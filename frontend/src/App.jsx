@@ -1,51 +1,48 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import DashboardLayout from './layouts/DashboardLayout';
-import LoginPage from './pages/Login/LoginPage';
-import DashboardHome from './pages/Dashboard/DashboardHome';
-import SmartClassroomPage from './pages/modules/SmartClassroomPage';
-import EnergyPage from './pages/modules/EnergyPage';
-import TransportPage from './pages/modules/TransportPage';
-import CrowdFlowPage from './pages/modules/CrowdFlowPage';
-import SustainabilityPage from './pages/modules/SustainabilityPage';
-import PredictiveAnalyticsPage from './pages/modules/PredictiveAnalyticsPage';
-import SettingsPage from './pages/modules/SettingsPage';
-import './styles/global.css';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import ClassroomAllocation from './pages/ClassroomAllocation';
+import EnergyOptimization from './pages/EnergyOptimization';
+import TransportManager from './pages/TransportManager';
+import CrowdMonitor from './pages/CrowdMonitor';
+import Sustainability from './pages/Sustainability';
+import Analytics from './pages/Analytics';
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  // In a real app, we might wait for a "loading" state
+  // For now, assuming synchronous token check from localStorage init
+  const token = localStorage.getItem('token');
+  return (isAuthenticated || token) ? children : <Navigate to="/login" />;
+};
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Dashboard Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<DashboardHome />} />
-            <Route path="classroom" element={<SmartClassroomPage />} />
-            <Route path="energy" element={<EnergyPage />} />
-            <Route path="transport" element={<TransportPage />} />
-            <Route path="crowd" element={<CrowdFlowPage />} />
-            <Route path="sustainability" element={<SustainabilityPage />} />
-            <Route path="predictive" element={<PredictiveAnalyticsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Navigate to="/dashboard" />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="classrooms" element={<ClassroomAllocation />} />
+            <Route path="energy" element={<EnergyOptimization />} />
+            <Route path="transport" element={<TransportManager />} />
+            <Route path="crowd" element={<CrowdMonitor />} />
+            <Route path="sustainability" element={<Sustainability />} />
+            <Route path="analytics" element={<Analytics />} />
           </Route>
-
-          {/* Redirect root to dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

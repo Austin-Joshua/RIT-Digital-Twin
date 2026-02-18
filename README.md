@@ -1,80 +1,102 @@
-# RIT Digital Twin - Smart Campus Intelligence Platform
+# RIT Digital Twin – Smart Campus Intelligence Platform
 
-## Rajalakshmi Institute of Technology, Chennai
+Developed for **Rajalakshmi Institute of Technology**
 
-Enterprise-grade digital twin platform for smart campus management with AI-powered analytics.
+This is a comprehensive full-stack platform for simulating, monitoring, and optimizing campus operations including Classroom Allocation, Energy Usage, Transport Logistics, Crowd Flow, and Sustainability.
 
-### Tech Stack
-- **Frontend**: React 19 + Vite  
-- **Backend**: Spring Boot 3.2 (Java 17+)  
-- **Database**: MySQL 8.0  
-- **Auth**: JWT + Role-based (Admin, Management, Faculty)  
-- **Docs**: Swagger/OpenAPI  
-- **Deploy**: Docker + Docker Compose  
+---
 
-### Quick Start
+## 🚀 Features
 
-#### Prerequisites
-- Java 17+, Maven, Node.js 18+, MySQL 8.0
+*   **Smart Classroom Allocation Engine**: AI-driven assignment of classrooms based on capacity and demand.
+*   **Energy Optimization Module**: Monitor consumption and simulate optimizations.
+*   **Transport Fleet Optimization**: Analyze bus routes for efficiency.
+*   **Crowd Flow & Emergency Simulation**: Real-time density monitoring and alert system.
+*   **Sustainability Dashboard**: Track Carbon Footprint and Green Initiatives.
+*   **Predictive Analytics**: Forecast infrastructure demands.
 
-#### Backend
-```bash
-cd backend
-mvn spring-boot:run
-```
-API available at: http://localhost:8080  
-Swagger UI: http://localhost:8080/swagger-ui.html
+---
 
-#### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-App available at: http://localhost:5173
+## 🛠 Tech Stack
 
-#### Docker (Full Stack)
-```bash
-docker-compose up --build
-```
+### Frontend
+- **React JS** (Vite)
+- **Recharts** for Data Visualization
+- **Axios** for API Integration
+- **Context API** for State Management
+- **RIT Institutional Design System** (Navy Blue & Gold Theme)
+
+### Backend
+- **Spring Boot 3** (Java 17)
+- **Spring Security** + **JWT** (Role Based Access Control)
+- **JPA / Hibernate**
+- **MySQL 8** Database
+- **Swagger / OpenAPI** Documentation
+
+### DevOps
+- **Docker** & **Docker Compose**
+
+---
+
+## 📦 Installation & Setup
+
+### Prerequisites
+- Docker & Docker Compose
+- Java 17+ (for local logic dev)
+- Node.js 18+ (for local UI dev)
+
+### Quick Start (Docker)
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Austin-Joshua/RIT-Digital-Twin.git
+    cd RIT-Digital-Twin
+    ```
+
+2.  **Run with Docker Compose**:
+    ```bash
+    docker-compose up --build
+    ```
+
+3.  **Access the Application**:
+    *   Frontend: `http://localhost:3000`
+    *   Backend API: `http://localhost:8080`
+    *   Swagger Docs: `http://localhost:8080/swagger-ui/index.html`
 
 ### Default Credentials
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | admin | admin123 |
-| Management | management | manage123 |
-| Faculty | faculty | faculty123 |
+*   **Email**: `admin@ritchennai.edu.in`
+*   **Password**: `admin123`
 
-### Core Modules
-1. Smart Classroom Allocation Engine
-2. Energy Consumption Simulation
-3. Transport Route Optimization
-4. Crowd Flow & Emergency Simulation
-5. Sustainability Dashboard
-6. Predictive Analytics Engine
+---
 
-### Project Structure
+## 📂 Project Structure
+
 ```
 RIT-Digital-Twin/
-├── backend/          # Spring Boot API
-│   └── src/main/java/com/rit/digitaltwin/
-│       ├── config/       # Security, Swagger, CORS
-│       ├── controller/   # REST controllers
-│       ├── dto/          # Data transfer objects
-│       ├── entity/       # JPA entities
-│       ├── exception/    # Global error handling
-│       ├── repository/   # Data access layer
-│       ├── security/     # JWT auth
-│       └── service/      # Business logic
-├── frontend/         # React + Vite
-│   └── src/
-│       ├── components/   # Reusable UI components
-│       ├── context/      # Auth context
-│       ├── layouts/      # Dashboard layout
-│       ├── pages/        # Login, Dashboard, Modules
-│       ├── services/     # API client
-│       └── styles/       # Design system
-├── database/         # SQL schemas
-├── docker-compose.yml
-└── README.md
+├── backend/            # Spring Boot Application
+│   ├── src/main/java/com/rit/digitaltwin
+│   │   ├── config/     # Security & App Config
+│   │   ├── controller/ # REST Endpoints
+│   │   ├── model/      # Database Entities
+│   │   ├── repository/ # JPA Repositories
+│   │   ├── service/    # Business Logic & Simulations
+│   └── Dockerfile
+├── frontend/           # React Application
+│   ├── src/
+│   │   ├── components/ # Reusable UI
+│   │   ├── pages/      # Feature Modules
+│   │   ├── context/    # Auth Context
+│   └── Dockerfile
+└── docker-compose.yml  # Orchestration
 ```
+
+---
+
+## 🔒 Security
+The platform uses JWT (JSON Web Tokens) for securing all endpoints. 
+- `/api/v1/auth/**` are public.
+- All other endpoints require a valid Bearer Token.
+
+---
+
+Developed with ❤️ by the RIT Digital Twin Team.
