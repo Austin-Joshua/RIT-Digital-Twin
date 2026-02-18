@@ -1,6 +1,5 @@
 package com.rit.digitaltwin.dto;
 
-import com.rit.digitaltwin.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
-    private String token;
-    private String firstName;
-    private String lastName;
-    private Role role;
+public class AuthRequest {
+    private String email;
+    private String password;
 }
