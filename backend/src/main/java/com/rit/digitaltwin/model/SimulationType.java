@@ -1,0 +1,10 @@
+package com.rit.digitaltwin.model;
+
+public enum SimulationType {
+    CLASSROOM_ALLOCATION,
+    ENERGY_FORECAST,
+    TRANSPORT_OPTIMIZATION,
+    CROWD_FLOW,
+    SUSTAINABILITY_PROJECTION,
+    PREDICTIVE_ANALYTICS
+}

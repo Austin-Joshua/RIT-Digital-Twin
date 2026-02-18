@@ -1,0 +1,131 @@
+/* =====================================================
+   Transport Route Optimization Styles
+   RIT Digital Twin – Deep Navy + Gold Theme
+   ===================================================== */
+
+.transport-header {
+    background: linear-gradient(135deg, #003366 0%, #001a33 40%, #1a1a3e 100%);
+}
+
+.transport-icon {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+}
+
+/* Routes Table */
+.routes-table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+}
+
+.routes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.routes-table thead {
+    background: #f0f4f8;
+}
+
+.routes-table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #475569;
+    white-space: nowrap;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.routes-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.routes-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.route-code {
+    font-weight: 700;
+    color: #003366;
+}
+
+/* Occupancy Bar */
+.occ-bar-wrap {
+    width: 60px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.occ-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.occ-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* Score Pill */
+.score-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+/* Status Badge */
+.status-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Fuel Section */
+.fuel-section {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Clusters Section */
+.clusters-section {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Optimization Section */
+.opt-section {
+    animation: fadeIn 0.3s ease;
+}
+
+/* EV Section */
+.ev-section {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .routes-table {
+        font-size: 0.75rem;
+    }
+
+    .routes-table th,
+    .routes-table td {
+        padding: 8px 10px;
+    }
+}

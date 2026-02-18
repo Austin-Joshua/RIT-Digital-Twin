@@ -1,0 +1,471 @@
+/* =====================================================
+   Crowd Flow & Emergency Simulation Styles
+   RIT Digital Twin – Deep Blue + Red/Orange Heat Theme
+   ===================================================== */
+
+.crowd-header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 40%, #1e1b4b 100%);
+}
+
+.crowd-icon {
+    background: linear-gradient(135deg, #f97316, #ef4444) !important;
+}
+
+/* Heatmap Grid */
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.heat-block {
+    position: relative;
+    overflow: hidden;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.heat-block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.heat-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.15;
+    transition: height 0.8s ease;
+    border-radius: 0 0 12px 12px;
+}
+
+.heat-content {
+    position: relative;
+    z-index: 1;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.heat-zone-id {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.heat-zone-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.heat-building {
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.heat-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+.heat-pct {
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.heat-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    align-self: flex-start;
+}
+
+/* Heat Legend */
+.heat-legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.heat-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.heat-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Evacuation Section */
+.evac-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.evac-hero {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 24px;
+}
+
+.evac-timer {
+    text-align: center;
+    padding: 24px 30px;
+    border-radius: 16px;
+    min-width: 160px;
+}
+
+.evac-timer.rating-excellent {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border: 2px solid #22c55e;
+}
+
+.evac-timer.rating-good {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #3b82f6;
+}
+
+.evac-timer.rating-warn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+}
+
+.evac-time {
+    font-size: 3.2rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #0f172a;
+}
+
+.evac-unit {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.evac-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.evac-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.evac-meta-item {
+    display: flex;
+    gap: 10px;
+    font-size: 0.88rem;
+}
+
+.evac-meta-item span {
+    color: #64748b;
+}
+
+.evac-meta-item strong {
+    color: #0f172a;
+}
+
+.rating-excellent {
+    color: #059669 !important;
+}
+
+.rating-good {
+    color: #2563eb !important;
+}
+
+.rating-acceptable {
+    color: #d97706 !important;
+}
+
+.rating-needs_improvement {
+    color: #dc2626 !important;
+}
+
+/* Gate Grid */
+.gate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.gate-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.gate-card.clear {
+    border-color: #86efac;
+    background: #f0fdf4;
+}
+
+.gate-card.moderate {
+    border-color: #fcd34d;
+    background: #fffbeb;
+}
+
+.gate-card.congested {
+    border-color: #fca5a5;
+    background: #fef2f2;
+}
+
+.gate-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.gate-people {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #003366;
+}
+
+.gate-time {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 4px 0;
+}
+
+.gate-bar-wrap {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.gate-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: #003366;
+    transition: width 0.6s ease;
+}
+
+.gate-status {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+/* Congestion List */
+.congestion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.congestion-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.cong-severity {
+    min-width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cong-location {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #0f172a;
+}
+
+.cong-type {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.cong-rec {
+    font-size: 0.78rem;
+    color: #475569;
+    margin-top: 6px;
+    background: #fefce8;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+/* Readiness Bars */
+.readiness-bars {
+    padding: 24px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.readiness-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rb-icon {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+}
+
+.rb-label {
+    width: 140px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    flex-shrink: 0;
+}
+
+.rb-track {
+    flex: 1;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.rb-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s ease;
+}
+
+.rb-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0f172a;
+    width: 32px;
+    text-align: right;
+}
+
+/* Readiness Lists */
+.readiness-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.readiness-list {
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: white;
+}
+
+.readiness-list h4 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+.readiness-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.readiness-list li {
+    padding: 6px 0;
+    font-size: 0.82rem;
+    color: #475569;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.readiness-list li:last-child {
+    border-bottom: none;
+}
+
+.readiness-list.strengths {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+.readiness-list.improvements {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .heatmap-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .evac-hero {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .readiness-lists {
+        grid-template-columns: 1fr;
+    }
+
+    .gate-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}

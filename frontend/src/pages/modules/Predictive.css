@@ -1,0 +1,359 @@
+/* =====================================================
+   Predictive Analytics Styles
+   RIT Digital Twin – Deep Navy + Gold Theme
+   ===================================================== */
+
+.predict-header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #003366 50%, #0f172a 100%);
+}
+
+.predict-icon-style {
+    background: linear-gradient(135deg, #a855f7, #6366f1) !important;
+}
+
+/* Summary Card */
+.pred-summary-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border-left: 4px solid #003366;
+}
+
+.pred-model-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #eff6ff;
+    color: #2563eb;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pred-summary-card p {
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Enrollment Hero */
+.enroll-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 24px;
+}
+
+.enroll-current,
+.enroll-predicted {
+    text-align: center;
+    padding: 20px 30px;
+    border-radius: 14px;
+}
+
+.enroll-current {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+}
+
+.enroll-predicted {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #3b82f6;
+}
+
+.enroll-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.enroll-num {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.enroll-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.enroll-growth {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #c9a227;
+}
+
+/* Department Trend Grid */
+.dept-trend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.dept-trend-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.dept-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #003366;
+}
+
+.dept-growth {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.dept-trend-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Facility List */
+.facility-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.facility-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    transition: background 0.2s;
+}
+
+.facility-item:hover {
+    background: #f1f5f9;
+}
+
+.facility-item.priority-critical {
+    border-left: 4px solid #dc2626;
+}
+
+.facility-item.priority-high {
+    border-left: 4px solid #ea580c;
+}
+
+.facility-item.priority-medium {
+    border-left: 4px solid #f59e0b;
+}
+
+.facility-item.priority-low {
+    border-left: 4px solid #22c55e;
+}
+
+.facility-info {
+    flex: 1;
+}
+
+.facility-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #0f172a;
+}
+
+.facility-action {
+    font-size: 0.76rem;
+    color: #475569;
+    margin-top: 3px;
+}
+
+.facility-caps {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.facility-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+}
+
+.facility-status {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.facility-priority {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* Forecast Dual */
+.fcast-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.dm strong.warn {
+    color: #ea580c;
+}
+
+/* Risk Items */
+.risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.risk-item {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.risk-item.severity-critical {
+    border-left: 4px solid #dc2626;
+}
+
+.risk-item.severity-high {
+    border-left: 4px solid #ea580c;
+}
+
+.risk-item.severity-medium {
+    border-left: 4px solid #f59e0b;
+}
+
+.risk-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.risk-severity {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.risk-category {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.risk-prob {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.risk-desc {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.risk-mitigate {
+    font-size: 0.78rem;
+    color: #475569;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #ecfdf5;
+    border-radius: 6px;
+}
+
+/* Recommendations */
+.rec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.rec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.rec-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #003366;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.rec-text {
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .enroll-hero {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .fcast-dual {
+        grid-template-columns: 1fr;
+    }
+
+    .dept-trend-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+}
