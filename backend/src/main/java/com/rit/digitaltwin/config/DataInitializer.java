@@ -21,31 +21,31 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         if (userRepository.count() == 0) {
             User admin = User.builder()
-                    .username("admin")
+                    .firstName("System")
+                    .lastName("Administrator")
                     .email("admin@ritchennai.edu.in")
                     .password(passwordEncoder.encode("admin123"))
-                    .fullName("System Administrator")
                     .role(Role.ADMIN)
                     .build();
             userRepository.save(admin);
 
-            User management = User.builder()
-                    .username("management")
-                    .email("management@ritchennai.edu.in")
-                    .password(passwordEncoder.encode("manage123"))
-                    .fullName("Management User")
-                    .role(Role.MANAGEMENT)
-                    .build();
-            userRepository.save(management);
-
             User faculty = User.builder()
-                    .username("faculty")
+                    .firstName("Faculty")
+                    .lastName("User")
                     .email("faculty@ritchennai.edu.in")
                     .password(passwordEncoder.encode("faculty123"))
-                    .fullName("Faculty User")
                     .role(Role.FACULTY)
                     .build();
             userRepository.save(faculty);
+
+            User student = User.builder()
+                    .firstName("Student")
+                    .lastName("User")
+                    .email("student@ritchennai.edu.in")
+                    .password(passwordEncoder.encode("student123"))
+                    .role(Role.STUDENT)
+                    .build();
+            userRepository.save(student);
 
             log.info("Default users created: admin, management, faculty");
         }

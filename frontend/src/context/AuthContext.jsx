@@ -1,80 +1,53 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [token, setToken] = useState(localStorage.getItem('token'));
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const savedToken = localStorage.getItem('token');
-        const savedUser = localStorage.getItem('user');
-
-        if (savedToken && savedUser) {
-            setToken(savedToken);
-            setUser(JSON.parse(savedUser));
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            // Ideally verify token with backend or decode payload
+            // For now, assume valid if present
+            setUser({ token }); 
+        } else {
+            delete axios.defaults.headers.common['Authorization'];
+            setUser(null);
         }
-        setLoading(false);
-    }, []);
+    }, [token]);
 
-    const login = async (credentials) => {
-        const response = await authAPI.login(credentials);
-        const data = response.data;
-
-        setToken(data.token);
-        const userData = {
-            username: data.username,
-            fullName: data.fullName,
-            email: data.email,
-            role: data.role,
-        };
-        setUser(userData);
-
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(userData));
-
-        return data;
+    const login = async (email, password) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/auth/authenticate', { email, password });
+            const { token, firstName, lastName, role } = response.data;
+            localStorage.setItem('token', token);
+            setToken(token);
+            setUser({ firstName, lastName, role, token });
+            navigate('/dashboard');
+            return true;
+        } catch (error) {
+            console.error("Login failed", error);
+            return false;
+        }
     };
 
     const logout = () => {
+        localStorage.removeItem('token');
         setToken(null);
         setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        navigate('/login');
     };
 
-    const isAuthenticated = !!token;
-
-    const hasRole = (role) => {
-        if (!user) return false;
-        return user.role === role;
-    };
-
-    const hasAnyRole = (roles) => {
-        if (!user) return false;
-        return roles.includes(user.role);
-    };
-
-    const value = {
-        user,
-        token,
-        loading,
-        isAuthenticated,
-        login,
-        logout,
-        hasRole,
-        hasAnyRole,
-    };
-
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };

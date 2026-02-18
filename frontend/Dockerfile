@@ -1,40 +1,29 @@
 # ==============================================================
 # RIT Digital Twin – Frontend Dockerfile
-# Multi-stage: Node build → Nginx serving
+# Multi-stage: Node build → Nginx runtime
 # ==============================================================
 
 # ---- Stage 1: Build ----
-FROM node:20-alpine AS build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Cache npm dependencies
+# Install dependencies (cache first)
 COPY package.json package-lock.json* ./
-RUN npm ci --silent
+RUN npm ci
 
-# Build production bundle
+# Copy source and build
 COPY . .
 RUN npm run build
 
-# ---- Stage 2: Serve ----
-FROM nginx:1.25-alpine
+# ---- Stage 2: Runtime ----
+FROM nginx:alpine
 
-LABEL maintainer="RIT Digital Twin <admin@ritchennai.edu.in>"
-LABEL description="RIT Digital Twin – React Frontend (Nginx)"
-
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy built assets from build stage
+# Copy build artifacts to Nginx html directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
-
+# Expose port 80
 EXPOSE 80
 
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
