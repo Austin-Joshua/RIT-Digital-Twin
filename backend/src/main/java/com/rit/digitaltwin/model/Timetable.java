@@ -19,9 +19,18 @@ public class Timetable {
     private Long id;
 
     private String courseName;
-    private String dayOfWeek;
+
+    @Enumerated(EnumType.STRING)
+    private java.time.DayOfWeek dayOfWeek;
+
     private LocalTime startTime;
     private LocalTime endTime;
+
+    private String subjectName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classroom_id")

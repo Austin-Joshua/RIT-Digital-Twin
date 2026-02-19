@@ -21,6 +21,17 @@ public class Classroom {
     private Integer capacity;
     private Boolean isSmartClass;
 
+    private Integer floor;
+    private String roomNumber;
+
+    @Enumerated(EnumType.STRING)
+    private RoomType roomType; // LECTURE_HALL, LAB, SEMINAR_HALL
+
+    private Boolean hasProjector;
+    private Boolean hasAc;
+    private Boolean hasSmartBoard;
+    private Boolean hasWifi;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id")
     private Building building;

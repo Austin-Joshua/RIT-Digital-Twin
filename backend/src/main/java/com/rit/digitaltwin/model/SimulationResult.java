@@ -18,13 +18,27 @@ public class SimulationResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String moduleType; // CLASSROOM, ENERGY, TRANSPORT, CROWD
+    @Enumerated(EnumType.STRING)
+    private SimulationType simulationType;
+
+    private String simulationName;
 
     @Column(columnDefinition = "TEXT")
     private String inputParams; // JSON string
 
     @Column(columnDefinition = "TEXT")
     private String outputData; // JSON string
+
+    @Column(columnDefinition = "TEXT")
+    private String summary;
+
+    @Enumerated(EnumType.STRING)
+    private SimulationStatus status;
+
+    private Long executionTimeMs;
+
+    private LocalDateTime startedAt;
+    private LocalDateTime completedAt;
 
     private LocalDateTime createdAt;
 
