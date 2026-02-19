@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 
@@ -11,10 +11,12 @@ const LoginPage = () => {
     const { user, login } = useAuth();
     const navigate = useNavigate();
 
-    // If already logged in, redirect to dashboard
-    if (user) {
-        return <Navigate to="/" replace />;
-    }
+    // Redirect to dashboard whenever user becomes non-null
+    useEffect(() => {
+        if (user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,11 +24,10 @@ const LoginPage = () => {
         setLoading(true);
         try {
             const result = await login(username, password);
-            if (result.success) {
-                navigate('/', { replace: true });
-            } else {
+            if (!result.success) {
                 setError(result.message);
             }
+            // Navigation happens via useEffect when user state updates
         } catch (err) {
             setError('An unexpected error occurred.');
         } finally {
