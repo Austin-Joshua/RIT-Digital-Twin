@@ -14,7 +14,8 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (user) {
-            navigate('/', { replace: true });
+            const dest = user.role === 'STUDENT' ? '/student' : '/';
+            navigate(dest, { replace: true });
         }
     }, [user, navigate]);
 
