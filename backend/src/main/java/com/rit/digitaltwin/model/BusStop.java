@@ -2,27 +2,33 @@ package com.rit.digitaltwin.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+import java.time.LocalTime;
+
 @Entity
 @Table(name = "bus_stops")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BusStop {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "stop_id")
+    private Long stopId;
 
-    private String stopName;
-    private Integer sequenceOrder;
-    private Double latitude;
-    private Double longitude;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "route_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "route_id", nullable = false)
     private TransportRoute route;
+
+    @Column(name = "stop_name", nullable = false)
+    private String stopName;
+
+    @Column(name = "student_count")
+    private int studentCount;
+
+    @Column(name = "arrival_time")
+    private LocalTime arrivalTime;
 }

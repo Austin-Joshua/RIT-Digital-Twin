@@ -35,7 +35,7 @@ public class AuthService {
                                 .token(jwtToken)
                                 .firstName(user.getFirstName())
                                 .lastName(user.getLastName())
-                                .role(user.getRole())
+                                .role(user.getRole().getRoleName())
                                 .build();
         }
 
@@ -51,7 +51,7 @@ public class AuthService {
                                 .token(jwtToken)
                                 .firstName(user.getFirstName())
                                 .lastName(user.getLastName())
-                                .role(user.getRole())
+                                .role(user.getRole().getRoleName())
                                 .build();
         }
 }

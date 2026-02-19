@@ -1,5 +1,8 @@
 package com.rit.digitaltwin.controller;
 
+import com.rit.digitaltwin.dto.EnergySimulationRequest;
+import com.rit.digitaltwin.dto.TransportSimulationRequest;
+import com.rit.digitaltwin.dto.CrowdFlowSimulationRequest;
 import com.rit.digitaltwin.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +15,9 @@ import java.util.Map;
 public class SimulationController {
 
     private final ClassroomAllocationService classroomService;
-    private final EnergyOptimizationService energyService;
-    private final TransportOptimizationService transportService;
+    private final EnergySimulationService energyService;
+    private final TransportSimulationService transportService;
+    private final CrowdFlowSimulationService crowdService;
 
     @PostMapping("/classroom-allocation")
     public ResponseEntity<Map<String, Object>> runClassroomAllocation(
@@ -22,12 +26,24 @@ public class SimulationController {
     }
 
     @PostMapping("/energy-optimization")
-    public ResponseEntity<Map<String, Object>> runEnergyOptimization() {
-        return ResponseEntity.ok(energyService.optimizeEnergyUsage());
+    public ResponseEntity<?> runEnergyOptimization(@RequestBody(required = false) EnergySimulationRequest request) {
+        if (request == null)
+            request = new EnergySimulationRequest();
+        return ResponseEntity.ok(energyService.runSimulation(request));
     }
 
     @PostMapping("/transport-optimization")
-    public ResponseEntity<Map<String, Object>> runTransportOptimization() {
-        return ResponseEntity.ok(transportService.analyzeRouteEfficiency());
+    public ResponseEntity<?> runTransportOptimization(
+            @RequestBody(required = false) TransportSimulationRequest request) {
+        if (request == null)
+            request = new TransportSimulationRequest();
+        return ResponseEntity.ok(transportService.runSimulation(request));
+    }
+
+    @PostMapping("/crowd-flow")
+    public ResponseEntity<?> runCrowdSimulation(@RequestBody(required = false) CrowdFlowSimulationRequest request) {
+        if (request == null)
+            request = new CrowdFlowSimulationRequest();
+        return ResponseEntity.ok(crowdService.runSimulation(request));
     }
 }

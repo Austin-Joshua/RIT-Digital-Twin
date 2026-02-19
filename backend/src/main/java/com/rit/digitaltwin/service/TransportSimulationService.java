@@ -182,10 +182,10 @@ public class TransportSimulationService {
         private SimulationResult saveResult(TransportSimulationRequest req, String summary, long execTime) {
                 try {
                         SimulationResult result = SimulationResult.builder()
-                                        .simulationType(SimulationType.TRANSPORT_OPTIMIZATION)
+                                        .simType(SimulationType.TRANSPORT_OPTIMIZATION)
                                         .simulationName("Transport Sim - " + req.getRouteCount() + " routes")
-                                        .inputParams(objectMapper.writeValueAsString(req))
-                                        .outputData("{}")
+                                        .parametersJson(objectMapper.writeValueAsString(req))
+                                        .resultJson("{}")
                                         .summary(summary)
                                         .executionTimeMs(execTime)
                                         .status(SimulationStatus.COMPLETED)

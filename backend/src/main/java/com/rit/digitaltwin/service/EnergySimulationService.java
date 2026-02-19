@@ -266,11 +266,11 @@ public class EnergySimulationService {
         private SimulationResult saveResult(EnergySimulationRequest req, String summary, long execTime) {
                 try {
                         SimulationResult result = SimulationResult.builder()
-                                        .simulationType(SimulationType.ENERGY_FORECAST)
+                                        .simType(SimulationType.ENERGY_FORECAST)
                                         .simulationName("Energy Sim - "
                                                         + (req.getSeason() != null ? req.getSeason() : "DEFAULT"))
-                                        .inputParams(objectMapper.writeValueAsString(req))
-                                        .outputData("{}")
+                                        .parametersJson(objectMapper.writeValueAsString(req))
+                                        .resultJson("{}")
                                         .summary(summary)
                                         .executionTimeMs(execTime)
                                         .status(SimulationStatus.COMPLETED)

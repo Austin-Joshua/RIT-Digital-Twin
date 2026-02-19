@@ -1,53 +1,51 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import api from '../services/api';
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            // Ideally verify token with backend or decode payload
-            // For now, assume valid if present
-            setUser({ token }); 
-        } else {
-            delete axios.defaults.headers.common['Authorization'];
-            setUser(null);
+        const storedUser = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        if (storedUser && token) {
+            setUser(JSON.parse(storedUser));
         }
-    }, [token]);
+        setLoading(false);
+    }, []);
 
-    const login = async (email, password) => {
+    const login = async (username, password) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/auth/authenticate', { email, password });
-            const { token, firstName, lastName, role } = response.data;
+            const response = await api.post('/auth/login', { username, password });
+            const { token, ...userData } = response.data;
+
             localStorage.setItem('token', token);
-            setToken(token);
-            setUser({ firstName, lastName, role, token });
-            navigate('/dashboard');
-            return true;
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+            return { success: true };
         } catch (error) {
             console.error("Login failed", error);
-            return false;
+            if (error.response) {
+                console.error("Error data:", error.response.data);
+                console.error("Error status:", error.response.status);
+            }
+            return { success: false, message: error.response?.data?.message || 'Login failed' };
         }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
-        setToken(null);
+        localStorage.removeItem('user');
         setUser(null);
-        navigate('/login');
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
+export const useAuth = () => useContext(AuthContext);

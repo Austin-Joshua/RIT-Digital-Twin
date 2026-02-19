@@ -1,139 +1,114 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { FaBuilding, FaBolt, FaBus, FaLeaf } from 'react-icons/fa';
 
 const Dashboard = () => {
-    // Quick Stats Data mimicking the screenshot
-    const stats = [
-        {
-            title: 'CGPA',
-            count: '0',
-            bg: '#28a745', // Green
-            icon: '📄'
-        },
-        {
-            title: 'Arrears In Hand',
-            count: '0',
-            bg: '#ffc107', // Yellow
-            icon: '📝'
-        },
-        {
-            title: 'Average Attendance',
-            count: '0',
-            unit: '%',
-            bg: '#17a2b8', // Teal
-            icon: '📊'
-        },
-        {
-            title: 'Taken Leave',
-            count: '0',
-            bg: '#dc3545', // Red
-            icon: '📅'
-        },
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await api.get('/dashboard/stats');
+                setStats(response.data);
+            } catch (error) {
+                console.error("Failed to fetch dashboard stats", error);
+                setStats({
+                    infrastructureUtil: 78.5,
+                    energyOptimization: 85.2,
+                    transportEfficiency: 92.0,
+                    sustainabilityIndex: 88.7,
+                    totalBuildings: 12,
+                    totalClassrooms: 48
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) return <div className="text-center p-10 text-navy-900">Loading Intelligence Platform...</div>;
+
+    const kpiCards = [
+        { title: 'Infrastructure Utilization', value: `${stats.infrastructureUtil}%`, icon: <FaBuilding />, borderTop: 'border-t-4 border-blue-500' },
+        { title: 'Energy Optimization', value: `${stats.energyOptimization}`, icon: <FaBolt />, borderTop: 'border-t-4 border-gold-500' },
+        { title: 'Transport Efficiency', value: `${stats.transportEfficiency}%`, icon: <FaBus />, borderTop: 'border-t-4 border-green-500' },
+        { title: 'Sustainability Index', value: `${stats.sustainabilityIndex}`, icon: <FaLeaf />, borderTop: 'border-t-4 border-teal-500' },
+    ];
+
+    const data = [
+        { name: 'Mon', Energy: 4000, Transport: 2400 },
+        { name: 'Tue', Energy: 3000, Transport: 1398 },
+        { name: 'Wed', Energy: 2000, Transport: 9800 },
+        { name: 'Thu', Energy: 2780, Transport: 3908 },
+        { name: 'Fri', Energy: 1890, Transport: 4800 },
+        { name: 'Sat', Energy: 2390, Transport: 3800 },
+        { name: 'Sun', Energy: 3490, Transport: 4300 },
     ];
 
     return (
-        <div className="dashboard-container">
-            {/* Stats Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                {stats.map((stat, index) => (
-                    <div key={index} style={{
-                        backgroundColor: stat.bg,
-                        borderRadius: '4px',
-                        color: 'white',
-                        overflow: 'hidden',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                    }}>
-                        <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+            <h1 className="page-header">Smart Campus Intelligence Dashboard</h1>
+
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {kpiCards.map((card, index) => (
+                    <div key={index} className={`card relative overflow-hidden transition hover:shadow-md ${card.borderTop}`}>
+                        <div className="flex justify-between items-start">
                             <div>
-                                <h3 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0' }}>
-                                    {stat.count}
-                                    {stat.unit && <span style={{ fontSize: '1.5rem', marginLeft: '5px' }}>{stat.unit}</span>}
-                                </h3>
-                                <p style={{ fontSize: '0.9rem', margin: '5px 0 0 0', opacity: '0.9' }}>{stat.title}</p>
+                                <p className="text-[14px] text-gray-500 font-medium mb-1">{card.title}</p>
+                                <h3 className="text-[28px] font-bold text-navy-900 leading-tight">{card.value}</h3>
                             </div>
-                            <div style={{ fontSize: '3rem', opacity: '0.2' }}>
-                                {stat.icon}
+                            <div className="p-2 bg-gray-50 rounded-lg text-gold-500 text-xl">
+                                {card.icon}
                             </div>
-                        </div>
-                        <div style={{
-                            backgroundColor: 'rgba(0,0,0,0.1)',
-                            padding: '8px 20px',
-                            fontSize: '0.85rem',
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            More info <span style={{ marginLeft: '5px' }}>➜</span>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Info Sections Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                {/* Announcements */}
-                <div style={{ background: 'white', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                    <div style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0', fontSize: '1.1rem', fontWeight: '600', color: '#444' }}>
-                        Announcements
-                    </div>
-                    <div style={{ padding: '20px', minHeight: '150px' }}>
-                        <ul style={{ paddingLeft: '20px', color: '#666' }}>
-                            <li>No Announcements</li>
-                        </ul>
-                        <div style={{ textAlign: 'right', marginTop: '20px', color: '#555', fontSize: '0.9rem', cursor: 'pointer' }}>
-                            More..
-                        </div>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="card">
+                    <h3 className="section-header !mb-6 !text-[18px]">Weekly Consumption Trends</h3>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <XAxis dataKey="name" tick={{ fill: '#374151', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: '#374151', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#fff', borderColor: '#E5E7EB', borderRadius: '4px', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
+                                    itemStyle={{ color: '#1F2937' }}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Bar dataKey="Energy" fill="#0B2C6B" name="Energy Usage (kWh)" radius={[4, 4, 0, 0]} barSize={30} />
+                                <Bar dataKey="Transport" fill="#D4AF37" name="Transport load" radius={[4, 4, 0, 0]} barSize={30} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Events */}
-                <div style={{ background: 'white', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                    <div style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0', fontSize: '1.1rem', fontWeight: '600', color: '#444' }}>
-                        Placement / Events Schedule
+                <div className="card">
+                    <h3 className="section-header !mb-6 !text-[18px]">Simulation Analytics</h3>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <XAxis dataKey="name" tick={{ fill: '#374151', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fill: '#374151', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#fff', borderColor: '#E5E7EB', borderRadius: '4px' }}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4, fill: '#0B2C6B' }} activeDot={{ r: 6 }} />
+                                <Line type="monotone" dataKey="Transport" stroke="#D4AF37" strokeWidth={2} dot={{ r: 4, fill: '#D4AF37' }} />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
-                    <div style={{ padding: '20px', minHeight: '150px' }}>
-                        <ul style={{ paddingLeft: '20px', color: '#666' }}>
-                            <li>No Events</li>
-                        </ul>
-                        <div style={{ textAlign: 'right', marginTop: '20px', color: '#555', fontSize: '0.9rem', cursor: 'pointer' }}>
-                            More..
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Calendar Section */}
-            <div style={{ background: 'white', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                <div style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontWeight: 'bold' }}>February 2026</div>
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <div style={{ width: '12px', height: '12px', background: '#fadbd8' }}></div> Holiday
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <div style={{ width: '12px', height: '12px', background: '#aed6f1' }}></div> No order Day
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <div style={{ width: '12px', height: '12px', background: '#17a2b8' }}></div> Today
-                        </div>
-                    </div>
-                </div>
-                <div style={{ padding: '0', overflowX: 'auto' }}>
-                    <table style={{ width: '100%', textAlign: 'center', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ background: '#d6eaf8', color: '#333' }}>
-                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                    <th key={day} style={{ padding: '15px', fontWeight: 'normal' }}>{day}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colSpan="7" style={{ padding: '40px', color: '#999' }}>Calendar Data Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

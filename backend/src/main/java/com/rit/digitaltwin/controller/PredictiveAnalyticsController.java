@@ -1,7 +1,7 @@
 package com.rit.digitaltwin.controller;
 
 import com.rit.digitaltwin.dto.PredictiveForecastResponse;
-import com.rit.digitaltwin.service.PredictiveAnalyticsService;
+import com.rit.digitaltwin.service.PredictionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Predictive Analytics", description = "Regression-based next-semester infrastructure demand forecasting")
 public class PredictiveAnalyticsController {
 
-    private final PredictiveAnalyticsService analyticsService;
+    private final PredictionService analyticsService;
 
     @GetMapping("/predictive")
     @Operation(summary = "Get Predictive Forecast", description = "Returns regression-based forecast for next semester: enrollment, infrastructure, energy, and transport demand")
