@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -8,19 +8,29 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { login } = useAuth();
+    const { user, login } = useAuth();
     const navigate = useNavigate();
+
+    // If already logged in, redirect to dashboard
+    if (user) {
+        return <Navigate to="/" replace />;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
-        const result = await login(username, password);
-        setLoading(false);
-        if (result.success) {
-            navigate('/');
-        } else {
-            setError(result.message);
+        try {
+            const result = await login(username, password);
+            if (result.success) {
+                navigate('/', { replace: true });
+            } else {
+                setError(result.message);
+            }
+        } catch (err) {
+            setError('An unexpected error occurred.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -38,22 +48,6 @@ const LoginPage = () => {
                     <p className="brand-tagline">
                         Digital Twin · IoT Analytics · Predictive Intelligence
                     </p>
-                    <div className="brand-stats">
-                        <div className="brand-stat">
-                            <span className="stat-number">7</span>
-                            <span className="stat-label">Modules</span>
-                        </div>
-                        <div className="brand-stat-divider" />
-                        <div className="brand-stat">
-                            <span className="stat-number">24/7</span>
-                            <span className="stat-label">Monitoring</span>
-                        </div>
-                        <div className="brand-stat-divider" />
-                        <div className="brand-stat">
-                            <span className="stat-number">∞</span>
-                            <span className="stat-label">Insights</span>
-                        </div>
-                    </div>
                 </div>
                 <div className="brand-footer">
                     Rajalakshmi Institute of Technology
@@ -143,7 +137,6 @@ const LoginPage = () => {
                         <div className="form-options">
                             <label className="remember-me">
                                 <input type="checkbox" />
-                                <span className="checkmark" />
                                 <span>Remember me</span>
                             </label>
                             <a href="#" className="forgot-link">Forgot password?</a>
@@ -275,52 +268,16 @@ const LoginPage = () => {
                     letter-spacing: 0.5px;
                 }
 
-                .brand-stats {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 1.5rem;
-                    margin-top: 3rem;
-                    padding: 1.25rem 2rem;
-                    background: rgba(255,255,255,0.05);
-                    border-radius: 16px;
-                    border: 1px solid rgba(255,255,255,0.08);
-                    backdrop-filter: blur(10px);
-                }
-
-                .brand-stat {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 0.25rem;
-                }
-
-                .stat-number {
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    color: #D4AF37;
-                }
-
-                .stat-label {
-                    font-size: 0.7rem;
-                    color: rgba(255,255,255,0.5);
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-
-                .brand-stat-divider {
-                    width: 1px;
-                    height: 36px;
-                    background: rgba(255,255,255,0.1);
-                }
-
+                /* ── Bold RIT Name in footer ── */
                 .brand-footer {
                     position: absolute;
-                    bottom: 2rem;
-                    font-size: 0.75rem;
-                    color: rgba(255,255,255,0.25);
-                    letter-spacing: 1px;
+                    bottom: 2.5rem;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    color: #D4AF37;
+                    letter-spacing: 3px;
                     text-transform: uppercase;
+                    text-shadow: 0 2px 12px rgba(212,175,55,0.25);
                 }
 
                 /* ── Right Form Panel ── */
@@ -452,7 +409,6 @@ const LoginPage = () => {
                     box-shadow: 0 0 0 3px rgba(11,44,107,0.1);
                 }
 
-                .input-wrapper input:focus ~ .input-icon,
                 .input-wrapper:focus-within .input-icon {
                     color: #0B2C6B;
                 }
