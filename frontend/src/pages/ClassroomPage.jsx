@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api';
+import { FaBuilding, FaChalkboardTeacher, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 const ClassroomPage = () => {
     const [formData, setFormData] = useState({
@@ -22,7 +23,8 @@ const ClassroomPage = () => {
             console.error(error);
             setResults([
                 { roomNumber: 'A-101', capacity: 60, hasProjector: true, building: { buildingName: 'Main Block' } },
-                { roomNumber: 'B-204', capacity: 70, hasProjector: true, building: { buildingName: 'Science Block' } }
+                { roomNumber: 'B-204', capacity: 70, hasProjector: true, building: { buildingName: 'Science Block' } },
+                { roomNumber: 'C-305', capacity: 50, hasProjector: false, building: { buildingName: 'Engineering Block' } }
             ]);
         } finally {
             setLoading(false);
@@ -31,92 +33,110 @@ const ClassroomPage = () => {
 
     return (
         <div className="space-y-6">
-            <h1 className="page-header">Classroom Allocation</h1>
+            <h1 className="page-header">Infrastructure & Classroom Report</h1>
 
-            <div className="card">
-                <h3 className="section-header">Allocation Parameters</h3>
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1 text-sm">Department</label>
-                        <select
-                            className="input-field"
-                            value={formData.department}
-                            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                        >
-                            <option value="">Select Department</option>
-                            <option value="CSE">Computer Science</option>
-                            <option value="MECH">Mechanical</option>
-                            <option value="CIVIL">Civil</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1 text-sm">Student Strength</label>
-                        <input
-                            type="number"
-                            className="input-field"
-                            value={formData.studentStrength}
-                            onChange={(e) => setFormData({ ...formData, studentStrength: parseInt(e.target.value) })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-gray-700 font-medium mb-1 text-sm">Time Slot</label>
-                        <input
-                            type="time"
-                            className="input-field"
-                            value={formData.timeSlot}
-                            onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
-                        />
-                    </div>
-                    <div className="flex items-center mt-7">
-                        <input
-                            type="checkbox"
-                            className="mr-2 h-4 w-4 text-navy-900 rounded focus:ring-navy-900 border-gray-300"
-                            checked={formData.needsProjector}
-                            onChange={(e) => setFormData({ ...formData, needsProjector: e.target.checked })}
-                        />
-                        <label className="text-gray-700 font-medium text-sm">Needs Projector / Smart Board</label>
-                    </div>
-                    <div className="md:col-span-2 mt-2">
-                        <button
-                            type="submit"
-                            className="btn-primary"
-                            disabled={loading}
-                        >
-                            {loading ? 'Processing Simulation...' : 'Run Allocation Algorithm'}
-                        </button>
-                    </div>
-                </form>
+            {/* Status Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="card border-l-4 border-blue-500 p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Total Rooms</p>
+                    <h3 className="text-2xl font-bold">48</h3>
+                </div>
+                <div className="card border-l-4 border-green-500 p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Occupied</p>
+                    <h3 className="text-2xl font-bold">36</h3>
+                </div>
+                <div className="card border-l-4 border-gold-500 p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Available</p>
+                    <h3 className="text-2xl font-bold">12</h3>
+                </div>
+                <div className="card border-l-4 border-teal-500 p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Smart Rooms</p>
+                    <h3 className="text-2xl font-bold">24</h3>
+                </div>
             </div>
 
-            {results && (
-                <div className="card">
-                    <h3 className="section-header text-navy-900">Allocation Recommendations</h3>
-                    <div className="overflow-x-auto rounded-lg border border-gray-200">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Room Number</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Building</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Capacity</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Facilities</th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {results.map((room, idx) => (
-                                    <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-navy-900">{room.roomNumber}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{room.building?.buildingName || 'N/A'}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{room.capacity}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {room.hasProjector && <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Projector</span>}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Allocation Logic */}
+                <div className="card lg:col-span-1">
+                    <h3 className="section-header">Allocation Simulation</h3>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-1 text-sm">Department</label>
+                            <select
+                                className="input-field w-full"
+                                value={formData.department}
+                                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                            >
+                                <option value="">Select Dept...</option>
+                                <option value="CSE">CSE</option>
+                                <option value="MECH">Mechanical</option>
+                                <option value="CIVIL">Civil</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-1 text-sm">Strength</label>
+                            <input
+                                type="number"
+                                className="input-field w-full"
+                                value={formData.studentStrength}
+                                onChange={(e) => setFormData({ ...formData, studentStrength: parseInt(e.target.value) })}
+                            />
+                        </div>
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                className="mr-2"
+                                checked={formData.needsProjector}
+                                onChange={(e) => setFormData({ ...formData, needsProjector: e.target.checked })}
+                            />
+                            <label className="text-sm">Smart Projector</label>
+                        </div>
+                        <button
+                            type="submit"
+                            className="btn-primary w-full"
+                            disabled={loading}
+                        >
+                            {loading ? 'Simulating...' : 'Run Algorithm'}
+                        </button>
+                    </form>
                 </div>
-            )}
+
+                {/* Recommendations Table */}
+                <div className="card lg:col-span-2">
+                    <h3 className="section-header">Allocation Recommendations</h3>
+                    {results ? (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">Room</th>
+                                        <th className="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">Building</th>
+                                        <th className="px-4 py-2 text-center text-xs font-bold text-gray-500 uppercase">Capacity</th>
+                                        <th className="px-4 py-2 text-center text-xs font-bold text-gray-500 uppercase">Facilities</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {results.map((room, idx) => (
+                                        <tr key={idx} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-bold text-navy-900">{room.roomNumber}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">{room.building?.buildingName || 'N/A'}</td>
+                                            <td className="px-4 py-3 text-sm text-center">{room.capacity}</td>
+                                            <td className="px-4 py-3 text-center">
+                                                {room.hasProjector && <FaChalkboardTeacher className="text-blue-500 inline" />}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="py-20 text-center text-gray-400">
+                            <FaBuilding className="text-4xl mx-auto mb-2 opacity-20" />
+                            <p>Run simulation to see recommendations</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

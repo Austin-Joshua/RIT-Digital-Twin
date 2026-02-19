@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { FaBuilding, FaBolt, FaBus, FaLeaf } from 'react-icons/fa';
@@ -33,10 +34,10 @@ const Dashboard = () => {
     if (loading) return <div className="text-center p-10 text-navy-900">Loading Intelligence Platform...</div>;
 
     const kpiCards = [
-        { title: 'Infrastructure Utilization', value: `${stats.infrastructureUtil}%`, icon: <FaBuilding />, borderTop: 'border-t-4 border-blue-500' },
-        { title: 'Energy Optimization', value: `${stats.energyOptimization}`, icon: <FaBolt />, borderTop: 'border-t-4 border-gold-500' },
-        { title: 'Transport Efficiency', value: `${stats.transportEfficiency}%`, icon: <FaBus />, borderTop: 'border-t-4 border-green-500' },
-        { title: 'Sustainability Index', value: `${stats.sustainabilityIndex}`, icon: <FaLeaf />, borderTop: 'border-t-4 border-teal-500' },
+        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil || 0}%`, icon: <FaBuilding />, borderTop: 'border-t-4 border-blue-500', link: '/classroom' },
+        { title: 'Energy Optimization', value: `${stats?.energyOptimization || 0}`, icon: <FaBolt />, borderTop: 'border-t-4 border-gold-500', link: '/energy' },
+        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency || 0}%`, icon: <FaBus />, borderTop: 'border-t-4 border-green-500', link: '/transport' },
+        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex || 0}`, icon: <FaLeaf />, borderTop: 'border-t-4 border-teal-500', link: '/sustainability' },
     ];
 
     const data = [
@@ -56,7 +57,7 @@ const Dashboard = () => {
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {kpiCards.map((card, index) => (
-                    <div key={index} className={`card relative overflow-hidden transition hover:shadow-md ${card.borderTop}`}>
+                    <Link key={index} to={card.link} className={`card relative overflow-hidden transition hover:shadow-md cursor-pointer block ${card.borderTop}`}>
                         <div className="flex justify-between items-start">
                             <div>
                                 <p className="text-[14px] text-gray-500 font-medium mb-1">{card.title}</p>
@@ -66,7 +67,7 @@ const Dashboard = () => {
                                 {card.icon}
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
