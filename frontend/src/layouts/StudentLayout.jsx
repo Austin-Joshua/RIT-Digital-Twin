@@ -5,7 +5,7 @@ import {
     FaHome, FaClock, FaBookOpen, FaFileAlt, FaCalendarCheck,
     FaCertificate, FaPenFancy, FaFlask, FaClipboardList,
     FaBook, FaMoneyCheckAlt, FaCommentDots, FaSignOutAlt,
-    FaBars, FaUser
+    FaBars, FaUser, FaDesktop
 } from 'react-icons/fa';
 import './student-layout.css';
 
@@ -42,13 +42,13 @@ const StudentLayout = () => {
         <div className="stu-layout">
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                {/* Header — RIT Branding */}
+                {/* Header — RIT brand text only (no logo image) */}
                 <div className="stu-sidebar-header">
                     <div className="stu-sidebar-logo">
                         <span>RIT</span>
                     </div>
                     <div className="stu-brand-text">
-                        <div className="brand-name">Rajalakshmi Institute of Technology</div>
+                        <div className="brand-name">Rajalakshmi<br />Institute of<br />Technology</div>
                         <div className="brand-motto">Believe in the Possibilities</div>
                         <div className="brand-sub">An Autonomous Institution</div>
                     </div>
@@ -76,8 +76,12 @@ const StudentLayout = () => {
                 </nav>
 
                 {/* Logout */}
-                <div style={{ padding: '8px 12px', borderTop: '1px solid #eee' }}>
-                    <button className="stu-nav-item" onClick={handleLogout} style={{ width: '100%', border: 'none', background: 'none', color: '#e53935' }}>
+                <div style={{ padding: '4px 0', borderTop: '1px solid #e0e0e0' }}>
+                    <button
+                        className="stu-nav-item"
+                        onClick={handleLogout}
+                        style={{ width: '100%', border: 'none', background: 'none', color: '#dd4b39', cursor: 'pointer' }}
+                    >
                         <span className="nav-icon"><FaSignOutAlt /></span>
                         <span>Logout</span>
                     </button>
@@ -86,7 +90,7 @@ const StudentLayout = () => {
 
             {/* ── Main ── */}
             <div className="stu-main">
-                {/* Top Bar */}
+                {/* Top Bar — exact IMS: hamburger left, icons center-ish, user badge right */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left">
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -94,6 +98,9 @@ const StudentLayout = () => {
                         </button>
                     </div>
                     <div className="stu-topbar-right">
+                        <span className="stu-topbar-icons">
+                            <FaDesktop />
+                        </span>
                         <button className="stu-user-badge">
                             <FaUser className="user-icon" />
                             <span>{displayName}</span>
