@@ -2,52 +2,41 @@ package com.rit.digitaltwin.config;
 
 import com.rit.digitaltwin.model.Role;
 import com.rit.digitaltwin.model.User;
+import com.rit.digitaltwin.repository.RoleRepository;
 import com.rit.digitaltwin.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-@Slf4j
-public class DataInitializer implements CommandLineRunner {
+import java.time.LocalDateTime;
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+@Configuration
+public class DataInitializer {
 
-    @Override
-    public void run(String... args) {
-        if (userRepository.count() == 0) {
-            User admin = User.builder()
-                    .firstName("System")
-                    .lastName("Administrator")
-                    .email("admin@ritchennai.edu.in")
-                    .password(passwordEncoder.encode("admin123"))
-                    .role(Role.ADMIN)
-                    .build();
-            userRepository.save(admin);
+    @Bean
+    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
+        return args -> {
+            // Seed Roles
+            Role adminRole = roleRepository.findByRoleName("ADMIN")
+                    .orElseGet(() -> roleRepository.save(new Role(null, "ADMIN", LocalDateTime.now())));
+            roleRepository.findByRoleName("MANAGEMENT")
+                    .orElseGet(() -> roleRepository.save(new Role(null, "MANAGEMENT", LocalDateTime.now())));
+            roleRepository.findByRoleName("FACULTY")
+                    .orElseGet(() -> roleRepository.save(new Role(null, "FACULTY", LocalDateTime.now())));
 
-            User faculty = User.builder()
-                    .firstName("Faculty")
-                    .lastName("User")
-                    .email("faculty@ritchennai.edu.in")
-                    .password(passwordEncoder.encode("faculty123"))
-                    .role(Role.FACULTY)
-                    .build();
-            userRepository.save(faculty);
-
-            User student = User.builder()
-                    .firstName("Student")
-                    .lastName("User")
-                    .email("student@ritchennai.edu.in")
-                    .password(passwordEncoder.encode("student123"))
-                    .role(Role.STUDENT)
-                    .build();
-            userRepository.save(student);
-
-            log.info("Default users created: admin, management, faculty");
-        }
+            // Seed Admin User
+            if (!userRepository.existsByUsername("admin")) {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setPassword(passwordEncoder.encode("password"));
+                admin.setEmail("admin@rit.edu");
+                admin.setFirstName("System");
+                admin.setLastName("Administrator");
+                admin.setRole(adminRole);
+                userRepository.save(admin);
+            }
+        };
     }
 }

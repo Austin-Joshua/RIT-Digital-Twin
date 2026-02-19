@@ -5,34 +5,60 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "classrooms")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "classrooms")
 public class Classroom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "room_id")
+    private Long roomId;
 
-    private String name;
-    private Integer capacity;
-    private Boolean isSmartClass;
-
-    private Integer floor;
+    @Column(name = "room_number", nullable = false)
     private String roomNumber;
 
-    @Enumerated(EnumType.STRING)
-    private RoomType roomType; // LECTURE_HALL, LAB, SEMINAR_HALL
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "building_id", nullable = false)
+    private Building building;
 
+    @Column(nullable = false)
+    private int capacity;
+
+    private int floor;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "room_type")
+    private RoomType roomType;
+
+    @Column(name = "has_projector")
     private Boolean hasProjector;
+
+    @Column(name = "has_ac")
     private Boolean hasAc;
+
+    @Column(name = "has_smart_board")
     private Boolean hasSmartBoard;
+
+    @Column(name = "has_wifi")
     private Boolean hasWifi;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "building_id")
-    private Building building;
+    @Column(name = "is_smart_classroom")
+    private boolean isSmartClassroom;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    // Alias for getRoomId to satisfy AllocationEngine
+    public Long getId() {
+        return roomId;
+    }
 }

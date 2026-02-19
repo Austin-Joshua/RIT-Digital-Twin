@@ -172,10 +172,10 @@ public class CrowdFlowSimulationService {
     private SimulationResult saveResult(CrowdFlowSimulationRequest req, String summary, long execTime) {
         try {
             SimulationResult r = SimulationResult.builder()
-                    .simulationType(SimulationType.CROWD_FLOW)
+                    .simType(SimulationType.CROWD_FLOW)
                     .simulationName("Crowd Flow - " + req.getScenario())
-                    .inputParams(objectMapper.writeValueAsString(req))
-                    .outputData("{}")
+                    .parametersJson(objectMapper.writeValueAsString(req))
+                    .resultJson("{}")
                     .summary(summary)
                     .executionTimeMs(execTime)
                     .status(SimulationStatus.COMPLETED)

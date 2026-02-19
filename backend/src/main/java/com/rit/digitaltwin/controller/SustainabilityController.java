@@ -1,27 +1,30 @@
 package com.rit.digitaltwin.controller;
 
-import com.rit.digitaltwin.dto.SustainabilityDashboardResponse;
+import com.rit.digitaltwin.model.SustainabilityMetric;
 import com.rit.digitaltwin.service.SustainabilityService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sustainability")
-@RequiredArgsConstructor
-@Tag(name = "Sustainability Dashboard", description = "Composite sustainability index and environmental metrics")
 public class SustainabilityController {
 
-    private final SustainabilityService sustainabilityService;
+    @Autowired
+    private SustainabilityService sustainabilityService;
 
-    @GetMapping("/dashboard")
-    @Operation(summary = "Get Sustainability Dashboard", description = "Returns composite sustainability index combining energy, transport, infrastructure, and carbon footprint metrics")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGEMENT', 'FACULTY')")
-    public ResponseEntity<SustainabilityDashboardResponse> getDashboard() {
-        SustainabilityDashboardResponse response = sustainabilityService.getDashboard();
-        return ResponseEntity.ok(response);
+    @GetMapping("/history")
+    public ResponseEntity<List<SustainabilityMetric>> getHistory() {
+        return ResponseEntity.ok(sustainabilityService.getHistory());
+    }
+
+    @PostMapping("/calculate")
+    public ResponseEntity<SustainabilityMetric> calculateCurrent() {
+        return ResponseEntity.ok(sustainabilityService.calculateCurrentMetrics());
     }
 }

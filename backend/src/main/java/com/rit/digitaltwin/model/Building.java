@@ -5,29 +5,44 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "buildings")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "buildings")
 public class Building {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "building_id")
+    private Long buildingId;
 
-    private String name;
+    @Column(name = "building_name", nullable = false, unique = true)
+    private String buildingName;
+
+    @Column(name = "building_code")
     private String code;
-    private Double latitude;
-    private Double longitude;
 
-    @Column(name = "created_at")
+    @Column(name = "total_floors", nullable = false)
+    private int totalFloors;
+
+    @Column(name = "total_capacity")
+    private int totalCapacity;
+
+    @Column(name = "location_coordinates")
+    private String locationCoordinates;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+    // Alias for getName to satisfy AllocationEngine
+    public String getName() {
+        return buildingName;
     }
 }

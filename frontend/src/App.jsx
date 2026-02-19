@@ -1,49 +1,50 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import DashboardLayout from './layouts/DashboardLayout';
+import SidebarLayout from './layouts/SidebarLayout';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
-import ClassroomAllocation from './pages/ClassroomAllocation';
-import EnergyOptimization from './pages/EnergyOptimization';
-import TransportManager from './pages/TransportManager';
-import CrowdMonitor from './pages/CrowdMonitor';
-import Sustainability from './pages/Sustainability';
-import Analytics from './pages/Analytics';
+import ClassroomPage from './pages/ClassroomPage';
+import EnergyPage from './pages/EnergyPage';
+import TransportPage from './pages/TransportPage';
+import CrowdPage from './pages/CrowdPage';
+import SustainabilityPage from './pages/SustainabilityPage';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  // In a real app, we might wait for a "loading" state
-  // For now, assuming synchronous token check from localStorage init
-  const token = localStorage.getItem('token');
-  return (isAuthenticated || token) ? children : <Navigate to="/login" />;
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
-function App() {
+const App = () => {
   return (
-    <BrowserRouter>
+    <Router>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/" element={
             <ProtectedRoute>
-              <DashboardLayout />
+              <SidebarLayout />
             </ProtectedRoute>
           }>
-            <Route index element={<Navigate to="/dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="classrooms" element={<ClassroomAllocation />} />
-            <Route path="energy" element={<EnergyOptimization />} />
-            <Route path="transport" element={<TransportManager />} />
-            <Route path="crowd" element={<CrowdMonitor />} />
-            <Route path="sustainability" element={<Sustainability />} />
-            <Route path="analytics" element={<Analytics />} />
+            <Route index element={<Dashboard />} />
+            <Route path="classroom" element={<ClassroomPage />} />
+            <Route path="energy" element={<EnergyPage />} />
+            <Route path="transport" element={<TransportPage />} />
+            <Route path="crowd" element={<CrowdPage />} />
+            <Route path="sustainability" element={<SustainabilityPage />} />
           </Route>
         </Routes>
       </AuthProvider>
-    </BrowserRouter>
+    </Router>
   );
-}
+};
 
 export default App;

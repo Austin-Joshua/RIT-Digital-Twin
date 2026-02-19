@@ -1,375 +1,44 @@
-/* =====================================================
-   RIT Digital Twin – Component Styles
-   Uses variables.css tokens
-   ===================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* --- Typography & Global --- */
+:root {
+    --primary-navy: #0B2C6B;
+    --secondary-navy: #123C8C;
+    --accent-gold: #D4AF37;
+    --bg-light: #F4F6F9;
+    --text-primary: #1F2937;
+    --border-grey: #E5E7EB;
+}
+
 body {
-    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
-    color: var(--color-gray-900);
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    font-weight: 600;
-}
-
-/* --- Layout --- */
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--color-white);
-    border-right: 1px solid var(--color-gray-200);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: var(--z-sticky);
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-header {
-    height: var(--topbar-height);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-primary-900);
-    color: var(--color-white);
-}
-
-.sidebar-brand {
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-lg);
-    letter-spacing: 0.5px;
-}
-
-.sidebar-nav {
-    flex: 1;
-    padding: var(--space-4) 0;
-    overflow-y: auto;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: var(--space-3) var(--space-6);
-    color: var(--color-gray-600);
-    font-weight: var(--font-weight-medium);
-    border-left: 3px solid transparent;
-    transition: all var(--transition-fast);
-}
-
-.sidebar-link:hover {
-    background-color: var(--color-gray-50);
-    color: var(--color-primary);
-}
-
-.sidebar-link.active {
-    background-color: var(--color-primary-50);
-    color: var(--color-primary);
-    border-left-color: var(--color-primary);
-}
-
-.sidebar-icon {
-    margin-right: var(--space-3);
-    font-size: 1.1em;
-}
-
-.sidebar-footer {
-    padding: var(--space-4);
-    border-top: 1px solid var(--color-gray-200);
-}
-
-.main-wrapper {
-    flex: 1;
-    margin-left: var(--sidebar-width);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--color-gray-50);
-}
-
-.top-header {
-    height: var(--topbar-height);
-    background-color: var(--color-white);
-    border-bottom: 1px solid var(--color-gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--space-6);
-    position: sticky;
-    top: 0;
-    z-index: var(--z-sticky);
-}
-
-.header-title {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-primary-900);
-    font-size: var(--font-size-lg);
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-700);
-    background: var(--color-gray-100);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-}
-
-.main-content {
-    flex: 1;
-    padding: var(--space-6);
-}
-
-.app-footer {
-    text-align: center;
-    padding: var(--space-4);
-    color: var(--color-gray-500);
-    font-size: var(--font-size-xs);
-}
-
-/* --- Login Page (Split Screen) --- */
-.login-split-screen {
-    min-height: 100vh;
-    display: flex;
-    background-color: var(--color-white);
-}
-
-.login-left-pane {
-    flex: 1;
-    background: linear-gradient(135deg, var(--color-primary-900) 0%, #002244 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: var(--space-8);
-    color: var(--color-white);
-    position: relative;
-    overflow: hidden;
-}
-
-.login-left-pane::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(201, 162, 39, 0.15), transparent 70%);
-    pointer-events: none;
-}
-
-.brand-large {
-    text-align: center;
-    z-index: 1;
-}
-
-.brand-logo-large {
-    max-width: 150px;
-    margin-bottom: var(--space-4);
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-}
-
-.brand-large h1 {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--color-white);
-    margin-bottom: var(--space-2);
-    letter-spacing: -1px;
-}
-
-.brand-large p {
-    font-size: 1.2rem;
-    color: var(--color-accent-200);
-    margin-top: 0;
-    font-weight: 300;
-}
-
-.login-right-pane {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: var(--space-8);
-    background-color: var(--color-white);
-}
-
-.login-form-container {
-    width: 100%;
-    max-width: 400px;
-}
-
-.login-header {
-    margin-bottom: var(--space-8);
-    text-align: left;
-}
-
-.login-college-logo {
-    max-height: 80px;
-    margin-bottom: var(--space-5);
-    display: block;
-}
-
-.login-header h2 {
-    font-size: 1.8rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--color-primary-900);
-    margin-bottom: var(--space-2);
-    font-weight: 700;
-}
-
-.login-header p {
-    color: var(--color-gray-500);
-    font-size: 0.95rem;
-}
-
-.form-group {
-    margin-bottom: var(--space-5);
-}
-
-.form-label {
-    display: block;
-    margin-bottom: var(--space-2);
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-gray-700);
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid var(--color-gray-200);
-    border-radius: var(--radius-md);
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    font-size: 1rem;
-    transition: all var(--transition-fast);
-    background-color: var(--color-gray-50);
-}
-
-.form-input:focus {
-    border-color: var(--color-primary);
-    background-color: var(--color-white);
-    box-shadow: 0 0 0 4px var(--color-primary-50);
-    outline: none;
-}
-
-.forgot-password {
-    text-align: right;
-    margin-top: var(--space-2);
-}
-
-.forgot-password a {
-    font-size: 0.85rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.forgot-password a:hover {
-    text-decoration: underline;
-}
-
-.btn-login {
-    width: 100%;
-    padding: 14px;
-    background-color: #003366;
-    /* Specific RIT Navy */
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: var(--space-2);
-    text-transform: uppercase;
-}
-
-.btn-login:hover {
-    background-color: #002244;
-}
-
-.btn-login:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.login-options {
-    margin-top: var(--space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    text-align: center;
-}
-
-.opt-link {
-    color: var(--color-primary-600);
-    font-size: 0.9rem;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.opt-link:hover {
-    color: var(--color-primary-800);
-    text-decoration: underline;
-}
-
-.divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--space-6) 0;
-    color: var(--color-gray-400);
-    font-size: 0.85rem;
-}
-
-.divider::before,
-.divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid var(--color-gray-200);
-}
-
-.divider::before {
-    margin-right: .5em;
-}
-
-.divider::after {
-    margin-left: .5em;
-}
-
-@media (max-width: 900px) {
-    .login-left-pane {
-        display: none;
+@layer components {
+    .btn-primary {
+        @apply bg-navy-900 text-white rounded-md px-5 py-2.5 transition-colors duration-200 hover:bg-navy-800 font-medium;
     }
 
-    .login-split-screen {
-        justify-content: center;
-        background: linear-gradient(135deg, var(--color-primary-900) 0%, #002244 100%);
+    .btn-accent {
+        @apply bg-gold-500 text-white rounded-md px-5 py-2.5 transition-colors duration-200 hover:bg-yellow-600 font-medium;
     }
 
-    .login-right-pane {
-        flex: 0;
-        width: 100%;
-        max-width: 450px;
-        border-radius: var(--radius-xl);
-        padding: var(--space-6);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    .card {
+        @apply bg-white border border-gray-200 rounded-lg p-5 shadow-subtle;
+    }
+
+    .input-field {
+        @apply border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 w-full transition-all duration-200;
+    }
+
+    .page-header {
+        @apply text-[28px] font-semibold text-navy-900 mb-6;
+    }
+
+    .section-header {
+        @apply text-[22px] font-semibold text-gray-800 mb-4;
     }
 }

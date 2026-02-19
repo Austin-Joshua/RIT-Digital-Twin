@@ -1,102 +1,68 @@
-# RIT Digital Twin – Smart Campus Intelligence Platform
+# Digital Twin – Smart Campus Intelligence Platform
 
-Developed for **Rajalakshmi Institute of Technology**
+A production-ready institutional web application for managing smart campus operations, including classroom allocation, energy optimization, transport management, and sustainability tracking.
 
-This is a comprehensive full-stack platform for simulating, monitoring, and optimizing campus operations including Classroom Allocation, Energy Usage, Transport Logistics, Crowd Flow, and Sustainability.
+## Tech Stack
+- **Frontend**: React (Vite), Tailwind CSS, Recharts, Axios
+- **Backend**: Spring Boot (Java 17), Spring Security (JWT), JPA/Hibernate
+- **Database**: MySQL 8.0
+- **Deployment**: Docker, Docker Compose
 
----
+## Prerequisites
+- Java 17+
+- Node.js 18+
+- Docker Desktop
+- Maven
 
-## 🚀 Features
+## Setup & Running
 
-*   **Smart Classroom Allocation Engine**: AI-driven assignment of classrooms based on capacity and demand.
-*   **Energy Optimization Module**: Monitor consumption and simulate optimizations.
-*   **Transport Fleet Optimization**: Analyze bus routes for efficiency.
-*   **Crowd Flow & Emergency Simulation**: Real-time density monitoring and alert system.
-*   **Sustainability Dashboard**: Track Carbon Footprint and Green Initiatives.
-*   **Predictive Analytics**: Forecast infrastructure demands.
+### Option 1: Docker (Recommended)
+1. Ensure Docker Desktop is running.
+2. Build the backend JAR:
+   ```bash
+   cd backend
+   ./mvnw clean package -DskipTests
+   ```
+   *(If `mvnw` fails, use `mvn clean package -DskipTests`)*
+3. Run docker-compose:
+   ```bash
+   cd ..
+   docker-compose up --build
+   ```
+4. Access the application:
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Backend API: [http://localhost:8080/api](http://localhost:8080/api)
+   - Swagger Documentation: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
----
+### Option 2: Local Development
+1. **Database**:
+   - Start a MySQL instance.
+   - Run `database/schema.sql` to create the schema.
+   - Update `backend/src/main/resources/application.properties` with your credentials.
 
-## 🛠 Tech Stack
+2. **Backend**:
+   ```bash
+   cd backend
+   ./mvnw spring-boot:run
+   ```
 
-### Frontend
-- **React JS** (Vite)
-- **Recharts** for Data Visualization
-- **Axios** for API Integration
-- **Context API** for State Management
-- **RIT Institutional Design System** (Navy Blue & Gold Theme)
+3. **Frontend**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
-### Backend
-- **Spring Boot 3** (Java 17)
-- **Spring Security** + **JWT** (Role Based Access Control)
-- **JPA / Hibernate**
-- **MySQL 8** Database
-- **Swagger / OpenAPI** Documentation
+## Default Credentials
+- **Admin**: `admin` / `password`
 
-### DevOps
-- **Docker** & **Docker Compose**
+## Modules
+1. **Dashboard**: Real-time KPIs and Analytics.
+2. **Classroom Allocation**: Optimized room booking based on strength and facilities.
+3. **Energy Optimization**: Log viewing and AI-driven optimization simulation.
+4. **Transport**: Fleet management and route efficiency analysis.
+5. **Crowd Simulation**: Emergency evacuation drills and congestion monitoring.
+6. **Sustainability**: Composite ESG scoring.
 
----
-
-## 📦 Installation & Setup
-
-### Prerequisites
-- Docker & Docker Compose
-- Java 17+ (for local logic dev)
-- Node.js 18+ (for local UI dev)
-
-### Quick Start (Docker)
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/Austin-Joshua/RIT-Digital-Twin.git
-    cd RIT-Digital-Twin
-    ```
-
-2.  **Run with Docker Compose**:
-    ```bash
-    docker-compose up --build
-    ```
-
-3.  **Access the Application**:
-    *   Frontend: `http://localhost:3000`
-    *   Backend API: `http://localhost:8080`
-    *   Swagger Docs: `http://localhost:8080/swagger-ui/index.html`
-
-### Default Credentials
-*   **Email**: `admin@ritchennai.edu.in`
-*   **Password**: `admin123`
-
----
-
-## 📂 Project Structure
-
-```
-RIT-Digital-Twin/
-├── backend/            # Spring Boot Application
-│   ├── src/main/java/com/rit/digitaltwin
-│   │   ├── config/     # Security & App Config
-│   │   ├── controller/ # REST Endpoints
-│   │   ├── model/      # Database Entities
-│   │   ├── repository/ # JPA Repositories
-│   │   ├── service/    # Business Logic & Simulations
-│   └── Dockerfile
-├── frontend/           # React Application
-│   ├── src/
-│   │   ├── components/ # Reusable UI
-│   │   ├── pages/      # Feature Modules
-│   │   ├── context/    # Auth Context
-│   └── Dockerfile
-└── docker-compose.yml  # Orchestration
-```
-
----
-
-## 🔒 Security
-The platform uses JWT (JSON Web Tokens) for securing all endpoints. 
-- `/api/v1/auth/**` are public.
-- All other endpoints require a valid Bearer Token.
-
----
-
-Developed with ❤️ by the RIT Digital Twin Team.
+## License
+Confidential - Institutional Use Only.

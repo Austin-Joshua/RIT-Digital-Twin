@@ -2,70 +2,232 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-    FaHome, FaCalendarAlt, FaBook, FaClipboardList,
-    FaUserCheck, FaCertificate, FaChartBar, FaFlask, FaTasks,
-    FaLayerGroup, FaMoneyBillWave, FaCommentDots, FaSignOutAlt
+    FaHome, FaChalkboardTeacher, FaBolt, FaBus,
+    FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,
+    FaUniversity
 } from 'react-icons/fa';
 
 const Sidebar = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
-    // Menu items based on the provided screenshot
-    const menuItems = [
-        { path: '/dashboard', name: 'Dashboard', icon: <FaHome /> },
-        { path: '/timetable', name: 'My Time Table', icon: <FaCalendarAlt /> },
-        { path: '/registration', name: 'My Subject Registration', icon: <FaBook /> },
-        { path: '/leave', name: 'Apply Leave / OD', icon: <FaClipboardList /> },
-        { path: '/attendance', name: 'Attendance', icon: <FaUserCheck /> },
-        { path: '/certificates', name: 'Apply Certificates', icon: <FaCertificate /> },
-        { path: '/cat-mark', name: 'CAT Mark', icon: <FaChartBar /> },
-        { path: '/lab-mark', name: 'LAB Mark', icon: <FaFlask /> },
-        { path: '/assignment', name: 'Assignment Mark', icon: <FaTasks /> },
-        { path: '/gradebook', name: 'Grade Book', icon: <FaLayerGroup /> },
-        { path: '/fees', name: 'Academic Fee', icon: <FaMoneyBillWave /> },
-        { path: '/feedback', name: 'Feedbacks', icon: <FaCommentDots /> },
-    ];
+    // Role-based menu items
+    const getMenuItems = () => {
+        const baseItems = [
+            { path: '/dashboard', name: 'Dashboard', icon: <FaHome /> },
+        ];
+
+        const adminItems = [
+            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
+            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
+            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
+            { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
+            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
+            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
+            { path: '/settings', name: 'Settings', icon: <FaCog /> },
+        ];
+
+        const managementItems = [
+            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
+            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
+            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
+            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
+            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
+        ];
+
+        const facultyItems = [
+            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
+            { path: '/crowd', name: 'Crowd Monitor', icon: <FaUsers /> },
+        ];
+
+        const role = user?.role || 'FACULTY';
+        
+        switch(role) {
+            case 'ADMIN':
+                return [...baseItems, ...adminItems];
+            case 'MANAGEMENT':
+                return [...baseItems, ...managementItems];
+            case 'FACULTY':
+            default:
+                return [...baseItems, ...facultyItems];
+        }
+    };
+
+    const menuItems = getMenuItems();
 
     return (
-        <div className="sidebar">
-            <div className="sidebar-header" style={{ padding: '20px', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
-                {/* Logo placeholder - User to provide actual image */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src="/rit-logo.png" alt="RIT Logo" style={{ height: '40px' }} onError={(e) => e.target.style.display = 'none'} />
-                    <div style={{ lineHeight: '1.2' }}>
-                        <div style={{ fontWeight: '800', fontSize: '1.2rem', color: '#003366' }}>RIT</div>
-                        <div style={{ fontSize: '0.6rem', color: '#555', textTransform: 'uppercase' }}>Rajalakshmi Institute<br />of Technology</div>
+        <aside className="sidebar" style={{
+            width: '260px',
+            height: '100vh',
+            background: '#ffffff',
+            borderRight: '1px solid #e2e8f0',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            zIndex: 1000,
+            boxShadow: '2px 0 10px rgba(0,0,0,0.05)'
+        }}>
+            {/* Header */}
+            <div className="sidebar-header" style={{
+                padding: '20px 24px',
+                background: '#1a365d',
+                borderBottom: '3px solid #d4af37'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        width: '44px',
+                        height: '44px',
+                        background: '#d4af37',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    }}>
+                        <FaUniversity size={24} color="#1a365d" />
+                    </div>
+                    <div>
+                        <div style={{
+                            fontWeight: '800',
+                            fontSize: '1.1rem',
+                            color: '#ffffff',
+                            letterSpacing: '0.5px',
+                            lineHeight: '1.2'
+                        }}>
+                            Digital Twin
+                        </div>
+                        <div style={{
+                            fontSize: '0.65rem',
+                            color: '#d4af37',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            fontWeight: '600',
+                            marginTop: '2px'
+                        }}>
+                            Smart Campus Platform
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <nav className="sidebar-nav">
-                <div style={{ padding: '10px 20px', fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Main Menu
+            {/* Navigation */}
+            <nav className="sidebar-nav" style={{
+                flex: 1,
+                padding: '16px 0',
+                overflowY: 'auto'
+            }}>
+                <div style={{
+                    padding: '8px 24px',
+                    fontSize: '0.7rem',
+                    color: '#94a3b8',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
+                    fontWeight: '700',
+                    marginBottom: '8px'
+                }}>
+                    Main Navigation
                 </div>
+                
                 {menuItems.map((item) => (
                     <NavLink
                         to={item.path}
                         key={item.name}
                         className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                        style={({ isActive }) => ({
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '14px',
+                            padding: '14px 24px',
+                            color: isActive ? '#1a365d' : '#64748b',
+                            textDecoration: 'none',
+                            fontSize: '0.95rem',
+                            fontWeight: isActive ? '600' : '500',
+                            borderLeft: isActive ? '4px solid #d4af37' : '4px solid transparent',
+                            background: isActive ? 'linear-gradient(90deg, rgba(212,175,55,0.1) 0%, transparent 100%)' : 'transparent',
+                            transition: 'all 0.2s ease',
+                            position: 'relative'
+                        })}
                     >
-                        <span className="sidebar-icon">{item.icon}</span>
+                        <span className="sidebar-icon" style={{
+                            fontSize: '1.2rem',
+                            minWidth: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            {item.icon}
+                        </span>
                         <span>{item.name}</span>
+                        {item.path === '/crowd' && (
+                            <span style={{
+                                marginLeft: 'auto',
+                                background: '#ef4444',
+                                color: '#fff',
+                                fontSize: '0.65rem',
+                                padding: '2px 8px',
+                                borderRadius: '10px',
+                                fontWeight: '700'
+                            }}>
+                                LIVE
+                            </span>
+                        )}
                     </NavLink>
                 ))}
             </nav>
 
-            <div className="sidebar-footer">
+            {/* Footer */}
+            <div className="sidebar-footer" style={{
+                padding: '16px 24px',
+                borderTop: '1px solid #e2e8f0',
+                background: '#f8fafc'
+            }}>
                 <div
-                    className="sidebar-link"
+                    className="sidebar-link logout-link"
                     onClick={logout}
-                    style={{ cursor: 'pointer', color: 'var(--color-danger)', borderLeft: '3px solid transparent' }}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '14px',
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        color: '#dc2626',
+                        borderRadius: '6px',
+                        transition: 'all 0.2s ease',
+                        fontWeight: '600',
+                        fontSize: '0.95rem'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#fee2e2';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                    }}
                 >
-                    <span className="sidebar-icon"><FaSignOutAlt /></span>
+                    <span className="sidebar-icon" style={{ fontSize: '1.2rem' }}>
+                        <FaSignOutAlt />
+                    </span>
                     <span>Logout</span>
                 </div>
+                
+                <div style={{
+                    marginTop: '16px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #e2e8f0',
+                    fontSize: '0.7rem',
+                    color: '#94a3b8',
+                    textAlign: 'center',
+                    lineHeight: '1.5'
+                }}>
+                    <div style={{ fontWeight: '600', color: '#64748b' }}>
+                        Version 1.0.0
+                    </div>
+                    <div style={{ marginTop: '4px' }}>
+                        Empowering Data-Driven<br/>Institutional Governance
+                    </div>
+                </div>
             </div>
-        </div>
+        </aside>
     );
 };
 
