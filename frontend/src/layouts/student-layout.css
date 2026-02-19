@@ -1,36 +1,30 @@
 /* ══════════════════════════════════════
-   Student Mode — IMS Portal Theme
+   Student Mode — IMS Portal Exact Clone
    ══════════════════════════════════════ */
 
 :root {
-    --ims-blue: #1565C0;
-    --ims-blue-dark: #0D47A1;
-    --ims-blue-light: #1E88E5;
-    --ims-white: #ffffff;
-    --ims-bg: #f5f5f5;
-    --ims-sidebar-w: 220px;
-    --ims-topbar-h: 50px;
-    --ims-green: #4caf50;
-    --ims-yellow: #ff9800;
-    --ims-teal: #00897b;
-    --ims-red: #e53935;
+    --ims-blue: #2962FF;
+    --ims-blue-dark: #1a47b8;
+    --ims-sidebar-w: 170px;
+    --ims-topbar-h: 42px;
 }
 
-/* ── Whole Layout ── */
+/* ── Layout ── */
 .stu-layout {
     display: flex;
     min-height: 100vh;
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-    background: var(--ims-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f0f0;
+    font-size: 13px;
 }
 
 /* ════════════════════════
-   SIDEBAR
+   SIDEBAR — White, compact
    ════════════════════════ */
 .stu-sidebar {
     width: var(--ims-sidebar-w);
-    background: var(--ims-white);
-    border-right: 1px solid #ddd;
+    background: #ffffff;
+    border-right: 1px solid #ccc;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -39,23 +33,25 @@
     bottom: 0;
     z-index: 200;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
-/* Sidebar Header — RIT Branding */
+/* Sidebar Header */
 .stu-sidebar-header {
-    padding: 12px 14px;
+    padding: 8px 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 2px solid var(--ims-blue);
-    background: var(--ims-white);
+    gap: 8px;
+    border-bottom: 2px solid #1565C0;
+    background: #fff;
+    min-height: 56px;
 }
 
 .stu-sidebar-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
-    background: var(--ims-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background: #1565C0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,33 +60,34 @@
 
 .stu-sidebar-logo span {
     font-weight: 900;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: #fff;
     letter-spacing: 1px;
 }
 
 .stu-brand-text {
-    line-height: 1.2;
+    line-height: 1.15;
 }
 
 .stu-brand-text .brand-name {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 800;
     color: #c62828;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
 }
 
 .stu-brand-text .brand-motto {
-    font-size: 0.5rem;
-    color: var(--ims-blue);
+    font-size: 0.46rem;
+    color: #1565C0;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
 }
 
 .stu-brand-text .brand-sub {
-    font-size: 0.48rem;
+    font-size: 0.44rem;
     color: #e65100;
     font-weight: 600;
     font-style: italic;
@@ -98,20 +95,19 @@
 
 /* Search */
 .stu-sidebar-search {
-    padding: 8px 12px;
-    border-bottom: 1px solid #eee;
+    padding: 6px 8px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .stu-sidebar-search input {
     width: 100%;
-    padding: 6px 10px 6px 30px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.75rem;
+    padding: 4px 6px 4px 24px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.7rem;
     color: #555;
-    background: #fafafa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 8px center no-repeat;
+    background: #fafafa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 6px center no-repeat;
     outline: none;
-    transition: border-color 0.2s;
 }
 
 .stu-sidebar-search input::placeholder {
@@ -119,44 +115,45 @@
 }
 
 .stu-sidebar-search input:focus {
-    border-color: var(--ims-blue);
+    border-color: #1565C0;
 }
 
-/* Nav Items */
+/* Nav Items — compact, IMS-exact */
 .stu-nav {
     flex: 1;
-    padding: 4px 0;
+    padding: 0;
 }
 
 .stu-nav-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    font-size: 0.8rem;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
     font-weight: 500;
     color: #333;
     text-decoration: none;
-    border-left: 4px solid transparent;
-    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+    transition: all 0.1s ease;
     cursor: pointer;
+    border-bottom: 1px solid #f5f5f5;
 }
 
 .stu-nav-item:hover {
     background: #e3f2fd;
-    color: var(--ims-blue);
+    color: #1565C0;
 }
 
 .stu-nav-item.active {
-    background: var(--ims-blue);
+    background: #1565C0;
     color: #fff;
-    border-left-color: var(--ims-blue-dark);
+    border-left-color: #0D47A1;
     font-weight: 600;
 }
 
 .stu-nav-item .nav-icon {
-    font-size: 0.95rem;
-    width: 20px;
+    font-size: 0.8rem;
+    width: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -164,16 +161,16 @@
 }
 
 /* ════════════════════════
-   TOP BAR
+   TOP BAR — thin, white
    ════════════════════════ */
 .stu-topbar {
     height: var(--ims-topbar-h);
-    background: var(--ims-white);
-    border-bottom: 1px solid #ddd;
+    background: #ffffff;
+    border-bottom: 1px solid #ccc;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 16px;
     position: sticky;
     top: 0;
     z-index: 150;
@@ -182,45 +179,53 @@
 .stu-topbar-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .stu-hamburger {
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #333;
     cursor: pointer;
-    padding: 4px;
+    padding: 2px;
+}
+
+.stu-topbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.85rem;
 }
 
 .stu-topbar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .stu-user-badge {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    background: var(--ims-blue);
+    gap: 6px;
+    padding: 5px 12px;
+    background: #1565C0;
     color: #fff;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
     border: none;
+    letter-spacing: 0.3px;
 }
 
 .stu-user-badge:hover {
-    background: var(--ims-blue-dark);
+    background: #0D47A1;
 }
 
 .stu-user-badge .user-icon {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
 }
 
 /* ════════════════════════
@@ -236,79 +241,79 @@
 
 .stu-content {
     flex: 1;
-    padding: 20px 24px;
+    padding: 16px 20px;
 }
 
 /* ════════════════════════
-   DASHBOARD WIDGETS
+   DASHBOARD WIDGETS — exact IMS
    ════════════════════════ */
 
 /* Welcome */
 .stu-welcome {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .stu-welcome h2 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: #333;
+    color: #222;
     margin: 0;
 }
 
 .stu-breadcrumb {
     display: inline-block;
-    font-size: 0.72rem;
-    color: #666;
-    background: #e8eaf6;
-    padding: 2px 10px;
-    border-radius: 3px;
+    font-size: 0.65rem;
+    color: #555;
+    background: #e0e0e0;
+    padding: 2px 8px;
+    border-left: 3px solid #1565C0;
     margin-top: 4px;
 }
 
-/* KPI Cards */
+/* KPI Cards — exact colors from screenshot */
 .stu-kpi-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin: 16px 0;
+    gap: 14px;
+    margin: 12px 0;
 }
 
 .stu-kpi-card {
-    border-radius: 6px;
-    padding: 16px 18px;
+    border-radius: 4px;
+    padding: 14px 16px 10px;
     color: #fff;
     position: relative;
     overflow: hidden;
-    min-height: 110px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .stu-kpi-card.green {
-    background: var(--ims-green);
+    background: #00a65a;
 }
 
 .stu-kpi-card.yellow {
-    background: var(--ims-yellow);
+    background: #f39c12;
 }
 
 .stu-kpi-card.teal {
-    background: var(--ims-teal);
+    background: #00c0ef;
 }
 
 .stu-kpi-card.red {
-    background: var(--ims-red);
+    background: #dd4b39;
 }
 
 .stu-kpi-card .kpi-value {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     line-height: 1;
 }
 
 .stu-kpi-card .kpi-label {
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     font-weight: 500;
     opacity: 0.95;
     margin-top: 2px;
@@ -316,78 +321,79 @@
 
 .stu-kpi-card .kpi-icon {
     position: absolute;
-    top: 12px;
-    right: 14px;
-    font-size: 2.5rem;
-    opacity: 0.3;
+    top: 10px;
+    right: 12px;
+    font-size: 2.8rem;
+    opacity: 0.2;
 }
 
 .stu-kpi-card .kpi-more {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
     background: rgba(0, 0, 0, 0.15);
-    padding: 4px 10px;
-    border-radius: 3px;
-    align-self: flex-start;
-    margin-top: 8px;
+    padding: 4px 0;
+    margin: 6px -16px -10px -16px;
     cursor: pointer;
-    transition: background 0.2s;
     text-decoration: none;
+    transition: background 0.15s;
 }
 
 .stu-kpi-card .kpi-more:hover {
     background: rgba(0, 0, 0, 0.25);
 }
 
-/* Info Sections */
+/* Info Sections — exact IMS */
 .stu-info-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
 .stu-info-card {
     background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #d2d6de;
+    border-radius: 0;
     overflow: hidden;
 }
 
 .stu-info-card .info-header {
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    padding: 8px 14px;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #333;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e8e8e8;
+    background: #fff;
 }
 
 .stu-info-card .info-body {
-    padding: 14px 16px;
-    font-size: 0.8rem;
-    color: #666;
-    min-height: 60px;
+    padding: 12px 14px;
+    font-size: 0.78rem;
+    color: #555;
+    min-height: 50px;
 }
 
 .stu-info-card .info-body li {
     list-style: disc;
-    margin-left: 16px;
-    margin-bottom: 4px;
+    margin-left: 14px;
+    margin-bottom: 3px;
 }
 
 .stu-info-card .info-footer {
-    padding: 6px 16px;
+    padding: 5px 14px;
     text-align: right;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #e8e8e8;
+    background: #fafafa;
 }
 
 .stu-info-card .info-footer a {
-    font-size: 0.75rem;
-    color: var(--ims-blue);
+    font-size: 0.72rem;
+    color: #1565C0;
     font-weight: 600;
     text-decoration: none;
 }
@@ -396,11 +402,10 @@
     text-decoration: underline;
 }
 
-/* Calendar */
+/* Calendar — exact IMS */
 .stu-calendar-card {
     background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid #d2d6de;
     overflow: hidden;
 }
 
@@ -408,21 +413,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
-    border-bottom: 1px solid #eee;
+    padding: 8px 14px;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .stu-calendar-header .cal-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #333;
 }
 
 .stu-calendar-legend {
     display: flex;
-    gap: 14px;
-    font-size: 0.68rem;
-    color: #666;
+    gap: 12px;
+    font-size: 0.65rem;
+    color: #555;
 }
 
 .stu-calendar-legend .legend-item {
@@ -432,14 +437,13 @@
 }
 
 .legend-dot {
-    width: 12px;
+    width: 14px;
     height: 12px;
-    border-radius: 2px;
     display: inline-block;
 }
 
 .legend-dot.holiday {
-    background: #ef9a9a;
+    background: #f8a0a0;
 }
 
 .legend-dot.no-order {
@@ -447,11 +451,11 @@
 }
 
 .legend-dot.today {
-    background: var(--ims-blue);
+    background: #1565C0;
 }
 
 .stu-calendar-grid {
-    padding: 8px 16px 16px;
+    padding: 0;
 }
 
 .stu-calendar-grid table {
@@ -461,41 +465,42 @@
 
 .stu-calendar-grid th {
     padding: 8px 4px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    color: #fff;
-    background: #90caf9;
+    color: #333;
+    background: #bbdefb;
     text-align: center;
+    border: 1px solid #ccc;
 }
 
 .stu-calendar-grid td {
-    padding: 7px 4px;
-    font-size: 0.75rem;
+    padding: 6px 4px;
+    font-size: 0.72rem;
     text-align: center;
-    color: #444;
-    border: 1px solid #eee;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    background: #fff;
 }
 
 .stu-calendar-grid td.today {
-    background: var(--ims-blue);
+    background: #1565C0;
     color: #fff;
     font-weight: 700;
-    border-radius: 3px;
 }
 
 .stu-calendar-grid td.holiday {
-    background: #ffebee;
-    color: #c62828;
+    background: #ffcdd2;
+    color: #b71c1c;
 }
 
 .stu-calendar-grid td.no-order {
     background: #e1f5fe;
-    color: #0277bd;
+    color: #01579b;
 }
 
 .stu-calendar-grid td.empty {
-    background: transparent;
-    border: none;
+    background: #fafafa;
+    border-color: #eee;
 }
 
 /* ════════════════════════
@@ -506,35 +511,34 @@
 }
 
 .stu-page-header {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .stu-page-header h2 {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #333;
-    margin: 0 0 4px;
+    margin: 0 0 3px;
 }
 
 .stu-page-header p {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #888;
     margin: 0;
 }
 
 .stu-placeholder {
     background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 40px;
+    border: 1px solid #d2d6de;
+    padding: 30px;
     text-align: center;
     color: #999;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
 }
 
 .stu-placeholder .placeholder-icon {
-    font-size: 3rem;
-    margin-bottom: 12px;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
     color: #ccc;
 }
 
@@ -544,7 +548,7 @@
 @media (max-width: 900px) {
     .stu-sidebar {
         transform: translateX(-100%);
-        transition: transform 0.3s;
+        transition: transform 0.25s;
     }
 
     .stu-sidebar.open {
