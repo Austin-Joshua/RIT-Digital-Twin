@@ -17,31 +17,34 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="rit-sidebar">
-            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                <h3 style={{ color: 'var(--rit-navy)' }}>RIT Digital Twin</h3>
+        <div className="sidebar">
+            <div className="sidebar-header">
+                <div className="sidebar-brand">RIT Digital Twin</div>
             </div>
-            <nav>
+
+            <nav className="sidebar-nav">
                 {menuItems.map((item) => (
                     <NavLink
                         to={item.path}
                         key={item.name}
-                        className={({ isActive }) => `rit-sidebar-link ${isActive ? 'active' : ''}`}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
                     >
-                        {item.icon}
+                        <span className="sidebar-icon">{item.icon}</span>
                         <span>{item.name}</span>
                     </NavLink>
                 ))}
+            </nav>
+
+            <div className="sidebar-footer">
                 <div
-                    className="rit-sidebar-link"
+                    className="sidebar-link"
                     onClick={logout}
-                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', borderTop: '1px solid #ddd' }}
+                    style={{ cursor: 'pointer', color: 'var(--color-danger)', borderLeft: '3px solid transparent' }}
                 >
-                    <FaSignOutAlt />
+                    <span className="sidebar-icon"><FaSignOutAlt /></span>
                     <span>Logout</span>
                 </div>
-            </nav>
+            </div>
         </div>
     );
 };

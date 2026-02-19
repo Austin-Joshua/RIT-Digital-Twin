@@ -7,20 +7,20 @@ const DashboardLayout = () => {
     const { user } = useAuth();
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div className="app-layout">
             <Sidebar />
-            <div style={{ flex: 1, marginLeft: '250px' }}>
-                <header className="rit-header">
-                    <h2>Smart Campus Intelligence Platform</h2>
-                    <div>
+            <div className="main-wrapper">
+                <header className="top-header">
+                    <div className="header-title">Smart Campus Intelligence Platform</div>
+                    <div className="user-profile">
                         <span>Welcome, {user?.firstName || 'User'}</span>
                     </div>
                 </header>
-                <main className="rit-main-content">
+                <main className="main-content">
                     <Outlet />
                 </main>
-                <footer style={{ textAlign: 'center', padding: '20px', color: '#666', fontSize: '0.9em' }}>
-                    Rajalakshmi Institute of Technology, Chennai
+                <footer className="app-footer">
+                    &copy; {new Date().getFullYear()} Rajalakshmi Institute of Technology, Chennai
                 </footer>
             </div>
         </div>

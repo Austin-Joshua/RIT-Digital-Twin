@@ -3,7 +3,7 @@ package com.rit.digitaltwin.simulation;
 import com.rit.digitaltwin.dto.ClassroomSimulationRequest;
 import com.rit.digitaltwin.dto.ClassroomSimulationResponse.ClassroomRecommendation;
 import com.rit.digitaltwin.model.Classroom;
-import com.rit.digitaltwin.model.DayOfWeek;
+import java.time.DayOfWeek;
 import com.rit.digitaltwin.model.Timetable;
 import com.rit.digitaltwin.repository.TimetableRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,13 +1,14 @@
 package com.rit.digitaltwin.service;
 
 import com.rit.digitaltwin.model.Classroom;
-import com.rit.digitaltwin.model.Timetable;
 import com.rit.digitaltwin.repository.ClassroomRepository;
-import com.rit.digitaltwin.repository.TimetableRepository;
+import com.rit.digitaltwin.dto.ClassroomSimulationRequest;
+import com.rit.digitaltwin.dto.ClassroomSimulationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 public class ClassroomAllocationService {
 
     private final ClassroomRepository classroomRepository;
-    private final TimetableRepository timetableRepository;
 
     public List<Classroom> getAllClassrooms() {
         return classroomRepository.findAll();
@@ -32,5 +32,31 @@ public class ClassroomAllocationService {
                 "studentCount", studentCount,
                 "suitableClassrooms", suitableClassrooms.size(),
                 "allocatedClassrooms", suitableClassrooms);
+    }
+
+    public ClassroomSimulationResponse runSimulation(ClassroomSimulationRequest request) {
+        // Mock implementation
+        return ClassroomSimulationResponse.builder()
+                .simulationId(1L)
+                .status("COMPLETED")
+                .executionTimeMs(150L)
+                .totalRoomsEvaluated(10)
+                .totalRecommendations(2)
+                .summary("Allocated successfully")
+                .inputParameters(request)
+                .recommendations(Collections.emptyList())
+                .build();
+    }
+
+    public ClassroomSimulationResponse getSimulationById(Long id) {
+        // Mock implementation
+        return ClassroomSimulationResponse.builder()
+                .simulationId(id)
+                .status("COMPLETED")
+                .build();
+    }
+
+    public List<ClassroomSimulationResponse> getRecentSimulations() {
+        return Collections.emptyList();
     }
 }

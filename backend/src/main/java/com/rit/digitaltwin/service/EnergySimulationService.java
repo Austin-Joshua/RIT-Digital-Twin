@@ -269,8 +269,8 @@ public class EnergySimulationService {
                                         .simulationType(SimulationType.ENERGY_FORECAST)
                                         .simulationName("Energy Sim - "
                                                         + (req.getSeason() != null ? req.getSeason() : "DEFAULT"))
-                                        .parameters(objectMapper.writeValueAsString(req))
-                                        .results("{}")
+                                        .inputParams(objectMapper.writeValueAsString(req))
+                                        .outputData("{}")
                                         .summary(summary)
                                         .executionTimeMs(execTime)
                                         .status(SimulationStatus.COMPLETED)

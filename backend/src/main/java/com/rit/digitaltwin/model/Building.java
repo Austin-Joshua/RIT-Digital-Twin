@@ -19,6 +19,7 @@ public class Building {
     private Long id;
 
     private String name;
+    private String code;
     private Double latitude;
     private Double longitude;
 
