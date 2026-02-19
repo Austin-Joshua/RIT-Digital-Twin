@@ -1,15 +1,21 @@
 import React from 'react';
-import { FaClipboardList } from 'react-icons/fa';
 
 const AssignmentMark = () => (
-    <div className="stu-page">
-        <div className="stu-page-header">
-            <h2>Assignment Mark</h2>
-            <p>Track your assignment grades</p>
-        </div>
-        <div className="stu-placeholder">
-            <div className="placeholder-icon"><FaClipboardList /></div>
-            <p>Assignment marks will be displayed once submitted and graded.</p>
+    <div className="stu-report-page">
+        <div className="stu-info-card" style={{ marginTop: '20px' }}>
+            <div style={{
+                padding: '15px',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                borderBottom: '1px solid #f4f4f4',
+                color: '#333'
+            }}>
+                Assignment Marks
+            </div>
+            <div style={{ padding: '30px', textAlign: 'center', fontSize: '14px', color: '#333' }}>
+                NO Exam Result Available
+            </div>
         </div>
     </div>
 );

@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import {
     FaHome, FaClock, FaBookOpen, FaFileAlt, FaCalendarCheck,
     FaCertificate, FaPenFancy, FaFlask, FaClipboardList,
-    FaBook, FaMoneyCheckAlt, FaCommentDots, FaSignOutAlt,
-    FaBars, FaUser, FaDesktop
+    FaBook, FaMoneyCheckAlt, FaCommentDots, FaUsers,
+    FaFileInvoice, FaEnvelope, FaKey, FaSignOutAlt,
+    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight
 } from 'react-icons/fa';
 import './student-layout.css';
 
@@ -28,6 +29,7 @@ const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [committeeOpen, setCommitteeOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -38,19 +40,38 @@ const StudentLayout = () => {
         ? `${user.firstName} ${user.lastName}`.toUpperCase()
         : (user?.username || 'STUDENT').toUpperCase();
 
+    const navItems = [
+        ...studentNav,
+        {
+            label: 'Class Committee',
+            icon: <FaUsers />,
+            isDropdown: true,
+            isOpen: committeeOpen,
+            onToggle: () => setCommitteeOpen(!committeeOpen),
+            subItems: [
+                { path: '/student/committee/schedule', label: 'Schedule', icon: <FaCalendarCheck /> },
+                { path: '/student/committee/minutes', label: 'Minutes Of Meet', icon: <FaFileAlt /> },
+            ]
+        },
+        { path: '/student/nodue', label: 'No Due Request', icon: <FaFileInvoice /> },
+        { path: '/student/messages', label: 'Messages', icon: <FaEnvelope /> },
+        { path: '/student/change-password', label: 'Change password', icon: <FaKey /> },
+    ];
+
     return (
         <div className="stu-layout">
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                {/* Header — RIT brand text only (no logo image) */}
+                {/* Header — EXACT IMS MIRROR */}
                 <div className="stu-sidebar-header">
                     <div className="stu-sidebar-logo">
-                        <span>RIT</span>
+                        {/* Placeholder for RIT Tree Logo */}
+                        <img src="https://picsum.photos/seed/rit/100/100" alt="RIT Logo" />
                     </div>
                     <div className="stu-brand-text">
-                        <div className="brand-name">Rajalakshmi<br />Institute of<br />Technology</div>
-                        <div className="brand-motto">Believe in the Possibilities</div>
-                        <div className="brand-sub">An Autonomous Institution</div>
+                        <div className="brand-name">RAJALAKSHMI<br />INSTITUTE OF<br />TECHNOLOGY</div>
+                        <div className="brand-motto">BELIEVE IN THE POSSIBILITIES</div>
+                        <div className="brand-sub">AN AUTONOMOUS INSTITUTION</div>
                     </div>
                 </div>
 
@@ -61,22 +82,56 @@ const StudentLayout = () => {
 
                 {/* Nav */}
                 <nav className="stu-nav">
-                    {studentNav.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            end={item.end || false}
-                            className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setSidebarOpen(false)}
-                        >
-                            <span className="nav-icon">{item.icon}</span>
-                            <span>{item.label}</span>
-                        </NavLink>
+                    {navItems.map((item, idx) => (
+                        <div key={idx}>
+                            {item.isDropdown ? (
+                                <>
+                                    <div
+                                        className={`stu-nav-item ${item.isOpen ? 'active' : ''}`}
+                                        onClick={item.onToggle}
+                                        style={{ cursor: 'pointer', justifyContent: 'space-between' }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span className="nav-icon">{item.icon}</span>
+                                            <span>{item.label}</span>
+                                        </div>
+                                        <span className="nav-chevron">
+                                            {item.isOpen ? <FaChevronDown fontSize="10px" /> : <FaChevronRight fontSize="10px" />}
+                                        </span>
+                                    </div>
+                                    {item.isOpen && (
+                                        <div className="stu-submenu">
+                                            {item.subItems.map((sub) => (
+                                                <NavLink
+                                                    key={sub.path}
+                                                    to={sub.path}
+                                                    className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
+                                                    onClick={() => setSidebarOpen(false)}
+                                                >
+                                                    <span className="nav-icon">{sub.icon}</span>
+                                                    <span>{sub.label}</span>
+                                                </NavLink>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <NavLink
+                                    to={item.path}
+                                    end={item.end || false}
+                                    className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
+                                    onClick={() => setSidebarOpen(false)}
+                                >
+                                    <span className="nav-icon">{item.icon}</span>
+                                    <span>{item.label}</span>
+                                </NavLink>
+                            )}
+                        </div>
                     ))}
                 </nav>
 
                 {/* Logout */}
-                <div style={{ padding: '4px 0', borderTop: '1px solid #e0e0e0' }}>
+                <div style={{ padding: '4px 0', borderTop: '1px solid #374850' }}>
                     <button
                         className="stu-nav-item"
                         onClick={handleLogout}
@@ -90,7 +145,7 @@ const StudentLayout = () => {
 
             {/* ── Main ── */}
             <div className="stu-main">
-                {/* Top Bar — exact IMS: hamburger left, icons center-ish, user badge right */}
+                {/* Top Bar — exact IMS: hamburger left, icons right */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left">
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -98,8 +153,9 @@ const StudentLayout = () => {
                         </button>
                     </div>
                     <div className="stu-topbar-right">
-                        <span className="stu-topbar-icons">
-                            <FaDesktop />
+                        <span className="stu-topbar-icons" title="Alerts">
+                            <FaBell />
+                            <span className="icon-badge">4</span>
                         </span>
                         <button className="stu-user-badge">
                             <FaUser className="user-icon" />

@@ -31,6 +31,11 @@ import AssignmentMark from './pages/student/AssignmentMark';
 import GradeBook from './pages/student/GradeBook';
 import AcademicFee from './pages/student/AcademicFee';
 import Feedbacks from './pages/student/Feedbacks';
+import NoDueRequest from './pages/student/NoDueRequest';
+import Messages from './pages/student/Messages';
+import ChangePassword from './pages/student/ChangePassword';
+import CommitteeSchedule from './pages/student/CommitteeSchedule';
+import CommitteeMinutes from './pages/student/CommitteeMinutes';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -64,6 +69,11 @@ const App = () => {
             <Route path="gradebook" element={<GradeBook />} />
             <Route path="fee" element={<AcademicFee />} />
             <Route path="feedbacks" element={<Feedbacks />} />
+            <Route path="committee/schedule" element={<CommitteeSchedule />} />
+            <Route path="committee/minutes" element={<CommitteeMinutes />} />
+            <Route path="nodue" element={<NoDueRequest />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="change-password" element={<ChangePassword />} />
           </Route>
 
           {/* Admin / Default Mode */}

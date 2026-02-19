@@ -1,70 +1,137 @@
-import React from 'react';
-import { FaBook, FaMedal, FaExclamationCircle } from 'react-icons/fa';
+import React, { useState } from 'react';
 
 const GradeBook = () => {
+    const [semester, setSemester] = useState('');
+    const [showData, setShowData] = useState(false);
+
     const grades = [
-        { semester: 'Semester 1', gpa: '8.5', result: 'Pass', arrears: 0 },
-        { semester: 'Semester 2', gpa: '8.2', result: 'Pass', arrears: 0 },
-        { semester: 'Semester 3', gpa: '7.9', result: 'Pass', arrears: 0 },
-        { semester: 'Semester 4', gpa: '0.0', result: 'Pending', arrears: 0 },
+        { year: '2024-2025', sem: '01', code: 'CY23111', title: 'Engineering Chemistry', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'GE23111', title: 'Problem Solving and C Programming', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'GE23131', title: 'Engineering Graphics', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'HS23111', title: 'Communicative English', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'MA23111', title: 'Matrices and Calculus', grade: 'A', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'CY23121', title: 'Chemistry Laboratory', grade: 'O', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'GE23121', title: 'Problem Solving and C Programming Laboratory', grade: 'A+', result: 'PASS', monthYear: 'November 2024' },
+        { year: '2024-2025', sem: '01', code: 'GE23112', title: 'Heritage of Tamil', grade: 'A', result: 'PASS', monthYear: 'November 2024' },
     ];
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (semester === '1') setShowData(true);
+        else setShowData(false);
+    };
+
     return (
-        <div className="stu-page">
-            <div className="stu-page-header">
-                <h2>Grade Book</h2>
-                <p>Academic performance and semester-wise grade summary</p>
+        <div className="stu-report-page">
+            <div className="stu-info-card" style={{ padding: '20px', marginBottom: '15px' }}>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', borderBottom: '1px solid #f4f4f4', paddingBottom: '10px', marginBottom: '20px' }}>
+                    Grade Book
+                </div>
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'flex-end', gap: '15px' }}>
+                    <div style={{ flex: '0 0 250px' }}>
+                        <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+                            Semester <span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select
+                            className="table-btn"
+                            style={{ width: '100%', height: '34px' }}
+                            value={semester}
+                            onChange={(e) => setSemester(e.target.value)}
+                        >
+                            <option value="">Select Semester</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <button type="submit" className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none', height: '34px', padding: '0 20px', borderRadius: '4px', fontWeight: 'bold' }}>
+                        Submit
+                    </button>
+                </form>
             </div>
 
-            <div className="stu-kpi-row" style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '20px' }}>
-                <div className="stu-kpi-card green" style={{ minHeight: '80px', padding: '10px 15px' }}>
-                    <div className="kpi-value">8.20</div>
-                    <div className="kpi-label">Cumulative GPA (CGPA)</div>
-                    <span className="kpi-icon"><FaMedal /></span>
-                </div>
-                <div className="stu-kpi-card yellow" style={{ minHeight: '80px', padding: '10px 15px' }}>
-                    <div className="kpi-value">0</div>
-                    <div className="kpi-label">Total Arrears in Hand</div>
-                    <span className="kpi-icon"><FaExclamationCircle /></span>
-                </div>
-            </div>
+            {showData ? (
+                <div className="stu-info-card" style={{ padding: '15px' }}>
+                    <div className="stu-table-controls">
+                        <div>
+                            Show &nbsp;
+                            <select className="table-btn">
+                                <option>10</option>
+                            </select>
+                            &nbsp; entries &nbsp;
+                            <button className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none' }}>
+                                Download PDF
+                            </button>
+                        </div>
+                        <div>
+                            Search: &nbsp;
+                            <input type="text" className="table-btn" style={{ width: '150px' }} />
+                        </div>
+                    </div>
 
-            <div className="stu-info-card">
-                <div className="info-header">Semester Summary</div>
-                <div className="stu-calendar-grid">
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table className="stu-data-table">
                         <thead>
-                            <tr style={{ background: '#bbdefb' }}>
-                                <th style={{ padding: '10px', textAlign: 'left', border: '1px solid #ccc' }}>Semester</th>
-                                <th style={{ padding: '10px', textAlign: 'center', border: '1px solid #ccc' }}>GPA</th>
-                                <th style={{ padding: '10px', textAlign: 'center', border: '1px solid #ccc' }}>Arrears</th>
-                                <th style={{ padding: '10px', textAlign: 'center', border: '1px solid #ccc' }}>Result</th>
+                            <tr>
+                                <th style={{ width: '30px' }}><input type="checkbox" /></th>
+                                <th style={{ textAlign: 'center' }}>Academic Year &nbsp;↕</th>
+                                <th style={{ textAlign: 'center' }}>Semester &nbsp;↕</th>
+                                <th style={{ textAlign: 'center' }}>Subject Code &nbsp;↕</th>
+                                <th>Subject Title &nbsp;↕</th>
+                                <th style={{ textAlign: 'center' }}>Grade &nbsp;↕</th>
+                                <th style={{ textAlign: 'center' }}>Result &nbsp;↕</th>
+                                <th>Exam Month and Exam Year &nbsp;↕</th>
                             </tr>
                         </thead>
                         <tbody>
                             {grades.map((g, i) => (
                                 <tr key={i}>
-                                    <td style={{ padding: '10px', border: '1px solid #e0e0e0' }}>{g.semester}</td>
-                                    <td style={{ padding: '10px', textAlign: 'center', border: '1px solid #e0e0e0', fontWeight: 'bold' }}>{g.gpa}</td>
-                                    <td style={{ padding: '10px', textAlign: 'center', border: '1px solid #e0e0e0' }}>{g.arrears}</td>
-                                    <td style={{ padding: '10px', textAlign: 'center', border: '1px solid #e0e0e0' }}>
-                                        <span style={{
-                                            padding: '2px 8px',
-                                            borderRadius: '4px',
-                                            background: g.result === 'Pass' ? '#e8f5e9' : '#fff3e0',
-                                            color: g.result === 'Pass' ? '#2e7d32' : '#ef6c00',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 'bold'
-                                        }}>
-                                            {g.result}
-                                        </span>
-                                    </td>
+                                    <td style={{ textAlign: 'center' }}><input type="checkbox" /></td>
+                                    <td style={{ textAlign: 'center' }}>{g.year}</td>
+                                    <td style={{ textAlign: 'center' }}>{g.sem}</td>
+                                    <td style={{ textAlign: 'center' }}>{g.code}</td>
+                                    <td>{g.title}</td>
+                                    <td style={{ textAlign: 'center' }}>{g.grade}</td>
+                                    <td style={{ textAlign: 'center' }}>{g.result}</td>
+                                    <td>{g.monthYear}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+
+                    <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                        <span style={{ color: '#777' }}>Showing 1 to 8 of 8 entries</span>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                            <button className="table-btn" disabled>Previous</button>
+                            <span className="table-btn active" style={{ background: '#007bff', color: 'white' }}>1</span>
+                            <button className="table-btn" disabled>Next</button>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '25px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', fontSize: '12px', color: '#333', fontWeight: 'bold', paddingTop: '15px', borderTop: '1px solid #eee' }}>
+                        <div>RA – Reappearance is required</div>
+                        <div>RA* - Absent for End Exam</div>
+                        <div>W/WD – Withdrawal</div>
+                        <div>SA – Shortage of Attendance</div>
+                        <div>SE – Sports Exemption</div>
+                        <div>WH1 – Suspected Malpractice</div>
+                        <div>WH2 – Contact COE office</div>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="stu-info-card" style={{ padding: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', fontSize: '12px', color: '#333', fontWeight: 'bold' }}>
+                        <div>RA – Reappearance is required</div>
+                        <div>RA* - Absent for End Exam</div>
+                        <div>W/WD – Withdrawal</div>
+                        <div>SA – Shortage of Attendance</div>
+                        <div>SE – Sports Exemption</div>
+                        <div>WH1 – Suspected Malpractice</div>
+                        <div>WH2 – Contact COE office</div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
