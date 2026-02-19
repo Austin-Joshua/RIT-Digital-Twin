@@ -1,9 +1,20 @@
-import React from 'react';
 import {
-    FaGraduationCap, FaExclamationTriangle, FaPercentage, FaPlaneDeparture,
+    FaGraduationCap, FaFileAlt, FaPercentage, FaShoppingBag,
     FaArrowCircleRight
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import {
+    ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
+    CartesianGrid, Tooltip
+} from 'recharts';
+
+const performanceData = [
+    { name: 'Jan', gpa: 7.8, attendance: 82 },
+    { name: 'Feb', gpa: 8.1, attendance: 85 },
+    { name: 'Mar', gpa: 8.3, attendance: 88 },
+    { name: 'Apr', gpa: 8.5, attendance: 92 },
+    { name: 'May', gpa: 8.4, attendance: 90 },
+];
 
 /* Feb 2026: starts on Sunday */
 const feb2026 = [
@@ -20,33 +31,64 @@ const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
 const kpis = [
     { label: 'CGPA', value: '0', color: 'green', icon: <FaGraduationCap />, link: '/student/gradebook' },
-    { label: 'Arrears in Hand', value: '0', color: 'yellow', icon: <FaExclamationTriangle />, link: '/student/gradebook' },
+    { label: 'Arrears In Hand', value: '0', color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
     { label: 'Average Attendance', value: '0', color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
-    { label: 'Taken Leave', value: '0', color: 'red', icon: <FaPlaneDeparture />, link: '/student/leave' },
+    { label: 'Taken Leave', value: '0', color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
 ];
 
 const StudentDashboard = () => (
-    <div className="stu-page">
+    <div className="stu-dashboard">
         {/* Welcome */}
         <div className="stu-welcome">
             <h2>Hi, welcome back!</h2>
-            <div className="stu-breadcrumb">Dashboard</div>
+            <div className="breadcrumb-bar">
+                <span className="breadcrumb-item active">Dashboard</span>
+            </div>
         </div>
 
-        {/* KPI Cards */}
+        {/* KPI Cards — EXACT IMS MIRROR */}
         <div className="stu-kpi-row">
             {kpis.map((kpi) => (
-                <Link key={kpi.label} to={kpi.link} className={`stu-kpi-card ${kpi.color}`} style={{ textDecoration: 'none' }}>
-                    <div>
+                <div key={kpi.label} className={`stu-kpi-card ${kpi.color}`}>
+                    <div className="kpi-main">
                         <div className="kpi-value">{kpi.value}</div>
                         <div className="kpi-label">{kpi.label}</div>
                     </div>
                     <span className="kpi-icon">{kpi.icon}</span>
-                    <div className="kpi-more">
+                    <Link to={kpi.link} className="kpi-more">
                         More info &nbsp;<FaArrowCircleRight />
-                    </div>
-                </Link>
+                    </Link>
+                </div>
             ))}
+        </div>
+
+        {/* Performance Trend Chart (The "Curve") upscale */}
+        <div className="stu-info-card" style={{ padding: '25px' }}>
+            <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
+            <div style={{ width: '100%', height: 400 }}>
+                <ResponsiveContainer>
+                    <AreaChart data={performanceData}>
+                        <defs>
+                            <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3c8dbc" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="#3c8dbc" stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                        <Tooltip />
+                        <Area
+                            type="monotone"
+                            dataKey="gpa"
+                            stroke="#3c8dbc"
+                            fillOpacity={1}
+                            fill="url(#colorGpa)"
+                            strokeWidth={4}
+                        />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
         </div>
 
         {/* Announcements & Events */}
@@ -54,20 +96,24 @@ const StudentDashboard = () => (
             <div className="stu-info-card">
                 <div className="info-header">Announcements</div>
                 <div className="info-body">
-                    <ul><li>No Announcements</li></ul>
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                        <li style={{ padding: '8px 0' }}>• No Announcements</li>
+                    </ul>
                 </div>
                 <div className="info-footer"><a href="#">More..</a></div>
             </div>
             <div className="stu-info-card">
                 <div className="info-header">Placement / Events Schedule</div>
                 <div className="info-body">
-                    <ul><li>No Events</li></ul>
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                        <li style={{ padding: '8px 0' }}>• No Events</li>
+                    </ul>
                 </div>
                 <div className="info-footer"><a href="#">More..</a></div>
             </div>
         </div>
 
-        {/* Calendar */}
+        {/* Calendar — EXACT IMS MIRROR */}
         <div className="stu-calendar-card">
             <div className="stu-calendar-header">
                 <span className="cal-title">February &nbsp; 2026</span>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
-import { FaLeaf, FaGlobeAmericas, FaRecycle, FaWater } from 'react-icons/fa';
+import { FaLeaf, FaGlobeAmericas, FaRecycle, FaWater, FaBolt } from 'react-icons/fa';
 
 const SustainabilityPage = () => {
     const [metrics, setMetrics] = useState(null);
