@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../services/api';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { FaBolt, FaLeaf, FaSolarPanel, FaChartLine } from 'react-icons/fa';
 
 const EnergyPage = () => {
     const [optimizationResult, setOptimizationResult] = useState(null);
@@ -37,60 +38,80 @@ const EnergyPage = () => {
 
     return (
         <div className="space-y-6">
-            <h1 className="page-header">Energy Consumption & Optimization</h1>
+            <h1 className="page-header">Energy Optimization Report</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="card bg-navy-900 text-white p-4">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-gray-400 text-xs uppercase font-bold">Current Load</p>
+                            <h3 className="text-2xl font-bold">542 kW</h3>
+                        </div>
+                        <FaBolt className="text-gold-500" />
+                    </div>
+                </div>
+                <div className="card p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Daily Peak</p>
+                    <h3 className="text-2xl font-bold">800 kW</h3>
+                </div>
+                <div className="card p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Solar Yield</p>
+                    <h3 className="text-2xl font-bold text-green-600">120 kW</h3>
+                </div>
+                <div className="card p-4">
+                    <p className="text-gray-500 text-xs uppercase font-bold">Efficiency</p>
+                    <h3 className="text-2xl font-bold text-blue-600">85.2%</h3>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Usage Chart */}
                 <div className="card">
-                    <h3 className="section-header !text-[18px]">Real-time Usage (kWh)</h3>
-                    <div className="h-64">
+                    <h3 className="section-header !text-[18px]">24-Hour Consumption Pattern</h3>
+                    <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E5E7EB' }} />
-                                <Area type="monotone" dataKey="Usage" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.2} strokeWidth={2} />
+                                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
+                                <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
+                                <Tooltip />
+                                <Area type="monotone" dataKey="Usage" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.15} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                <div className="card flex flex-col justify-center">
+                {/* Optimization Simulation */}
+                <div className="card flex flex-col">
                     <h3 className="section-header !text-[18px]">Optimization Simulation</h3>
-                    <p className="text-gray-600 mb-6 text-sm leading-relaxed">Run AI-driven analysis to identify potential savings through load balancing and solar integration.</p>
-                    <button
-                        onClick={handleSimulate}
-                        disabled={loading}
-                        className="btn-accent w-full"
-                    >
-                        {loading ? 'Calculating...' : 'Run Optimization Analysis'}
-                    </button>
-                </div>
-            </div>
+                    <div className="flex-1 space-y-4">
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                            Analyze building-wise sensors to redistribute load and maximize renewable source integration.
+                        </p>
+                        <button
+                            onClick={handleSimulate}
+                            disabled={loading}
+                            className="btn-accent w-full flex items-center justify-center gap-2"
+                        >
+                            {loading ? 'Analyzing Sensors...' : <><FaChartLine /> Run Analysis</>}
+                        </button>
 
-            {optimizationResult && (
-                <div className="card border-t-4 border-t-gold-500">
-                    <h3 className="section-header !mb-6">Simulation Results</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div className="p-4 bg-gray-50 rounded border border-gray-100">
-                            <p className="text-sm text-gray-500 mb-1">Current Avg Usage</p>
-                            <p className="text-xl font-bold text-navy-900">{optimizationResult.currentUsageAvg} kWh</p>
-                        </div>
-                        <div className="p-4 bg-green-50 rounded border border-green-100">
-                            <p className="text-sm text-gray-500 mb-1">Projected Usage</p>
-                            <p className="text-xl font-bold text-green-700">{optimizationResult.projectedUsage} kWh</p>
-                        </div>
-                        <div className="p-4 bg-blue-50 rounded border border-blue-100">
-                            <p className="text-sm text-gray-500 mb-1">Solar Potential</p>
-                            <p className="text-xl font-bold text-blue-700">{optimizationResult.solarPotential} kWh</p>
-                        </div>
-                        <div className="p-4 bg-yellow-50 rounded border border-yellow-100">
-                            <p className="text-sm text-gray-500 mb-1">ROI Period</p>
-                            <p className="text-xl font-bold text-yellow-700">{optimizationResult.roiMonths} Months</p>
-                        </div>
+                        {optimizationResult && (
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                <div className="p-3 bg-green-50 rounded border border-green-100">
+                                    <p className="text-xs text-gray-500 uppercase">Savings</p>
+                                    <p className="text-lg font-bold text-green-700">{optimizationResult.savings} kWh/day</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded border border-blue-100">
+                                    <p className="text-xs text-gray-500 uppercase">Solar Potential</p>
+                                    <p className="text-lg font-bold text-blue-700">{optimizationResult.solarPotential} kWh</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

@@ -3,6 +3,7 @@ import {
     FaGraduationCap, FaExclamationTriangle, FaPercentage, FaPlaneDeparture,
     FaArrowCircleRight
 } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 /* Feb 2026: starts on Sunday */
 const feb2026 = [
@@ -18,10 +19,10 @@ const todayDate = now.getDate();
 const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
 const kpis = [
-    { label: 'CGPA', value: '0', color: 'green', icon: <FaGraduationCap /> },
-    { label: 'Arrears in Hand', value: '0', color: 'yellow', icon: <FaExclamationTriangle /> },
-    { label: 'Average Attendance', value: '0', color: 'teal', icon: <FaPercentage /> },
-    { label: 'Taken Leave', value: '0', color: 'red', icon: <FaPlaneDeparture /> },
+    { label: 'CGPA', value: '0', color: 'green', icon: <FaGraduationCap />, link: '/student/gradebook' },
+    { label: 'Arrears in Hand', value: '0', color: 'yellow', icon: <FaExclamationTriangle />, link: '/student/gradebook' },
+    { label: 'Average Attendance', value: '0', color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
+    { label: 'Taken Leave', value: '0', color: 'red', icon: <FaPlaneDeparture />, link: '/student/leave' },
 ];
 
 const StudentDashboard = () => (
@@ -35,16 +36,16 @@ const StudentDashboard = () => (
         {/* KPI Cards */}
         <div className="stu-kpi-row">
             {kpis.map((kpi) => (
-                <div key={kpi.label} className={`stu-kpi-card ${kpi.color}`}>
+                <Link key={kpi.label} to={kpi.link} className={`stu-kpi-card ${kpi.color}`} style={{ textDecoration: 'none' }}>
                     <div>
                         <div className="kpi-value">{kpi.value}</div>
                         <div className="kpi-label">{kpi.label}</div>
                     </div>
                     <span className="kpi-icon">{kpi.icon}</span>
-                    <a href="#" className="kpi-more">
+                    <div className="kpi-more">
                         More info &nbsp;<FaArrowCircleRight />
-                    </a>
-                </div>
+                    </div>
+                </Link>
             ))}
         </div>
 
