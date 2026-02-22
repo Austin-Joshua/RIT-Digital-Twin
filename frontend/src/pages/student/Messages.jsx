@@ -35,7 +35,7 @@ const Messages = () => {
 
             <div style={{ marginTop: '30px', color: '#777', fontSize: '12px' }}>
                 © All rights reserved.
-                <span style={{ float: 'right' }}><img src="https://picsum.photos/seed/rit/16/16" alt="RIT-IMS" /> RIT-IMS</span>
+                <span style={{ float: 'right' }}><img src="/assets/images/rit-icon.png" alt="RIT-IMS" style={{ width: '16px', height: '16px', objectFit: 'contain' }} /> RIT-IMS</span>
             </div>
         </div>
     );

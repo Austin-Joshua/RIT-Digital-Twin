@@ -2,113 +2,37 @@ package com.rit.digitaltwin.controller;
 
 import com.rit.digitaltwin.dto.AuthResponse;
 import com.rit.digitaltwin.dto.LoginRequest;
-import com.rit.digitaltwin.model.Role;
-import com.rit.digitaltwin.model.User;
-import com.rit.digitaltwin.repository.RoleRepository;
-import com.rit.digitaltwin.repository.UserRepository;
-import com.rit.digitaltwin.security.JwtUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rit.digitaltwin.dto.RegisterRequest;
+import com.rit.digitaltwin.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
 
-        @Autowired
-        AuthenticationManager authenticationManager;
-
-        @Autowired
-        UserRepository userRepository;
-
-        @Autowired
-        RoleRepository roleRepository;
-
-        @Autowired
-        PasswordEncoder passwordEncoder;
-
-        @Autowired
-        JwtUtil jwtUtils;
+        private final AuthService authService;
 
         @PostMapping("/login")
         public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-                Authentication authentication = authenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                                                loginRequest.getPassword()));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                String jwt = jwtUtils.generateToken(authentication);
-
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                User user = userRepository.findByUsername(userDetails.getUsername())
-                                .orElseThrow(() -> new RuntimeException("User not found"));
-
-                String roleName = user.getRole() != null ? user.getRole().getRoleName() : "UNKNOWN";
-
-                return ResponseEntity.ok(new AuthResponse(jwt,
-                                user.getUserId(),
-                                user.getUsername(),
-                                user.getEmail(),
-                                roleName));
+                try {
+                        AuthResponse response = authService.authenticateUser(loginRequest);
+                        return ResponseEntity.ok(response);
+                } catch (Exception e) {
+                        return ResponseEntity.badRequest().body("Invalid Institutional ID or Password");
+                }
         }
 
         @PostMapping("/register")
-        public ResponseEntity<?> registerUser(@RequestBody Map<String, String> request) {
-                String username = request.get("username");
-                String email = request.get("email");
-                String password = request.get("password");
-                String firstName = request.get("firstName");
-                String lastName = request.get("lastName");
-
-                if (username == null || email == null || password == null) {
-                        return ResponseEntity.badRequest()
-                                        .body(Map.of("message", "Username, email, and password are required"));
+        public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+                try {
+                        authService.registerUser(registerRequest);
+                        return ResponseEntity.ok("User registered successfully!");
+                } catch (Exception e) {
+                        return ResponseEntity.badRequest().body(e.getMessage());
                 }
-
-                if (userRepository.existsByUsername(username)) {
-                        return ResponseEntity.badRequest()
-                                        .body(Map.of("message", "Username is already taken"));
-                }
-
-                if (userRepository.existsByEmail(email)) {
-                        return ResponseEntity.badRequest()
-                                        .body(Map.of("message", "Email is already registered"));
-                }
-
-                Role defaultRole = roleRepository.findByRoleName("FACULTY")
-                                .orElseGet(() -> roleRepository.findByRoleName("ADMIN")
-                                                .orElseThrow(() -> new RuntimeException("No roles found")));
-
-                User newUser = new User();
-                newUser.setUsername(username);
-                newUser.setEmail(email);
-                newUser.setPassword(passwordEncoder.encode(password));
-                newUser.setFirstName(firstName);
-                newUser.setLastName(lastName);
-                newUser.setRole(defaultRole);
-                userRepository.save(newUser);
-
-                // Auto-login after registration
-                Authentication authentication = authenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(username, password));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                String jwt = jwtUtils.generateToken(authentication);
-
-                String roleName = newUser.getRole() != null ? newUser.getRole().getRoleName() : "UNKNOWN";
-
-                return ResponseEntity.ok(new AuthResponse(jwt,
-                                newUser.getUserId(),
-                                newUser.getUsername(),
-                                newUser.getEmail(),
-                                roleName));
         }
 }

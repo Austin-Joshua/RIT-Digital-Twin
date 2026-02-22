@@ -1,0 +1,74 @@
+/* 
+ * Enterprise Design Tokens for Smart Campus Intelligence Platform
+ * Standardized Design System Architecture
+ */
+
+:root {
+    /* Colors */
+    --color-primary-navy: #0B2C6B;
+    --color-secondary-navy: #123C8C;
+    --color-accent-gold: #D4AF37;
+    --color-bg-light: #F4F6F9;
+    --color-bg-dark: #0F172A;
+    --color-text-primary: #1F2937;
+    --color-text-secondary: #64748B;
+    --color-text-light: #E5E7EB;
+    --color-border: #E5E7EB;
+    --color-success: #16A34A;
+    --color-warning: #F59E0B;
+    --color-danger: #DC2626;
+
+    /* Semantic Mappings - Light (Default) */
+    --theme-bg: var(--color-bg-light);
+    --theme-text: var(--color-text-primary);
+    --theme-text-muted: var(--color-text-secondary);
+    --theme-border: var(--color-border);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --card-bg: #ffffff;
+
+    /* Typography */
+    --font-primary: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+    --font-size-h1: 28px;
+    --font-size-h2: 22px;
+    --font-size-body: 15px;
+    --font-size-small: 13px;
+
+    /* Spacing Scale */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    /* Transitions */
+    --transition-speed: 300ms;
+}
+
+/* Dark Mode Overrides */
+.dark {
+    --theme-bg: var(--color-bg-dark);
+    --theme-text: var(--color-text-light);
+    --theme-text-muted: #94A3B8;
+    --theme-border: #1E293B;
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --card-bg: #1E293B;
+}
+
+/* Global Transition Utility */
+* {
+    transition: background-color var(--transition-speed),
+        border-color var(--transition-speed),
+        color var(--transition-speed),
+        box-shadow var(--transition-speed);
+}

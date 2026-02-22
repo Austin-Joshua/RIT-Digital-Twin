@@ -1,95 +1,135 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import Skeleton from './components/common/Skeleton';
 
 /* Layouts */
-import SidebarLayout from './layouts/SidebarLayout';
+import InstitutionalLayout from './layouts/InstitutionalLayout';
 import StudentLayout from './layouts/StudentLayout';
+import AuthLayout from './layouts/AuthLayout';
 
-/* Auth Pages */
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+/* Lazy Loaded Auth Pages */
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 
-/* Admin Pages */
-import Dashboard from './pages/Dashboard';
-import ClassroomPage from './pages/ClassroomPage';
-import EnergyPage from './pages/EnergyPage';
-import TransportPage from './pages/TransportPage';
-import CrowdPage from './pages/CrowdPage';
-import SustainabilityPage from './pages/SustainabilityPage';
+/* Lazy Loaded Admin Pages */
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ClassroomPage = lazy(() => import('./pages/ClassroomPage'));
+const EnergyPage = lazy(() => import('./pages/EnergyPage'));
+const TransportPage = lazy(() => import('./pages/TransportPage'));
+const CrowdPage = lazy(() => import('./pages/CrowdPage'));
+const PredictionPage = lazy(() => import('./pages/PredictionPage'));
+const ManagementPage = lazy(() => import('./pages/ManagementPage'));
 
-/* Student Pages */
-import StudentDashboard from './pages/student/StudentDashboard';
-import Timetable from './pages/student/Timetable';
-import SubjectRegistration from './pages/student/SubjectRegistration';
-import LeaveOD from './pages/student/LeaveOD';
-import Attendance from './pages/student/Attendance';
-import Certificates from './pages/student/Certificates';
-import CATMark from './pages/student/CATMark';
-import LABMark from './pages/student/LABMark';
-import AssignmentMark from './pages/student/AssignmentMark';
-import GradeBook from './pages/student/GradeBook';
-import AcademicFee from './pages/student/AcademicFee';
-import Feedbacks from './pages/student/Feedbacks';
-import NoDueRequest from './pages/student/NoDueRequest';
-import Messages from './pages/student/Messages';
-import ChangePassword from './pages/student/ChangePassword';
-import CommitteeSchedule from './pages/student/CommitteeSchedule';
-import CommitteeMinutes from './pages/student/CommitteeMinutes';
+/* Lazy Loaded Student Pages */
+const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
+const Timetable = lazy(() => import('./pages/student/Timetable'));
+const SubjectRegistration = lazy(() => import('./pages/student/SubjectRegistration'));
+const LeaveOD = lazy(() => import('./pages/student/LeaveOD'));
+const Attendance = lazy(() => import('./pages/student/Attendance'));
+const Certificates = lazy(() => import('./pages/student/Certificates'));
+const CATMark = lazy(() => import('./pages/student/CATMark'));
+const LABMark = lazy(() => import('./pages/student/LABMark'));
+const AssignmentMark = lazy(() => import('./pages/student/AssignmentMark'));
+const GradeBook = lazy(() => import('./pages/student/GradeBook'));
+const AcademicFee = lazy(() => import('./pages/student/AcademicFee'));
+const Feedbacks = lazy(() => import('./pages/student/Feedbacks'));
+const CommitteeSchedule = lazy(() => import('./pages/student/CommitteeSchedule'));
+const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
+const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
+const Messages = lazy(() => import('./pages/student/Messages'));
+const ChangePassword = lazy(() => import('./pages/student/ChangePassword'));
 
-const ProtectedRoute = ({ children }) => {
+const PageLoader = () => (
+  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <Skeleton height="40px" width="300px" />
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+    </div>
+    <Skeleton height="400px" />
+  </div>
+);
+
+const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
+
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-light)' }}>
+      <div style={{ padding: '20px', background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', borderRadius: '12px' }}>Loading Portal...</div>
+    </div>
+  );
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to={user.role === 'STUDENT' ? '/student' : '/'} replace />;
+  }
+
   return children;
 };
 
+import { ThemeProvider } from './context/ThemeContext';
+
+import { ToastProvider } from './context/ToastContext';
+
 const App = () => {
   return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          {/* Public */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+    <ThemeProvider>
+      <ToastProvider>
+        <Router>
+          <AuthProvider>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Auth Routes */}
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                </Route>
 
-          {/* Student Mode */}
-          <Route path="/student" element={
-            <ProtectedRoute><StudentLayout /></ProtectedRoute>
-          }>
-            <Route index element={<StudentDashboard />} />
-            <Route path="timetable" element={<Timetable />} />
-            <Route path="registration" element={<SubjectRegistration />} />
-            <Route path="leave" element={<LeaveOD />} />
-            <Route path="attendance" element={<Attendance />} />
-            <Route path="certificates" element={<Certificates />} />
-            <Route path="cat-mark" element={<CATMark />} />
-            <Route path="lab-mark" element={<LABMark />} />
-            <Route path="assignment" element={<AssignmentMark />} />
-            <Route path="gradebook" element={<GradeBook />} />
-            <Route path="fee" element={<AcademicFee />} />
-            <Route path="feedbacks" element={<Feedbacks />} />
-            <Route path="committee/schedule" element={<CommitteeSchedule />} />
-            <Route path="committee/minutes" element={<CommitteeMinutes />} />
-            <Route path="nodue" element={<NoDueRequest />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="change-password" element={<ChangePassword />} />
-          </Route>
+                {/* Student Mode */}
+                <Route path="/student" element={
+                  <ProtectedRoute requiredRole="STUDENT"><StudentLayout /></ProtectedRoute>
+                }>
+                  <Route index element={<StudentDashboard />} />
+                  <Route path="timetable" element={<Timetable />} />
+                  <Route path="registration" element={<SubjectRegistration />} />
+                  <Route path="leave" element={<LeaveOD />} />
+                  <Route path="attendance" element={<Attendance />} />
+                  <Route path="certificates" element={<Certificates />} />
+                  <Route path="cat-mark" element={<CATMark />} />
+                  <Route path="lab-mark" element={<LABMark />} />
+                  <Route path="assignment" element={<AssignmentMark />} />
+                  <Route path="gradebook" element={<GradeBook />} />
+                  <Route path="fee" element={<AcademicFee />} />
+                  <Route path="feedbacks" element={<Feedbacks />} />
+                  <Route path="committee/schedule" element={<CommitteeSchedule />} />
+                  <Route path="committee/minutes" element={<CommitteeMinutes />} />
+                  <Route path="nodue" element={<NoDueRequest />} />
+                  <Route path="messages" element={<Messages />} />
+                  <Route path="change-password" element={<ChangePassword />} />
+                </Route>
 
-          {/* Admin / Default Mode */}
-          <Route path="/" element={
-            <ProtectedRoute><SidebarLayout /></ProtectedRoute>
-          }>
-            <Route index element={<Dashboard />} />
-            <Route path="classroom" element={<ClassroomPage />} />
-            <Route path="energy" element={<EnergyPage />} />
-            <Route path="transport" element={<TransportPage />} />
-            <Route path="crowd" element={<CrowdPage />} />
-            <Route path="sustainability" element={<SustainabilityPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </Router>
+                {/* Institutional / Admin / Management / Faculty Mode */}
+                <Route path="/" element={
+                  <ProtectedRoute><InstitutionalLayout /></ProtectedRoute>
+                }>
+                  <Route index element={<Dashboard />} />
+                  <Route path="simulations/classroom" element={<ClassroomPage />} />
+                  <Route path="simulations/energy" element={<EnergyPage />} />
+                  <Route path="simulations/transport" element={<TransportPage />} />
+                  <Route path="simulations/crowd" element={<CrowdPage />} />
+                  <Route path="predictions" element={<PredictionPage />} />
+                  <Route path="management" element={<ManagementPage />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </AuthProvider>
+        </Router>
+      </ToastProvider>
+    </ThemeProvider>
   );
 };
 

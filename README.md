@@ -1,68 +1,96 @@
-# Digital Twin – Smart Campus Intelligence Platform
+# RIT Digital Twin — Smart Campus Intelligence Platform
 
-A production-ready institutional web application for managing smart campus operations, including classroom allocation, energy optimization, transport management, and sustainability tracking.
+A full-stack institutional web application for managing smart campus operations: classroom allocation, energy optimization, transport management, sustainability tracking, and crowd simulation.
 
-## Tech Stack
-- **Frontend**: React (Vite), Tailwind CSS, Recharts, Axios
-- **Backend**: Spring Boot (Java 17), Spring Security (JWT), JPA/Hibernate
-- **Database**: MySQL 8.0
-- **Deployment**: Docker, Docker Compose
+---
 
-## Prerequisites
-- Java 17+
-- Node.js 18+
-- Docker Desktop
-- Maven
+## 🏗️ Tech Stack
 
-## Setup & Running
+| Layer | Technology |
+|---|---|
+| Frontend | React (Vite), Recharts, Axios |
+| Backend | Spring Boot 3.2 (Java 17), Spring Security (JWT) |
+| Database | MySQL 8.0 |
+| Infrastructure | Docker, Docker Compose |
 
-### Option 1: Docker (Recommended)
-1. Ensure Docker Desktop is running.
-2. Build the backend JAR:
-   ```bash
-   cd backend
-   ./mvnw clean package -DskipTests
-   ```
-   *(If `mvnw` fails, use `mvn clean package -DskipTests`)*
-3. Run docker-compose:
-   ```bash
-   cd ..
-   docker-compose up --build
-   ```
-4. Access the application:
-   - Frontend: [http://localhost:3000](http://localhost:3000)
-   - Backend API: [http://localhost:8080/api](http://localhost:8080/api)
-   - Swagger Documentation: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+---
 
-### Option 2: Local Development
-1. **Database**:
-   - Start a MySQL instance.
-   - Run `database/schema.sql` to create the schema.
-   - Update `backend/src/main/resources/application.properties` with your credentials.
+## 🚀 Quick Start (Docker)
 
-2. **Backend**:
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-   ```
+**Requirements:** Docker Desktop must be running.
 
-3. **Frontend**:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+```powershell
+# Start all services (MySQL → Backend → Frontend)
+docker-compose up --build -d
 
-## Default Credentials
-- **Admin**: `admin` / `password`
+# Stop all services
+docker-compose down
 
-## Modules
-1. **Dashboard**: Real-time KPIs and Analytics.
-2. **Classroom Allocation**: Optimized room booking based on strength and facilities.
-3. **Energy Optimization**: Log viewing and AI-driven optimization simulation.
-4. **Transport**: Fleet management and route efficiency analysis.
-5. **Crowd Simulation**: Emergency evacuation drills and congestion monitoring.
-6. **Sustainability**: Composite ESG scoring.
+# Full reset (wipes database)
+docker-compose down -v
+docker-compose up --build -d
+```
 
-## License
-Confidential - Institutional Use Only.
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8080/api |
+| Swagger Docs | http://localhost:8080/swagger-ui/index.html |
+
+---
+
+## 🔑 Default Credentials
+
+| Role | Username | Password |
+|---|---|---|
+| Admin | `admin` | `admin123` |
+| Faculty | `faculty` | `faculty123` |
+| Student | `student` | `student123` |
+
+---
+
+## 🛠️ Local Development
+
+### Backend
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+> Update `backend/src/main/resources/application.properties` to point to your local MySQL instance.
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 📦 Project Structure
+
+```
+RIT-Digital-Twin/
+├── backend/          # Spring Boot API
+├── frontend/         # React app
+├── database/         # schema.sql + seed-data.sql
+├── docker-compose.yml
+└── start_app.ps1     # PowerShell convenience script
+```
+
+---
+
+## 📋 Modules
+
+| Module | Description |
+|---|---|
+| Dashboard | Real-time KPIs and analytics |
+| Classroom Allocation | Optimized room booking |
+| Energy Optimization | Monitoring and AI simulation |
+| Transport | Fleet management and route efficiency |
+| Crowd Simulation | Evacuation drills and congestion monitoring |
+| Sustainability | ESG composite scoring |
+
+---
+
+*Confidential — Institutional Use Only.*

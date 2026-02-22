@@ -1,0 +1,115 @@
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, Outlet } from 'react-router-dom';
+import AnimatedWaveBackground from '../components/auth/AnimatedWaveBackground';
+import { useTheme } from '../hooks/useTheme';
+import { FaMoon, FaSun } from 'react-icons/fa';
+
+const AuthLayout = () => {
+    const location = useLocation();
+    const { isDarkMode, toggleTheme } = useTheme();
+    const isLogin = location.pathname === '/login';
+
+    const panelVariants = {
+        login: { x: 0, transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } },
+        signup: { x: '100%', transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } }
+    };
+
+    const formPanelVariants = {
+        login: { x: 0, transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } },
+        signup: { x: '-100%', transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } }
+    };
+
+    const textVariants = {
+        initial: { opacity: 0, y: 30 },
+        animate: { opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.8 } },
+        exit: { opacity: 0, y: -30, transition: { duration: 0.4 } }
+    };
+
+    return (
+        <div style={{
+            minHeight: '100vh', width: '100vw', backgroundColor: 'var(--theme-bg)', display: 'flex', overflow: 'hidden', position: 'relative', transition: 'background-color var(--transition-speed)'
+        }}>
+            <div style={{ position: 'fixed', top: '20px', right: '25px', zIndex: 100 }}>
+                <button onClick={toggleTheme} style={{
+                    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '50%', cursor: 'pointer', color: 'var(--color-accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', boxShadow: 'var(--shadow-subtle)', fontSize: '18px'
+                }}>
+                    {isDarkMode ? <FaSun /> : <FaMoon />}
+                </button>
+            </div>
+            <div style={{ display: 'flex', width: '100%', height: '100vh', position: 'relative' }}>
+                <motion.div animate={isLogin ? 'login' : 'signup'} variants={panelVariants} style={{
+                    width: '50%', height: '100%',
+                    background: 'linear-gradient(135deg, #0B2C6B 0%, #123C8C 100%)', // Persistent Blue Accent
+                    position: 'absolute', left: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px',
+                    color: '#ffffff' // Always white on blue
+                }}>
+                    <AnimatedWaveBackground />
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
+                        <div style={{ marginBottom: '40px' }}>
+                            <img
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                                alt="RIT"
+                                style={{
+                                    height: '90px',
+                                    width: 'auto'
+                                }}
+                            />
+                        </div>
+                        <AnimatePresence mode="wait">
+                            <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
+                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '24px', lineHeight: '1.2', color: isDarkMode ? '#ffffff' : '#f8f9fa' }}>
+                                    {isLogin ? "Institutional Intelligence Portal" : "Campus Digital Ecosystem"}
+                                </h1>
+                                <p style={{ fontSize: '1.2rem', color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '400' }}>
+                                    {isLogin ? "Access real-time analytics, campus simulations, and predictive governance tools for the smart future." : "Join the next generation of institutional management with our integrated digital twin platform."}
+                                </p>
+
+                                <div style={{
+                                    fontSize: '0.95rem',
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.65)',
+                                    lineHeight: '1.7',
+                                    marginBottom: '40px',
+                                    padding: '16px',
+                                    background: 'rgba(0,0,0,0.1)',
+                                    borderRadius: '12px',
+                                    borderLeft: `2px solid ${isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}`
+                                }}>
+                                    Rajalakshmi Institute of Technology is an engineering college in Chennai, Tamil Nadu, India.
+                                    RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>'A++' Grade in NAAC</strong>.
+                                </div>
+
+                                <div style={{
+                                    fontSize: '1rem',
+                                    fontStyle: 'italic',
+                                    color: 'var(--color-accent-gold)',
+                                    fontWeight: '500',
+                                    marginTop: '60px',
+                                    borderLeft: '3px solid var(--color-accent-gold)',
+                                    paddingLeft: '16px'
+                                }}>
+                                    "Innovation through data, excellence in governance."
+                                </div>
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+                </motion.div>
+                <motion.div animate={isLogin ? 'login' : 'signup'} variants={formPanelVariants} style={{
+                    width: '50%', height: '100%', position: 'absolute', right: 0, zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px'
+                }}>
+                    <div style={{ maxWidth: '440px', width: '100%' }}>
+                        <Outlet />
+                    </div>
+                </motion.div>
+            </div>
+            <style>{`
+                @media (max-width: 1024px) {
+                    .auth-wrapper { flex-direction: column !important; }
+                    .brand-panel, .form-panel { width: 100% !important; height: 50% !important; position: relative !important; transform: none !important; }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+export default AuthLayout;

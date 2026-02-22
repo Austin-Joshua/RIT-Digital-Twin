@@ -11,6 +11,9 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
         List<Timetable> findByClassroomId(Long classroomId);
 
         @Query("SELECT t FROM Timetable t WHERE t.classroom.id = :classroomId AND t.dayOfWeek = :dayOfWeek AND t.startTime < :endTime AND t.endTime > :startTime")
-        List<Timetable> findConflictingSlots(Long classroomId, java.time.DayOfWeek dayOfWeek,
-                        java.time.LocalTime startTime, java.time.LocalTime endTime);
+        List<Timetable> findConflictingSlots(
+                        @org.springframework.data.repository.query.Param("classroomId") Long classroomId,
+                        @org.springframework.data.repository.query.Param("dayOfWeek") java.time.DayOfWeek dayOfWeek,
+                        @org.springframework.data.repository.query.Param("startTime") java.time.LocalTime startTime,
+                        @org.springframework.data.repository.query.Param("endTime") java.time.LocalTime endTime);
 }
