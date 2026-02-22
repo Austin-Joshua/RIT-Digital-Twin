@@ -40,8 +40,8 @@ const Sidebar = () => {
         ];
 
         const role = user?.role || 'FACULTY';
-        
-        switch(role) {
+
+        switch (role) {
             case 'ADMIN':
                 return [...baseItems, ...adminItems];
             case 'MANAGEMENT':
@@ -78,14 +78,15 @@ const Sidebar = () => {
                     <div style={{
                         width: '44px',
                         height: '44px',
-                        background: '#d4af37',
+                        background: '#ffffff',
                         borderRadius: '8px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        padding: '4px'
                     }}>
-                        <FaUniversity size={24} color="#1a365d" />
+                        <img src="/assets/images/rit-icon.png" alt="RIT" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                     <div>
                         <div style={{
@@ -128,7 +129,7 @@ const Sidebar = () => {
                 }}>
                     Main Navigation
                 </div>
-                
+
                 {menuItems.map((item) => (
                     <NavLink
                         to={item.path}
@@ -209,7 +210,7 @@ const Sidebar = () => {
                     </span>
                     <span>Logout</span>
                 </div>
-                
+
                 <div style={{
                     marginTop: '16px',
                     paddingTop: '16px',
@@ -223,7 +224,7 @@ const Sidebar = () => {
                         Version 1.0.0
                     </div>
                     <div style={{ marginTop: '4px' }}>
-                        Empowering Data-Driven<br/>Institutional Governance
+                        Empowering Data-Driven<br />Institutional Governance
                     </div>
                 </div>
             </div>

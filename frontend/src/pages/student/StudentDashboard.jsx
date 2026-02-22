@@ -38,6 +38,30 @@ const kpis = [
 
 const StudentDashboard = () => (
     <div className="stu-dashboard">
+        {/* Institutional Branding Header */}
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '20px',
+            marginBottom: '24px',
+            padding: '20px',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            borderLeft: '4px solid #0B2C6B',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+        }}>
+            <img
+                src="/assets/images/rit-logo.png"
+                alt="RIT Logo"
+                style={{ height: '50px', width: 'auto' }}
+            />
+            <div style={{ height: '40px', width: '1px', backgroundColor: '#e2e8f0' }}></div>
+            <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0B2C6B', fontWeight: '700' }}>Student Academic Portal</h2>
+                <div style={{ fontSize: '0.85rem', color: '#64748b' }}>RAJALAKSHMI INSTITUTE OF TECHNOLOGY</div>
+            </div>
+        </div>
+
         {/* Welcome */}
         <div className="stu-welcome">
             <h2>Hi, welcome back!</h2>

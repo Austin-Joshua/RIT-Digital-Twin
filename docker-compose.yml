@@ -12,6 +12,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   backend:
     build: ./backend
@@ -24,7 +30,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       APP_JWT_SECRET: 9a4f2c8d3b7e1g5h9j2k4l6m8n0p2q4r6s8t0u2v4x6y8z0A2B4C6D8E0F2G4H6J8K0L
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
 
   frontend:
     build: ./frontend

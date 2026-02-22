@@ -3,10 +3,10 @@
 :root {
     --ims-sidebar-bg: #222d32;
     --ims-sidebar-hover: #1e282c;
-    --ims-active-blue: #3c8dbc;
-    --ims-topbar-bg: #ffffff;
+    --ims-active-blue: #0B2C6B;
+    --ims-topbar-bg: #0B2C6B;
     --ims-text-grey: #666666;
-    --ims-bg-light: #ecf0f5;
+    --ims-bg-light: #f8fafc;
 
     --ims-green: #00a65a;
     --ims-yellow: #f39c12;
@@ -17,15 +17,16 @@
 .stu-layout {
     display: flex;
     height: 100vh;
-    background-color: var(--ims-bg-light);
-    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--theme-bg);
+    font-family: var(--font-primary);
+    transition: all var(--transition-speed);
 }
 
 /* ── Sidebar ── */
 .stu-sidebar {
     width: 230px;
-    background-color: var(--ims-sidebar-bg);
-    color: #b8c7ce;
+    background-color: var(--color-primary-navy);
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     transition: width 0.3s;
@@ -64,14 +65,16 @@
 
 .brand-name {
     font-weight: bold;
-    color: #333;
+    color: var(--ims-active-blue);
+    /* RIT Navy */
     font-size: 11px;
     text-transform: uppercase;
 }
 
 .brand-motto {
     font-size: 9px;
-    color: var(--ims-active-blue);
+    color: #D4AF37;
+    /* RIT Gold */
     font-weight: bold;
 }
 
@@ -118,7 +121,8 @@
 .stu-nav-item.active {
     background-color: var(--ims-sidebar-hover);
     color: #fff;
-    border-left-color: var(--ims-active-blue);
+    border-left-color: #D4AF37;
+    /* RIT Gold */
 }
 
 .stu-submenu {
@@ -131,7 +135,8 @@
 }
 
 .submenu-item.active {
-    color: var(--ims-active-blue) !important;
+    color: #D4AF37 !important;
+    /* RIT Gold */
     background-color: transparent !important;
 }
 
@@ -165,7 +170,7 @@
     border: none;
     font-size: 18px;
     cursor: pointer;
-    color: #777;
+    color: #ffffff;
 }
 
 .stu-topbar-right {

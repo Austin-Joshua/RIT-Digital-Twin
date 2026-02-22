@@ -63,16 +63,12 @@ const StudentLayout = () => {
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 {/* Header — EXACT IMS MIRROR */}
-                <div className="stu-sidebar-header">
-                    <div className="stu-sidebar-logo">
-                        {/* Placeholder for RIT Tree Logo */}
-                        <img src="https://picsum.photos/seed/rit/100/100" alt="RIT Logo" />
-                    </div>
-                    <div className="stu-brand-text">
-                        <div className="brand-name">RAJALAKSHMI<br />INSTITUTE OF<br />TECHNOLOGY</div>
-                        <div className="brand-motto">BELIEVE IN THE POSSIBILITIES</div>
-                        <div className="brand-sub">AN AUTONOMOUS INSTITUTION</div>
-                    </div>
+                <div className="stu-sidebar-header" style={{ padding: '15px' }}>
+                    <img
+                        src="/assets/images/institutional-branding-logo.png"
+                        alt="RIT Institutional Branding"
+                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                    />
                 </div>
 
                 {/* Search */}
@@ -147,13 +143,18 @@ const StudentLayout = () => {
             <div className="stu-main">
                 {/* Top Bar — exact IMS: hamburger left, icons right */}
                 <header className="stu-topbar">
-                    <div className="stu-topbar-left">
+                    <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             <FaBars />
                         </button>
+                        <img
+                            src="/assets/images/rit-logo.png"
+                            alt="RIT Logo"
+                            style={{ height: '40px', width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
+                        />
                     </div>
                     <div className="stu-topbar-right">
-                        <span className="stu-topbar-icons" title="Alerts">
+                        <span className="stu-topbar-icons" title="Alerts" style={{ color: 'rgba(255,255,255,0.8)' }}>
                             <FaBell />
                             <span className="icon-badge">4</span>
                         </span>

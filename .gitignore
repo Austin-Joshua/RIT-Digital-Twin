@@ -5,6 +5,7 @@ target/
 # Node
 node_modules/
 dist/
+.next/
 coverage/
 
 # IDEs
@@ -19,6 +20,10 @@ Thumbs.db
 
 # Logs
 *.log
+*.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Docker volumes (local)
+mysql-data/

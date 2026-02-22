@@ -1,12 +1,12 @@
 -- Digital Twin Smart Campus - Database Schema
--- Fully Normalized, Indexed, and Constraint-Rich
+-- Aligned with Hibernate entity definitions
 
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 1. Roles Table
 CREATE TABLE IF NOT EXISTS roles (
     role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE, -- ADMIN, MANAGEMENT, FACULTY
+    role_name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
     role_id BIGINT NOT NULL,
     dept_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -40,7 +42,7 @@ CREATE TABLE IF NOT EXISTS buildings (
     building_name VARCHAR(100) NOT NULL UNIQUE,
     total_floors INT NOT NULL,
     total_capacity INT,
-    location_coordinates VARCHAR(100), -- Lat,Long
+    location_coordinates VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -58,7 +60,7 @@ CREATE TABLE IF NOT EXISTS classrooms (
     INDEX idx_room_capacity (capacity)
 );
 
--- 6. Energy Logs Table (Energy Optimization Module)
+-- 6. Energy Logs Table
 CREATE TABLE IF NOT EXISTS energy_logs (
     log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     building_id BIGINT NOT NULL,
@@ -69,7 +71,7 @@ CREATE TABLE IF NOT EXISTS energy_logs (
     INDEX idx_energy_time (timestamp)
 );
 
--- 7. Transport Routes Table (Transport Module)
+-- 7. Transport Routes Table
 CREATE TABLE IF NOT EXISTS transport_routes (
     route_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     route_name VARCHAR(100) NOT NULL,
@@ -90,41 +92,61 @@ CREATE TABLE IF NOT EXISTS bus_stops (
     FOREIGN KEY (route_id) REFERENCES transport_routes(route_id) ON DELETE CASCADE
 );
 
--- 9. Crowd Simulation Data (Crowd Flow Module)
+-- 9. Crowd Simulation Data
 CREATE TABLE IF NOT EXISTS crowd_data (
     crowd_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     building_id BIGINT NOT NULL,
     occupancy_count INT NOT NULL,
-    congestion_level VARCHAR(20), -- LOW, MEDIUM, HIGH, CRITICAL
+    congestion_level VARCHAR(20),
     evacuation_time_est_min INT,
     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (building_id) REFERENCES buildings(building_id) ON DELETE CASCADE
 );
 
--- 10. Simulation Results (General Purpose for Allocations)
+-- 10. Simulation Results
 CREATE TABLE IF NOT EXISTS simulation_results (
     sim_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    sim_type VARCHAR(50) NOT NULL, -- CLASSROOM, ENERGY, TRANSPORT
-    parameters_json TEXT, -- Input parameters
-    result_json TEXT, -- Output results
+    sim_type VARCHAR(50) NOT NULL,
+    simulation_name VARCHAR(255),
+    parameters_json TEXT,
+    result_json TEXT,
+    summary TEXT,
+    execution_time_ms BIGINT,
+    status VARCHAR(50),
+    started_at DATETIME,
+    completed_at DATETIME,
     created_by BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
--- 11. Sustainability Metrics (Composite Index)
+-- 11. Sustainability Metrics
 CREATE TABLE IF NOT EXISTS sustainability_metrics (
     metric_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     date DATE NOT NULL UNIQUE,
     energy_score DECIMAL(5, 2),
     transport_score DECIMAL(5, 2),
     waste_management_score DECIMAL(5, 2),
-    composite_index DECIMAL(5, 2), -- The final calculated score
+    composite_index DECIMAL(5, 2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Data Seeding (Initial Data)
-INSERT IGNORE INTO roles (role_name) VALUES ('ADMIN'), ('MANAGEMENT'), ('FACULTY');
+-- Timetable Table
+CREATE TABLE IF NOT EXISTS timetables (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    course_name VARCHAR(200),
+    day_of_week VARCHAR(20) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    subject_name VARCHAR(200),
+    department_id BIGINT,
+    classroom_id BIGINT,
+    FOREIGN KEY (department_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(room_id) ON DELETE SET NULL
+);
+
+-- Data Seeding
+INSERT IGNORE INTO roles (role_name) VALUES ('ADMIN'), ('MANAGEMENT'), ('FACULTY'), ('STUDENT');
 INSERT IGNORE INTO departments (dept_name) VALUES ('Computer Science'), ('Mechanical'), ('Civil'), ('Electronics');
 
 SET FOREIGN_KEY_CHECKS = 1;
