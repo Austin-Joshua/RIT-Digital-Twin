@@ -54,7 +54,7 @@ const NotificationBar = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     background: 'none', border: 'none', fontSize: '20px',
-                    cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+                    cursor: 'pointer', color: 'var(--ims-icon-color)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     position: 'relative'
                 }}

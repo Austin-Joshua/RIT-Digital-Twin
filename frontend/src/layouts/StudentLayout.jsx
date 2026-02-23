@@ -1,5 +1,6 @@
-import React, { useState, useContext, Suspense } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import {
     FaHome, FaClock, FaBookOpen, FaFileAlt, FaCalendarCheck,
@@ -26,20 +27,32 @@ const studentNav = [
     { path: '/student/gradebook', label: 'Grade Book', icon: <FaBook /> },
     { path: '/student/fee', label: 'Academic Fee', icon: <FaMoneyCheckAlt /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <FaCommentDots /> },
-    { path: '/student/transport', label: 'Transport', icon: <FaBus /> },
-    { path: '/student/simulator', label: 'What-If Simulator', icon: <FaCalculator /> },
+    { path: '/student/simulator', label: 'CGPA Simulator', icon: <FaCalculator /> },
 ];
 
 const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [committeeOpen, setCommitteeOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setUserMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        window.location.href = '/login';
     };
 
     const displayName = user?.firstName && user?.lastName
@@ -68,18 +81,24 @@ const StudentLayout = () => {
         <div className="stu-layout">
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                {/* Header — EXACT IMS MIRROR */}
-                <div className="stu-sidebar-header" style={{ padding: '15px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img
-                        src="/assets/images/RIT_LOGO.webp"
-                        alt="RIT Institutional Branding"
-                        style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '6px' }}
-                    />
-                    {sidebarOpen && (
-                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
-                            RIT Digital Twin <span style={{ fontWeight: 'normal', opacity: 0.8 }}>| Smart Campus Int</span>
-                        </span>
-                    )}
+                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: '#fff' }}>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
+                        {sidebarOpen ? (
+                            /* Wide logo when sidebar open */
+                            <img
+                                src="/assets/images/logo.png"
+                                alt="RIT Rajalakshmi Institute of Technology"
+                                style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
+                            />
+                        ) : (
+                            /* Small round icon when sidebar collapsed */
+                            <img
+                                src="/assets/images/RIT_LOGO.webp"
+                                alt="RIT"
+                                style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '6px' }}
+                            />
+                        )}
+                    </Link>
                 </div>
 
                 {/* Search */}
@@ -136,45 +155,30 @@ const StudentLayout = () => {
                         </div>
                     ))}
                 </nav>
-
-                {/* Logout */}
-                <div style={{ padding: '4px 0', borderTop: '1px solid #374850' }}>
-                    <button
-                        className="stu-nav-item"
-                        onClick={handleLogout}
-                        style={{ width: '100%', border: 'none', background: 'none', color: '#dd4b39', cursor: 'pointer' }}
-                    >
-                        <span className="nav-icon"><FaSignOutAlt /></span>
-                        <span>Logout</span>
-                    </button>
-                </div>
             </aside>
 
             {/* ── Main ── */}
             <div className="stu-main">
-                {/* Top Bar — exact IMS: hamburger left, icons right */}
+                {/* Top Bar — exact IMS: white topbar, gray icons */}
                 <header className="stu-topbar">
-                    <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             <FaBars />
                         </button>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
-                                src="/assets/images/RIT_LOGO.webp"
-                                alt="RIT Logo"
-                                style={{ height: '32px', width: '32px', display: 'block', borderRadius: '6px' }}
+                                src="/assets/images/logo.png"
+                                alt="RIT"
+                                style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
                             />
-                            <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>
-                                RIT Digital Twin <span style={{ fontWeight: 'normal', opacity: 0.8 }}>| Smart Campus Int</span>
-                            </span>
-                        </div>
+                        </Link>
                     </div>
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <button
                             onClick={toggleTheme}
                             style={{
                                 background: 'none', border: 'none', fontSize: '20px',
-                                cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+                                cursor: 'pointer', color: 'var(--ims-icon-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                             title="Toggle Dark Mode"
@@ -182,10 +186,60 @@ const StudentLayout = () => {
                             {isDarkMode ? '☀️' : '🌙'}
                         </button>
                         <NotificationBar />
-                        <button className="stu-user-badge">
-                            <FaUser className="user-icon" />
-                            <span>{displayName}</span>
-                        </button>
+
+                        <div style={{ position: 'relative' }} ref={dropdownRef}>
+                            <button
+                                className="stu-user-badge"
+                                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                            >
+                                <FaUser className="user-icon" />
+                                <span>{displayName}</span>
+                            </button>
+
+                            <AnimatePresence>
+                                {userMenuOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        transition={{ duration: 0.15 }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            right: 0,
+                                            marginTop: '8px',
+                                            background: 'white',
+                                            borderRadius: '4px',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                            width: '180px',
+                                            zIndex: 1000,
+                                            border: '1px solid #eee'
+                                        }}
+                                    >
+                                        <NavLink
+                                            to="/student/profile"
+                                            style={{
+                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
+                                                color: '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
+                                            }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            My Profile
+                                        </NavLink>
+                                        <button
+                                            onClick={handleLogout}
+                                            style={{
+                                                width: '100%', textAlign: 'left', padding: '12px 16px',
+                                                border: 'none', background: 'none', color: '#333',
+                                                fontSize: '14px', cursor: 'pointer'
+                                            }}
+                                        >
+                                            Logout
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </header>
 

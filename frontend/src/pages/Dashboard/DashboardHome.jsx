@@ -74,11 +74,6 @@ const DashboardHome = () => {
 
     return (
         <div className="dashboard-home">
-            {/* Welcome */}
-            <div className="dashboard-welcome">
-                <h2>Welcome, {user?.fullName || 'User'}</h2>
-                <p>Campus intelligence overview &mdash; Rajalakshmi Institute of Technology</p>
-            </div>
 
             <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
                 {stats.map((stat, i) => (
@@ -144,4 +139,3 @@ const DashboardHome = () => {
 };
 
 export default DashboardHome;
-```

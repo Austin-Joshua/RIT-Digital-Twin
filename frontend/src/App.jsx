@@ -57,6 +57,7 @@ const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
 const Messages = lazy(() => import('./pages/student/Messages'));
 const ChangePassword = lazy(() => import('./pages/student/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
+const ProfilePage = lazy(() => import('./pages/student/Profile'));
 
 /* Lazy Loaded Enterprise ERP Pages (Student) */
 const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
@@ -83,10 +84,19 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     </div>
   );
 
-  if (!user) return <Navigate to="/login" replace />;
+  // If no user is logged in at all, immediately kick to login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
+  // If a specific role is required and the user doesn't match it
   if (requiredRole && user.role !== requiredRole) {
     return <Navigate to={user.role === 'STUDENT' ? '/student' : '/'} replace />;
+  }
+
+  // Prevent students from accessing the root Admin/Faculty dashboard by default
+  if (!requiredRole && user.role === 'STUDENT') {
+    return <Navigate to="/student" replace />;
   }
 
   return children;
@@ -128,6 +138,7 @@ const App = () => {
                   <Route path="messages" element={<Messages />} />
                   <Route path="change-password" element={<ChangePassword />} />
                   <Route path="transport" element={<TransportRoute />} />
+                  <Route path="profile" element={<ProfilePage />} />
 
                   {/* Student ERP Additions */}
                   <Route path="simulator" element={<WhatIfSimulator />} />
