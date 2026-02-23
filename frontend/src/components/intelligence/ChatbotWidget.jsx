@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaTimes, FaMinus } from 'react-icons/fa';
-import api from '../services/api';
+import api from '../../services/api';
 
 const ChatbotWidget = ({ studentId }) => {
     const [isOpen, setIsOpen] = useState(false);
