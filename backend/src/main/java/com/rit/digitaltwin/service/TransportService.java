@@ -51,4 +51,18 @@ public class TransportService {
 
         return simulationResultRepository.save(result);
     }
+
+    public TransportRoute addRoute(TransportRoute route) {
+        return routeRepository.save(route);
+    }
+
+    public TransportRoute updateRoute(Long routeId, TransportRoute updatedRoute) {
+        TransportRoute route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new IllegalArgumentException("Route not found"));
+        route.setRouteName(updatedRoute.getRouteName());
+        route.setDriverName(updatedRoute.getDriverName());
+        route.setVehicleNumber(updatedRoute.getVehicleNumber());
+        route.setCapacity(updatedRoute.getCapacity());
+        return routeRepository.save(route);
+    }
 }

@@ -10,6 +10,9 @@ import java.util.List;
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
         List<Timetable> findByClassroomId(Long classroomId);
 
+        List<Timetable> findByFacultyIdAndDayOfWeekAndStartTime(Long facultyId, java.time.DayOfWeek dayOfWeek,
+                        java.time.LocalTime startTime);
+
         @Query("SELECT t FROM Timetable t WHERE t.classroom.id = :classroomId AND t.dayOfWeek = :dayOfWeek AND t.startTime < :endTime AND t.endTime > :startTime")
         List<Timetable> findConflictingSlots(
                         @org.springframework.data.repository.query.Param("classroomId") Long classroomId,
