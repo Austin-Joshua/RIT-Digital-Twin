@@ -69,7 +69,7 @@ const StudentLayout = () => {
                 {/* Header — EXACT IMS MIRROR */}
                 <div className="stu-sidebar-header" style={{ padding: '15px' }}>
                     <img
-                        src="/assets/images/institutional-branding-logo.png"
+                        src="/assets/images/institutional-light-logo.png"
                         alt="RIT Institutional Branding"
                         style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
                     />
@@ -152,9 +152,9 @@ const StudentLayout = () => {
                             <FaBars />
                         </button>
                         <img
-                            src="/assets/images/rit-logo.png"
+                            src="/assets/images/institutional-light-logo.png"
                             alt="RIT Logo"
-                            style={{ height: '40px', width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
+                            style={{ height: '40px', width: 'auto', display: 'block' }}
                         />
                     </div>
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
