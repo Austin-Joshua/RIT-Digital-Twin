@@ -18,9 +18,11 @@ const Card = ({ children, padding = 'var(--spacing-lg)', glass = false, hoverEff
                 boxShadow: 'var(--shadow-soft)',
                 color: 'var(--theme-text)',
                 transition: 'background-color var(--transition-speed), border-color 0.2s, box-shadow 0.2s',
-                cursor: hoverEffect ? 'pointer' : 'default',
+                cursor: (hoverEffect || props.onClick) ? 'pointer' : 'default',
                 ...props.style
-            }} {...props}
+            }}
+            onClick={props.onClick}
+            {...props}
         >
             {children}
         </motion.div>

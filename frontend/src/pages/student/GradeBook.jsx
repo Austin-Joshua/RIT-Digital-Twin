@@ -40,10 +40,9 @@ const GradeBook = () => {
                             onChange={(e) => setSemester(e.target.value)}
                         >
                             <option value="">Select Semester</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                                <option key={num} value={num}>{num}</option>
+                            ))}
                         </select>
                     </div>
                     <button type="submit" className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none', height: '34px', padding: '0 20px', borderRadius: '4px', fontWeight: 'bold' }}>

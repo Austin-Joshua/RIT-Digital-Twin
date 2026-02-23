@@ -37,7 +37,10 @@ export const AuthProvider = ({ children }) => {
                 console.error("Error data:", error.response.data);
                 console.error("Error status:", error.response.status);
             }
-            return { success: false, message: error.response?.data?.message || 'Login failed' };
+            const errorMessage = typeof error.response?.data === 'string'
+                ? error.response.data
+                : (error.response?.data?.message || 'Login failed');
+            return { success: false, message: errorMessage };
         }
     };
 

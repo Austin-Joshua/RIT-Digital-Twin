@@ -81,13 +81,13 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit}>
                 <Input
-                    label="Username / ID"
+                    label="Institutional ID / Email"
                     type="text"
                     name="username"
                     value={credentials.username}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. RIT-2024-001"
+                    placeholder="e.g. admin@ritchennai.edu.in"
                 />
 
                 <Input

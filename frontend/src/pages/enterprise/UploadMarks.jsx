@@ -27,7 +27,7 @@ const UploadMarks = () => {
             <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', maxWidth: '500px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <input type="number" placeholder="Department ID (e.g. 1)" value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
-                    <input type="number" placeholder="Semester (e.g. 5)" value={semester} onChange={(e) => setSemester(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                    <input type="number" placeholder="Semester (1-8)" min="1" max="8" value={semester} onChange={(e) => setSemester(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
                     <input type="email" placeholder="Faculty Authenticated Email" value={facultyEmail} onChange={(e) => setFacultyEmail(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
                     <button onClick={handleUpload} style={{ padding: '12px', borderRadius: '8px', background: 'var(--color-primary-navy)', color: 'white', fontWeight: 'bold' }}>Push to Approval Queue</button>
                     {status && <div style={{ color: status.includes('Success') ? '#10B981' : '#EF4444' }}>{status}</div>}

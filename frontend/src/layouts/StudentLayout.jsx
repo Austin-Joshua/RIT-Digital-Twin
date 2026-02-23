@@ -9,6 +9,7 @@ import {
     FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight, FaBus, FaCalculator
 } from 'react-icons/fa';
 import NotificationBar from '../components/NotificationBar';
+import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import { ThemeContext } from '../context/ThemeContext';
 import './student-layout.css';
 
@@ -187,6 +188,8 @@ const StudentLayout = () => {
                         </button>
                     </div>
                 </header>
+
+                <GlobalAlertBar />
 
                 {/* Content */}
                 <div className="stu-content">

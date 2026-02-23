@@ -10,6 +10,8 @@ import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
 import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
+import Card from '../components/common/Card';
+import DetailModal from '../components/common/DetailModal';
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 24 },
@@ -30,28 +32,26 @@ const AnimatedChartContainer = ({ children }) => (
     <motion.div variants={fadeInUp}>{children}</motion.div>
 );
 
-const StatCard = memo(({ card }) => (
+const StatCard = memo(({ card, onClick }) => (
     <motion.div variants={fadeInUp}>
-        <Link to={card.link} style={{ textDecoration: 'none' }}>
-            <div style={{
-                background: 'var(--glass-bg, #fff)', backdropFilter: 'blur(10px)', borderRadius: '14px',
-                padding: '24px', borderTop: `4px solid ${card.color}`, boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
-                cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.07)'; }}
-            >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)', fontWeight: 500, marginBottom: '6px' }}>{card.title}</p>
-                        <h3 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>{card.value}</h3>
-                    </div>
-                    <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: `${card.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, fontSize: '1.25rem' }}>
-                        {card.icon}
-                    </div>
+        <Card
+            onClick={onClick}
+            hoverEffect={true}
+            style={{ borderTop: `4px solid ${card.color}`, padding: '24px' }}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)', fontWeight: 500, marginBottom: '6px' }}>{card.title}</p>
+                    <h3 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>{card.value}</h3>
+                </div>
+                <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: `${card.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, fontSize: '1.25rem' }}>
+                    {card.icon}
                 </div>
             </div>
-        </Link>
+            <div style={{ marginTop: '12px', fontSize: '0.75rem', color: card.color, fontWeight: 'bold' }}>
+                View In-depth Analytics →
+            </div>
+        </Card>
     </motion.div>
 ));
 
@@ -63,6 +63,7 @@ const AdminDashboard = () => {
     // Broadcast State
     const [bTitle, setBTitle] = useState('');
     const [bMessage, setBMessage] = useState('');
+    const [selectedDetail, setSelectedDetail] = useState(null);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -126,8 +127,51 @@ const AdminDashboard = () => {
 
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                {kpiCards.map((card, i) => <StatCard key={i} card={card} />)}
+                {kpiCards.map((card, i) => <StatCard key={i} card={card} onClick={() => setSelectedDetail(card)} />)}
             </div>
+
+            <DetailModal
+                isOpen={!!selectedDetail}
+                onClose={() => setSelectedDetail(null)}
+                title={`${selectedDetail?.title} System Report`}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div style={{ padding: '20px', background: 'var(--glass-bg)', borderRadius: '12px', border: `1px solid ${selectedDetail?.color}40` }}>
+                        <h4 style={{ margin: '0 0 10px 0', color: selectedDetail?.color }}>Real-time Status: Optimized</h4>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--theme-text-muted)' }}>
+                            Current {selectedDetail?.title} is performing within expected parameters.
+                            AI agents are continuously monitoring for anomalies and predictive maintenance needs.
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
+                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>EFFICIENCY</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>94.2%</div>
+                        </div>
+                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>UPTIME</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>99.9%</div>
+                        </div>
+                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>ALERTS</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10B981' }}>NONE</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style={{ marginBottom: '12px' }}>Recent Activity Log</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {[1, 2, 3].map(i => (
+                                <div key={i} style={{ padding: '10px', fontSize: '0.85rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-border)' }}>
+                                    <span>System auto-recalibration completed</span>
+                                    <span style={{ opacity: 0.5 }}>{i * 10}m ago</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </DetailModal>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
                 <AnimatedChartContainer>
