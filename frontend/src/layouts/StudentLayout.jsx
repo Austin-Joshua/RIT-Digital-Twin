@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Suspense } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -6,7 +6,7 @@ import {
     FaCertificate, FaPenFancy, FaFlask, FaClipboardList,
     FaBook, FaMoneyCheckAlt, FaCommentDots, FaUsers,
     FaFileInvoice, FaEnvelope, FaKey, FaSignOutAlt,
-    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight, FaBus
+    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight, FaBus, FaCalculator
 } from 'react-icons/fa';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../context/ThemeContext';
@@ -26,6 +26,7 @@ const studentNav = [
     { path: '/student/fee', label: 'Academic Fee', icon: <FaMoneyCheckAlt /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <FaCommentDots /> },
     { path: '/student/transport', label: 'Transport', icon: <FaBus /> },
+    { path: '/student/simulator', label: 'What-If Simulator', icon: <FaCalculator /> },
 ];
 
 const StudentLayout = () => {
@@ -67,12 +68,17 @@ const StudentLayout = () => {
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 {/* Header — EXACT IMS MIRROR */}
-                <div className="stu-sidebar-header" style={{ padding: '15px' }}>
+                <div className="stu-sidebar-header" style={{ padding: '15px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img
-                        src="/assets/images/institutional-light-logo.png"
+                        src="/assets/images/RIT_LOGO.webp"
                         alt="RIT Institutional Branding"
-                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                        style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '6px' }}
                     />
+                    {sidebarOpen && (
+                        <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                            RIT Digital Twin <span style={{ fontWeight: 'normal', opacity: 0.8 }}>| Smart Campus Int</span>
+                        </span>
+                    )}
                 </div>
 
                 {/* Search */}
@@ -151,11 +157,16 @@ const StudentLayout = () => {
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             <FaBars />
                         </button>
-                        <img
-                            src="/assets/images/institutional-light-logo.png"
-                            alt="RIT Logo"
-                            style={{ height: '40px', width: 'auto', display: 'block' }}
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <img
+                                src="/assets/images/RIT_LOGO.webp"
+                                alt="RIT Logo"
+                                style={{ height: '32px', width: '32px', display: 'block', borderRadius: '6px' }}
+                            />
+                            <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>
+                                RIT Digital Twin <span style={{ fontWeight: 'normal', opacity: 0.8 }}>| Smart Campus Int</span>
+                            </span>
+                        </div>
                     </div>
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <button
@@ -179,7 +190,14 @@ const StudentLayout = () => {
 
                 {/* Content */}
                 <div className="stu-content">
-                    <Outlet />
+                    <Suspense fallback={
+                        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ width: '40px', height: '40px', border: '4px solid #ccc', borderTopColor: '#0B2C6B', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                        </div>
+                    }>
+                        <Outlet />
+                    </Suspense>
                 </div>
             </div>
         </div>

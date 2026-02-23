@@ -122,14 +122,7 @@ const AdminDashboard = () => {
 
     return (
         <AnimatedDashboardLayout>
-            <motion.div variants={fadeInUp} style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--glass-bg, #fff)', borderRadius: '14px', padding: '20px 28px', borderLeft: '5px solid var(--color-primary-navy, #0B2C6B)' }}>
-                <img src="/assets/images/rit-logo.png" alt="RIT Logo" style={{ height: '52px', width: 'auto' }} />
-                <div style={{ width: '1px', height: '48px', background: '#e5e7eb' }} />
-                <div>
-                    <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>Admin Portal</h2>
-                    <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: '4px 0 0' }}>Global Operations &amp; Intelligence</p>
-                </div>
-            </motion.div>
+
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 {kpiCards.map((card, i) => <StatCard key={i} card={card} />)}
