@@ -59,9 +59,9 @@ const InstitutionalLayout = () => {
                 {/* Logo Section */}
                 <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                     <img
-                        src="/assets/images/institutional-branding-logo.png"
+                        src="/assets/images/institutional-light-logo.png"
                         alt="RIT Branding"
-                        style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
                     />
                 </div>
 
