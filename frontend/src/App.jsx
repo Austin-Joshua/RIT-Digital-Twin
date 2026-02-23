@@ -23,6 +23,17 @@ const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
 const ManagementPage = lazy(() => import('./pages/ManagementPage'));
 
+/* Lazy Loaded Enterprise ERP Pages (Admin/Faculty) */
+const InstitutionalAnalyticsDashboard = lazy(() => import('./pages/enterprise/InstitutionalAnalyticsDashboard'));
+const PlacementAnalyticsView = lazy(() => import('./pages/enterprise/PlacementAnalyticsView'));
+const AuditLogViewer = lazy(() => import('./pages/enterprise/AuditLogViewer'));
+const ExamTimetableGeneratorUI = lazy(() => import('./pages/enterprise/ExamTimetableGeneratorUI'));
+const CertificateApprovalQueue = lazy(() => import('./pages/enterprise/CertificateApprovalQueue'));
+const SubstitutionOverridePanel = lazy(() => import('./pages/enterprise/SubstitutionOverridePanel'));
+const AutomatedResultPublishing = lazy(() => import('./pages/enterprise/AutomatedResultPublishing'));
+const ClassRiskHeatmap = lazy(() => import('./pages/enterprise/ClassRiskHeatmap'));
+const UploadMarks = lazy(() => import('./pages/enterprise/UploadMarks'));
+
 /* Lazy Loaded Student Pages */
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const Timetable = lazy(() => import('./pages/student/Timetable'));
@@ -42,6 +53,9 @@ const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
 const Messages = lazy(() => import('./pages/student/Messages'));
 const ChangePassword = lazy(() => import('./pages/student/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
+
+/* Lazy Loaded Enterprise ERP Pages (Student) */
+const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
 
 const PageLoader = () => (
   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -110,6 +124,9 @@ const App = () => {
                   <Route path="messages" element={<Messages />} />
                   <Route path="change-password" element={<ChangePassword />} />
                   <Route path="transport" element={<TransportRoute />} />
+
+                  {/* Student ERP Additions */}
+                  <Route path="simulator" element={<WhatIfSimulator />} />
                 </Route>
 
                 {/* Institutional / Admin / Management / Faculty Mode */}
@@ -123,6 +140,20 @@ const App = () => {
                   <Route path="simulations/crowd" element={<CrowdPage />} />
                   <Route path="predictions" element={<PredictionPage />} />
                   <Route path="management" element={<ManagementPage />} />
+
+                  {/* Enterprise ERP Additions (Admin/Faculty) */}
+                  <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
+                  <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
+                  <Route path="management/audit" element={<AuditLogViewer />} />
+                  <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
+                  <Route path="management/certificates" element={<CertificateApprovalQueue />} />
+                  <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
+                  <Route path="management/results" element={<AutomatedResultPublishing />} />
+                  <Route path="change-password" element={<ChangePassword />} />
+
+                  {/* Specific Faculty Routes (Currently under general layout constraint) */}
+                  <Route path="faculty/risk-heatmap" element={<ClassRiskHeatmap />} />
+                  <Route path="faculty/upload-marks" element={<UploadMarks />} />
                 </Route>
               </Routes>
             </Suspense>

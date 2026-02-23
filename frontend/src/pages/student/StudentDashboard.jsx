@@ -10,6 +10,8 @@ import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
     CartesianGrid, Tooltip
 } from 'recharts';
+import { academicAiApi } from '../../services/enterpriseApi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -35,6 +37,8 @@ const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 const StudentDashboard = () => {
     const { user } = useAuth();
     const [kpiData, setKpiData] = useState({ cgpa: 0, attendance: 0, arrear: 0, leave: 0 });
+    const [riskScore, setRiskScore] = useState(null);
+    const [ranking, setRanking] = useState(null);
 
     useEffect(() => {
         const fetchKpis = async () => {
@@ -60,8 +64,24 @@ const StudentDashboard = () => {
                 console.error(err);
             }
         };
+
+        const fetchEnterpriseData = async () => {
+            try {
+                const sId = user?.id || 1;
+                const [riskRes, rankRes] = await Promise.all([
+                    academicAiApi.getRiskPrediction(sId).catch(() => ({ data: null })),
+                    academicAiApi.getStudentRanking(sId).catch(() => ({ data: null }))
+                ]);
+                if (riskRes.data) setRiskScore(riskRes.data);
+                if (rankRes.data) setRanking(rankRes.data);
+            } catch (err) {
+                console.error("Enterprise metrics failed", err);
+            }
+        }
+
         fetchKpis();
-    }, []);
+        fetchEnterpriseData();
+    }, [user]);
 
     const kpis = [
         { label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaGraduationCap />, link: '/student/gradebook' },
@@ -103,6 +123,46 @@ const StudentDashboard = () => {
                     <span className="breadcrumb-item active">Dashboard</span>
                 </div>
             </div>
+
+            {/* Enterprise AI Risk Banner */}
+            <AnimatePresence>
+                {riskScore && riskScore.riskLevel !== 'LOW' && (
+                    <motion.div initial={{ opacity: 0, y: -20, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} style={{
+                        background: riskScore.riskLevel === 'HIGH' ? '#FEF2F2' : '#FFFBEB',
+                        borderLeft: `4px solid ${riskScore.riskLevel === 'HIGH' ? '#EF4444' : '#F59E0B'}`,
+                        padding: '16px 20px', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '16px',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                    }}>
+                        <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+                        <div>
+                            <h3 style={{ margin: 0, color: riskScore.riskLevel === 'HIGH' ? '#991B1B' : '#92400E', fontSize: '1.1rem' }}>Academic Risk Warning</h3>
+                            <p style={{ margin: '4px 0 0 0', color: riskScore.riskLevel === 'HIGH' ? '#B91C1C' : '#B45309', fontSize: '0.9rem' }}>
+                                Your AI-predicted failure risk is <strong>{riskScore.failureProbability.toFixed(1)}% ({riskScore.riskLevel})</strong>. Action recommended: {riskScore.suggestedActions}
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Enterprise Ranking Panel */}
+            {ranking && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Department Rank</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.departmentRank}</div>
+                        </div>
+                        <div style={{ fontSize: '3rem', opacity: 0.2 }}>🏆</div>
+                    </div>
+                    <div style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Class Section Rank</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.classRank}</div>
+                        </div>
+                        <div style={{ fontSize: '3rem', opacity: 0.2 }}>🎓</div>
+                    </div>
+                </motion.div>
+            )}
 
             {/* KPI Cards — EXACT IMS MIRROR */}
             <div className="stu-kpi-row">

@@ -1,9 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
+import { FaUser } from 'react-icons/fa';
+
+const LayoutLoader = () => (
+    <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '40px', height: '40px', border: '4px solid rgba(11, 44, 107, 0.2)', borderTopColor: '#0B2C6B', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+    </div>
+);
 
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
@@ -13,19 +21,30 @@ const InstitutionalLayout = () => {
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
     const adminNavItems = [
-        { path: '/', label: 'Overview', icon: '📊' },
+        { path: '/', label: 'Overview', icon: '📊', exact: true },
+        { path: '/analytics', label: 'Enterprise Analytics', icon: '📈' },
+        { path: '/analytics/placement', label: 'Placement Analytics', icon: '💼' },
+        { path: '/management/audit', label: 'Audit Logs', icon: '🛡️' },
+        { path: '/management/exam-timetable', label: 'Exam Timetables', icon: '📅' },
+        { path: '/management/results', label: 'Result Workflows', icon: '✅' },
+        { path: '/management/substitutions', label: 'Class Substitutions', icon: '🔄' },
+        { path: '/management/certificates', label: 'Certificate Approvals', icon: '📜' },
         { path: '/simulations/classroom', label: 'Classroom Allocation', icon: '🏫' },
         { path: '/simulations/energy', label: 'Energy Optimization', icon: '⚡' },
         { path: '/simulations/transport', label: 'Transport Analytics', icon: '🚌' },
         { path: '/simulations/crowd', label: 'Crowd Flow', icon: '👥' },
         { path: '/predictions', label: 'Predictive Analytics', icon: '🔮' },
         { path: '/management', label: 'Governance', icon: '🏛️' },
+        { path: '/change-password', label: 'Change Password', icon: '🔑' },
     ];
 
     const facultyNavItems = [
-        { path: '/', label: 'Dashboard', icon: '📊' },
+        { path: '/', label: 'Dashboard', icon: '📊', exact: true },
         { path: '/simulations/classroom', label: 'Timetables', icon: '🏫' },
+        { path: '/faculty/upload-marks', label: 'Upload Results', icon: '📝' },
+        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: '🔥' },
         { path: '/management', label: 'Student Management', icon: '👥' },
+        { path: '/change-password', label: 'Change Password', icon: '🔑' },
     ];
 
     const navItems = user?.role === 'FACULTY' ? facultyNavItems : adminNavItems;
@@ -58,19 +77,32 @@ const InstitutionalLayout = () => {
             >
                 {/* Logo Section */}
                 <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <img
-                        src="/assets/images/institutional-light-logo.png"
-                        alt="RIT Branding"
-                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
-                    />
+                    <a href="/" style={{ textDecoration: 'none', display: 'flex', width: '100%' }}>
+                        <img
+                            src="/assets/images/institutional-light-logo.png"
+                            alt="RIT Branding"
+                            style={{ width: '100%', height: 'auto', objectFit: 'contain', cursor: 'pointer' }}
+                        />
+                    </a>
                 </div>
 
                 {/* Navigation */}
-                <nav style={{ flex: 1, padding: '24px 12px' }}>
+                <nav style={{ flex: 1, padding: '24px 12px', overflowY: 'auto' }}>
                     {navItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                        const isActive = item.exact
+                            ? location.pathname === item.path
+                            : location.pathname.startsWith(item.path);
+
                         return (
-                            <Link key={item.path} to={item.path} style={{ textDecoration: 'none' }}>
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                style={{ textDecoration: 'none' }}
+                                onClick={() => {
+                                    // Smoothly scroll to top on navigation to ensure new view is visible immediately
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                            >
                                 <motion.div
                                     whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.08)' }}
                                     whileTap={{ scale: 0.98 }}
@@ -91,9 +123,24 @@ const InstitutionalLayout = () => {
                             </Link>
                         );
                     })}
+
+                    {/* Embedded Logout Option */}
+                    <motion.div
+                        onClick={logout}
+                        whileHover={{ x: 4, backgroundColor: 'rgba(255,113,113,0.1)' }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px', borderRadius: '8px',
+                            marginTop: '16px', color: '#f87171', borderLeft: '4px solid transparent', cursor: 'pointer',
+                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                    >
+                        <span style={{ fontSize: '20px' }}>🚪</span>
+                        {isSidebarOpen && <span>Logout</span>}
+                    </motion.div>
                 </nav>
 
-                {/* User Section */}
+                {/* User Section bottom */}
                 <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     {isSidebarOpen ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -104,10 +151,13 @@ const InstitutionalLayout = () => {
                                 <div style={{ fontSize: '0.9rem', fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{user?.username}</div>
                                 <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{user?.role}</div>
                             </div>
-                            <button onClick={logout} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '4px' }}>🚪</button>
                         </div>
                     ) : (
-                        <button onClick={logout} style={{ width: '100%', background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '20px' }}>🚪</button>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#cbd5e1', color: '#0B2C6B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                {user?.username?.charAt(0).toUpperCase()}
+                            </div>
+                        </div>
                     )}
                 </div>
             </motion.aside>
@@ -148,6 +198,15 @@ const InstitutionalLayout = () => {
                         >
                             {isDarkMode ? '☀️' : '🌙'}
                         </button>
+                        <button style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                            color: 'white', padding: '6px 16px', borderRadius: '20px',
+                            fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer'
+                        }}>
+                            <FaUser />
+                            <span>{user?.role === 'FACULTY' ? 'FACULTY MODE' : 'ADMIN MODE'}</span>
+                        </button>
                     </div>
                 </motion.header>
 
@@ -161,7 +220,9 @@ const InstitutionalLayout = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                         >
-                            <Outlet />
+                            <Suspense fallback={<LayoutLoader />}>
+                                <Outlet />
+                            </Suspense>
                         </motion.div>
                     </AnimatePresence>
                 </div>
