@@ -1,73 +1,104 @@
 import React, { useState, useEffect } from 'react';
+import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import api from '../../services/api';
-import Skeleton from '../../components/common/Skeleton';
-import { FaBus, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaBus, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 
-const TransportRoute = () => {
-    const [routeInfo, setRouteInfo] = useState(null);
-    const [loading, setLoading] = useState(true);
+const containerStyle = {
+    width: '100%',
+    height: '500px',
+    borderRadius: '12px'
+};
+
+const center = {
+    lat: 13.0827, // Chennai coordinates as default for RIT
+    lng: 80.2707
+};
+
+const TransportRoute = ({ studentId }) => {
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY" // Placeholder for user to fill
+    });
+
+    const [routeData, setRouteData] = useState(null);
+    const [directions, setDirections] = useState(null);
 
     useEffect(() => {
         const fetchRoute = async () => {
             try {
-                // Fetch student's assigned transport route (Mocking for now if endpoint isn't fully returning structure)
-                const res = await api.get('/transport/my-route').catch(() => ({ data: { routeName: "Route 5 - T Nagar", vehicleNumber: "TN-01-AB-1234", driverName: "Ramesh", stops: ["T Nagar", "Saidapet", "Guindy", "Campus"] } }));
-                setRouteInfo(res.data);
+                const res = await api.get(`/api/operations/transport/student/${studentId}`);
+                if (res.data && res.data.length > 0) {
+                    setRouteData(res.data[0].route);
+                }
             } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
+                console.error("Failed to fetch transport data", err);
             }
         };
         fetchRoute();
-    }, []);
+    }, [studentId]);
 
-    if (loading) return <div style={{ padding: '24px' }}><Skeleton height="400px" /></div>;
+    useEffect(() => {
+        if (isLoaded && routeData) {
+            const directionsService = new window.google.maps.DirectionsService();
+            directionsService.route(
+                {
+                    origin: routeData.startLocation,
+                    destination: routeData.endLocation,
+                    travelMode: window.google.maps.TravelMode.DRIVING
+                },
+                (result, status) => {
+                    if (status === window.google.maps.DirectionsStatus.OK) {
+                        setDirections(result);
+                    } else {
+                        console.error(`error fetching directions ${result}`);
+                    }
+                }
+            );
+        }
+    }, [isLoaded, routeData]);
+
+    if (!isLoaded) return <div>Loading Maps...</div>;
 
     return (
-        <div style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '24px', color: '#0B2C6B', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <FaBus /> My Transport Route
-            </h2>
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ background: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <h2 style={{ margin: '0 0 16px 0', borderBottom: '2px solid #0B2C6B', paddingBottom: '10px' }}>
+                    <FaBus /> My Transport Route
+                </h2>
 
-            {routeInfo ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                    <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-                        <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#333' }}>Route Details</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '1.1rem' }}>
-                            <div><strong>Route Name:</strong> {routeInfo.routeName}</div>
-                            <div><strong>Vehicle No:</strong> {routeInfo.vehicleNumber}</div>
-                            <div><strong>Driver:</strong> {routeInfo.driverName}</div>
+                {routeData ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
+                                <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Route Name</div>
+                                <div style={{ fontWeight: 'bold' }}>{routeData.routeName}</div>
+                            </div>
+                            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
+                                <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Vehicle Number</div>
+                                <div style={{ fontWeight: 'bold' }}>{routeData.vehicleNumber}</div>
+                            </div>
+                            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
+                                <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Pickup Point</div>
+                                <div style={{ fontWeight: 'bold' }}><FaMapMarkerAlt color="#EF4444" /> {routeData.startLocation}</div>
+                            </div>
+                            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px' }}>
+                                <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Estimated Time</div>
+                                <div style={{ fontWeight: 'bold' }}><FaClock color="#0B2C6B" /> 07:30 AM</div>
+                            </div>
                         </div>
 
-                        <h4 style={{ marginTop: '32px', marginBottom: '16px', color: '#666' }}>Stops</h4>
-                        <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {(routeInfo.stops || []).map((stop, i) => (
-                                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
-                                    <FaMapMarkerAlt color="#3b82f6" /> {stop}
-                                </li>
-                            ))}
-                        </ul>
+                        <GoogleMap
+                            mapContainerStyle={containerStyle}
+                            center={center}
+                            zoom={12}
+                        >
+                            {directions && <DirectionsRenderer directions={directions} />}
+                        </GoogleMap>
                     </div>
-
-                    <div style={{ background: 'white', padding: '12px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-                        {/* Placeholder Map (OSM/Google Maps iframe) */}
-                        <iframe
-                            title="Live Map Placeholder"
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0, borderRadius: '8px', minHeight: '400px' }}
-                            loading="lazy"
-                            allowFullScreen
-                            src={`https://www.openstreetmap.org/export/embed.html?bbox=79.998,13.045,80.005,13.055&layer=mapnik&marker=13.050,80.001`}
-                        ></iframe>
-                    </div>
-                </div>
-            ) : (
-                <div style={{ background: '#fef2f2', color: '#991b1b', padding: '24px', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
-                    You are not assigned to any college transport route.
-                </div>
-            )}
+                ) : (
+                    <p>No transport route assigned yet.</p>
+                )}
+            </div>
         </div>
     );
 };

@@ -77,11 +77,11 @@ public class AcademicService {
     }
 
     public List<CGPA> getStudentCGPA(Long studentId) {
-        return cgpaRepository.findByStudentId(studentId);
+        return cgpaRepository.findByStudentStudentId(studentId);
     }
 
     public Double calculateCGPA(Long studentId) {
-        List<CGPA> semesters = cgpaRepository.findByStudentId(studentId);
+        List<CGPA> semesters = cgpaRepository.findByStudentStudentId(studentId);
         if (semesters.isEmpty())
             return 0.0;
         double sum = 0;

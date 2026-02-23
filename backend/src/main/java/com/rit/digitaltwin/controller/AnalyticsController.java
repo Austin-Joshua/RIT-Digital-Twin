@@ -2,11 +2,14 @@ package com.rit.digitaltwin.controller;
 
 import com.rit.digitaltwin.dto.DepartmentAnalyticsDTO;
 import com.rit.digitaltwin.dto.FacultyPerformanceDTO;
+import com.rit.digitaltwin.model.RiskScore;
 import com.rit.digitaltwin.service.AnalyticsService;
+import com.rit.digitaltwin.service.RiskPredictionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +21,7 @@ import java.util.List;
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
+    private final RiskPredictionService riskPredictionService;
 
     @GetMapping("/departments")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -29,5 +33,10 @@ public class AnalyticsController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<FacultyPerformanceDTO>> getFacultyPerformance() {
         return ResponseEntity.ok(analyticsService.getFacultyPerformanceIndex());
+    }
+
+    @GetMapping("/risk/{studentId}")
+    public ResponseEntity<RiskScore> getStudentRisk(@PathVariable Long studentId) {
+        return ResponseEntity.ok(riskPredictionService.calculateRiskForStudent(studentId));
     }
 }

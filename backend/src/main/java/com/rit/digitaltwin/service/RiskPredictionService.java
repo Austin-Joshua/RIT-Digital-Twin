@@ -22,6 +22,7 @@ public class RiskPredictionService {
     private final StudentRepository studentRepository;
     private final AttendanceRepository attendanceRepository;
     private final MarksRepository marksRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public RiskScore calculateRiskForStudent(Long studentId) {
@@ -30,45 +31,42 @@ public class RiskPredictionService {
         List<Attendance> attendances = attendanceRepository.findByStudentId(studentId);
         List<Marks> marks = marksRepository.findByStudentId(studentId);
 
-        // Simple Heuristic Algorithm:
-        // Attendance weight 40%, Marks weight 40%, Arrears weight // Attendance logic:
-        // count PRESENT / total records
+        // Attendance Impact
         long presentCount = attendances.stream()
                 .filter(a -> "PRESENT".equals(a.getStatus()) || "ON_DUTY".equals(a.getStatus()))
                 .count();
-        double avgAttendance = attendances.isEmpty() ? 100.0 : ((double) presentCount / attendances.size()) * 100.0;
+        double attendancePercent = attendances.isEmpty() ? 100.0 : ((double) presentCount / attendances.size()) * 100.0;
+        double attendanceImpact = attendancePercent < 75.0 ? 1.0 : (attendancePercent < 85.0 ? 0.5 : 0.0);
 
-        // Assume marks out of 100 for simplicity of prediction engine
-        double avgMarks = marks.stream()
-                .mapToDouble(m -> (m.getInternalMarks() != null ? m.getInternalMarks() : 0) +
-                        (m.getLabMarks() != null ? m.getLabMarks() : 0))
+        // Internal Mark Impact
+        double avgInternal = marks.stream().mapToDouble(m -> m.getInternalMarks() != null ? m.getInternalMarks() : 0)
                 .average().orElse(100.0);
+        double internalImpact = avgInternal < 50.0 ? 1.0 : (avgInternal < 60.0 ? 0.5 : 0.0);
 
+        // Lab Mark Impact
+        double avgLab = marks.stream().mapToDouble(m -> m.getLabMarks() != null ? m.getLabMarks() : 0).average()
+                .orElse(100.0);
+        double labImpact = avgLab < 50.0 ? 1.0 : (avgLab < 60.0 ? 0.5 : 0.0);
+
+        // Previous GPA Impact
+        double cgpa = student.getCurrentCgpa() != null ? student.getCurrentCgpa() : 10.0;
         int arrears = student.getArrearCount() != null ? student.getArrearCount() : 0;
+        double gpaImpact = cgpa < 5.0 || arrears >= 3 ? 1.0 : (cgpa < 6.0 || arrears > 0 ? 0.5 : 0.0);
 
-        // Calculate failure probability (0.0 to 1.0)
-        double failureProbability = 0.0;
-
-        if (avgAttendance < 75)
-            failureProbability += 0.4;
-        else if (avgAttendance < 85)
-            failureProbability += 0.2;
-
-        if (avgMarks < 50)
-            failureProbability += 0.4;
-        else if (avgMarks < 60)
-            failureProbability += 0.2;
-
-        if (arrears > 0)
-            failureProbability += Math.min(0.2, arrears * 0.05);
+        // Weighted scoring model: Risk Score = (0.30 * Attendance Impact) + (0.30 *
+        // Internal Mark Impact) + (0.20 * Lab Mark Impact) + (0.20 * Previous GPA
+        // Impact)
+        double riskScoreValue = (0.30 * attendanceImpact) + (0.30 * internalImpact) + (0.20 * labImpact)
+                + (0.20 * gpaImpact);
+        double failureProbability = riskScoreValue * 100.0;
 
         // Determine Risk Level
         RiskScore.RiskLevel riskLevel;
         String suggestions;
-        if (failureProbability > 0.6) {
+        if (failureProbability >= 60.0) {
             riskLevel = RiskScore.RiskLevel.HIGH;
             suggestions = "Immediate counseling required. Mandatory remedial classes.";
-        } else if (failureProbability > 0.3) {
+        } else if (failureProbability >= 30.0) {
             riskLevel = RiskScore.RiskLevel.MEDIUM;
             suggestions = "Monitor attendance closely. Suggest peer tutoring.";
         } else {
@@ -78,10 +76,22 @@ public class RiskPredictionService {
 
         RiskScore score = riskScoreRepository.findByStudentId(studentId).orElse(new RiskScore());
         score.setStudent(student);
-        score.setFailureProbability(failureProbability * 100);
+        score.setFailureProbability(failureProbability);
         score.setRiskLevel(riskLevel);
         score.setSuggestedActions(suggestions);
 
-        return riskScoreRepository.save(score);
+        RiskScore savedScore = riskScoreRepository.save(score);
+
+        // Auto-notification for High risk via WebSockets
+        if (riskLevel == RiskScore.RiskLevel.HIGH && student.getUser() != null) {
+            notificationService.sendToUser(
+                    student.getUser().getUserId(),
+                    "Academic Risk Alert",
+                    "Your academic risk profile is currently evaluated as HIGH ("
+                            + String.format("%.1f", failureProbability) + "%). Please consult your mentor immediately.",
+                    "WARNING");
+        }
+
+        return savedScore;
     }
 }

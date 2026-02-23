@@ -48,6 +48,10 @@ public class User extends BaseEntity implements org.springframework.security.cor
     @JoinColumn(name = "dept_id")
     private Department department;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id")
+    private CampusTenant tenant;
+
     @Override
     @JsonIgnore
     public Collection<? extends org.springframework.security.core.GrantedAuthority> getAuthorities() {

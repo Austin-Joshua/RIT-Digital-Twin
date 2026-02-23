@@ -22,6 +22,8 @@ const TransportPage = lazy(() => import('./pages/TransportPage'));
 const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
 const ManagementPage = lazy(() => import('./pages/ManagementPage'));
+const SuperAdminDashboard = lazy(() => import('./pages/SuperAdminDashboard'));
+const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
 
 /* Lazy Loaded Enterprise ERP Pages (Admin/Faculty) */
 const InstitutionalAnalyticsDashboard = lazy(() => import('./pages/enterprise/InstitutionalAnalyticsDashboard'));
@@ -127,6 +129,20 @@ const App = () => {
 
                   {/* Student ERP Additions */}
                   <Route path="simulator" element={<WhatIfSimulator />} />
+                </Route>
+
+                {/* Parent Mode */}
+                <Route path="/parent" element={
+                  <ProtectedRoute requiredRole="PARENT"><StudentLayout /></ProtectedRoute>
+                }>
+                  <Route index element={<ParentDashboard />} />
+                </Route>
+
+                {/* Super Admin Mode */}
+                <Route path="/super-admin" element={
+                  <ProtectedRoute requiredRole="SUPER_ADMIN"><InstitutionalLayout /></ProtectedRoute>
+                }>
+                  <Route index element={<SuperAdminDashboard />} />
                 </Route>
 
                 {/* Institutional / Admin / Management / Faculty Mode */}

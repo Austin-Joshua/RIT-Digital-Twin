@@ -6,9 +6,10 @@ export const analyticsApi = {
 };
 
 export const academicAiApi = {
-    getRiskPrediction: (studentId) => api.get(`/academic-ai/risk/${studentId}`),
-    simulateCGPA: (studentId, currentCredits, expectedGrades) =>
-        api.post(`/academic-ai/simulate-cgpa/${studentId}?currentCredits=${currentCredits}`, expectedGrades),
+    getRiskPrediction: (studentId) => api.get(`/analytics/risk/${studentId}`),
+    simulateCGPA: (data) => api.post(`/cgpa/simulate`, data),
+    getGrowthPassport: (studentId) => api.get(`/analytics/passport/${studentId}`),
+    getCareerRecommendation: (studentId) => api.get(`/analytics/career/${studentId}`),
     substituteClass: (timetableId) => api.post(`/academic-ai/substitute-class/${timetableId}`),
     generateExamTimetable: (startDate) => api.post(`/academic-ai/generate-exam-timetable?startDate=${startDate}`),
     getStudentRanking: (studentId) => api.get(`/academic-ai/ranking/${studentId}`),

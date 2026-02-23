@@ -9,5 +9,5 @@ import java.util.List;
 public interface StudentTransportMappingRepository extends JpaRepository<StudentTransportMapping, Long> {
     List<StudentTransportMapping> findByRouteRouteId(Long routeId);
 
-    StudentTransportMapping findByStudentId(Long studentId);
+    List<StudentTransportMapping> findByStudentId(Long studentId);
 }

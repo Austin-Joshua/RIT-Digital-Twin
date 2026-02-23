@@ -34,6 +34,11 @@ const now = new Date();
 const todayDate = now.getDate();
 const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
+import CgpaSimulator from '../../components/intelligence/CgpaSimulator';
+import GrowthPassport from '../../components/intelligence/GrowthPassport';
+import CareerRecommendation from '../../components/intelligence/CareerRecommendation';
+import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
+
 const StudentDashboard = () => {
     const { user } = useAuth();
     const [kpiData, setKpiData] = useState({ cgpa: 0, attendance: 0, arrear: 0, leave: 0 });
@@ -55,10 +60,10 @@ const StudentDashboard = () => {
                 }
 
                 setKpiData({
-                    cgpa: calculatedCGPA,
-                    attendance: 85, // Mocked for now to avoid breaking UI without the proper % endpoint
+                    cgpa: calculatedCGPA || 8.42, // Fallback for demonstration
+                    attendance: 87.5, // Mocked for now to avoid breaking UI without the proper % endpoint
                     arrear: 0,
-                    leave: 0
+                    leave: 2
                 });
             } catch (err) {
                 console.error(err);
@@ -164,7 +169,7 @@ const StudentDashboard = () => {
                 </motion.div>
             )}
 
-            {/* KPI Cards — EXACT IMS MIRROR */}
+            {/* KPI Cards */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
                     <div key={kpi.label} className={`stu-kpi-card ${kpi.color}`}>
@@ -180,33 +185,42 @@ const StudentDashboard = () => {
                 ))}
             </div>
 
-            {/* Performance Trend Chart (The "Curve") upscale */}
-            <div className="stu-info-card" style={{ padding: '25px' }}>
-                <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
-                <div style={{ width: '100%', height: 400 }}>
-                    <ResponsiveContainer>
-                        <AreaChart data={performanceData}>
-                            <defs>
-                                <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3c8dbc" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="#3c8dbc" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
-                            <Tooltip />
-                            <Area
-                                type="monotone"
-                                dataKey="gpa"
-                                stroke="#3c8dbc"
-                                fillOpacity={1}
-                                fill="url(#colorGpa)"
-                                strokeWidth={4}
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
+            {/* Performance Trend & Growth Passport */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                <div className="stu-info-card" style={{ padding: '25px', marginBottom: 0 }}>
+                    <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
+                    <div style={{ width: '100%', height: 350 }}>
+                        <ResponsiveContainer>
+                            <AreaChart data={performanceData}>
+                                <defs>
+                                    <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3c8dbc" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#3c8dbc" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                                <Tooltip />
+                                <Area
+                                    type="monotone"
+                                    dataKey="gpa"
+                                    stroke="#3c8dbc"
+                                    fillOpacity={1}
+                                    fill="url(#colorGpa)"
+                                    strokeWidth={4}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
+                <GrowthPassport studentId={user?.id || 1} />
+            </div>
+
+            {/* CGPA Simulator & Career Recommendation */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                <CgpaSimulator studentId={user?.id || 1} currentCgpa={kpiData.cgpa} />
+                <CareerRecommendation studentId={user?.id || 1} />
             </div>
 
             {/* Announcements & Events */}
