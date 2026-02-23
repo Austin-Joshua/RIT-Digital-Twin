@@ -39,9 +39,23 @@ const Sidebar = () => {
             { path: '/crowd', name: 'Crowd Monitor', icon: <FaUsers /> },
         ];
 
+        const parentItems = [
+            { path: '/parent', name: 'Ward Progress', icon: <FaHome /> },
+        ];
+
+        const superAdminItems = [
+            { path: '/super-admin', name: 'Global View', icon: <FaUniversity /> },
+            { path: '/analytics', name: 'Global Analytics', icon: <FaChartLine /> },
+            { path: '/settings', name: 'System Settings', icon: <FaCog /> },
+        ];
+
         const role = user?.role || 'FACULTY';
 
         switch (role) {
+            case 'SUPER_ADMIN':
+                return [...baseItems, ...superAdminItems];
+            case 'PARENT':
+                return [...baseItems, ...parentItems];
             case 'ADMIN':
                 return [...baseItems, ...adminItems];
             case 'MANAGEMENT':

@@ -20,5 +20,5 @@ public class Role extends BaseEntity {
     private Long roleId;
 
     @Column(name = "role_name", nullable = false, unique = true)
-    private String roleName; // ADMIN, MANAGEMENT, FACULTY
+    private String roleName; // ADMIN, MANAGEMENT, FACULTY, STUDENT, PARENT, SUPER_ADMIN
 }

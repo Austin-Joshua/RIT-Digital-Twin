@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Skeleton from '../components/common/Skeleton';
 import { FaChalkboardTeacher, FaCalendarCheck, FaTasks } from 'react-icons/fa';
+import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 
 const FacultyDashboard = () => {
     const { user } = useAuth();
@@ -48,6 +49,8 @@ const FacultyDashboard = () => {
                     <button style={{ padding: '8px 16px', background: '#0B2C6B', color: 'white', borderRadius: '6px', border: 'none', cursor: 'pointer', marginTop: '12px' }}>Review Now</button>
                 </div>
             </div>
+
+            <ClassRiskHeatmap />
         </div>
     );
 };

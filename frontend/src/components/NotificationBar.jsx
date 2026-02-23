@@ -80,15 +80,24 @@ const NotificationBar = () => {
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
                         transition={{ duration: 0.2 }}
                         style={{
-                            position: 'absolute', top: '40px', right: '-10px', width: '300px',
-                            background: 'var(--glass-bg, #ffffff)', backdropFilter: 'blur(10px)',
-                            borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                            border: '1px solid rgba(0,0,0,0.05)', zIndex: 9999,
-                            overflow: 'hidden'
+                            position: 'absolute', top: '45px', right: '-10px', width: '320px',
+                            background: '#ffffff', borderRadius: '16px',
+                            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+                            border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden'
                         }}
                     >
-                        <div style={{ padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: '#f8fafc', fontWeight: 'bold', color: '#1e293b' }}>
-                            Notifications
+                        <div style={{
+                            padding: '16px 20px',
+                            background: '#0B2C6B',
+                            color: 'white',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{ fontWeight: 'bold' }}>Notifications</span>
+                            <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '10px' }}>
+                                {notifications.length} New
+                            </span>
                         </div>
                         <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
                             {notifications.length === 0 ? (

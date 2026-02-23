@@ -18,7 +18,7 @@ public class CertificateRequestService {
     private final StudentRepository studentRepository;
 
     public List<CertificateRequest> getRequestsByStudent(Long studentId) {
-        return certificateRepository.findByStudentId(studentId);
+        return certificateRepository.findByStudentStudentId(studentId);
     }
 
     public List<CertificateRequest> getPendingRequests() {

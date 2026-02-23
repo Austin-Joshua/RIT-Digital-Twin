@@ -9,6 +9,7 @@ import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers } from 'react-ic
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
+import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 24 },
@@ -160,6 +161,13 @@ const AdminDashboard = () => {
                     </div>
                 </AnimatedChartContainer>
             </div>
+
+            <AnimatedChartContainer>
+                <div style={{ background: 'var(--glass-bg)', padding: '24px', borderRadius: '14px' }}>
+                    <h2 style={{ marginTop: 0, color: '#0B2C6B' }}>Institutional Intelligence Dashboard</h2>
+                    <InstitutionalAnalytics />
+                </div>
+            </AnimatedChartContainer>
         </AnimatedDashboardLayout>
     );
 };

@@ -29,6 +29,16 @@ public class Ranking extends BaseEntity {
     @Column(name = "semester_rank")
     private Integer semesterRank;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @Column(name = "semester")
+    private Integer semester;
+
+    @Column(name = "batch")
+    private String batch;
+
     @Column(name = "improvement_rank")
     private Integer improvementRank;
 }
