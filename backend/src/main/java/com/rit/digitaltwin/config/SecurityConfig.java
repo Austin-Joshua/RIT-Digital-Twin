@@ -52,6 +52,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/faculty/**").hasAuthority("FACULTY")
+                        .requestMatchers("/api/student/**").hasAuthority("STUDENT")
+                        .requestMatchers("/api/academic/**").hasAnyAuthority("ADMIN", "FACULTY", "STUDENT")
+                        .requestMatchers("/api/transport/**").hasAnyAuthority("ADMIN", "FACULTY", "STUDENT")
+                        .requestMatchers("/ws-notifications/**").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());

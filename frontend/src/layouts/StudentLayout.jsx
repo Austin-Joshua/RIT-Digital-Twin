@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -6,8 +6,10 @@ import {
     FaCertificate, FaPenFancy, FaFlask, FaClipboardList,
     FaBook, FaMoneyCheckAlt, FaCommentDots, FaUsers,
     FaFileInvoice, FaEnvelope, FaKey, FaSignOutAlt,
-    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight
+    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight, FaBus
 } from 'react-icons/fa';
+import NotificationBar from '../components/NotificationBar';
+import { ThemeContext } from '../context/ThemeContext';
 import './student-layout.css';
 
 const studentNav = [
@@ -23,11 +25,13 @@ const studentNav = [
     { path: '/student/gradebook', label: 'Grade Book', icon: <FaBook /> },
     { path: '/student/fee', label: 'Academic Fee', icon: <FaMoneyCheckAlt /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <FaCommentDots /> },
+    { path: '/student/transport', label: 'Transport', icon: <FaBus /> },
 ];
 
 const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [committeeOpen, setCommitteeOpen] = useState(false);
 
@@ -153,11 +157,19 @@ const StudentLayout = () => {
                             style={{ height: '40px', width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
                         />
                     </div>
-                    <div className="stu-topbar-right">
-                        <span className="stu-topbar-icons" title="Alerts" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                            <FaBell />
-                            <span className="icon-badge">4</span>
-                        </span>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <button
+                            onClick={toggleTheme}
+                            style={{
+                                background: 'none', border: 'none', fontSize: '20px',
+                                cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}
+                            title="Toggle Dark Mode"
+                        >
+                            {isDarkMode ? '☀️' : '🌙'}
+                        </button>
+                        <NotificationBar />
                         <button className="stu-user-badge">
                             <FaUser className="user-icon" />
                             <span>{displayName}</span>

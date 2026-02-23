@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ThemeContext } from '../context/ThemeContext';
+import NotificationBar from '../components/NotificationBar';
 
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
-    const navItems = [
+    const adminNavItems = [
         { path: '/', label: 'Overview', icon: '📊' },
         { path: '/simulations/classroom', label: 'Classroom Allocation', icon: '🏫' },
         { path: '/simulations/energy', label: 'Energy Optimization', icon: '⚡' },
@@ -18,6 +21,14 @@ const InstitutionalLayout = () => {
         { path: '/predictions', label: 'Predictive Analytics', icon: '🔮' },
         { path: '/management', label: 'Governance', icon: '🏛️' },
     ];
+
+    const facultyNavItems = [
+        { path: '/', label: 'Dashboard', icon: '📊' },
+        { path: '/simulations/classroom', label: 'Timetables', icon: '🏫' },
+        { path: '/management', label: 'Student Management', icon: '👥' },
+    ];
+
+    const navItems = user?.role === 'FACULTY' ? facultyNavItems : adminNavItems;
 
     const sidebarVariants = {
         open: { width: 280, x: 0, opacity: 1, transition: { duration: 0.5, ease: "easeInOut" } },
@@ -119,15 +130,24 @@ const InstitutionalLayout = () => {
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'rgba(255,255,255,0.7)' }}>☰</button>
-                        <img
-                            src="/assets/images/rit-logo.png"
-                            alt="RIT Logo"
-                            style={{ height: '45px', width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }}
-                        />
                         <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginLeft: '8px' }}>
                             <span>Portal / </span>
                             <span style={{ fontWeight: '600', color: 'white' }}>{navItems.find(n => n.path === location.pathname)?.label || 'Dashboard'}</span>
                         </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <NotificationBar />
+                        <button
+                            onClick={toggleTheme}
+                            style={{
+                                background: 'none', border: 'none', fontSize: '20px',
+                                cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}
+                            title="Toggle Dark Mode"
+                        >
+                            {isDarkMode ? '☀️' : '🌙'}
+                        </button>
                     </div>
                 </motion.header>
 

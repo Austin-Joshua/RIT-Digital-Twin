@@ -1,45 +1,37 @@
 version: '3.8'
 
 services:
-  mysqldb:
+  db:
     image: mysql:8.0
-    restart: unless-stopped
+    restart: always
+    container_name: rit_db
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: digital_twin_db
-    ports:
-      - "3307:3306"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rit_db
     volumes:
-      - db_data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      - rit_db_data:/var/lib/mysql
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     restart: on-failure
-    ports:
-      - "8080:8080"
+    container_name: rit_backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/digital_twin_db?allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-      APP_JWT_SECRET: 9a4f2c8d3b7e1g5h9j2k4l6m8n0p2q4r6s8t0u2v4x6y8z0A2B4C6D8E0F2G4H6J8K0L
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/rit_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      mysqldb:
-        condition: service_healthy
+      - db
 
   frontend:
-    build: ./frontend
-    restart: on-failure
+    build:
+      context: ./frontend
+    container_name: rit_frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
 
 volumes:
-  db_data:
+  rit_db_data:

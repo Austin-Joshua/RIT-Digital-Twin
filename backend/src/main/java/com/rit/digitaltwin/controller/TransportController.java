@@ -25,4 +25,14 @@ public class TransportController {
     public ResponseEntity<SimulationResult> optimizeRoute(@PathVariable Long routeId) {
         return ResponseEntity.ok(transportService.optimizeRoute(routeId));
     }
+
+    @PostMapping("/admin/routes")
+    public ResponseEntity<TransportRoute> addRoute(@RequestBody TransportRoute route) {
+        return ResponseEntity.ok(transportService.addRoute(route));
+    }
+
+    @PutMapping("/admin/routes/{routeId}")
+    public ResponseEntity<TransportRoute> updateRoute(@PathVariable Long routeId, @RequestBody TransportRoute route) {
+        return ResponseEntity.ok(transportService.updateRoute(routeId, route));
+    }
 }

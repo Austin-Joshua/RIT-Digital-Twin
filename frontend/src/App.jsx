@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import Skeleton from './components/common/Skeleton';
 
 /* Layouts */
@@ -39,6 +41,7 @@ const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
 const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
 const Messages = lazy(() => import('./pages/student/Messages'));
 const ChangePassword = lazy(() => import('./pages/student/ChangePassword'));
+const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
 
 const PageLoader = () => (
   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -70,10 +73,6 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   return children;
 };
-
-import { ThemeProvider } from './context/ThemeContext';
-
-import { ToastProvider } from './context/ToastContext';
 
 const App = () => {
   return (
@@ -110,6 +109,7 @@ const App = () => {
                   <Route path="nodue" element={<NoDueRequest />} />
                   <Route path="messages" element={<Messages />} />
                   <Route path="change-password" element={<ChangePassword />} />
+                  <Route path="transport" element={<TransportRoute />} />
                 </Route>
 
                 {/* Institutional / Admin / Management / Faculty Mode */}
