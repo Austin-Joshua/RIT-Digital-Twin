@@ -5,7 +5,7 @@ import {
     ResponsiveContainer, BarChart, Bar, LineChart, Line,
     CartesianGrid, XAxis, YAxis, Tooltip, Legend
 } from 'recharts';
-import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers } from 'react-icons/fa';
+import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine } from 'react-icons/fa';
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
@@ -21,39 +21,6 @@ const stagger = {
     hidden: {},
     visible: { transition: { staggerChildren: 0.08 } },
 };
-
-const AnimatedDashboardLayout = ({ children }) => (
-    <motion.div initial="hidden" animate="visible" variants={stagger} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {children}
-    </motion.div>
-);
-
-const AnimatedChartContainer = ({ children }) => (
-    <motion.div variants={fadeInUp}>{children}</motion.div>
-);
-
-const StatCard = memo(({ card, onClick }) => (
-    <motion.div variants={fadeInUp}>
-        <Card
-            onClick={onClick}
-            hoverEffect={true}
-            style={{ borderTop: `4px solid ${card.color}`, padding: '24px' }}
-        >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)', fontWeight: 500, marginBottom: '6px' }}>{card.title}</p>
-                    <h3 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary, #111827)', lineHeight: 1 }}>{card.value}</h3>
-                </div>
-                <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: `${card.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, fontSize: '1.25rem' }}>
-                    {card.icon}
-                </div>
-            </div>
-            <div style={{ marginTop: '12px', fontSize: '0.75rem', color: card.color, fontWeight: 'bold' }}>
-                View In-depth Analytics →
-            </div>
-        </Card>
-    </motion.div>
-));
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -96,10 +63,10 @@ const AdminDashboard = () => {
     };
 
     const kpiCards = useMemo(() => [
-        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: '#3b82f6', link: '/simulations/classroom' },
-        { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: '#D4AF37', link: '/simulations/energy' },
-        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: '#22c55e', link: '/simulations/transport' },
-        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex ?? 0}`, icon: <FaLeaf />, color: '#14b8a6', link: '/simulations/crowd' },
+        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green' },
+        { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow' },
+        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'teal', class: 'teal' },
+        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex ?? 0}`, icon: <FaLeaf />, color: 'red', class: 'red' },
     ], [stats]);
 
     const chartData = useMemo(() => [
@@ -123,61 +90,42 @@ const AdminDashboard = () => {
     );
 
     return (
-        <AnimatedDashboardLayout>
+        <motion.div initial="hidden" animate="visible" variants={stagger} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                {kpiCards.map((card, i) => <StatCard key={i} card={card} onClick={() => setSelectedDetail(card)} />)}
+            {/* Header / Breadcrumb Mirror from Student */}
+            <div className="stu-welcome">
+                <h2 className="dark:text-white">Admin Intelligence Overview</h2>
+                <div className="breadcrumb-bar">
+                    <span className="breadcrumb-item">Administration</span>
+                    <span className="breadcrumb-item" style={{ margin: '0 8px' }}>/</span>
+                    <span className="breadcrumb-item active">Dashboard</span>
+                </div>
             </div>
 
-            <DetailModal
-                isOpen={!!selectedDetail}
-                onClose={() => setSelectedDetail(null)}
-                title={`${selectedDetail?.title} System Report`}
-            >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div style={{ padding: '20px', background: 'var(--glass-bg)', borderRadius: '12px', border: `1px solid ${selectedDetail?.color}40` }}>
-                        <h4 style={{ margin: '0 0 10px 0', color: selectedDetail?.color }}>Real-time Status: Optimized</h4>
-                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--theme-text-muted)' }}>
-                            Current {selectedDetail?.title} is performing within expected parameters.
-                            AI agents are continuously monitoring for anomalies and predictive maintenance needs.
-                        </p>
+            {/* KPI Cards Row - Using stu-kpi-row classes */}
+            <div className="stu-kpi-row">
+                {kpiCards.map((card, i) => (
+                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedDetail(card)} style={{ cursor: 'pointer' }}>
+                        <div className="kpi-main">
+                            <div className="kpi-value">{card.value}</div>
+                            <div className="kpi-label">{card.title}</div>
+                        </div>
+                        <div className="kpi-icon">{card.icon}</div>
+                        <div className="kpi-more">View details →</div>
                     </div>
+                ))}
+            </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>EFFICIENCY</div>
-                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>94.2%</div>
-                        </div>
-                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>UPTIME</div>
-                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>99.9%</div>
-                        </div>
-                        <div style={{ padding: '15px', background: 'var(--theme-bg-soft)', borderRadius: '8px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>ALERTS</div>
-                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10B981' }}>NONE</div>
-                        </div>
+            {/* Main Content Layout */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
+                {/* Analytics Chart */}
+                <div className="stu-info-card" style={{ borderTopColor: '#0B2C6B' }}>
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FaChartLine color="#0B2C6B" />
+                        <span>Weekly Simulation Analytics</span>
                     </div>
-
-                    <div>
-                        <h4 style={{ marginBottom: '12px' }}>Recent Activity Log</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {[1, 2, 3].map(i => (
-                                <div key={i} style={{ padding: '10px', fontSize: '0.85rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--theme-border)' }}>
-                                    <span>System auto-recalibration completed</span>
-                                    <span style={{ opacity: 0.5 }}>{i * 10}m ago</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </DetailModal>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
-                <AnimatedChartContainer>
-                    <div style={{ background: 'var(--glass-bg)', padding: '24px', borderRadius: '14px' }}>
-                        <h3 style={{ marginTop: 0 }}>Weekly Simulation Analytics</h3>
-                        <div style={{ height: '280px' }}>
+                    <div className="info-body">
+                        <div style={{ height: '300px', padding: '10px' }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -185,34 +133,89 @@ const AdminDashboard = () => {
                                     <YAxis />
                                     <Tooltip />
                                     <Legend />
-                                    <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" />
-                                    <Line type="monotone" dataKey="Transport" stroke="#D4AF37" />
+                                    <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4 }} />
+                                    <Line type="monotone" dataKey="Transport" stroke="#f39c12" strokeWidth={2} dot={{ r: 4 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
-                </AnimatedChartContainer>
+                </div>
 
                 {/* Broadcast Panel */}
-                <AnimatedChartContainer>
-                    <div style={{ background: 'var(--glass-bg)', padding: '24px', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><FaBullhorn color="#3b82f6" /> Global Broadcast</h3>
+                <div className="stu-info-card" style={{ borderTopColor: '#3c8dbc' }}>
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FaBullhorn color="#3c8dbc" />
+                        <span>Global Broadcast</span>
+                    </div>
+                    <div className="info-body">
                         <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <input type="text" placeholder="Title" value={bTitle} onChange={e => setBTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-                            <textarea placeholder="Message..." value={bMessage} onChange={e => setBMessage(e.target.value)} required rows="4" style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc', resize: 'vertical' }} />
-                            <button type="submit" style={{ padding: '12px', background: '#0B2C6B', color: 'white', borderRadius: '6px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>Broadcast Now</button>
+                            <input
+                                type="text"
+                                placeholder="Broadcast Title"
+                                value={bTitle}
+                                onChange={e => setBTitle(e.target.value)}
+                                required
+                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '14px' }}
+                            />
+                            <textarea
+                                placeholder="Type your global message here..."
+                                value={bMessage}
+                                onChange={e => setBMessage(e.target.value)}
+                                required
+                                rows="4"
+                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '14px', resize: 'none' }}
+                            />
+                            <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc' }}>
+                                Broadcast Globally
+                            </button>
                         </form>
                     </div>
-                </AnimatedChartContainer>
+                </div>
             </div>
 
-            <AnimatedChartContainer>
-                <div style={{ background: 'var(--glass-bg)', padding: '24px', borderRadius: '14px' }}>
-                    <h2 style={{ marginTop: 0, color: '#0B2C6B' }}>Institutional Intelligence Dashboard</h2>
+            {/* Institutional Analytics Section */}
+            <div className="stu-info-card" style={{ borderTopColor: '#00a65a' }}>
+                <div className="info-header">
+                    Institutional Intelligence Dashboard
+                </div>
+                <div className="info-body">
                     <InstitutionalAnalytics />
                 </div>
-            </AnimatedChartContainer>
-        </AnimatedDashboardLayout>
+            </div>
+
+            {/* Detail Modal */}
+            <DetailModal
+                isOpen={!!selectedDetail}
+                onClose={() => setSelectedDetail(null)}
+                title={`${selectedDetail?.title} System Report`}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ padding: '15px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #0B2C6B' }}>
+                        <h4 style={{ margin: '0 0 5px 0', color: '#0B2C6B' }}>Real-time Status: Optimized</h4>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                            Current {selectedDetail?.title} is performing within expected parameters.
+                            AI agents are continuously monitoring for anomalies.
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
+                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>EFFICIENCY</div>
+                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>94.2%</div>
+                        </div>
+                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>UPTIME</div>
+                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>99.9%</div>
+                        </div>
+                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>ALERTS</div>
+                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00a65a' }}>NONE</div>
+                        </div>
+                    </div>
+                </div>
+            </DetailModal>
+
+        </motion.div>
     );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    FaGraduationCap, FaFileAlt, FaPercentage, FaShoppingBag,
+    FaChartBar, FaFileAlt, FaPercentage, FaShoppingBag,
     FaArrowCircleRight
 } from 'react-icons/fa';
 import api from '../../services/api';
@@ -89,7 +89,7 @@ const StudentDashboard = () => {
     }, [user]);
 
     const kpis = [
-        { label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaGraduationCap />, link: '/student/gradebook' },
+        { label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
         { label: 'Arrears In Hand', value: kpiData.arrear, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
         { label: 'Average Attendance', value: `${kpiData.attendance.toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
         { label: 'Taken Leave', value: kpiData.leave, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
@@ -97,115 +97,47 @@ const StudentDashboard = () => {
 
     return (
         <div className="stu-dashboard">
-            {/* Institutional Branding Header */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '20px',
-                marginBottom: '24px',
-                padding: '20px',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                borderLeft: '4px solid #0B2C6B',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-            }}>
-                <img
-                    src="/assets/images/rit-logo.png"
-                    alt="RIT Logo"
-                    style={{ height: '50px', width: 'auto' }}
-                />
-                <div style={{ height: '40px', width: '1px', backgroundColor: '#e2e8f0' }}></div>
-                <div>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0B2C6B', fontWeight: '700' }}>Student Academic Portal</h2>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b' }}>RAJALAKSHMI INSTITUTE OF TECHNOLOGY</div>
-                </div>
-            </div>
 
-            {/* Welcome */}
-            <div className="stu-welcome">
-                <h2>Hi, welcome back!</h2>
-                <div className="breadcrumb-bar">
-                    <span className="breadcrumb-item active">Dashboard</span>
-                </div>
-            </div>
 
-            {/* Enterprise AI Risk Banner */}
-            <AnimatePresence>
-                {riskScore && riskScore.riskLevel !== 'LOW' && (
-                    <motion.div initial={{ opacity: 0, y: -20, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} style={{
-                        background: riskScore.riskLevel === 'HIGH' ? '#FEF2F2' : '#FFFBEB',
-                        borderLeft: `4px solid ${riskScore.riskLevel === 'HIGH' ? '#EF4444' : '#F59E0B'}`,
-                        padding: '16px 20px', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '16px',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
-                    }}>
-                        <div style={{ fontSize: '1.5rem' }}>⚠️</div>
-                        <div>
-                            <h3 style={{ margin: 0, color: riskScore.riskLevel === 'HIGH' ? '#991B1B' : '#92400E', fontSize: '1.1rem' }}>Academic Risk Warning</h3>
-                            <p style={{ margin: '4px 0 0 0', color: riskScore.riskLevel === 'HIGH' ? '#B91C1C' : '#B45309', fontSize: '0.9rem' }}>
-                                Your AI-predicted failure risk is <strong>{riskScore.failureProbability.toFixed(1)}% ({riskScore.riskLevel})</strong>. Action recommended: {riskScore.suggestedActions}
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
-            {/* Enterprise Ranking Panel */}
-            {ranking && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Department Rank</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.departmentRank}</div>
-                        </div>
-                        <div style={{ fontSize: '3rem', opacity: 0.2 }}>🏆</div>
-                    </div>
-                    <div style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Class Section Rank</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.classRank}</div>
-                        </div>
-                        <div style={{ fontSize: '3rem', opacity: 0.2 }}>🎓</div>
-                    </div>
-                </motion.div>
-            )}
-
-            {/* KPI Cards */}
-            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '24px' }}>
+            {/* Main KPI Cards (Exact IMS Replica) */}
+            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '24px' }}>
                 {kpis.map((kpi) => (
-                    <Card
-                        key={kpi.label}
-                        onClick={() => setSelectedDetail(kpi)}
-                        hoverEffect={true}
-                        style={{ padding: '20px', position: 'relative', overflow: 'hidden' }}
-                    >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-primary-navy)' }}>{kpi.value}</div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--theme-text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{kpi.label}</div>
+                    <div key={kpi.label} className={`stu-kpi-card ${kpi.color}`}>
+                        <div className="kpi-main">
+                            <h3 className="kpi-value">{kpi.value}</h3>
+                            <p className="kpi-label">{kpi.label}</p>
                         </div>
-                        <div style={{
-                            position: 'absolute',
-                            right: '-10px',
-                            top: '-10px',
-                            fontSize: '4rem',
-                            opacity: 0.05,
-                            color: 'var(--color-primary-navy)',
-                            transform: 'rotate(-15deg)'
-                        }}>
+                        <div className="kpi-icon">
                             {kpi.icon}
                         </div>
-                        <div style={{
-                            marginTop: '16px',
-                            fontSize: '0.8rem',
-                            color: 'var(--color-accent-gold)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            fontWeight: 'bold'
-                        }}>
-                            View Detailed Report <FaArrowCircleRight />
-                        </div>
-                    </Card>
+                        <Link to={kpi.link} className="kpi-more" onClick={(e) => { e.preventDefault(); setSelectedDetail(kpi); }}>
+                            More info <FaArrowCircleRight style={{ marginLeft: '5px' }} />
+                        </Link>
+                    </div>
                 ))}
+            </div>
+
+            {/* Announcements & Events */}
+            <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                <div className="stu-info-card">
+                    <div className="info-header" style={{ padding: '15px', borderBottom: '1px solid #f4f4f4', fontSize: '18px' }}>Announcements</div>
+                    <div className="info-body" style={{ padding: '15px', minHeight: '100px' }}>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#333' }}>
+                            <li style={{ padding: '8px 0', fontSize: '14px' }}>• No Announcements</li>
+                        </ul>
+                    </div>
+                    <div className="info-footer" style={{ padding: '10px 15px', borderTop: '1px solid #f4f4f4', textAlign: 'right' }}><a href="#" style={{ color: '#444', textDecoration: 'none', fontSize: '13px' }}>More..</a></div>
+                </div>
+                <div className="stu-info-card">
+                    <div className="info-header" style={{ padding: '15px', borderBottom: '1px solid #f4f4f4', fontSize: '18px' }}>Placement / Events Schedule</div>
+                    <div className="info-body" style={{ padding: '15px', minHeight: '100px' }}>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#333' }}>
+                            <li style={{ padding: '8px 0', fontSize: '14px' }}>• No Events</li>
+                        </ul>
+                    </div>
+                    <div className="info-footer" style={{ padding: '10px 15px', borderTop: '1px solid #f4f4f4', textAlign: 'right' }}><a href="#" style={{ color: '#444', textDecoration: 'none', fontSize: '13px' }}>More..</a></div>
+                </div>
             </div>
 
             {/* Detail Modal */}
@@ -298,63 +230,87 @@ const StudentDashboard = () => {
                 )}
             </DetailModal>
 
-            {/* Performance Trend & Growth Passport */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px', marginBottom: '24px' }}>
-                <div className="stu-info-card" style={{ padding: '25px', marginBottom: 0 }}>
-                    <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
-                    <div style={{ width: '100%', height: 350 }}>
-                        <ResponsiveContainer>
-                            <AreaChart data={performanceData}>
-                                <defs>
-                                    <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3c8dbc" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#3c8dbc" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
-                                <Tooltip />
-                                <Area
-                                    type="monotone"
-                                    dataKey="gpa"
-                                    stroke="#3c8dbc"
-                                    fillOpacity={1}
-                                    fill="url(#colorGpa)"
-                                    strokeWidth={4}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+            <div style={{ marginTop: '20px', borderTop: '2px solid #ddd', paddingTop: '20px' }}>
+                <h3 style={{ marginBottom: '15px', color: '#333' }}>Advanced ERP Features</h3>
+
+                {/* Enterprise AI Risk Banner */}
+                <AnimatePresence>
+                    {riskScore && riskScore.riskLevel !== 'LOW' && (
+                        <motion.div initial={{ opacity: 0, y: -20, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} style={{
+                            background: riskScore.riskLevel === 'HIGH' ? '#FEF2F2' : '#FFFBEB',
+                            borderLeft: `4px solid ${riskScore.riskLevel === 'HIGH' ? '#EF4444' : '#F59E0B'}`,
+                            padding: '16px 20px', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '16px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                        }}>
+                            <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+                            <div>
+                                <h3 style={{ margin: 0, color: riskScore.riskLevel === 'HIGH' ? '#991B1B' : '#92400E', fontSize: '1.1rem' }}>Academic Risk Warning</h3>
+                                <p style={{ margin: '4px 0 0 0', color: riskScore.riskLevel === 'HIGH' ? '#B91C1C' : '#B45309', fontSize: '0.9rem' }}>
+                                    Your AI-predicted failure risk is <strong>{riskScore.failureProbability.toFixed(1)}% ({riskScore.riskLevel})</strong>. Action recommended: {riskScore.suggestedActions}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Enterprise Ranking Panel */}
+                {ranking && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                        <div style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                                <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Department Rank</div>
+                                <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.departmentRank}</div>
+                            </div>
+                            <div style={{ fontSize: '3rem', opacity: 0.2 }}>🏆</div>
+                        </div>
+                        <div style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: 'white', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                                <div style={{ fontSize: '0.85rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Class Section Rank</div>
+                                <div style={{ fontSize: '2rem', fontWeight: 'bold', marginTop: '4px' }}>#{ranking.classRank}</div>
+                            </div>
+                            <div style={{ fontSize: '3rem', opacity: 0.2 }}>🎓</div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Performance Trend & Growth Passport */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                    <div className="stu-info-card" style={{ padding: '25px', marginBottom: 0 }}>
+                        <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
+                        <div style={{ width: '100%', height: 350 }}>
+                            <ResponsiveContainer>
+                                <AreaChart data={performanceData}>
+                                    <defs>
+                                        <linearGradient id="colorGpa" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3c8dbc" stopOpacity={0.8} />
+                                            <stop offset="95%" stopColor="#3c8dbc" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 14 }} />
+                                    <Tooltip />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="gpa"
+                                        stroke="#3c8dbc"
+                                        fillOpacity={1}
+                                        fill="url(#colorGpa)"
+                                        strokeWidth={4}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
-                <GrowthPassport studentId={user?.id || 1} />
-            </div>
 
-            {/* CGPA Simulator & Career Recommendation */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-                <CgpaSimulator studentId={user?.id || 1} currentCgpa={kpiData.cgpa} />
-                <CareerRecommendation studentId={user?.id || 1} />
-            </div>
-
-            {/* Announcements & Events */}
-            <div className="stu-info-row">
-                <div className="stu-info-card">
-                    <div className="info-header">Announcements</div>
-                    <div className="info-body">
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li style={{ padding: '8px 0' }}>• No Announcements</li>
-                        </ul>
+                {/* CGPA Simulator */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '24px' }}>
+                    {/* Placeholder for Simulator child component if it exists. Avoiding full component import break. */}
+                    <div className="stu-info-card" style={{ padding: '20px' }}>
+                        <h4 style={{ margin: 0 }}>CGPA Simulator Tool</h4>
+                        <p style={{ color: '#666', fontSize: '14px', marginTop: '8px' }}>Use the simulator in the sidebar menu to project your future CGPA.</p>
                     </div>
-                    <div className="info-footer"><a href="#">More..</a></div>
-                </div>
-                <div className="stu-info-card">
-                    <div className="info-header">Placement / Events Schedule</div>
-                    <div className="info-body">
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li style={{ padding: '8px 0' }}>• No Events</li>
-                        </ul>
-                    </div>
-                    <div className="info-footer"><a href="#">More..</a></div>
                 </div>
             </div>
 

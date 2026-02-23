@@ -22,10 +22,6 @@ const ParentDashboard = () => {
 
     return (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ background: 'white', padding: '24px', borderRadius: '14px', borderLeft: '5px solid #10B981' }}>
-                <h2>Welcome, Parent Account</h2>
-                <p>Monitoring your ward's academic progress</p>
-            </motion.div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {students.map(student => (
