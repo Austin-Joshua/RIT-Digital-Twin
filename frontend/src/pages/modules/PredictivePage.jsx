@@ -50,7 +50,7 @@ function PredictivePage() {
                     </div>
                     <div>
                         <h1>Predictive Analytics Engine</h1>
-                        <p>Regression-based next-semester infrastructure demand forecasting</p>
+                        <p>Regression-based 8-semester infrastructure demand forecasting</p>
                     </div>
                 </div>
                 {data && (
@@ -95,7 +95,7 @@ function PredictivePage() {
 
                             {/* Semester trend chart */}
                             <div className="chart-card">
-                                <h3>6-Semester Historical + Forecast Trend</h3>
+                                <h3>8-Semester Historical + Forecast Trend</h3>
                                 <ResponsiveContainer width="100%" height={340}>
                                     <LineChart data={data.historicalTrend} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -227,7 +227,7 @@ function PredictivePage() {
 
                             {/* Energy trend overlay */}
                             <div className="chart-card" style={{ marginTop: 24 }}>
-                                <h3>Energy Consumption Trend + Forecast</h3>
+                                <h3>8-Semester Energy Consumption Trend + Forecast</h3>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={data.historicalTrend} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />

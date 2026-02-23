@@ -35,6 +35,8 @@ const SubstitutionOverridePanel = lazy(() => import('./pages/enterprise/Substitu
 const AutomatedResultPublishing = lazy(() => import('./pages/enterprise/AutomatedResultPublishing'));
 const ClassRiskHeatmap = lazy(() => import('./pages/enterprise/ClassRiskHeatmap'));
 const UploadMarks = lazy(() => import('./pages/enterprise/UploadMarks'));
+const EmergencyDashboard = lazy(() => import('./pages/enterprise/EmergencyDashboard'));
+const MaintenanceModule = lazy(() => import('./pages/enterprise/MaintenanceModule'));
 
 /* Lazy Loaded Student Pages */
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
@@ -165,6 +167,8 @@ const App = () => {
                   <Route path="management/certificates" element={<CertificateApprovalQueue />} />
                   <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
                   <Route path="management/results" element={<AutomatedResultPublishing />} />
+                  <Route path="management/safety" element={<EmergencyDashboard />} />
+                  <Route path="management/assets" element={<MaintenanceModule />} />
                   <Route path="change-password" element={<ChangePassword />} />
 
                   {/* Specific Faculty Routes (Currently under general layout constraint) */}

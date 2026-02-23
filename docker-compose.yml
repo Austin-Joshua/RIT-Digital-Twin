@@ -3,38 +3,41 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
-    restart: always
-    container_name: rit_db
+    container_name: erp-db
     environment:
+      MYSQL_DATABASE: rit_digital_twin
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: rit_db
+    ports:
+      - "3308:3306"
     volumes:
-      - rit_db_data:/var/lib/mysql
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   backend:
-    build:
-      context: ./backend
+    build: ./backend
+    container_name: erp-backend
     restart: on-failure
-    container_name: rit_backend
     ports:
-      - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/rit_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - "8081:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      APP_JWT_SECRET: RITDigitalTwinSmartCampusIntelligencePlatformSecretKey2026VeryLongSecureKey
 
   frontend:
-    build:
-      context: ./frontend
-    container_name: rit_frontend
+    build: ./frontend
+    container_name: erp-frontend
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - backend
 
 volumes:
-  rit_db_data:
+  db-data:

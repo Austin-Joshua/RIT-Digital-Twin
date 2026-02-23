@@ -4,6 +4,7 @@ import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
+import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import { FaUser } from 'react-icons/fa';
 
 const LayoutLoader = () => (
@@ -18,17 +19,18 @@ const InstitutionalLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
     const adminNavItems = [
-        { path: '/', label: 'Overview', icon: '📊', exact: true },
-        { path: '/analytics', label: 'Enterprise Analytics', icon: '📈' },
-        { path: '/analytics/placement', label: 'Placement Analytics', icon: '💼' },
+        { path: '/', label: 'Home', icon: '📊', exact: true },
+        { path: '/analytics', label: 'Analytics', icon: '📈' },
+        { path: '/analytics/placement', label: 'Placements', icon: '💼' },
         { path: '/management/audit', label: 'Audit Logs', icon: '🛡️' },
         { path: '/management/exam-timetable', label: 'Exam Timetables', icon: '📅' },
-        { path: '/management/results', label: 'Result Workflows', icon: '✅' },
+        { path: '/management/results', label: 'Results', icon: '✅' },
         { path: '/management/substitutions', label: 'Class Substitutions', icon: '🔄' },
-        { path: '/management/certificates', label: 'Certificate Approvals', icon: '📜' },
+        { path: '/management/certificates', label: 'Certificate', icon: '📜' },
         { path: '/simulations/classroom', label: 'Classroom Allocation', icon: '🏫' },
         { path: '/simulations/energy', label: 'Energy Optimization', icon: '⚡' },
         { path: '/simulations/transport', label: 'Transport Analytics', icon: '🚌' },
@@ -124,41 +126,86 @@ const InstitutionalLayout = () => {
                         );
                     })}
 
-                    {/* Embedded Logout Option */}
-                    <motion.div
-                        onClick={logout}
-                        whileHover={{ x: 4, backgroundColor: 'rgba(255,113,113,0.1)' }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px', borderRadius: '8px',
-                            marginTop: '16px', color: '#f87171', borderLeft: '4px solid transparent', cursor: 'pointer',
-                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                    >
-                        <span style={{ fontSize: '20px' }}>🚪</span>
-                        {isSidebarOpen && <span>Logout</span>}
-                    </motion.div>
+
                 </nav>
 
                 {/* User Section bottom */}
-                <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    {isSidebarOpen ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#cbd5e1', color: '#0B2C6B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                {user?.username?.charAt(0).toUpperCase()}
-                            </div>
-                            <div style={{ flex: 1, overflow: 'hidden' }}>
-                                <div style={{ fontSize: '0.9rem', fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{user?.username}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{user?.role}</div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <AnimatePresence>
+                        {isUserMenuOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                style={{
+                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                    borderRadius: '12px',
+                                    marginBottom: '12px',
+                                    padding: '12px',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                <div style={{ marginBottom: '12px' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>User Details</div>
+                                    <div style={{ fontSize: '0.85rem', fontWeight: '500' }}>{user?.username}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{user?.email || 'user@ritchennai.edu.in'}</div>
+                                    <div style={{ fontSize: '0.75rem', marginTop: '4px' }}>
+                                        <span style={{ backgroundColor: 'rgba(212,175,55,0.2)', color: 'var(--color-accent-gold)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem' }}>
+                                            {user?.role}
+                                        </span>
+                                    </div>
+                                </div>
+                                <motion.div
+                                    onClick={logout}
+                                    whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '12px', padding: '10px',
+                                        borderRadius: '8px', cursor: 'pointer', color: '#f87171',
+                                        fontSize: '0.9rem', fontWeight: '600', transition: '0.2s'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '18px' }}>🚪</span>
+                                    <span>Logout</span>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <div
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            padding: '8px',
+                            borderRadius: '12px',
+                            transition: '0.2s'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                        {isSidebarOpen ? (
+                            <>
+                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#cbd5e1', color: '#0B2C6B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>
+                                    {user?.username?.charAt(0).toUpperCase()}
+                                </div>
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{user?.username}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{user?.role}</div>
+                                </div>
+                                <motion.span animate={{ rotate: isUserMenuOpen ? 180 : 0 }}>
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </motion.span>
+                            </>
+                        ) : (
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#cbd5e1', color: '#0B2C6B', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                                 {user?.username?.charAt(0).toUpperCase()}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </motion.aside>
 
@@ -209,6 +256,8 @@ const InstitutionalLayout = () => {
                         </button>
                     </div>
                 </motion.header>
+
+                <GlobalAlertBar />
 
                 {/* Page Content with Staggered Wrapper */}
                 <div style={{ padding: '32px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>

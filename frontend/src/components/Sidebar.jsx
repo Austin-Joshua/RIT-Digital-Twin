@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     FaHome, FaChalkboardTeacher, FaBolt, FaBus,
     FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,
-    FaUniversity
+    FaUniversity, FaShieldAlt, FaTools
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -23,6 +23,8 @@ const Sidebar = () => {
             { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
             { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
             { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
+            { path: '/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
+            { path: '/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
             { path: '/settings', name: 'Settings', icon: <FaCog /> },
         ];
 
