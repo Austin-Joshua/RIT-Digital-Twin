@@ -12,6 +12,10 @@ import {
 } from 'recharts';
 import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import CgpaSimulator from '../../components/intelligence/CgpaSimulator';
+import GrowthPassport from '../../components/intelligence/GrowthPassport';
+import CareerRecommendation from '../../components/intelligence/CareerRecommendation';
+import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -34,10 +38,6 @@ const now = new Date();
 const todayDate = now.getDate();
 const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
-import CgpaSimulator from '../../components/intelligence/CgpaSimulator';
-import GrowthPassport from '../../components/intelligence/GrowthPassport';
-import CareerRecommendation from '../../components/intelligence/CareerRecommendation';
-import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
