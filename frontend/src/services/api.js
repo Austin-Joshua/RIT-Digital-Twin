@@ -4,6 +4,9 @@ const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    'ngrok-skip-browser-warning': 'true'
+  }
 });
 
 api.interceptors.request.use(
@@ -36,3 +39,5 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// Trigger Vercel redeploy to pick up new env variable
