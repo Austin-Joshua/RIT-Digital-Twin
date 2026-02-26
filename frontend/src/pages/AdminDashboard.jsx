@@ -110,7 +110,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Main Content Layout */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
+            <div className="admin-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
                 {/* Analytics Chart */}
                 <div className="stu-info-card" style={{ borderTopColor: '#0B2C6B' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

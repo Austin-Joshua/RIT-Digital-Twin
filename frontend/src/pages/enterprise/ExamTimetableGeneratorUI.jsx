@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { academicAiApi } from '../../services/enterpriseApi';
+import { useToast } from '../../context/ToastContext';
 
 const ExamTimetableGeneratorUI = () => {
     const [startDate, setStartDate] = useState('');
     const [generating, setGenerating] = useState(false);
     const [timetable, setTimetable] = useState(null);
+    const { addToast } = useToast();
 
     const handleGenerate = async () => {
-        if (!startDate) return;
+        if (!startDate) {
+            addToast('Please select a start date first.', 'warning');
+            return;
+        }
         setGenerating(true);
         try {
             const res = await academicAiApi.generateExamTimetable(startDate);
             setTimetable(res.data);
+            addToast('Exam timetable generated successfully!', 'success');
         } catch (error) {
             console.error("Failed to generate timetable", error);
+            addToast('Failed to generate timetable. Please try again.', 'error');
         } finally {
             setGenerating(false);
         }
@@ -27,7 +34,7 @@ const ExamTimetableGeneratorUI = () => {
                 <p style={{ color: 'var(--text-secondary)' }}>Automated constraint resolution to schedule exams without faculty or room clashes.</p>
             </div>
 
-            <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
+            <div className="exam-gen-controls" style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1 }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Select Target Start Date</label>
                     <input

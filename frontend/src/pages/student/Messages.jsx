@@ -3,11 +3,11 @@ import React from 'react';
 const Messages = () => {
     return (
         <div className="stu-report-page">
-            <div style={{ fontSize: '14px', color: '#333', marginBottom: '15px' }}>All Messages</div>
+            <div style={{ fontSize: '14px', color: 'var(--text-primary, #333)', marginBottom: '15px' }}>All Messages</div>
 
-            <div style={{ display: 'flex', gap: '20px' }}>
+            <div className="messages-layout" style={{ display: 'flex', gap: '20px' }}>
                 {/* Message Sidebar */}
-                <div style={{ width: '230px', flexShrink: 0 }}>
+                <div className="messages-sidebar" style={{ width: '230px', flexShrink: 0 }}>
                     <button className="table-btn" style={{
                         width: '100%',
                         background: '#007bff',
@@ -15,28 +15,35 @@ const Messages = () => {
                         border: 'none',
                         padding: '10px',
                         fontWeight: 'bold',
-                        marginBottom: '15px'
+                        marginBottom: '15px',
+                        borderRadius: '8px'
                     }}>
-                        New message
+                        New Message
                     </button>
 
                     <div className="stu-info-card" style={{ padding: '0' }}>
-                        <div style={{ padding: '12px 15px', color: '#007bff', fontWeight: 'bold', borderBottom: '1px solid #f4f4f4' }}>All Messages</div>
-                        <div style={{ padding: '12px 15px', color: '#333', borderBottom: '1px solid #f4f4f4', cursor: 'pointer' }}>Inbox</div>
-                        <div style={{ padding: '12px 15px', color: '#333', cursor: 'pointer' }}>Outbox</div>
+                        <div style={{ padding: '12px 15px', color: '#007bff', fontWeight: 'bold', borderBottom: '1px solid var(--border-color, #f4f4f4)' }}>All Messages</div>
+                        <div style={{ padding: '12px 15px', color: 'var(--text-primary, #333)', borderBottom: '1px solid var(--border-color, #f4f4f4)', cursor: 'pointer' }}>Inbox</div>
+                        <div style={{ padding: '12px 15px', color: 'var(--text-primary, #333)', cursor: 'pointer' }}>Outbox</div>
                     </div>
                 </div>
 
                 {/* Message Content */}
                 <div className="stu-info-card" style={{ flex: 1, padding: '15px' }}>
-                    <div style={{ fontSize: '14px', color: '#333' }}>You have no messages.</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary, #777)', textAlign: 'center', padding: '40px 0' }}>You have no messages.</div>
                 </div>
             </div>
 
-            <div style={{ marginTop: '30px', color: '#777', fontSize: '12px' }}>
-                © All rights reserved.
-                <span style={{ float: 'right' }}><img src="/assets/images/rit-icon.png" alt="RIT-IMS" style={{ width: '16px', height: '16px', objectFit: 'contain' }} /> RIT-IMS</span>
-            </div>
+            <style>{`
+                @media (max-width: 768px) {
+                    .messages-layout {
+                        flex-direction: column !important;
+                    }
+                    .messages-sidebar {
+                        width: 100% !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 };
