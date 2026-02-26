@@ -934,4 +934,55 @@ html.dark ::-webkit-scrollbar-thumb {
         display: none;
         /* Hide name text on mobile to save space */
     }
+
+    /* Table controls: stack and wrap on mobile */
+    .stu-table-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .stu-table-actions {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .stu-table-actions .table-btn {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    /* Data tables: horizontal scroll */
+    .stu-data-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stu-data-table th,
+    .stu-data-table td {
+        white-space: nowrap;
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    /* Report header: stack year/semester */
+    .stu-report-header div {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* Certificate & form controls: stack on mobile */
+    .cert-apply-row {
+        flex-direction: column !important;
+    }
+
+    .cert-apply-row>div {
+        width: 100% !important;
+    }
+
+    .cert-apply-row button {
+        width: 100% !important;
+        align-self: stretch !important;
+    }
 }
