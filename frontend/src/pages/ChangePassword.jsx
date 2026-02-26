@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useToast } from '../../context/ToastContext';
-import api from '../../services/api';
+import { useToast } from '../context/ToastContext';
+import api from '../services/api';
 
 const ChangePassword = () => {
     const [newPassword, setNewPassword] = useState('');
