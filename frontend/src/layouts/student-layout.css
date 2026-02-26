@@ -986,3 +986,45 @@ html.dark ::-webkit-scrollbar-thumb {
         align-self: stretch !important;
     }
 }
+
+/* === Admin & Enterprise Pages Mobile === */
+@media (max-width: 768px) {
+    .admin-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .prediction-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .prediction-header select {
+        width: 100%;
+    }
+
+    .prediction-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .prediction-page h1 {
+        font-size: 1.2rem !important;
+    }
+
+    .prediction-page h2 {
+        font-size: 1rem !important;
+    }
+
+    .exam-gen-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .exam-gen-controls>div {
+        width: 100% !important;
+    }
+
+    .exam-gen-controls button {
+        width: 100% !important;
+    }
+}

@@ -28,7 +28,7 @@ const PredictionPage = () => {
 
     return (
         <div className="prediction-page">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+            <div className="prediction-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1e293b' }}>Predictive Intelligence</h1>
                     <p style={{ color: '#64748b' }}>Regression-based demand forecasting and resource projections</p>
@@ -45,7 +45,7 @@ const PredictionPage = () => {
                 </select>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
+            <div className="prediction-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
                 {/* Forecast Chart */}
                 <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '24px' }}>6-Month Forecast Trend</h2>
