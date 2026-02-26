@@ -1,0 +1,15 @@
+{
+    "name": "rit-digital-twin-root",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Root management for RIT Digital Twin",
+    "scripts": {
+        "install:frontend": "npm install --prefix frontend",
+        "install:scrape": "npm install --prefix scrape_ims",
+        "install:all": "npm install --prefix frontend && npm install --prefix scrape_ims",
+        "dev": "npm run dev --prefix frontend",
+        "build": "npm run build --prefix frontend",
+        "scrape": "npm run test --prefix scrape_ims",
+        "start": "npm run dev --prefix frontend"
+    }
+}
