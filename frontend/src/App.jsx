@@ -55,7 +55,7 @@ const CommitteeSchedule = lazy(() => import('./pages/student/CommitteeSchedule')
 const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
 const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
 const Messages = lazy(() => import('./pages/student/Messages'));
-const ChangePassword = lazy(() => import('./pages/student/ChangePassword'));
+const ChangePassword = lazy(() => import('./pages/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
 const ProfilePage = lazy(() => import('./pages/student/Profile'));
 

@@ -81,7 +81,7 @@ const InstitutionalLayout = () => {
         <div className="stu-layout">
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: '#fff' }}>
+                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
                         {sidebarOpen ? (
                             <img
@@ -193,25 +193,32 @@ const InstitutionalLayout = () => {
                                             top: '100%',
                                             right: 0,
                                             marginTop: '8px',
-                                            background: 'white',
+                                            background: isDarkMode ? 'var(--ims-topbar-bg)' : 'white',
                                             borderRadius: '4px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                            boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.15)',
                                             width: '180px',
                                             zIndex: 1000,
-                                            border: '1px solid #eee'
+                                            border: isDarkMode ? '1px solid #444' : '1px solid #eee'
                                         }}
                                     >
-                                        <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: '#f8fafc' }}>
+                                        <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: isDarkMode ? 'var(--ims-bg-dark)' : '#f8fafc' }}>
                                             <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
-                                            <div style={{ fontSize: '13px', color: '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
+                                            <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role}</div>
                                         </div>
                                         <NavLink
-                                            to="/student/profile"
-                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            to="/change-password"
+                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            My Profile
+                                            <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
+                                        </NavLink>
+                                        <NavLink
+                                            to={user?.role === 'STUDENT' ? "/student/profile" : "/student/profile"} // Keeping path consistent for now
+                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuUser style={{ marginRight: '8px', verticalAlign: 'middle' }} /> My Profile
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
