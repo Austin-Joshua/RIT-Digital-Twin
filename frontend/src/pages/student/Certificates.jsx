@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { workflowApi } from '../../services/enterpriseApi';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 const Certificates = () => {
     const { user } = useAuth();
@@ -9,6 +10,7 @@ const Certificates = () => {
     const [search, setSearch] = useState('');
     const [type, setType] = useState('BONAFIDE');
     const [submitting, setSubmitting] = useState(false);
+    const { addToast } = useToast();
 
     useEffect(() => {
         const fetchReqs = async () => {
@@ -27,8 +29,10 @@ const Certificates = () => {
             const studentId = user?.id || 1;
             const res = await workflowApi.requestCertificate(studentId, type);
             setRequests([...requests, res.data]);
+            addToast('Certificate request submitted successfully!', 'success');
         } catch (err) {
             console.error(err);
+            addToast('Failed to submit certificate request. Please try again.', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -36,7 +40,7 @@ const Certificates = () => {
 
     return (
         <div className="stu-report-page" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px', background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+            <div className="cert-apply-row" style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px', background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
                 <div style={{ flex: 1 }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Certificate Type</label>
                     <select value={type} onChange={(e) => setType(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
