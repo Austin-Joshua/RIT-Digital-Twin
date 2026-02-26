@@ -552,6 +552,57 @@ html.dark .kpi-more {
     background-color: rgba(0, 0, 0, 0.25);
 }
 
+html.dark .info-footer {
+    background: var(--ims-bg-dark, #1a2332);
+    border-top: 1px solid #334155;
+}
+
+html.dark .info-footer .table-btn {
+    color: #f8fafc;
+}
+
+/* Heatmap & embedded component dark mode */
+html.dark .class-risk-heatmap,
+html.dark .heatmap-container,
+html.dark [class*="heatmap"] {
+    background: var(--ims-bg-dark, #1a2332) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Task notification items */
+html.dark .stu-info-card div[style*="border-left"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #cbd5e1 !important;
+}
+
+/* Generic card backgrounds */
+html.dark .card,
+html.dark .panel,
+html.dark [style*="background: white"],
+html.dark [style*="background: #fff"],
+html.dark [style*="background-color: white"] {
+    background: var(--ims-bg-dark, #1a2332) !important;
+    color: #e2e8f0;
+}
+
+/* Input fields in dark mode */
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+}
+
+/* Scrollbar dark mode */
+html.dark ::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
 .stu-info-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
