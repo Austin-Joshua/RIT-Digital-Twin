@@ -46,7 +46,7 @@ const AuthLayout = () => {
                 }}>
                     <AnimatedWaveBackground />
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
-                        <div style={{ marginBottom: '40px' }}>
+                        <div style={{ marginBottom: '20px' }} className="brand-logo-area">
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
@@ -65,7 +65,7 @@ const AuthLayout = () => {
                                     {isLogin ? "Access real-time analytics, campus simulations, and predictive tools for the smart future." : "Join the next generation of institutional management with our integrated digital twin platform."}
                                 </p>
 
-                                <div style={{
+                                <div className="brand-description" style={{
                                     fontSize: '0.95rem',
                                     color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.65)',
                                     lineHeight: '1.7',
@@ -79,7 +79,7 @@ const AuthLayout = () => {
                                     RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>'A++' Grade in NAAC</strong>.
                                 </div>
 
-                                <div style={{
+                                <div className="brand-tagline" style={{
                                     fontSize: '1rem',
                                     fontStyle: 'italic',
                                     color: 'var(--color-accent-gold)',
@@ -106,8 +106,14 @@ const AuthLayout = () => {
                 @media (max-width: 1024px) {
                     .auth-wrapper { flex-direction: column !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; }
                     .brand-panel, .form-panel { width: 100% !important; position: relative !important; transform: none !important; left: auto !important; right: auto !important; }
-                    .brand-panel { padding: 40px 20px !important; height: auto !important; z-index: 1 !important; display: block !important; }
-                    .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 20px !important; z-index: 2 !important; }
+                    .brand-panel { padding: 24px 20px 16px !important; height: auto !important; z-index: 1 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center; }
+                    .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
+                    .brand-panel p,
+                    .brand-description,
+                    .brand-tagline { display: none !important; }
+                    .brand-logo-area { margin-bottom: 10px !important; }
+                    .brand-panel img { height: 55px !important; }
+                    .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 10px !important; z-index: 2 !important; }
                 }
             `}</style>
         </div>
