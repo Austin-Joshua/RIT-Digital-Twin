@@ -81,7 +81,7 @@ const StudentLayout = () => {
         <div className="stu-layout">
             {/* ── Sidebar ── */}
             <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: '#fff' }}>
+                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
                         {sidebarOpen ? (
                             /* Wide logo when sidebar open */
@@ -228,23 +228,33 @@ const StudentLayout = () => {
                                             top: '100%',
                                             right: 0,
                                             marginTop: '8px',
-                                            background: 'white',
+                                            background: isDarkMode ? 'var(--ims-topbar-bg)' : 'white',
                                             borderRadius: '4px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                            boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.15)',
                                             width: '180px',
                                             zIndex: 1000,
-                                            border: '1px solid #eee'
+                                            border: isDarkMode ? '1px solid #444' : '1px solid #eee'
                                         }}
                                     >
                                         <NavLink
                                             to="/student/profile"
                                             style={{
                                                 display: 'block', padding: '12px 16px', textDecoration: 'none',
-                                                color: '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
+                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
                                             }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            My Profile
+                                            <LuUser style={{ marginRight: '8px', verticalAlign: 'middle' }} /> My Profile
+                                        </NavLink>
+                                        <NavLink
+                                            to="/student/change-password"
+                                            style={{
+                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
+                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
+                                            }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
