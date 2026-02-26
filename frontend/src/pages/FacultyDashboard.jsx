@@ -38,37 +38,37 @@ const FacultyDashboard = () => {
 
             {/* KPI Cards Placeholder - Matching Student Style */}
             <div className="stu-kpi-row">
-                <div className="stu-kpi-card green">
+                <div className="stu-kpi-card green" onClick={() => { }}>
                     <div className="kpi-main">
                         <div className="kpi-value">{subjects.length}</div>
                         <div className="kpi-label">Courses</div>
                     </div>
                     <FaBook className="kpi-icon" />
-                    <a href="#" className="kpi-more">More info →</a>
+                    <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card teal">
+                <div className="stu-kpi-card teal" onClick={() => { }}>
                     <div className="kpi-main">
                         <div className="kpi-value">4</div>
                         <div className="kpi-label">Pending Requests</div>
                     </div>
                     <FaCalendarCheck className="kpi-icon" />
-                    <a href="#" className="kpi-more">More info →</a>
+                    <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card yellow">
+                <div className="stu-kpi-card yellow" onClick={() => { }}>
                     <div className="kpi-main">
                         <div className="kpi-value">92%</div>
                         <div className="kpi-label">Avg Attendance</div>
                     </div>
                     <FaUserClock className="kpi-icon" />
-                    <a href="#" className="kpi-more">More info →</a>
+                    <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card red">
+                <div className="stu-kpi-card red" onClick={() => { }}>
                     <div className="kpi-main">
                         <div className="kpi-value">2</div>
                         <div className="kpi-label">At Risk Students</div>
                     </div>
                     <FaExclamationTriangle className="kpi-icon" />
-                    <a href="#" className="kpi-more">More info →</a>
+                    <div className="kpi-more">More info →</div>
                 </div>
             </div>
 

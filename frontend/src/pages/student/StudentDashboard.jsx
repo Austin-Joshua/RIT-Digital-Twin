@@ -101,9 +101,13 @@ const StudentDashboard = () => {
 
 
             {/* Main KPI Cards (Exact IMS Replica) */}
-            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+            <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
-                    <div key={kpi.label} className={`stu-kpi-card ${kpi.color}`}>
+                    <div
+                        key={kpi.label}
+                        className={`stu-kpi-card ${kpi.color}`}
+                        onClick={() => setSelectedDetail(kpi)}
+                    >
                         <div className="kpi-main">
                             <h3 className="kpi-value">{kpi.value}</h3>
                             <p className="kpi-label">{kpi.label}</p>
@@ -111,15 +115,15 @@ const StudentDashboard = () => {
                         <div className="kpi-icon">
                             {kpi.icon}
                         </div>
-                        <Link to={kpi.link} className="kpi-more" onClick={(e) => { e.preventDefault(); setSelectedDetail(kpi); }}>
+                        <div className="kpi-more">
                             More info <FaArrowCircleRight style={{ marginLeft: '5px' }} />
-                        </Link>
+                        </div>
                     </div>
                 ))}
             </div>
 
             {/* Announcements & Events */}
-            <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+            <div className="stu-info-row">
                 <div className="stu-info-card">
                     <div className="info-header" style={{ padding: '15px', borderBottom: '1px solid #f4f4f4', fontSize: '18px' }}>Announcements</div>
                     <div className="info-body" style={{ padding: '15px', minHeight: '100px' }}>
