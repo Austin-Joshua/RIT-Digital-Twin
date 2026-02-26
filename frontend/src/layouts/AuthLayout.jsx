@@ -28,7 +28,7 @@ const AuthLayout = () => {
 
     return (
         <div style={{
-            minHeight: '100vh', width: '100vw', backgroundColor: 'var(--theme-bg)', display: 'flex', overflow: 'hidden', position: 'relative', transition: 'background-color var(--transition-speed)'
+            minHeight: '100vh', width: '100vw', backgroundColor: 'var(--theme-bg)', display: 'flex', position: 'relative', transition: 'background-color var(--transition-speed)'
         }}>
             <div style={{ position: 'fixed', top: '20px', right: '25px', zIndex: 100 }}>
                 <button onClick={toggleTheme} style={{
@@ -37,8 +37,8 @@ const AuthLayout = () => {
                     {isDarkMode ? <FaSun /> : <FaMoon />}
                 </button>
             </div>
-            <div style={{ display: 'flex', width: '100%', height: '100vh', position: 'relative' }}>
-                <motion.div animate={isLogin ? 'login' : 'signup'} variants={panelVariants} style={{
+            <div className="auth-wrapper" style={{ display: 'flex', width: '100%', height: '100vh', position: 'relative' }}>
+                <motion.div className="brand-panel" animate={isLogin ? 'login' : 'signup'} variants={panelVariants} style={{
                     width: '50%', height: '100%',
                     background: 'linear-gradient(135deg, #0B2C6B 0%, #123C8C 100%)', // Persistent Blue Accent
                     position: 'absolute', left: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px',
@@ -62,7 +62,7 @@ const AuthLayout = () => {
                                     {isLogin ? "Institutional Intelligence Portal" : "Campus Digital Ecosystem"}
                                 </h1>
                                 <p style={{ fontSize: '1.2rem', color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '400' }}>
-                                    {isLogin ? "Access real-time analytics, campus simulations, and predictive governance tools for the smart future." : "Join the next generation of institutional management with our integrated digital twin platform."}
+                                    {isLogin ? "Access real-time analytics, campus simulations, and predictive tools for the smart future." : "Join the next generation of institutional management with our integrated digital twin platform."}
                                 </p>
 
                                 <div style={{
@@ -88,13 +88,13 @@ const AuthLayout = () => {
                                     borderLeft: '3px solid var(--color-accent-gold)',
                                     paddingLeft: '16px'
                                 }}>
-                                    "Innovation through data, excellence in governance."
+                                    "Innovation through data, excellence in education."
                                 </div>
                             </motion.div>
                         </AnimatePresence>
                     </div>
                 </motion.div>
-                <motion.div animate={isLogin ? 'login' : 'signup'} variants={formPanelVariants} style={{
+                <motion.div className="form-panel" animate={isLogin ? 'login' : 'signup'} variants={formPanelVariants} style={{
                     width: '50%', height: '100%', position: 'absolute', right: 0, zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px'
                 }}>
                     <div style={{ maxWidth: '440px', width: '100%' }}>
@@ -104,8 +104,10 @@ const AuthLayout = () => {
             </div>
             <style>{`
                 @media (max-width: 1024px) {
-                    .auth-wrapper { flex-direction: column !important; }
-                    .brand-panel, .form-panel { width: 100% !important; height: 50% !important; position: relative !important; transform: none !important; }
+                    .auth-wrapper { flex-direction: column !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; }
+                    .brand-panel, .form-panel { width: 100% !important; position: relative !important; transform: none !important; left: auto !important; right: auto !important; }
+                    .brand-panel { padding: 40px 20px !important; height: auto !important; z-index: 1 !important; display: block !important; }
+                    .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 20px !important; z-index: 2 !important; }
                 }
             `}</style>
         </div>

@@ -675,3 +675,32 @@
 .percent-cell.good {
     color: #333;
 }
+/* -- Mobile Responsiveness -- */
+@media (max-width: 768px) {
+    .stu-sidebar {
+        position: fixed;
+        height: 100vh;
+        left: -230px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    }
+    .stu-sidebar.open {
+        left: 0;
+    }
+    .stu-sidebar:not(.open) {
+        width: 230px; /* Don't shrink to 60px when closed on mobile, just hide */
+    }
+    .stu-main {
+        width: 100%; /* Take full width on mobile */
+    }
+    .stu-kpi-row {
+        grid-template-columns: 1fr; /* Stack KPI cards */
+    }
+    .stu-info-row {
+        grid-template-columns: 1fr; /* Stack info blocks */
+    }
+    .stu-data-table-wrapper { /* Ensure tables can scroll horizontally */
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
