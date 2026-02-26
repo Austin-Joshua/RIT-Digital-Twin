@@ -1,15 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 const NoDueRequest = () => {
-    const subjects = [
-        { id: 1, code: 'CS23411', name: 'Database Management Systems', faculty: 'Prof. PANDIARAJAN T.', status: 'Not Requested', remarks: '-' },
-        { id: 2, code: 'CS23413', name: 'Theory of Computation', faculty: 'Prof. ANGALAPARAMESWARI ANBAZHAGAN', status: 'Not Requested', remarks: '-' },
-        { id: 3, code: 'CS23414', name: 'Software Development Practices', faculty: 'Prof. VINITHA R', status: 'Not Requested', remarks: '-' },
-        { id: 4, code: 'CS23431', name: 'Design and Analysis of Algorithms', faculty: 'Prof. MURUGAN P', status: 'Not Requested', remarks: '-' },
-        { id: 5, code: 'AL23432', name: 'Machine Learning Techniques', faculty: 'Prof. ARAVINDH S', status: 'Not Requested', remarks: '-' },
-        { id: 6, code: 'CS23IC2', name: 'Visualization Tools', faculty: 'Prof. ARAVINDH S', status: 'Not Requested', remarks: '-' },
-        { id: 7, code: 'CS23415', name: 'Operating Systems', faculty: 'Prof. Not Assigned', status: 'Not Requested', remarks: '-' },
-    ];
+    const { addToast } = useToast();
+    const subjects = []; // Hardcoded mock data removed
 
     return (
         <div className="stu-report-page">
@@ -30,29 +24,37 @@ const NoDueRequest = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {subjects.map((s, idx) => (
-                            <tr key={s.id}>
-                                <td style={{ textAlign: 'center' }}>{idx + 1}</td>
-                                <td>{s.code}</td>
-                                <td>{s.name}</td>
-                                <td>{s.faculty}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <button style={{
-                                        background: '#6c757d',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '3px',
-                                        padding: '4px 10px',
-                                        fontSize: '11px',
-                                        fontWeight: 'bold',
-                                        display: 'inline-block'
-                                    }}>
-                                        Not Requested
-                                    </button>
+                        {subjects.length > 0 ? (
+                            subjects.map((s, idx) => (
+                                <tr key={s.id}>
+                                    <td style={{ textAlign: 'center' }}>{idx + 1}</td>
+                                    <td>{s.code}</td>
+                                    <td>{s.name}</td>
+                                    <td>{s.faculty}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button style={{
+                                            background: '#6c757d',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '3px',
+                                            padding: '4px 10px',
+                                            fontSize: '11px',
+                                            fontWeight: 'bold',
+                                            display: 'inline-block'
+                                        }}>
+                                            Not Requested
+                                        </button>
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>{s.remarks}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6" style={{ textAlign: 'center', padding: '15px', color: '#777', background: '#f9f9f9', fontSize: '13px' }}>
+                                    No data available in table
                                 </td>
-                                <td style={{ textAlign: 'center' }}>{s.remarks}</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
 

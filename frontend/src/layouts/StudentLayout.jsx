@@ -3,31 +3,31 @@ import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import {
-    FaHome, FaClock, FaBookOpen, FaFileAlt, FaCalendarCheck,
-    FaCertificate, FaPenFancy, FaFlask, FaClipboardList,
-    FaBook, FaMoneyCheckAlt, FaCommentDots, FaUsers,
-    FaFileInvoice, FaEnvelope, FaKey, FaSignOutAlt,
-    FaBars, FaBell, FaUser, FaChevronDown, FaChevronRight, FaBus, FaCalculator
-} from 'react-icons/fa';
+    LuLayoutDashboard, LuClock, LuBookOpen, LuFileText, LuCalendarCheck2,
+    LuAward, LuPenTool, LuTestTube, LuClipboardList,
+    LuBook, LuBanknote, LuMessageSquare, LuUsers,
+    LuFileCheck, LuMail, LuKey, LuLogOut,
+    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator
+} from 'react-icons/lu';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import { ThemeContext } from '../context/ThemeContext';
 import './student-layout.css';
 
 const studentNav = [
-    { path: '/student', label: 'Dashboard', icon: <FaHome />, end: true },
-    { path: '/student/timetable', label: 'My Time Table', icon: <FaClock /> },
-    { path: '/student/registration', label: 'My Subject Registration', icon: <FaBookOpen /> },
-    { path: '/student/leave', label: 'Apply Leave / OD', icon: <FaFileAlt /> },
-    { path: '/student/attendance', label: 'Attendance', icon: <FaCalendarCheck /> },
-    { path: '/student/certificates', label: 'Apply Certificates', icon: <FaCertificate /> },
-    { path: '/student/cat-mark', label: 'CAT Mark', icon: <FaPenFancy /> },
-    { path: '/student/lab-mark', label: 'LAB Mark', icon: <FaFlask /> },
-    { path: '/student/assignment', label: 'Assignment Mark', icon: <FaClipboardList /> },
-    { path: '/student/gradebook', label: 'Grade Book', icon: <FaBook /> },
-    { path: '/student/fee', label: 'Academic Fee', icon: <FaMoneyCheckAlt /> },
-    { path: '/student/feedbacks', label: 'Feedbacks', icon: <FaCommentDots /> },
-    { path: '/student/simulator', label: 'CGPA Simulator', icon: <FaCalculator /> },
+    { path: '/student', label: 'Dashboard', icon: <LuLayoutDashboard />, end: true },
+    { path: '/student/timetable', label: 'My Time Table', icon: <LuClock /> },
+    { path: '/student/registration', label: 'My Subject Registration', icon: <LuBookOpen /> },
+    { path: '/student/leave', label: 'Apply Leave / OD', icon: <LuFileText /> },
+    { path: '/student/attendance', label: 'Attendance', icon: <LuCalendarCheck2 /> },
+    { path: '/student/certificates', label: 'Apply Certificates', icon: <LuAward /> },
+    { path: '/student/cat-mark', label: 'CAT Mark', icon: <LuPenTool /> },
+    { path: '/student/lab-mark', label: 'LAB Mark', icon: <LuTestTube /> },
+    { path: '/student/assignment', label: 'Assignment Mark', icon: <LuClipboardList /> },
+    { path: '/student/gradebook', label: 'Grade Book', icon: <LuBook /> },
+    { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
+    { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
+    { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
 ];
 
 const StudentLayout = () => {
@@ -63,18 +63,18 @@ const StudentLayout = () => {
         ...studentNav,
         {
             label: 'Class Committee',
-            icon: <FaUsers />,
+            icon: <LuUsers />,
             isDropdown: true,
             isOpen: committeeOpen,
             onToggle: () => setCommitteeOpen(!committeeOpen),
             subItems: [
-                { path: '/student/committee/schedule', label: 'Schedule', icon: <FaCalendarCheck /> },
-                { path: '/student/committee/minutes', label: 'Minutes Of Meet', icon: <FaFileAlt /> },
+                { path: '/student/committee/schedule', label: 'Schedule', icon: <LuCalendarCheck2 /> },
+                { path: '/student/committee/minutes', label: 'Minutes Of Meet', icon: <LuFileText /> },
             ]
         },
-        { path: '/student/nodue', label: 'No Due Request', icon: <FaFileInvoice /> },
-        { path: '/student/messages', label: 'Messages', icon: <FaEnvelope /> },
-        { path: '/student/change-password', label: 'Change password', icon: <FaKey /> },
+        { path: '/student/nodue', label: 'No Due Request', icon: <LuFileCheck /> },
+        { path: '/student/messages', label: 'Messages', icon: <LuMail /> },
+        { path: '/student/change-password', label: 'Change password', icon: <LuKey /> },
     ];
 
     return (
@@ -122,7 +122,7 @@ const StudentLayout = () => {
                                             <span>{item.label}</span>
                                         </div>
                                         <span className="nav-chevron">
-                                            {item.isOpen ? <FaChevronDown fontSize="10px" /> : <FaChevronRight fontSize="10px" />}
+                                            {item.isOpen ? <LuChevronDown fontSize="14px" /> : <LuChevronRight fontSize="14px" />}
                                         </span>
                                     </div>
                                     {item.isOpen && (
@@ -132,7 +132,9 @@ const StudentLayout = () => {
                                                     key={sub.path}
                                                     to={sub.path}
                                                     className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
-                                                    onClick={() => setSidebarOpen(false)}
+                                                    onClick={() => {
+                                                        if (window.innerWidth <= 768) setSidebarOpen(false);
+                                                    }}
                                                 >
                                                     <span className="nav-icon">{sub.icon}</span>
                                                     <span>{sub.label}</span>
@@ -146,7 +148,9 @@ const StudentLayout = () => {
                                     to={item.path}
                                     end={item.end || false}
                                     className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                                    onClick={() => setSidebarOpen(false)}
+                                    onClick={() => {
+                                        if (window.innerWidth <= 768) setSidebarOpen(false);
+                                    }}
                                 >
                                     <span className="nav-icon">{item.icon}</span>
                                     <span>{item.label}</span>
@@ -179,7 +183,7 @@ const StudentLayout = () => {
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <FaBars />
+                            <LuMenu />
                         </button>
                         <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
@@ -208,7 +212,7 @@ const StudentLayout = () => {
                                 className="stu-user-badge"
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                             >
-                                <FaUser className="user-icon" />
+                                <LuUser className="user-icon" />
                                 <span>{displayName}</span>
                             </button>
 

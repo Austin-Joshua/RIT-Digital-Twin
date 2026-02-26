@@ -68,4 +68,10 @@ public class AuthService {
         userRepository.save(user);
         return "User registered successfully!";
     }
+
+    @Transactional
+    public void changePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
