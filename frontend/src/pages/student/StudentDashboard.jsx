@@ -278,7 +278,7 @@ const StudentDashboard = () => {
                 )}
 
                 {/* Performance Trend & Growth Passport */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '24px' }}>
                     <div className="stu-info-card" style={{ padding: '25px', marginBottom: 0 }}>
                         <div className="info-header" style={{ marginBottom: '25px', border: 'none' }}>Performance Trend (CGPA & Attendance)</div>
                         <div style={{ width: '100%', height: 350 }}>
