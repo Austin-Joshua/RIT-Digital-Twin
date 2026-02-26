@@ -34,14 +34,7 @@ const FacultyDashboard = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Header / Breadcrumb Mirror from Student */}
-            <div className="stu-welcome">
-                <h2>Faculty Dashboard</h2>
-                <div className="breadcrumb-bar">
-                    <span className="breadcrumb-item">Faculty</span>
-                    <span className="breadcrumb-item" style={{ margin: '0 8px' }}>/</span>
-                    <span className="breadcrumb-item active">Overview</span>
-                </div>
-            </div>
+            {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Placeholder - Matching Student Style */}
             <div className="stu-kpi-row">

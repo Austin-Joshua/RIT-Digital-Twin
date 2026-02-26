@@ -1,24 +1,29 @@
 import React, { useState } from 'react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const GradeBook = () => {
     const [semester, setSemester] = useState('');
     const [showData, setShowData] = useState(false);
 
-    const grades = [
-        { year: '2024-2025', sem: '01', code: 'CY23111', title: 'Engineering Chemistry', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'GE23111', title: 'Problem Solving and C Programming', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'GE23131', title: 'Engineering Graphics', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'HS23111', title: 'Communicative English', grade: 'B+', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'MA23111', title: 'Matrices and Calculus', grade: 'A', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'CY23121', title: 'Chemistry Laboratory', grade: 'O', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'GE23121', title: 'Problem Solving and C Programming Laboratory', grade: 'A+', result: 'PASS', monthYear: 'November 2024' },
-        { year: '2024-2025', sem: '01', code: 'GE23112', title: 'Heritage of Tamil', grade: 'A', result: 'PASS', monthYear: 'November 2024' },
-    ];
+    const grades = []; // Hardcoded mock data removed
+
+    const exportToPDF = () => {
+        if (grades.length === 0) {
+            alert("No data available to export");
+            return;
+        }
+        const doc = new jsPDF();
+        doc.text(`Grade Book - Semester ${semester}`, 14, 15);
+        const columns = ["Year", "Sem", "Code", "Title", "Grade", "Result", "Exam Date"];
+        const rows = grades.map(g => [g.year, g.sem, g.code, g.title, g.grade, g.result, g.monthYear]);
+        doc.autoTable({ head: [columns], body: rows, startY: 20 });
+        doc.save(`grade_book_sem_${semester}.pdf`);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (semester === '1') setShowData(true);
-        else setShowData(false);
+        if (semester) setShowData(true);
     };
 
     return (
@@ -60,7 +65,7 @@ const GradeBook = () => {
                                 <option>10</option>
                             </select>
                             &nbsp; entries &nbsp;
-                            <button className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none' }}>
+                            <button className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none' }} onClick={exportToPDF}>
                                 Download PDF
                             </button>
                         </div>
@@ -84,23 +89,31 @@ const GradeBook = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {grades.map((g, i) => (
-                                <tr key={i}>
-                                    <td style={{ textAlign: 'center' }}><input type="checkbox" /></td>
-                                    <td style={{ textAlign: 'center' }}>{g.year}</td>
-                                    <td style={{ textAlign: 'center' }}>{g.sem}</td>
-                                    <td style={{ textAlign: 'center' }}>{g.code}</td>
-                                    <td>{g.title}</td>
-                                    <td style={{ textAlign: 'center' }}>{g.grade}</td>
-                                    <td style={{ textAlign: 'center' }}>{g.result}</td>
-                                    <td>{g.monthYear}</td>
+                            {grades.length > 0 ? (
+                                grades.map((g, i) => (
+                                    <tr key={i}>
+                                        <td style={{ textAlign: 'center' }}><input type="checkbox" /></td>
+                                        <td style={{ textAlign: 'center' }}>{g.year}</td>
+                                        <td style={{ textAlign: 'center' }}>{g.sem}</td>
+                                        <td style={{ textAlign: 'center' }}>{g.code}</td>
+                                        <td>{g.title}</td>
+                                        <td style={{ textAlign: 'center' }}>{g.grade}</td>
+                                        <td style={{ textAlign: 'center' }}>{g.result}</td>
+                                        <td>{g.monthYear}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: 'center', padding: '15px', color: '#777', background: '#f9f9f9', fontSize: '13px' }}>
+                                        No data available in table
+                                    </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
 
                     <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-                        <span style={{ color: '#777' }}>Showing 1 to 8 of 8 entries</span>
+                        <span style={{ color: '#777' }}>Showing 0 to 0 of 0 entries</span>
                         <div style={{ display: 'flex', gap: '5px' }}>
                             <button className="table-btn" disabled>Previous</button>
                             <span className="table-btn active" style={{ background: '#007bff', color: 'white' }}>1</span>

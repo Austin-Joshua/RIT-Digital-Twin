@@ -93,14 +93,7 @@ const AdminDashboard = () => {
         <motion.div initial="hidden" animate="visible" variants={stagger} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
             {/* Header / Breadcrumb Mirror from Student */}
-            <div className="stu-welcome">
-                <h2 className="dark:text-white">Admin Intelligence Overview</h2>
-                <div className="breadcrumb-bar">
-                    <span className="breadcrumb-item">Administration</span>
-                    <span className="breadcrumb-item" style={{ margin: '0 8px' }}>/</span>
-                    <span className="breadcrumb-item active">Dashboard</span>
-                </div>
-            </div>
+            {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Row - Using stu-kpi-row classes */}
             <div className="stu-kpi-row">

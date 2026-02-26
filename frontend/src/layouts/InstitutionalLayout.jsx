@@ -5,7 +5,12 @@ import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
-import { FaUser, FaBars, FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import {
+    LuUser, LuMenu, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
+    LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
+    LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey,
+    LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight
+} from 'react-icons/lu';
 import './student-layout.css';
 
 const LayoutLoader = () => (
@@ -44,30 +49,30 @@ const InstitutionalLayout = () => {
         : (user?.username || user?.role || 'ADMIN').toUpperCase();
 
     const adminNavItems = [
-        { path: '/', label: 'Home', icon: '📊', exact: true },
-        { path: '/analytics', label: 'Analytics', icon: '📈', exact: true },
-        { path: '/analytics/placement', label: 'Placements', icon: '💼' },
-        { path: '/management/audit', label: 'Audit Logs', icon: '🛡️' },
-        { path: '/management/exam-timetable', label: 'Exam Timetables', icon: '📅' },
-        { path: '/management/results', label: 'Results', icon: '✅' },
-        { path: '/management/substitutions', label: 'Class Substitutions', icon: '🔄' },
-        { path: '/management/certificates', label: 'Certificate', icon: '📜' },
-        { path: '/simulations/classroom', label: 'Classroom Allocation', icon: '🏫' },
-        { path: '/simulations/energy', label: 'Energy Optimization', icon: '⚡' },
-        { path: '/simulations/transport', label: 'Transport Analytics', icon: '🚌' },
-        { path: '/simulations/crowd', label: 'Crowd Flow', icon: '👥' },
-        { path: '/predictions', label: 'Predictive Analytics', icon: '🔮' },
+        { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
+        { path: '/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
+        { path: '/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
+        { path: '/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
+        { path: '/management/results', label: 'Results', icon: <LuBook /> },
+        { path: '/management/substitutions', label: 'Class Substitutions', icon: <LuRefreshCcw /> },
+        { path: '/management/certificates', label: 'Certificate', icon: <LuAward /> },
+        { path: '/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
+        { path: '/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
+        { path: '/simulations/transport', label: 'Transport Analytics', icon: <LuBus /> },
+        { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
+        { path: '/predictions', label: 'Predictive Analytics', icon: <LuCpu /> },
 
-        { path: '/change-password', label: 'Change Password', icon: '🔑' },
+        { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
     const facultyNavItems = [
-        { path: '/', label: 'Dashboard', icon: '📊', exact: true },
-        { path: '/simulations/classroom', label: 'Timetables', icon: '🏫' },
-        { path: '/faculty/upload-marks', label: 'Upload Results', icon: '📝' },
-        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: '🔥' },
+        { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/simulations/classroom', label: 'Timetables', icon: <LuSchool /> },
+        { path: '/faculty/upload-marks', label: 'Upload Results', icon: <LuPenTool /> },
+        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: <LuFlame /> },
 
-        { path: '/change-password', label: 'Change Password', icon: '🔑' },
+        { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
     const navItems = user?.role === 'FACULTY' ? facultyNavItems : adminNavItems;
@@ -141,7 +146,7 @@ const InstitutionalLayout = () => {
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
                         <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <FaBars />
+                            <LuMenu />
                         </button>
                         <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
@@ -172,7 +177,7 @@ const InstitutionalLayout = () => {
                                 className="stu-user-badge"
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                             >
-                                <FaUser className="user-icon" />
+                                <LuUser className="user-icon" />
                                 <span>{displayName}</span>
                             </button>
 

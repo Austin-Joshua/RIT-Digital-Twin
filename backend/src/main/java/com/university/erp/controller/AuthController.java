@@ -2,6 +2,7 @@ package com.university.erp.controller;
 
 import com.university.erp.dto.AuthRequest;
 import com.university.erp.dto.AuthResponse;
+import com.university.erp.dto.ChangePasswordRequest;
 import com.university.erp.dto.RegisterRequest;
 import com.university.erp.model.User;
 import com.university.erp.service.AuthService;
@@ -40,5 +41,14 @@ public class AuthController {
                 .username(user.getUsername())
                 .role(user.getRole().getRoleName().name())
                 .build());
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        authService.changePassword(user, request.getNewPassword());
+        return ResponseEntity.ok("Password updated successfully!");
     }
 }

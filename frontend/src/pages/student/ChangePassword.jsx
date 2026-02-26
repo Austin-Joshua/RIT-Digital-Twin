@@ -27,10 +27,8 @@ const ChangePassword = () => {
             setConfirmPassword('');
         } catch (error) {
             console.error("Change password error:", error);
-            // Fallback for visual demonstration if the backend endpoint is not yet wired
-            addToast('Password successfully updated!', 'success');
-            setNewPassword('');
-            setConfirmPassword('');
+            const errorMsg = error.response?.data?.message || 'Failed to update password. Please try again.';
+            addToast(errorMsg, 'error');
         }
     };
 
