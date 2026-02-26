@@ -77,12 +77,12 @@ const StudentLayout = () => {
             onToggle: () => setCommitteeOpen(!committeeOpen),
             subItems: [
                 { path: '/student/committee/schedule', label: 'Schedule', icon: <LuCalendarCheck2 /> },
-                { path: '/student/committee/minutes', label: 'Minutes Of Meet', icon: <LuFileText /> },
+                { path: '/student/committee/minutes', label: 'Minutes of Meeting', icon: <LuFileText /> },
             ]
         },
         { path: '/student/nodue', label: 'No Due Request', icon: <LuFileCheck /> },
         { path: '/student/messages', label: 'Messages', icon: <LuMail /> },
-        { path: '/student/change-password', label: 'Change password', icon: <LuKey /> },
+        { path: '/student/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
     return (
