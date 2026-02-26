@@ -98,7 +98,7 @@ const AdminDashboard = () => {
             {/* KPI Cards Row - Using stu-kpi-row classes */}
             <div className="stu-kpi-row">
                 {kpiCards.map((card, i) => (
-                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedDetail(card)} style={{ cursor: 'pointer' }}>
+                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedDetail(card)}>
                         <div className="kpi-main">
                             <div className="kpi-value">{card.value}</div>
                             <div className="kpi-label">{card.title}</div>

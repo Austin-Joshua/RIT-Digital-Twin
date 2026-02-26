@@ -7,7 +7,7 @@ import {
     LuAward, LuPenTool, LuTestTube, LuClipboardList,
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
-    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator
+    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings
 } from 'react-icons/lu';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
@@ -33,7 +33,7 @@ const studentNav = [
 const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+    const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [sidebarOpen, setSidebarOpen] = useState(() => {
         const saved = localStorage.getItem('sidebar-open');
         return saved !== null ? JSON.parse(saved) : window.innerWidth > 768;
@@ -197,11 +197,11 @@ const StudentLayout = () => {
                             <img
                                 src="/assets/images/institutional-dark-logo.png"
                                 alt="RIT"
-                                style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
+                                style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
                             />
                         </Link>
                     </div>
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <button
                             onClick={toggleTheme}
                             style={{
@@ -209,9 +209,9 @@ const StudentLayout = () => {
                                 cursor: 'pointer', color: 'var(--ims-icon-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
-                            title="Toggle Dark Mode"
+                            title={`Theme: ${themePreference}`}
                         >
-                            {isDarkMode ? '☀️' : '🌙'}
+                            {themePreference === 'system' ? '🖥️' : isDarkMode ? '☀️' : '🌙'}
                         </button>
                         <NotificationBar />
 
@@ -263,6 +263,16 @@ const StudentLayout = () => {
                                             onClick={() => setUserMenuOpen(false)}
                                         >
                                             <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
+                                        </NavLink>
+                                        <NavLink
+                                            to="/student/settings"
+                                            style={{
+                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
+                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
+                                            }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuSettings style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Settings
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}

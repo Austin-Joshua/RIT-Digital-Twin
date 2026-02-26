@@ -8,7 +8,7 @@ import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import {
     LuUser, LuMenu, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
-    LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey,
+    LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuSettings,
     LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight
 } from 'react-icons/lu';
 import './student-layout.css';
@@ -30,7 +30,7 @@ const InstitutionalLayout = () => {
     });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+    const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
 
     // Persist sidebar state
     useEffect(() => {
@@ -160,12 +160,12 @@ const InstitutionalLayout = () => {
                             <img
                                 src="/assets/images/institutional-dark-logo.png"
                                 alt="RIT"
-                                style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
+                                style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
                             />
                         </Link>
                     </div>
 
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <button
                             onClick={toggleTheme}
                             style={{
@@ -173,9 +173,9 @@ const InstitutionalLayout = () => {
                                 cursor: 'pointer', color: 'var(--ims-icon-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
-                            title="Toggle Dark Mode"
+                            title={`Theme: ${themePreference}`}
                         >
-                            {isDarkMode ? '☀️' : '🌙'}
+                            {themePreference === 'system' ? '🖥️' : isDarkMode ? '☀️' : '🌙'}
                         </button>
                         <NotificationBar />
 
@@ -222,11 +222,18 @@ const InstitutionalLayout = () => {
                                             <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
                                         </NavLink>
                                         <NavLink
-                                            to={user?.role === 'STUDENT' ? "/student/profile" : "/student/profile"} // Keeping path consistent for now
+                                            to="/profile"
                                             style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
                                             <LuUser style={{ marginRight: '8px', verticalAlign: 'middle' }} /> My Profile
+                                        </NavLink>
+                                        <NavLink
+                                            to="/settings"
+                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuSettings style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Settings
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
