@@ -24,10 +24,18 @@ const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
-    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        const saved = localStorage.getItem('sidebar-open');
+        return saved !== null ? JSON.parse(saved) : window.innerWidth > 768;
+    });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+
+    // Persist sidebar state
+    useEffect(() => {
+        localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
+    }, [sidebarOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {

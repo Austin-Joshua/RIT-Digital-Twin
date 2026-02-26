@@ -34,10 +34,18 @@ const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+    const [sidebarOpen, setSidebarOpen] = useState(() => {
+        const saved = localStorage.getItem('sidebar-open');
+        return saved !== null ? JSON.parse(saved) : window.innerWidth > 768;
+    });
     const [committeeOpen, setCommitteeOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    // Persist sidebar state
+    useEffect(() => {
+        localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
+    }, [sidebarOpen]);
 
     // Close dropdown on click outside
     useEffect(() => {
