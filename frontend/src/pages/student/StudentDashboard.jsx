@@ -323,8 +323,8 @@ const StudentDashboard = () => {
                 <div className="stu-calendar-header">
                     <span className="cal-title">February &nbsp; 2026</span>
                     <div className="stu-calendar-legend">
-                        <span className="legend-item"><span className="legend-dot holiday"></span> HoliDay</span>
-                        <span className="legend-item"><span className="legend-dot no-order"></span> No order Day</span>
+                        <span className="legend-item"><span className="legend-dot holiday"></span> Holiday</span>
+                        <span className="legend-item"><span className="legend-dot no-order"></span> No Order Day</span>
                         <span className="legend-item"><span className="legend-dot today"></span> Today</span>
                     </div>
                 </div>

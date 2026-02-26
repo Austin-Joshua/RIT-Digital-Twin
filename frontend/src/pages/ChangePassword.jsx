@@ -36,7 +36,7 @@ const ChangePassword = () => {
         <div className="stu-report-page">
             <div className="stu-info-card" style={{ maxWidth: '500px', margin: '20px 0' }}>
                 <div style={{ padding: '12px 15px', borderBottom: '1px solid #f4f4f4', fontSize: '14px', color: '#333' }}>
-                    Change password
+                    Change Password
                 </div>
                 <form autoComplete="off" style={{ padding: '20px' }}>
                     <div style={{ marginBottom: '15px' }}>
