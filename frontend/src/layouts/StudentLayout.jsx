@@ -34,7 +34,7 @@ const StudentLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
     const [committeeOpen, setCommitteeOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -156,6 +156,22 @@ const StudentLayout = () => {
                     ))}
                 </nav>
             </aside>
+
+            {/* Mobile Sidebar Backdrop */}
+            {sidebarOpen && window.innerWidth <= 768 && (
+                <div
+                    onClick={() => setSidebarOpen(false)}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        zIndex: 999
+                    }}
+                />
+            )}
 
             {/* ── Main ── */}
             <div className="stu-main">

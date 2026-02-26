@@ -21,7 +21,7 @@ const EnergyPage = lazy(() => import('./pages/EnergyPage'));
 const TransportPage = lazy(() => import('./pages/TransportPage'));
 const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
-const ManagementPage = lazy(() => import('./pages/ManagementPage'));
+
 const SuperAdminDashboard = lazy(() => import('./pages/SuperAdminDashboard'));
 const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
 
@@ -168,7 +168,7 @@ const App = () => {
                   <Route path="simulations/transport" element={<TransportPage />} />
                   <Route path="simulations/crowd" element={<CrowdPage />} />
                   <Route path="predictions" element={<PredictionPage />} />
-                  <Route path="management" element={<ManagementPage />} />
+
 
                   {/* Enterprise ERP Additions (Admin/Faculty) */}
                   <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
