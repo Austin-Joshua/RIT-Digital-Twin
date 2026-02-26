@@ -421,17 +421,18 @@
 .stu-info-card {
     background: white;
     border-top: 3px solid #d2d6de;
-    border-radius: 4px;
+    border-radius: 12px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     width: 100%;
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
 }
 
 .stu-kpi-card {
-    border-radius: 4px;
+    border-radius: 12px;
     position: relative;
     color: white;
     overflow: hidden;
-    min-height: 140px;
+    min-height: 110px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -453,18 +454,18 @@
 }
 
 .kpi-main {
-    padding: 20px 25px;
+    padding: 15px 18px;
     z-index: 1;
 }
 
 .kpi-value {
-    font-size: 48px;
+    font-size: 36px;
     font-weight: bold;
     margin: 0;
 }
 
 .kpi-label {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: normal;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -472,9 +473,9 @@
 
 .kpi-icon {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 80px;
+    top: 10px;
+    right: 12px;
+    font-size: 60px;
     color: rgba(0, 0, 0, 0.15);
     z-index: 0;
     transition: all 0.4s ease-out;
@@ -511,6 +512,44 @@
 
 .stu-kpi-card.red {
     background-color: var(--ims-red);
+}
+
+/* ── Dark Mode: KPI cards & info panels ── */
+html.dark .stu-kpi-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+html.dark .stu-kpi-card:hover {
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .stu-info-card {
+    background: var(--ims-bg-dark, #1a2332);
+    border-top-color: #334155;
+    color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .stu-info-card .info-header {
+    border-bottom-color: #334155;
+    color: #f8fafc;
+}
+
+html.dark .stu-info-card .info-body {
+    color: #cbd5e1;
+}
+
+html.dark .stu-content {
+    background: var(--ims-bg-dark, #0f172a);
+}
+
+html.dark .stu-report-page {
+    color: #e2e8f0;
+}
+
+html.dark .kpi-more {
+    background-color: rgba(0, 0, 0, 0.25);
 }
 
 .stu-info-row {
