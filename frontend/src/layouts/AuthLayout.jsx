@@ -10,20 +10,22 @@ const AuthLayout = () => {
     const { isDarkMode, toggleTheme } = useTheme();
     const isLogin = location.pathname === '/login';
 
+    const ease = [0.4, 0, 0.2, 1];
+
     const panelVariants = {
-        login: { x: 0, transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } },
-        signup: { x: '100%', transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } }
+        login: { x: 0, transition: { duration: 0.4, ease } },
+        signup: { x: '100%', transition: { duration: 0.4, ease } }
     };
 
     const formPanelVariants = {
-        login: { x: 0, transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } },
-        signup: { x: '-100%', transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] } }
+        login: { x: 0, transition: { duration: 0.4, ease } },
+        signup: { x: '-100%', transition: { duration: 0.4, ease } }
     };
 
     const textVariants = {
-        initial: { opacity: 0, y: 30 },
-        animate: { opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.8 } },
-        exit: { opacity: 0, y: -30, transition: { duration: 0.4 } }
+        initial: { opacity: 0, y: 15 },
+        animate: { opacity: 1, y: 0, transition: { delay: 0.15, duration: 0.3 } },
+        exit: { opacity: 0, y: -15, transition: { duration: 0.15 } }
     };
 
     return (
@@ -37,25 +39,27 @@ const AuthLayout = () => {
                     {isDarkMode ? <FaSun /> : <FaMoon />}
                 </button>
             </div>
+            {/* Fixed logo — stays in place during transitions */}
+            <div className="brand-logo-fixed" style={{
+                position: 'fixed', top: '24px', left: '30px', zIndex: 50,
+                display: 'flex', alignItems: 'center', gap: '12px'
+            }}>
+                <img
+                    src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                    alt="RIT"
+                    style={{ height: '50px', width: 'auto' }}
+                />
+            </div>
+
             <div className="auth-wrapper" style={{ display: 'flex', width: '100%', height: '100vh', position: 'relative' }}>
                 <motion.div className="brand-panel" animate={isLogin ? 'login' : 'signup'} variants={panelVariants} style={{
                     width: '50%', height: '100%',
-                    background: 'linear-gradient(135deg, #0B2C6B 0%, #123C8C 100%)', // Persistent Blue Accent
+                    background: 'linear-gradient(135deg, #0B2C6B 0%, #123C8C 100%)',
                     position: 'absolute', left: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px',
-                    color: '#ffffff' // Always white on blue
+                    color: '#ffffff'
                 }}>
                     <AnimatedWaveBackground />
-                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
-                        <div style={{ marginBottom: '20px' }} className="brand-logo-area">
-                            <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT"
-                                style={{
-                                    height: '90px',
-                                    width: 'auto'
-                                }}
-                            />
-                        </div>
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px', marginTop: '30px' }}>
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
                                 <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '24px', lineHeight: '1.2', color: isDarkMode ? '#ffffff' : '#f8f9fa' }}>
@@ -111,8 +115,9 @@ const AuthLayout = () => {
                     .brand-panel p,
                     .brand-description,
                     .brand-tagline { display: none !important; }
-                    .brand-logo-area { margin-bottom: 10px !important; }
                     .brand-panel img { height: 55px !important; }
+                    .brand-logo-fixed { position: absolute !important; top: 16px !important; left: 50% !important; transform: translateX(-50%) !important; }
+                    .brand-logo-fixed img { height: 40px !important; }
                     .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 10px !important; z-index: 2 !important; }
                 }
             `}</style>
