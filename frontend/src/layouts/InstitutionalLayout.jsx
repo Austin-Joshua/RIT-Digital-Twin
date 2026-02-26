@@ -93,7 +93,7 @@ const InstitutionalLayout = () => {
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
                         {sidebarOpen ? (
                             <img
-                                src="/assets/images/institutional-dark-logo.png"
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT Rajalakshmi Institute of Technology"
                                 style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
                             />
@@ -158,7 +158,7 @@ const InstitutionalLayout = () => {
                         </button>
                         <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
-                                src="/assets/images/institutional-dark-logo.png"
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
                                 style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
                             />
