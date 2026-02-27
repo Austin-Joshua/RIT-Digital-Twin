@@ -79,7 +79,6 @@ const RegisterPage = () => {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    placeholder="Institutional ID"
                 />
 
                 <Input
@@ -89,7 +88,6 @@ const RegisterPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    placeholder="email@rit.edu.in"
                 />
 
                 <Input
@@ -99,7 +97,6 @@ const RegisterPage = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    placeholder="••••••••"
                 />
 
                 <Button
