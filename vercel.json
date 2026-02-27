@@ -3,6 +3,10 @@
     "outputDirectory": "frontend/dist",
     "rewrites": [
         {
+            "source": "/api/:path*",
+            "destination": "https://roguish-christeen-cnemial.ngrok-free.dev/api/:path*"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
