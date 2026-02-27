@@ -54,6 +54,9 @@ INSERT IGNORE INTO roles (id, role_name) VALUES
 (3, 'ROLE_STUDENT'),
 (4, 'ROLE_SUPER_ADMIN');
 
+CALL AddColumnSafely('roles', 'created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+CALL AddColumnSafely('roles', 'updated_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+
 -- ---------------------------------------------------------
 -- 3. User Seeding (Fixes the Login Failed error)
 -- ---------------------------------------------------------
@@ -76,6 +79,9 @@ INSERT IGNORE INTO users (username, email, password, first_name, last_name, role
 ('admin@ritchennai.edu.in',   'admin@ritchennai.edu.in',   '$2a$10$KryCmxLqFNoMv3Qd6KSK20dJotZ6ItPc14vyIW6S5v3WJ0xcljWkK', 'System', 'Admin', 1),
 ('faculty@ritchennai.edu.in', 'faculty@ritchennai.edu.in', '$2a$10$p0M9Xp6xQG5stLCRzM9vHeE8L.g9E1Z6.iYv.C7e4v9v9v9v9v9v9', 'John', 'Faculty', 2),
 ('student@ritchennai.edu.in', 'student@ritchennai.edu.in', '$2a$10$p0M9Xp6xQG5stLCRzM9vHeE8L.g9E1Z6.iYv.C7e4v9v9v9v9v9v9', 'Jane', 'Student', 3);
+
+CALL AddColumnSafely('users', 'created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+CALL AddColumnSafely('users', 'updated_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
 
 -- ---------------------------------------------------------
 -- 4. Transport Routes & Bus Stops
@@ -101,6 +107,8 @@ CALL AddColumnSafely('transport_routes', 'capacity', 'INT DEFAULT 56');
 CALL AddColumnSafely('transport_routes', 'current_occupancy', 'INT DEFAULT 0');
 CALL AddColumnSafely('transport_routes', 'coordinator_name', 'VARCHAR(100)');
 CALL AddColumnSafely('transport_routes', 'coordinator_phone', 'VARCHAR(20)');
+CALL AddColumnSafely('transport_routes', 'created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+CALL AddColumnSafely('transport_routes', 'updated_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
 
 CREATE TABLE IF NOT EXISTS bus_stops (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
