@@ -1,9 +1,6 @@
 -- =====================================================
 -- RIT Digital Twin – Seed Data
--- Sample data for development and testing
 -- =====================================================
-
-USE rit_digital_twin;
 
 -- =====================================================
 -- BUILDINGS
@@ -78,33 +75,27 @@ INSERT INTO timetables (classroom_id, department_id, subject_name, subject_code,
 (17, 8, 'Biomedical Instrumentation','BM2201','TUESDAY',   '09:00', '10:00', 3, 'A', '2024-2025', 28);
 
 -- =====================================================
--- TRANSPORT ROUTES
+-- TRANSPORT ROUTES (Updated for RIT Transport Features)
 -- =====================================================
-INSERT INTO transport_routes (route_number, route_name, origin, destination, total_distance_km, estimated_duration_min, vehicle_type, vehicle_capacity, departure_time, arrival_time, route_type) VALUES
-('R01', 'Chennai Central Route',     'Chennai Central',    'RIT Campus', 45.5, 75, 'BUS', 56, '07:00', '08:15', 'MORNING'),
-('R02', 'Tambaram Route',            'Tambaram Station',   'RIT Campus', 18.2, 35, 'BUS', 56, '07:30', '08:05', 'MORNING'),
-('R03', 'Chromepet Route',           'Chromepet',          'RIT Campus', 22.0, 40, 'BUS', 56, '07:15', '07:55', 'MORNING'),
-('R04', 'Guindy Route',              'Guindy Station',     'RIT Campus', 30.0, 55, 'BUS', 56, '07:00', '07:55', 'MORNING'),
-('R05', 'OMR IT Corridor Route',     'Sholinganallur',     'RIT Campus', 35.0, 60, 'BUS', 50, '07:00', '08:00', 'MORNING'),
-('R06', 'Kanchipuram Route',         'Kanchipuram Bus Stand','RIT Campus',12.5, 25, 'MINIBUS', 30, '07:45', '08:10', 'MORNING'),
-('R07', 'Evening - Central Return',  'RIT Campus',         'Chennai Central', 45.5, 80, 'BUS', 56, '17:00', '18:20', 'EVENING'),
-('R08', 'Evening - Tambaram Return', 'RIT Campus',         'Tambaram Station', 18.2, 40, 'BUS', 56, '17:00', '17:40', 'EVENING');
+INSERT INTO transport_routes (route_number, route_name, start_point, end_point, bus_number, capacity, current_occupancy, coordinator_name, coordinator_phone) VALUES
+('R01', 'Ennore Route', 'Ennore', 'RIT Campus', 'TN-01-AX-1234', 56, 45, 'Mr. Ramesh', '9840012345'),
+('R11A', 'Chengalpattu Route', 'Chengalpattu', 'RIT Campus', 'TN-01-BY-5678', 56, 38, 'Mr. Suresh', '9840054321'),
+('R22', 'Tambaram Route', 'Tambaram Station', 'RIT Campus', 'TN-01-CZ-9012', 56, 50, 'Ms. Priya', '9841122334'),
+('R05', 'OMR IT Corridor', 'Sholinganallur', 'RIT Campus', 'TN-01-DW-3456', 50, 30, 'Mr. Karthik', '9840099887');
 
 -- =====================================================
--- BUS STOPS
+-- BUS STOPS (Updated for Boarding Points & Timings)
 -- =====================================================
-INSERT INTO bus_stops (route_id, stop_name, stop_order, estimated_arrival_offset_min, passenger_count_avg, landmark) VALUES
-(1, 'Chennai Central',     1,  0, 25, 'Central Railway Station'),
-(1, 'Guindy',              2, 20, 18, 'Guindy National Park'),
-(1, 'Chromepet',           3, 35, 22, 'Chromepet Bus Stand'),
-(1, 'Tambaram',            4, 45, 15, 'Tambaram Railway Station'),
-(1, 'Vandalur',            5, 55, 10, 'Vandalur Zoo'),
-(1, 'Sriperumbudur',       6, 65,  8, 'Sriperumbudur Bus Stand'),
-(1, 'RIT Campus',          7, 75,  0, 'Main Gate'),
-(2, 'Tambaram Station',    1,  0, 30, 'West Side Exit'),
-(2, 'Perungalathur',       2, 10, 15, 'Signal Junction'),
-(2, 'Vandalur',            3, 18, 12, 'Zoo Entrance'),
-(2, 'RIT Campus',          4, 35,  0, 'Main Gate');
+INSERT INTO bus_stops (route_id, stop_name, pickup_time, stop_order, landmark) VALUES
+(1, 'Ennore',           '05:50:00', 1, 'Near Railway Station'),
+(1, 'Ernavoor',         '06:05:00', 2, 'Market Junction'),
+(1, 'Thiruvottiyur',    '06:20:00', 3, 'Theradi Metro'),
+(1, 'RIT Campus',       '08:00:00', 4, 'Main Gate'),
+
+(2, 'Chengalpattu',     '06:00:00', 1, 'Old Bus Stand'),
+(2, 'Maraimalai Nagar', '06:25:00', 2, 'Ford Factory Junction'),
+(2, 'Potheri',          '06:40:00', 3, 'SRM University Gate'),
+(2, 'RIT Campus',       '08:10:00', 4, 'Main Gate');
 
 -- =====================================================
 -- SAMPLE ENERGY LOGS (one day)

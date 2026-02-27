@@ -2,6 +2,7 @@ package com.university.erp.service;
 
 import com.university.erp.exception.ErpException;
 import com.university.erp.model.RevaluationRequest;
+import com.university.erp.model.Marks;
 import com.university.erp.repository.RevaluationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,15 @@ public class RevaluationService {
     private final RevaluationRepository revaluationRepository;
     private final AcademicService academicService;
     private final AuditService auditService;
+    private final InternalMarkCalculationService calculationService;
 
     public RevaluationService(RevaluationRepository revaluationRepository,
-            AcademicService academicService, AuditService auditService) {
+            AcademicService academicService, AuditService auditService,
+            InternalMarkCalculationService calculationService) {
         this.revaluationRepository = revaluationRepository;
         this.academicService = academicService;
         this.auditService = auditService;
+        this.calculationService = calculationService;
     }
 
     @Transactional
@@ -37,7 +41,7 @@ public class RevaluationService {
     }
 
     @Transactional
-    public void updateMarksByFaculty(Long requestId, Integer newInternal, Integer newExternal) {
+    public void updateMarksByFaculty(Long requestId, Double newInternal, Double newExternal) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
@@ -45,10 +49,13 @@ public class RevaluationService {
             throw new ErpException.InvalidOperationException("Request not yet approved by Admin/HOD");
         }
 
-        request.getOriginalMarks().setInternalMarks(newInternal);
-        request.getOriginalMarks().setExternalMarks(newExternal);
-        request.getOriginalMarks().setTotalMarks(newInternal + newExternal);
-        // Recalculate grade logic could go here
+        Marks marks = request.getOriginalMarks();
+        marks.setCalculatedInternal(newInternal.doubleValue());
+        marks.setFinalExamScore(newExternal.doubleValue());
+
+        calculationService.calculateFinalConverted(marks);
+        calculationService.calculateTotal(marks);
+        calculationService.calculateGrade(marks);
 
         request.setStatus(RevaluationRequest.RequestStatus.FACULTY_UPDATED);
         revaluationRepository.save(request);
