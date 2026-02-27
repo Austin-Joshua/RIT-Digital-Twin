@@ -29,7 +29,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
-        return buildErrorResponse("An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse("An unexpected error occurred. Please contact support.",
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<Object> buildErrorResponse(String message, HttpStatus status) {

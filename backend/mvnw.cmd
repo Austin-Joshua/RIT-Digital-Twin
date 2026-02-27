@@ -18,7 +18,7 @@
 @REM ----------------------------------------------------------------------------
 
 @REM Begin all REM://
-@echo off
+@echo on
 @REM set title of command window
 title %0
 
@@ -49,8 +49,7 @@ echo Downloading Maven Wrapper...
 powershell -Command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar' -OutFile '%~dp0\.mvn\wrapper\maven-wrapper.jar' }"
 
 :runWrapper
-"%JAVACMD%" ^
-  -jar %WRAPPER_JAR% %*
+"%JAVACMD%" -jar %WRAPPER_JAR% %*
 if ERRORLEVEL 1 goto error
 goto end
 
