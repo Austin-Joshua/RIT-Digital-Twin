@@ -17,6 +17,9 @@ public class TransportRoute extends BaseEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    private String routeNumber;
+
+    @Column(nullable = false)
     private String routeName;
 
     private String startPoint;
@@ -24,4 +27,7 @@ public class TransportRoute extends BaseEntity {
     private String busNumber;
     private Integer capacity;
     private Integer currentOccupancy;
+
+    private String coordinatorName;
+    private String coordinatorPhone;
 }

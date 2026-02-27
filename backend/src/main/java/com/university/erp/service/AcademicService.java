@@ -4,6 +4,7 @@ import com.university.erp.exception.ErpException;
 import com.university.erp.model.Marks;
 import com.university.erp.model.Student;
 import com.university.erp.repository.MarksRepository;
+import com.university.erp.repository.MarkHistoryRepository;
 import com.university.erp.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,26 +17,66 @@ public class AcademicService {
     private final MarksRepository marksRepository;
     private final StudentRepository studentRepository;
     private final AuditService auditService;
+    private final InternalMarkCalculationService calculationService;
+    private final MarkHistoryRepository historyRepository;
 
     public AcademicService(MarksRepository marksRepository, StudentRepository studentRepository,
-            AuditService auditService) {
+            AuditService auditService, InternalMarkCalculationService calculationService,
+            MarkHistoryRepository historyRepository) {
         this.marksRepository = marksRepository;
         this.studentRepository = studentRepository;
         this.auditService = auditService;
+        this.calculationService = calculationService;
+        this.historyRepository = historyRepository;
     }
 
     @Transactional
-    public void enterMarks(Long studentId, Marks marks) {
+    public void enterMarks(Long studentId, Marks newMarks) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
 
-        marks.setStudent(student);
-        marksRepository.save(marks);
+        Marks existingMarks = marksRepository.findById(newMarks.getId() != null ? newMarks.getId() : -1L)
+                .orElse(new Marks());
+
+        if (existingMarks.getId() != null) {
+            logHistory(existingMarks, newMarks);
+        }
+
+        newMarks.setStudent(student);
+        calculationService.calculateAll(newMarks);
+        marksRepository.save(newMarks);
 
         recalculateCgpa(studentId);
 
-        auditService.log("MARKS_ENTRY", "Entered marks for student: " + student.getStudentIdNumber() +
-                " in subject ID: " + marks.getSubject().getId());
+        auditService.log("MARKS_ENTRY", "Updated marks for student: " + student.getStudentIdNumber() +
+                " in subject ID: " + newMarks.getSubject().getId());
+    }
+
+    private void logHistory(Marks oldMarks, Marks newMarks) {
+        trackChange(oldMarks, newMarks, "cat1Score", String.valueOf(oldMarks.getCat1Score()),
+                String.valueOf(newMarks.getCat1Score()));
+        trackChange(oldMarks, newMarks, "cat2Score", String.valueOf(oldMarks.getCat2Score()),
+                String.valueOf(newMarks.getCat2Score()));
+        trackChange(oldMarks, newMarks, "cat3Score", String.valueOf(oldMarks.getCat3Score()),
+                String.valueOf(newMarks.getCat3Score()));
+        trackChange(oldMarks, newMarks, "assignmentScore", String.valueOf(oldMarks.getAssignmentScore()),
+                String.valueOf(newMarks.getAssignmentScore()));
+        trackChange(oldMarks, newMarks, "attendancePercentage", String.valueOf(oldMarks.getAttendancePercentage()),
+                String.valueOf(newMarks.getAttendancePercentage()));
+        trackChange(oldMarks, newMarks, "finalExamScore", String.valueOf(oldMarks.getFinalExamScore()),
+                String.valueOf(newMarks.getFinalExamScore()));
+    }
+
+    private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
+        if (oldVal != null && !oldVal.equals(newVal)) {
+            historyRepository.save(com.university.erp.model.MarkHistory.builder()
+                    .mark(mark)
+                    .fieldName(field)
+                    .oldValue(oldVal)
+                    .newValue(newVal)
+                    .changedBy("SYSTEM")
+                    .build());
+        }
     }
 
     public List<Marks> getStudentMarks(Long studentId) {

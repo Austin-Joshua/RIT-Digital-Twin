@@ -73,23 +73,29 @@ CREATE TABLE IF NOT EXISTS energy_logs (
 
 -- 7. Transport Routes Table
 CREATE TABLE IF NOT EXISTS transport_routes (
-    route_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    route_number VARCHAR(20) NOT NULL UNIQUE,
     route_name VARCHAR(100) NOT NULL,
-    driver_name VARCHAR(100),
-    vehicle_number VARCHAR(20) NOT NULL UNIQUE,
+    start_point VARCHAR(100),
+    end_point VARCHAR(100),
+    bus_number VARCHAR(20) NOT NULL UNIQUE,
     capacity INT NOT NULL,
-    fuel_efficiency_kmpl DECIMAL(5, 2),
+    current_occupancy INT DEFAULT 0,
+    coordinator_name VARCHAR(100),
+    coordinator_phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 8. Bus Stops Table
 CREATE TABLE IF NOT EXISTS bus_stops (
-    stop_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     route_id BIGINT NOT NULL,
     stop_name VARCHAR(100) NOT NULL,
+    pickup_time TIME,
+    stop_order INT NOT NULL,
+    landmark VARCHAR(255),
     student_count INT DEFAULT 0,
-    arrival_time TIME,
-    FOREIGN KEY (route_id) REFERENCES transport_routes(route_id) ON DELETE CASCADE
+    FOREIGN KEY (route_id) REFERENCES transport_routes(id) ON DELETE CASCADE
 );
 
 -- 9. Crowd Simulation Data
@@ -131,6 +137,40 @@ CREATE TABLE IF NOT EXISTS sustainability_metrics (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Marks Table
+CREATE TABLE IF NOT EXISTS marks (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    student_id BIGINT NOT NULL,
+    subject_id BIGINT NOT NULL,
+    semester INT,
+    cat1_score DECIMAL(5, 2),
+    cat2_score DECIMAL(5, 2),
+    cat3_score DECIMAL(5, 2),
+    assignment_score DECIMAL(5, 2),
+    attendance_percentage DECIMAL(5, 2),
+    calculated_internal DECIMAL(5, 2),
+    final_exam_score DECIMAL(5, 2),
+    final_converted_score DECIMAL(5, 2),
+    total_score DECIMAL(5, 2),
+    grade VARCHAR(5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+);
+
+-- Mark History Table (Audit Log)
+CREATE TABLE IF NOT EXISTS mark_history (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    mark_id BIGINT NOT NULL,
+    field_name VARCHAR(50),
+    old_value VARCHAR(255),
+    new_value VARCHAR(255),
+    changed_by VARCHAR(100),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mark_id) REFERENCES marks(id) ON DELETE CASCADE
+);
+
 -- Timetable Table
 CREATE TABLE IF NOT EXISTS timetables (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -141,8 +181,8 @@ CREATE TABLE IF NOT EXISTS timetables (
     subject_name VARCHAR(200),
     department_id BIGINT,
     classroom_id BIGINT,
-    FOREIGN KEY (department_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(room_id) ON DELETE SET NULL
+    FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL
 );
 
 -- Data Seeding
