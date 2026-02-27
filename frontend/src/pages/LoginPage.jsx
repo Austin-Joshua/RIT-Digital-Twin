@@ -89,7 +89,6 @@ const LoginPage = () => {
                     value={credentials.username}
                     onChange={handleChange}
                     required
-                    placeholder="e.g. admin@ritchennai.edu.in"
                 />
 
                 <Input
@@ -99,7 +98,6 @@ const LoginPage = () => {
                     value={credentials.password}
                     onChange={handleChange}
                     required
-                    placeholder="••••••••"
                     rightElement={
                         <button
                             type="button"
