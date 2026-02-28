@@ -1,62 +1,26 @@
-@REM ----------------------------------------------------------------------------
-@REM Licensed to the Apache Software Foundation (ASF) under one
-@REM or more contributor license agreements.  See the NOTICE file
-@REM distributed with this work for additional information
-@REM regarding copyright ownership.  The ASF licenses this file
-@REM to you under the Apache License, Version 2.0 (the
-@REM "License"); you may not use this file except in compliance
-@REM with the License.  You may obtain a copy of the License at
-@REM
-@REM    https://www.apache.org/licenses/LICENSE-2.0
-@REM
-@REM Unless required by applicable law or agreed to in writing,
-@REM software distributed under the License is distributed on an
-@REM "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-@REM KIND, either express or implied.  See the License for the
-@REM specific language governing permissions and limitations
-@REM under the License.
-@REM ----------------------------------------------------------------------------
+@REM Maven Wrapper for Windows
+@echo off
+setlocal
 
-@REM Begin all REM://
-@echo on
-@REM set title of command window
-title %0
+set "WRAPPER_JAR=%~dp0.mvn\wrapper\maven-wrapper.jar"
 
-@setlocal
+@REM Find Java
+if not "%JAVA_HOME%"=="" (
+    set "JAVACMD=%JAVA_HOME%\bin\java.exe"
+) else (
+    for %%i in (java.exe) do set "JAVACMD=%%~$PATH:i"
+)
 
-set ERROR_CODE=0
+if not exist "%JAVACMD%" (
+    echo Error: JAVA_HOME is not set and java.exe is not in PATH. >&2
+    exit /B 1
+)
 
-@REM ==== START VALIDATION ====
-if not "%JAVA_HOME%"=="" goto OkJHome
-for %%i in (java.exe) do set "JAVACMD=%%~$PATH:i"
-goto checkJCmd
+if not exist "%WRAPPER_JAR%" (
+    echo Downloading Maven Wrapper...
+    powershell -Command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.3.2/maven-wrapper-3.3.2.jar' -OutFile '%WRAPPER_JAR%' }"
+)
 
-:OkJHome
-set "JAVACMD=%JAVA_HOME%\bin\java.exe"
+"%JAVACMD%" %MVNW_JAVA_OPTS% -cp "%WRAPPER_JAR%" "-Dmaven.multiModuleProjectDirectory=%~dp0." org.apache.maven.wrapper.MavenWrapperMain %*
 
-:checkJCmd
-if exist "%JAVACMD%" goto chkMWrapper
-
-echo The JAVA_HOME environment variable is not defined correctly >&2
-echo This environment variable is needed to run this program. >&2
-goto error
-
-:chkMWrapper
-set WRAPPER_JAR="%~dp0\.mvn\wrapper\maven-wrapper.jar"
-if exist %WRAPPER_JAR% goto runWrapper
-
-echo Downloading Maven Wrapper...
-powershell -Command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar' -OutFile '%~dp0\.mvn\wrapper\maven-wrapper.jar' }"
-
-:runWrapper
-"%JAVACMD%" -jar %WRAPPER_JAR% %*
-if ERRORLEVEL 1 goto error
-goto end
-
-:error
-set ERROR_CODE=1
-
-:end
-@endlocal & set ERROR_CODE=%ERROR_CODE%
-
-exit /B %ERROR_CODE%
+endlocal
