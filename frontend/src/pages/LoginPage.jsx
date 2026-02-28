@@ -11,27 +11,11 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [step, setStep] = useState(1); // 1: Identifier, 2: Choice (Login/Preview), 3: Password
-    const { login, loginAsGuest } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    };
-
-    const handleIdentifierSubmit = (e) => {
-        e.preventDefault();
-        if (credentials.username.trim()) {
-            setStep(2);
-        }
-    };
-
-    const handleGuestLogin = (role) => {
-        loginAsGuest(role);
-        if (role === 'STUDENT') navigate('/student');
-        else if (role === 'ADMIN') navigate('/admin');
-        else if (role === 'FACULTY') navigate('/faculty');
-        else navigate('/');
     };
 
     const handleSubmit = async (e) => {
@@ -42,12 +26,15 @@ const LoginPage = () => {
             const result = await login(credentials.username.trim(), credentials.password);
             if (result.success) {
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                if (storedUser?.role === 'STUDENT') navigate('/student');
-                else if (storedUser?.role === 'ADMIN') navigate('/admin');
-                else navigate('/');
+                if (storedUser?.role === 'STUDENT') {
+                    navigate('/student');
+                } else if (storedUser?.role === 'ADMIN') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             } else {
-                setError(result.message || 'Invalid institutional credentials.');
-                setStep(1); // Go back to start on error
+                setError(result.message || 'Invalid username or password.');
             }
         } catch (err) {
             setError('Authentication service unavailable.');
@@ -95,100 +82,82 @@ const LoginPage = () => {
                 </motion.div>
             )}
 
-            <div className="login-form-container">
-                {step === 1 && (
-                    <form onSubmit={handleIdentifierSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <Input
-                            label="INSTITUTIONAL ID / EMAIL"
-                            type="text"
-                            name="username"
-                            value={credentials.username}
-                            onChange={handleChange}
-                            placeholder="e.g. admin@ritchennai.edu.in"
-                            required
-                        />
-                        <Button type="submit" style={{ width: '100%', marginTop: '16px' }}>Continue</Button>
-                    </form>
-                )}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Input
+                    label="Username / Email"
+                    type="text"
+                    name="username"
+                    value={credentials.username}
+                    onChange={handleChange}
+                    placeholder="Enter your ID or Email"
+                    required
+                />
 
-                {step === 2 && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)', marginBottom: '10px' }}>
-                            Identify your access mode for <strong>{credentials.username}</strong>:
-                        </p>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                            <button onClick={() => handleGuestLogin('ADMIN')} className="chooser-btn">Admin Preview</button>
-                            <button onClick={() => handleGuestLogin('FACULTY')} className="chooser-btn">Faculty Preview</button>
-                            <button onClick={() => handleGuestLogin('STUDENT')} className="chooser-btn">Student Preview</button>
-                            <button onClick={() => handleGuestLogin('PARENT')} className="chooser-btn">Parent Preview</button>
-                        </div>
-
-                        <div style={{ margin: '15px 0', borderTop: '1px solid var(--glass-border)', paddingTop: '15px' }}>
-                            <Button onClick={() => setStep(3)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--color-primary-navy)', color: 'var(--color-primary-navy)' }}>
-                                Login with Password
-                            </Button>
-                        </div>
-
-                        <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: 'var(--theme-text-muted)', fontSize: '0.8rem', cursor: 'pointer' }}>
-                            ← Use different ID
+                <Input
+                    label="Password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={credentials.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    rightElement={
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label="Toggle password visibility"
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                color: 'var(--theme-text-muted)',
+                                fontSize: '1.2rem',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'color 0.3s ease'
+                            }}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
+                    }
+                />
 
-                        <style>{`
-                            .chooser-btn {
-                                padding: 12px;
-                                border-radius: 12px;
-                                border: 1px solid var(--glass-border);
-                                background: rgba(255,255,255,0.05);
-                                color: var(--theme-text);
-                                cursor: pointer;
-                                transition: all 0.2s;
-                                font-weight: 500;
-                            }
-                            .chooser-btn:hover {
-                                background: var(--color-accent-gold);
-                                color: white;
-                                border-color: var(--color-accent-gold);
-                                transform: translateY(-2px);
-                            }
-                        `}</style>
-                    </motion.div>
-                )}
-
-                {step === 3 && (
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ marginBottom: '15px', color: 'var(--theme-text-muted)', fontSize: '0.9rem' }}>
-                            Logging in as <strong>{credentials.username}</strong>
-                        </div>
-                        <Input
-                            label="PASSWORD"
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={credentials.password}
-                            onChange={handleChange}
-                            placeholder="••••••••"
-                            required
-                            rightElement={
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--theme-text-muted)' }}
-                                >
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </button>
-                            }
-                        />
-
-                        <Button type="submit" disabled={loading} style={{ width: '100%', marginTop: '16px' }}>
-                            {loading ? 'Authenticating...' : 'Secure Login'}
-                        </Button>
-
-                        <button onClick={() => setStep(2)} style={{ background: 'none', border: 'none', color: 'var(--theme-text-muted)', fontSize: '0.8rem', cursor: 'pointer', marginTop: '10px' }}>
-                            ← Back to choices
-                        </button>
-                    </form>
-                )}
-            </div>
+                <Button
+                    type="submit"
+                    disabled={loading}
+                    style={{
+                        width: '100%',
+                        marginTop: '16px',
+                        padding: '16px 32px',
+                        fontSize: '1.1rem',
+                        borderRadius: '12px',
+                        backgroundColor: 'var(--color-primary-navy, #0b2c6b)',
+                        color: '#ffffff',
+                        border: 'none',
+                        fontWeight: '700',
+                        boxShadow: '0 8px 16px rgba(11, 44, 107, 0.2)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        opacity: loading ? 0.8 : 1
+                    }}
+                    onMouseOver={(e) => {
+                        if (!loading) {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 12px 20px rgba(11, 44, 107, 0.3)';
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if (!loading) {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 8px 16px rgba(11, 44, 107, 0.2)';
+                        }
+                    }}
+                >
+                    {loading ? 'Signing in...' : 'Login'}
+                </Button>
+            </form>
 
             <div style={{ marginTop: '32px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                 New to the ecosystem? {' '}

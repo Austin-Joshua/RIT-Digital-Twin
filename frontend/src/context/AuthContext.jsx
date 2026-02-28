@@ -44,20 +44,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const loginAsGuest = (role) => {
-        const guestData = {
-            username: `guest_${role.toLowerCase()}`,
-            role: role,
-            firstName: 'Guest',
-            lastName: role.charAt(0) + role.slice(1).toLowerCase(),
-            isGuest: true
-        };
-        localStorage.setItem('token', 'guest-token-' + Date.now());
-        localStorage.setItem('user', JSON.stringify(guestData));
-        setUser(guestData);
-        return { success: true };
-    };
-
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -65,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loginAsGuest, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
