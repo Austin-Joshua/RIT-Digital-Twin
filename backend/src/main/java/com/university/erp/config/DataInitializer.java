@@ -159,7 +159,13 @@ public class DataInitializer implements CommandLineRunner {
                         };
 
                         for (String[] r : basicRoutes) {
-                                seedRoute(r[0], r[1] + " Route", r[1], LocalTime.parse(r[2]), coord1, phone1, null);
+                                LocalTime startTime = LocalTime.parse(r[2]);
+                                List<StopInfo> genericStops = List.of(
+                                                new StopInfo(r[1], startTime, "Bus Stand"),
+                                                new StopInfo(r[1] + " Junction", startTime.plusMinutes(15),
+                                                                "Main Road"),
+                                                new StopInfo("RIT Campus", startTime.plusMinutes(45), "College Gate"));
+                                seedRoute(r[0], r[1] + " Route", r[1], startTime, coord1, phone1, genericStops);
                         }
                 }
         }
