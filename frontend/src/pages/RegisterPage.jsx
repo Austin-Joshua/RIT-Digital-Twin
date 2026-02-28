@@ -23,15 +23,17 @@ const RegisterPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        const email = formData.email.trim();
+        const username = formData.username.trim();
 
-        if (!formData.email.endsWith('@ritchennai.edu.in')) {
+        if (!email.endsWith('@ritchennai.edu.in')) {
             setError('Registration is restricted to official @ritchennai.edu.in email addresses.');
             return;
         }
 
         setLoading(true);
         try {
-            await api.post('/auth/register', formData);
+            await api.post('/auth/register', { ...formData, email, username });
             navigate('/login?registered=true');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please check your inputs.');

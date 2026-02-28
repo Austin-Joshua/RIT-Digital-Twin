@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             }
             const errorMessage = typeof error.response?.data === 'string'
                 ? error.response.data
-                : (error.response?.data?.message || 'Login failed');
+                : (error.response?.data?.message || 'Invalid username or password.');
             return { success: false, message: errorMessage };
         }
     };
