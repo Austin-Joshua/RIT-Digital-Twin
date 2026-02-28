@@ -84,22 +84,22 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <Input
-                    label="Username / Email"
+                    label="username"
                     type="text"
                     name="username"
                     value={credentials.username}
                     onChange={handleChange}
-                    placeholder="Enter your ID or Email"
+                    placeholder="username"
                     required
                 />
 
                 <Input
-                    label="Password"
+                    label="password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={credentials.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
+                    placeholder="password"
                     required
                     rightElement={
                         <button
