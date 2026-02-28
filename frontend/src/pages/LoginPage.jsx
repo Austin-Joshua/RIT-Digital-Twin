@@ -9,6 +9,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 const LoginPage = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1); // 1: Identifier, 2: Choice (Login/Preview), 3: Password
     const { login, loginAsGuest } = useAuth();
     const navigate = useNavigate();
