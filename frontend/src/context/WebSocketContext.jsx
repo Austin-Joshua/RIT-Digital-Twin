@@ -17,8 +17,11 @@ export const WebSocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+        const wsUrl = baseUrl.replace('/api', '') + '/ws';
+
         const client = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'), // URL to Spring Boot WS endpoint
+            webSocketFactory: () => new SockJS(wsUrl),
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
