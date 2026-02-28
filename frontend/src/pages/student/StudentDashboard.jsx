@@ -263,6 +263,9 @@ const StudentDashboard = () => {
                     </table>
                 </div>
             </div>
+
+            {/* AI Academic Chatbot */}
+            <ChatbotWidget studentId={user?.studentId || 1} />
         </div>
     );
 };
