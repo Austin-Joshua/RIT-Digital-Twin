@@ -8,7 +8,11 @@ export const INSTITUTION = 'Rajalakshmi Institute of Technology, Chennai';
 export const COPYRIGHT_YEAR = 2026;
 
 /** API base URL (proxied in Docker, direct in dev) */
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+let apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+if (window.location.hostname.includes('vercel.app')) {
+    apiBase = 'https://rit-digital-twin.onrender.com/api';
+}
+export const API_BASE = apiBase;
 
 /** Simulation module identifiers */
 export const MODULES = {
