@@ -9,6 +9,7 @@ import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine } f
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
+import { useWebSocket } from '../context/WebSocketContext';
 import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
 import Card from '../components/common/Card';
 import DetailModal from '../components/common/DetailModal';
@@ -26,6 +27,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const { addToast } = useToast();
+    const { publish } = useWebSocket();
 
     // Broadcast State
     const [bTitle, setBTitle] = useState('');
@@ -54,6 +56,15 @@ const AdminDashboard = () => {
         e.preventDefault();
         try {
             await api.post(`/notifications/admin/broadcast?title=${encodeURIComponent(bTitle)}&message=${encodeURIComponent(bMessage)}&type=SYSTEM`);
+
+            // Push real-time event via raw websockets
+            publish('/app/broadcast', {
+                sender: 'ADMIN',
+                title: bTitle,
+                message: bMessage,
+                severity: 'HIGH'
+            });
+
             addToast('Broadcast sent globally!', 'success');
             setBTitle('');
             setBMessage('');

@@ -16,6 +16,13 @@ services:
       timeout: 20s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    container_name: erp-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
   backend:
     build: ./backend
     container_name: erp-backend
@@ -25,11 +32,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&allowMultiQueries=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       APP_JWT_SECRET: RITDigitalTwinSmartCampusIntelligencePlatformSecretKey2026VeryLongSecureKey
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
 
   frontend:
     build: ./frontend

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     FaHome, FaChalkboardTeacher, FaBolt, FaBus,
     FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,
-    FaUniversity, FaShieldAlt, FaTools
+    FaUniversity, FaShieldAlt, FaTools, FaMapMarkedAlt
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -14,6 +14,7 @@ const Sidebar = () => {
     const getMenuItems = () => {
         const baseItems = [
             { path: '/dashboard', name: 'Dashboard', icon: <FaHome /> },
+            { path: '/map', name: 'Campus IoT Map', icon: <FaMapMarkedAlt /> },
         ];
 
         const adminItems = [
@@ -39,6 +40,7 @@ const Sidebar = () => {
         const facultyItems = [
             { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
             { path: '/crowd', name: 'Crowd Monitor', icon: <FaUsers /> },
+            { path: '/faculty/upload-marks', name: 'Upload Marks', icon: <FaChartLine /> },
         ];
 
         const parentItems = [
