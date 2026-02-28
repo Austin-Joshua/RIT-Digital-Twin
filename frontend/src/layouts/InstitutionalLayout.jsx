@@ -9,7 +9,8 @@ import {
     LuUser, LuMenu, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuSettings,
-    LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight
+    LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight,
+    LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
 import './student-layout.css';
 
@@ -175,7 +176,7 @@ const InstitutionalLayout = () => {
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? '🖥️' : isDarkMode ? '☀️' : '🌙'}
+                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuSun /> : <LuMoon />}
                         </button>
                         <NotificationBar />
 

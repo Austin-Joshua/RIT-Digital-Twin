@@ -12,6 +12,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    // Bypass Ngrok's free-tier interception page
+    config.headers['ngrok-skip-browser-warning'] = '69420';
     return config;
   },
   (error) => {

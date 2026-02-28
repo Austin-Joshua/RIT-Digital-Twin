@@ -45,13 +45,9 @@ export const ThemeProvider = ({ children }) => {
         return () => mediaQuery.removeEventListener('change', handler);
     }, [themePreference, resolveTheme]);
 
-    // Simple toggle cycles: light → dark → system → light
+    // Allow toggle to jump straight between light and dark
     const toggleTheme = () => {
-        setThemePreference(prev => {
-            if (prev === 'light') return 'dark';
-            if (prev === 'dark') return 'system';
-            return 'light';
-        });
+        setThemePreference(prev => (prev === 'dark' ? 'light' : 'dark'));
     };
 
     // Direct setter for settings page
