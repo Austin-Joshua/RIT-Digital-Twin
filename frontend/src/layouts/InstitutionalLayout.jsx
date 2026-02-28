@@ -176,7 +176,7 @@ const InstitutionalLayout = () => {
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuSun /> : <LuMoon />}
+                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
                         </button>
                         <NotificationBar />
 
