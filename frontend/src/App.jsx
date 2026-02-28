@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { WebSocketProvider } from './context/WebSocketContext';
 import Skeleton from './components/common/Skeleton';
+import BroadcastListener from './components/BroadcastListener';
 
 /* Layouts */
 import InstitutionalLayout from './layouts/InstitutionalLayout';
@@ -21,6 +23,7 @@ const EnergyPage = lazy(() => import('./pages/EnergyPage'));
 const TransportPage = lazy(() => import('./pages/TransportPage'));
 const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
+const CampusMap = lazy(() => import('./pages/CampusMap'));
 
 const SuperAdminDashboard = lazy(() => import('./pages/SuperAdminDashboard'));
 const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
@@ -106,89 +109,93 @@ const App = () => {
       <ToastProvider>
         <Router>
           <AuthProvider>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                {/* Auth Routes */}
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                </Route>
+            <WebSocketProvider>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Auth Routes */}
+                  <Route element={<AuthLayout />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                  </Route>
 
-                {/* Student Mode */}
-                <Route path="/student" element={
-                  <ProtectedRoute requiredRole="STUDENT"><StudentLayout /></ProtectedRoute>
-                }>
-                  <Route index element={<StudentDashboard />} />
-                  <Route path="timetable" element={<Timetable />} />
-                  <Route path="registration" element={<SubjectRegistration />} />
-                  <Route path="leave" element={<LeaveOD />} />
-                  <Route path="attendance" element={<Attendance />} />
-                  <Route path="certificates" element={<Certificates />} />
-                  <Route path="cat-mark" element={<CATMark />} />
-                  <Route path="lab-mark" element={<LABMark />} />
-                  <Route path="assignment" element={<AssignmentMark />} />
-                  <Route path="gradebook" element={<GradeBook />} />
-                  <Route path="fee" element={<AcademicFee />} />
-                  <Route path="feedbacks" element={<Feedbacks />} />
-                  <Route path="committee/schedule" element={<CommitteeSchedule />} />
-                  <Route path="committee/minutes" element={<CommitteeMinutes />} />
-                  <Route path="nodue" element={<NoDueRequest />} />
-                  <Route path="messages" element={<Messages />} />
-                  <Route path="change-password" element={<ChangePassword />} />
-                  <Route path="transport" element={<TransportRoute />} />
-                  <Route path="profile" element={<ProfilePage />} />
-                  <Route path="settings" element={<ThemeSettingsPage />} />
+                  {/* Student Mode */}
+                  <Route path="/student" element={
+                    <ProtectedRoute requiredRole="STUDENT"><StudentLayout /></ProtectedRoute>
+                  }>
+                    <Route index element={<StudentDashboard />} />
+                    <Route path="timetable" element={<Timetable />} />
+                    <Route path="registration" element={<SubjectRegistration />} />
+                    <Route path="leave" element={<LeaveOD />} />
+                    <Route path="attendance" element={<Attendance />} />
+                    <Route path="certificates" element={<Certificates />} />
+                    <Route path="cat-mark" element={<CATMark />} />
+                    <Route path="lab-mark" element={<LABMark />} />
+                    <Route path="assignment" element={<AssignmentMark />} />
+                    <Route path="gradebook" element={<GradeBook />} />
+                    <Route path="fee" element={<AcademicFee />} />
+                    <Route path="feedbacks" element={<Feedbacks />} />
+                    <Route path="committee/schedule" element={<CommitteeSchedule />} />
+                    <Route path="committee/minutes" element={<CommitteeMinutes />} />
+                    <Route path="nodue" element={<NoDueRequest />} />
+                    <Route path="messages" element={<Messages />} />
+                    <Route path="change-password" element={<ChangePassword />} />
+                    <Route path="transport" element={<TransportRoute />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="settings" element={<ThemeSettingsPage />} />
+                    <Route path="map" element={<CampusMap />} />
 
-                  {/* Student ERP Additions */}
-                  <Route path="simulator" element={<WhatIfSimulator />} />
-                </Route>
+                    {/* Student ERP Additions */}
+                    <Route path="simulator" element={<WhatIfSimulator />} />
+                  </Route>
 
-                {/* Parent Mode */}
-                <Route path="/parent" element={
-                  <ProtectedRoute requiredRole="PARENT"><StudentLayout /></ProtectedRoute>
-                }>
-                  <Route index element={<ParentDashboard />} />
-                </Route>
+                  {/* Parent Mode */}
+                  <Route path="/parent" element={
+                    <ProtectedRoute requiredRole="PARENT"><StudentLayout /></ProtectedRoute>
+                  }>
+                    <Route index element={<ParentDashboard />} />
+                  </Route>
 
-                {/* Super Admin Mode */}
-                <Route path="/super-admin" element={
-                  <ProtectedRoute requiredRole="SUPER_ADMIN"><InstitutionalLayout /></ProtectedRoute>
-                }>
-                  <Route index element={<SuperAdminDashboard />} />
-                </Route>
+                  {/* Super Admin Mode */}
+                  <Route path="/super-admin" element={
+                    <ProtectedRoute requiredRole="SUPER_ADMIN"><InstitutionalLayout /></ProtectedRoute>
+                  }>
+                    <Route index element={<SuperAdminDashboard />} />
+                  </Route>
 
-                {/* Institutional / Admin / Management / Faculty Mode */}
-                <Route path="/" element={
-                  <ProtectedRoute><InstitutionalLayout /></ProtectedRoute>
-                }>
-                  <Route index element={<Dashboard />} />
-                  <Route path="simulations/classroom" element={<ClassroomPage />} />
-                  <Route path="simulations/energy" element={<EnergyPage />} />
-                  <Route path="simulations/transport" element={<TransportPage />} />
-                  <Route path="simulations/crowd" element={<CrowdPage />} />
-                  <Route path="predictions" element={<PredictionPage />} />
+                  {/* Institutional / Admin / Management / Faculty Mode */}
+                  <Route path="/" element={
+                    <ProtectedRoute><InstitutionalLayout /></ProtectedRoute>
+                  }>
+                    <Route index element={<Dashboard />} />
+                    <Route path="simulations/classroom" element={<ClassroomPage />} />
+                    <Route path="simulations/energy" element={<EnergyPage />} />
+                    <Route path="simulations/transport" element={<TransportPage />} />
+                    <Route path="simulations/crowd" element={<CrowdPage />} />
+                    <Route path="predictions" element={<PredictionPage />} />
+                    <Route path="map" element={<CampusMap />} />
 
 
-                  {/* Enterprise ERP Additions (Admin/Faculty) */}
-                  <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
-                  <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
-                  <Route path="management/audit" element={<AuditLogViewer />} />
-                  <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
-                  <Route path="management/certificates" element={<CertificateApprovalQueue />} />
-                  <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
-                  <Route path="management/results" element={<AutomatedResultPublishing />} />
-                  <Route path="management/safety" element={<EmergencyDashboard />} />
-                  <Route path="management/assets" element={<MaintenanceModule />} />
-                  <Route path="change-password" element={<ChangePassword />} />
+                    {/* Enterprise ERP Additions (Admin/Faculty) */}
+                    <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
+                    <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
+                    <Route path="management/audit" element={<AuditLogViewer />} />
+                    <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
+                    <Route path="management/certificates" element={<CertificateApprovalQueue />} />
+                    <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
+                    <Route path="management/results" element={<AutomatedResultPublishing />} />
+                    <Route path="management/safety" element={<EmergencyDashboard />} />
+                    <Route path="management/assets" element={<MaintenanceModule />} />
+                    <Route path="change-password" element={<ChangePassword />} />
 
-                  {/* Specific Faculty Routes (Currently under general layout constraint) */}
-                  <Route path="faculty/risk-heatmap" element={<ClassRiskHeatmap />} />
-                  <Route path="faculty/upload-marks" element={<UploadMarks />} />
-                  <Route path="profile" element={<ProfilePage />} />
-                  <Route path="settings" element={<ThemeSettingsPage />} />
-                </Route>
-              </Routes>
-            </Suspense>
+                    {/* Specific Faculty Routes (Currently under general layout constraint) */}
+                    <Route path="faculty/risk-heatmap" element={<ClassRiskHeatmap />} />
+                    <Route path="faculty/upload-marks" element={<UploadMarks />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="settings" element={<ThemeSettingsPage />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </WebSocketProvider>
           </AuthProvider>
         </Router>
       </ToastProvider>

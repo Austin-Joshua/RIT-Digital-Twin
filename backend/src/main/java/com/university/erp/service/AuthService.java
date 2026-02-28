@@ -53,8 +53,33 @@ public class AuthService {
             throw new RuntimeException("Error: Username is already taken!");
         }
 
-        Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(request.getRole()))
-                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+        if (request.getEmail() == null || !request.getEmail().toLowerCase().endsWith("@ritchennai.edu.in")) {
+            throw new RuntimeException(
+                    "Error: Registration is restricted to official @ritchennai.edu.in email addresses.");
+        }
+
+        String roleEnumName = "STUDENT";
+        String inviteCode = request.getInviteCode();
+
+        if (inviteCode != null && !inviteCode.isBlank()) {
+            switch (inviteCode) {
+                case "RIT-SUPER":
+                    roleEnumName = "SUPER_ADMIN";
+                    break;
+                case "RIT-ADMIN":
+                    roleEnumName = "ADMIN";
+                    break;
+                case "RIT-FACULTY":
+                    roleEnumName = "FACULTY";
+                    break;
+                case "RIT-PARENT":
+                    roleEnumName = "PARENT";
+                    break;
+            }
+        }
+
+        Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
+                .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
         User user = User.builder()
                 .username(request.getUsername())

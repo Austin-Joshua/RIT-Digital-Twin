@@ -7,7 +7,7 @@ import {
     LuAward, LuPenTool, LuTestTube, LuClipboardList,
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
-    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings
+    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap
 } from 'react-icons/lu';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
@@ -28,6 +28,7 @@ const studentNav = [
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
     { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
+    { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];
 
 const StudentLayout = () => {

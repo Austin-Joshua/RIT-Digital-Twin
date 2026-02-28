@@ -9,6 +9,10 @@ import com.university.erp.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.university.erp.dto.MarksUploadRequestDto;
+import com.university.erp.model.Subject;
+import com.university.erp.repository.SubjectRepository;
+
 import java.util.List;
 
 @Service
@@ -19,15 +23,17 @@ public class AcademicService {
     private final AuditService auditService;
     private final InternalMarkCalculationService calculationService;
     private final MarkHistoryRepository historyRepository;
+    private final SubjectRepository subjectRepository;
 
     public AcademicService(MarksRepository marksRepository, StudentRepository studentRepository,
             AuditService auditService, InternalMarkCalculationService calculationService,
-            MarkHistoryRepository historyRepository) {
+            MarkHistoryRepository historyRepository, SubjectRepository subjectRepository) {
         this.marksRepository = marksRepository;
         this.studentRepository = studentRepository;
         this.auditService = auditService;
         this.calculationService = calculationService;
         this.historyRepository = historyRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @Transactional
@@ -50,6 +56,69 @@ public class AcademicService {
 
         auditService.log("MARKS_ENTRY", "Updated marks for student: " + student.getStudentIdNumber() +
                 " in subject ID: " + newMarks.getSubject().getId());
+    }
+
+    @Transactional
+    public void bulkUploadMarks(List<MarksUploadRequestDto> payload) {
+        int count = 0;
+        for (MarksUploadRequestDto dto : payload) {
+            // Find Student by RegNo or Email
+            Student student = studentRepository.findByStudentIdNumber(dto.getStudentIdentifier())
+                    .orElseGet(() -> {
+                        // Fallback to checking by User Email if RegNo isn't found
+                        return studentRepository.findAll().stream()
+                                .filter(s -> s.getUser() != null
+                                        && s.getUser().getEmail().equalsIgnoreCase(dto.getStudentIdentifier()))
+                                .findFirst().orElse(null);
+                    });
+
+            if (student == null) {
+                System.err.println("Student not found for identifier: " + dto.getStudentIdentifier());
+                continue;
+            }
+
+            // Find Subject by Code
+            Subject subject = subjectRepository.findBySubjectCode(dto.getSubjectCode())
+                    .orElse(null);
+
+            if (subject == null) {
+                System.err.println("Subject not found for code: " + dto.getSubjectCode());
+                continue;
+            }
+
+            // Find existing marks or create new
+            Marks mark = marksRepository.findByStudentId(student.getId()).stream()
+                    .filter(m -> m.getSubject().getId().equals(subject.getId()))
+                    .findFirst()
+                    .orElse(new Marks());
+
+            mark.setStudent(student);
+            mark.setSubject(subject);
+
+            // Safe assignment with null checks
+            if (dto.getCat1() != null)
+                mark.setCat1Score(dto.getCat1());
+            if (dto.getCat2() != null)
+                mark.setCat2Score(dto.getCat2());
+            if (dto.getCat3() != null)
+                mark.setCat3Score(dto.getCat3());
+            if (dto.getAssignment() != null)
+                mark.setAssignmentScore(dto.getAssignment());
+            if (dto.getSemesterGrade() != null && !dto.getSemesterGrade().isEmpty())
+                mark.setGrade(dto.getSemesterGrade());
+            if (mark.getSemester() == null)
+                mark.setSemester(1); // Default
+
+            calculationService.calculateAll(mark);
+            marksRepository.save(mark);
+
+            // Re-calc CGPA for the student
+            recalculateCgpa(student.getId());
+            count++;
+        }
+
+        auditService.log("BULK_MARKS_UPLOAD",
+                "Faculty successfully processed " + count + " academic records via bulk Excel upload.");
     }
 
     private void logHistory(Marks oldMarks, Marks newMarks) {

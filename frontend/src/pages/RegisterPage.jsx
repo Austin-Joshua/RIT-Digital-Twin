@@ -10,7 +10,7 @@ const RegisterPage = () => {
         username: '',
         email: '',
         password: '',
-        role: 'FACULTY'
+        inviteCode: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,6 +23,12 @@ const RegisterPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (!formData.email.endsWith('@ritchennai.edu.in')) {
+            setError('Registration is restricted to official @ritchennai.edu.in email addresses.');
+            return;
+        }
+
         setLoading(true);
         try {
             await api.post('/auth/register', formData);
@@ -97,6 +103,15 @@ const RegisterPage = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
+                />
+
+                <Input
+                    label="Institutional Invite Code (Optional)"
+                    type="password"
+                    name="inviteCode"
+                    value={formData.inviteCode}
+                    onChange={handleChange}
+                    placeholder="Leave empty for Student account"
                 />
 
                 <Button
