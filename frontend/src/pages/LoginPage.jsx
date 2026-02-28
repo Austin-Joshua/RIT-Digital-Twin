@@ -81,13 +81,14 @@ const LoginPage = () => {
                 </motion.div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <Input
-                    label="Institutional ID / Email"
+                    label="Username"
                     type="text"
                     name="username"
                     value={credentials.username}
                     onChange={handleChange}
+                    placeholder="username"
                     required
                 />
 
@@ -97,21 +98,24 @@ const LoginPage = () => {
                     name="password"
                     value={credentials.password}
                     onChange={handleChange}
+                    placeholder="password"
                     required
                     rightElement={
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
+                            aria-label="Toggle password visibility"
                             style={{
                                 background: 'transparent',
                                 border: 'none',
                                 cursor: 'pointer',
-                                color: 'var(--theme-text, #333)',
+                                color: 'var(--theme-text-muted)',
                                 fontSize: '1.2rem',
                                 padding: '4px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                transition: 'color 0.3s ease'
                             }}
                         >
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -124,16 +128,30 @@ const LoginPage = () => {
                     disabled={loading}
                     style={{
                         width: '100%',
-                        marginTop: '24px',
+                        marginTop: '16px',
                         padding: '16px 32px',
-                        fontSize: '1.2rem',
+                        fontSize: '1.1rem',
                         borderRadius: '12px',
-                        backgroundColor: '#007bff',
+                        backgroundColor: 'var(--color-primary-navy, #0b2c6b)',
                         color: '#ffffff',
                         border: 'none',
                         fontWeight: '700',
-                        boxShadow: '0 10px 20px rgba(0, 123, 255, 0.2)',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                        boxShadow: '0 8px 16px rgba(11, 44, 107, 0.2)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        opacity: loading ? 0.8 : 1
+                    }}
+                    onMouseOver={(e) => {
+                        if (!loading) {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 12px 20px rgba(11, 44, 107, 0.3)';
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if (!loading) {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 8px 16px rgba(11, 44, 107, 0.2)';
+                        }
                     }}
                 >
                     {loading ? 'Signing in...' : 'Login'}

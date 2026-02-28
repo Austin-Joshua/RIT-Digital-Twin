@@ -506,20 +506,33 @@
 }
 
 .stu-kpi-card.green {
-    background-color: var(--ims-green);
+    background-color: var(--ims-green, #00a65a);
 }
 
 .stu-kpi-card.yellow {
-    background-color: var(--ims-yellow);
+    background-color: var(--ims-yellow, #f39c12);
 }
 
 .stu-kpi-card.teal {
-    background-color: var(--ims-teal);
+    background-color: var(--ims-teal, #39cccc);
 }
 
 .stu-kpi-card.red {
-    background-color: var(--ims-red);
+    background-color: var(--ims-red, #dd4b39);
 }
+
+.stu-kpi-card.blue {
+    background-color: var(--ims-active-blue, #0073b7);
+}
+
+.stu-kpi-card.purple {
+    background-color: var(--ims-purple, #605ca8);
+}
+
+.stu-kpi-card.orange {
+    background-color: var(--ims-orange, #ff851b);
+}
+
 
 /* ── Dark Mode: KPI cards & info panels ── */
 html.dark .stu-kpi-card {
