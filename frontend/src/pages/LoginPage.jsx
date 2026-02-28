@@ -23,7 +23,7 @@ const LoginPage = () => {
         setError('');
         setLoading(true);
         try {
-            const result = await login(credentials.username, credentials.password);
+            const result = await login(credentials.username.trim(), credentials.password);
             if (result.success) {
                 // Get fresh user data from context after login
                 const storedUser = JSON.parse(localStorage.getItem('user'));
