@@ -26,7 +26,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     @JsonIgnore
     private String password;
 
