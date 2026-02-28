@@ -91,7 +91,7 @@ const LoginPage = () => {
                     }}
                 >
                     <img
-                        src={isDarkMode ? '/assets/images/institutional-dark-logo.png' : '/assets/images/institutional-light-logo.png'}
+                        src={isDarkMode ? '/assets/images/institutional-light-logo.png' : '/assets/images/institutional-dark-logo.png'}
                         alt="RIT Institutional Logo"
                         style={{
                             height: '70px',
