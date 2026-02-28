@@ -36,7 +36,7 @@ const AuthLayout = () => {
                 <button onClick={toggleTheme} style={{
                     background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: '50%', cursor: 'pointer', color: 'var(--color-accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', boxShadow: 'var(--shadow-subtle)', fontSize: '18px'
                 }}>
-                    {isDarkMode ? <FaSun /> : <FaMoon />}
+                    {isDarkMode ? <FaMoon /> : <FaSun />}
                 </button>
             </div>
             <div className="auth-wrapper" style={{ display: 'flex', width: '100%', height: '100vh', position: 'relative' }}>
