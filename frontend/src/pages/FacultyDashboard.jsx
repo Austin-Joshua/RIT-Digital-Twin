@@ -72,30 +72,29 @@ const FacultyDashboard = () => {
                     <FaExclamationTriangle className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                {/* New Cards */}
-                <div className="stu-kpi-card" style={{ background: '#f5f3ff', borderLeft: '4px solid #8b5cf6' }} onClick={() => navigate('/faculty/assignments')}>
+                <div className="stu-kpi-card purple-light" onClick={() => navigate('/faculty/assignments')}>
                     <div className="kpi-main">
-                        <div className="kpi-value" style={{ color: '#8b5cf6' }}>3</div>
+                        <div className="kpi-value">3</div>
                         <div className="kpi-label">Assignments to Grade</div>
                     </div>
-                    <FaFileAlt className="kpi-icon" style={{ color: '#8b5cf6' }} />
-                    <div className="kpi-more" style={{ color: '#8b5cf6' }}>More info →</div>
+                    <FaFileAlt className="kpi-icon" />
+                    <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card" style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6' }} onClick={() => navigate('/faculty/proctor')}>
+                <div className="stu-kpi-card blue-light" onClick={() => navigate('/faculty/proctor')}>
                     <div className="kpi-main">
-                        <div className="kpi-value" style={{ color: '#3b82f6' }}>12</div>
+                        <div className="kpi-value">12</div>
                         <div className="kpi-label">Proctor Wards</div>
                     </div>
-                    <FaUsers className="kpi-icon" style={{ color: '#3b82f6' }} />
-                    <div className="kpi-more" style={{ color: '#3b82f6' }}>More info →</div>
+                    <FaUsers className="kpi-icon" />
+                    <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card" style={{ background: '#f0fdf4', borderLeft: '4px solid #22c55e' }} onClick={() => navigate('/faculty/research')}>
+                <div className="stu-kpi-card green-light" onClick={() => navigate('/faculty/research')}>
                     <div className="kpi-main">
-                        <div className="kpi-value" style={{ color: '#22c55e' }}>2</div>
+                        <div className="kpi-value">2</div>
                         <div className="kpi-label">New Publications</div>
                     </div>
-                    <FaFlask className="kpi-icon" style={{ color: '#22c55e' }} />
-                    <div className="kpi-more" style={{ color: '#22c55e' }}>More info →</div>
+                    <FaFlask className="kpi-icon" />
+                    <div className="kpi-more">More info →</div>
                 </div>
             </div>
 
@@ -139,16 +138,28 @@ const FacultyDashboard = () => {
                     </div>
                     <div className="info-body">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <div style={{ padding: '8px', borderLeft: '3px solid #f39c12', background: '#fffef0', fontSize: '13px' }}>
+                            <div
+                                onClick={() => navigate('/faculty/leaves')}
+                                style={{ padding: '10px', borderLeft: '3px solid #f39c12', background: '#fffef0', fontSize: '13px', cursor: 'pointer', transition: '0.2s' }}
+                                className="hover:opacity-80"
+                            >
                                 <strong>3 New Leave requests</strong> pending review for CSE-A
                             </div>
-                            <div style={{ padding: '8px', borderLeft: '3px solid #00c0ef', background: '#f0fbff', fontSize: '13px' }}>
+                            <div
+                                onClick={() => navigate('/faculty/leaves')}
+                                style={{ padding: '10px', borderLeft: '3px solid #00c0ef', background: '#f0fbff', fontSize: '13px', cursor: 'pointer', transition: '0.2s' }}
+                                className="hover:opacity-80"
+                            >
                                 <strong>1 OD request</strong> pending for Sports quota
                             </div>
                         </div>
                     </div>
                     <div className="info-footer">
-                        <button className="table-btn primary" style={{ width: '100%', background: '#f39c12', borderColor: '#f39c12' }}>
+                        <button
+                            className="table-btn primary"
+                            style={{ width: '100%', background: '#f39c12', borderColor: '#f39c12' }}
+                            onClick={() => navigate('/faculty/leaves')}
+                        >
                             Review All Approvals
                         </button>
                     </div>

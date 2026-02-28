@@ -83,7 +83,7 @@ const AdminDashboard = () => {
         { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green', link: '/simulations/classroom' },
         { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow', link: '/simulations/energy' },
         { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'teal', class: 'teal', link: '/transport' },
-        { title: 'HR & Recruitment', value: `12 Open`, icon: <FaUsers />, color: 'blue', class: 'blue', link: '/management/hr-recruitment' },
+        { title: 'HR & Recruitment', value: `12 Open`, icon: <FaUsers />, color: 'indigo', class: 'indigo', link: '/management/hr-recruitment' },
         { title: 'Asset Inventory', value: `4.2k`, icon: <FaBoxes />, color: 'purple', class: 'purple', link: '/management/inventory' },
         { title: 'Alumni Network', value: `12.4k`, icon: <FaUserGraduate />, color: 'orange', class: 'orange', link: '/management/alumni' },
     ], [stats]);
