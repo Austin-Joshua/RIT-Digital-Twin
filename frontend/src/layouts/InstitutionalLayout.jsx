@@ -69,6 +69,7 @@ const InstitutionalLayout = () => {
         { path: '/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
         { path: '/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
         { path: '/simulations/transport', label: 'Transport Analytics', icon: <LuBus /> },
+        { path: '/transport', label: 'Transport Directory', icon: <LuBus /> },
         { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
         { path: '/predictions', label: 'Predictive Analytics', icon: <LuCpu /> },
 
@@ -154,10 +155,10 @@ const InstitutionalLayout = () => {
                 {/* Top Bar — exact IMS mirror */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
-                        <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                        <button className="stu-hamburger desktop-hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             <LuMenu />
                         </button>
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
+                        <Link to="/" className="desktop-hidden" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"

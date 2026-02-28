@@ -20,7 +20,8 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const ClassroomPage = lazy(() => import('./pages/ClassroomPage'));
 const EnergyPage = lazy(() => import('./pages/EnergyPage'));
-const TransportPage = lazy(() => import('./pages/TransportPage'));
+const TransportDirectory = lazy(() => import('./pages/TransportDirectory'));
+const TransportSimulation = lazy(() => import('./pages/TransportSimulation'));
 const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
 const CampusMap = lazy(() => import('./pages/CampusMap'));
@@ -139,7 +140,7 @@ const App = () => {
                     <Route path="nodue" element={<NoDueRequest />} />
                     <Route path="messages" element={<Messages />} />
                     <Route path="change-password" element={<ChangePassword />} />
-                    <Route path="transport" element={<TransportRoute />} />
+                    <Route path="transport" element={<TransportDirectory />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
                     <Route path="map" element={<CampusMap />} />
@@ -169,7 +170,8 @@ const App = () => {
                     <Route index element={<Dashboard />} />
                     <Route path="simulations/classroom" element={<ClassroomPage />} />
                     <Route path="simulations/energy" element={<EnergyPage />} />
-                    <Route path="simulations/transport" element={<TransportPage />} />
+                    <Route path="simulations/transport" element={<TransportSimulation />} />
+                    <Route path="transport" element={<TransportDirectory />} />
                     <Route path="simulations/crowd" element={<CrowdPage />} />
                     <Route path="predictions" element={<PredictionPage />} />
                     <Route path="map" element={<CampusMap />} />

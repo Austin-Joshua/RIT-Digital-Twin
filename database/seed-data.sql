@@ -75,27 +75,9 @@ INSERT INTO timetables (classroom_id, department_id, subject_name, subject_code,
 (17, 8, 'Biomedical Instrumentation','BM2201','TUESDAY',   '09:00', '10:00', 3, 'A', '2024-2025', 28);
 
 -- =====================================================
--- TRANSPORT ROUTES (Updated for RIT Transport Features)
+-- TRANSPORT ROUTES (Seeded dynamically via DataInitializer.java)
 -- =====================================================
-INSERT INTO transport_routes (route_number, route_name, start_point, end_point, bus_number, capacity, current_occupancy, coordinator_name, coordinator_phone) VALUES
-('R01', 'Ennore Route', 'Ennore', 'RIT Campus', 'TN-01-AX-1234', 56, 45, 'Mr. Ramesh', '9840012345'),
-('R11A', 'Chengalpattu Route', 'Chengalpattu', 'RIT Campus', 'TN-01-BY-5678', 56, 38, 'Mr. Suresh', '9840054321'),
-('R22', 'Tambaram Route', 'Tambaram Station', 'RIT Campus', 'TN-01-CZ-9012', 56, 50, 'Ms. Priya', '9841122334'),
-('R05', 'OMR IT Corridor', 'Sholinganallur', 'RIT Campus', 'TN-01-DW-3456', 50, 30, 'Mr. Karthik', '9840099887');
-
--- =====================================================
--- BUS STOPS (Updated for Boarding Points & Timings)
--- =====================================================
-INSERT INTO bus_stops (route_id, stop_name, pickup_time, stop_order, landmark) VALUES
-(1, 'Ennore',           '05:50:00', 1, 'Near Railway Station'),
-(1, 'Ernavoor',         '06:05:00', 2, 'Market Junction'),
-(1, 'Thiruvottiyur',    '06:20:00', 3, 'Theradi Metro'),
-(1, 'RIT Campus',       '08:00:00', 4, 'Main Gate'),
-
-(2, 'Chengalpattu',     '06:00:00', 1, 'Old Bus Stand'),
-(2, 'Maraimalai Nagar', '06:25:00', 2, 'Ford Factory Junction'),
-(2, 'Potheri',          '06:40:00', 3, 'SRM University Gate'),
-(2, 'RIT Campus',       '08:10:00', 4, 'Main Gate');
+-- (Empty - handled by backend code to ensure latest route data from rittransport.com)
 
 -- =====================================================
 -- SAMPLE ENERGY LOGS (one day)

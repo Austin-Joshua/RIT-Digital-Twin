@@ -12,18 +12,15 @@ import { useToast } from '../context/ToastContext';
 import { useWebSocket } from '../context/WebSocketContext';
 import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
 import Card from '../components/common/Card';
-import DetailModal from '../components/common/DetailModal';
+import { useNavigate } from 'react-router-dom';
 
-const fadeInUp = {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
-};
 const stagger = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.08 } },
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const { addToast } = useToast();
@@ -32,7 +29,6 @@ const AdminDashboard = () => {
     // Broadcast State
     const [bTitle, setBTitle] = useState('');
     const [bMessage, setBMessage] = useState('');
-    const [selectedDetail, setSelectedDetail] = useState(null);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -74,10 +70,10 @@ const AdminDashboard = () => {
     };
 
     const kpiCards = useMemo(() => [
-        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green' },
-        { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow' },
-        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'teal', class: 'teal' },
-        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex ?? 0}`, icon: <FaLeaf />, color: 'red', class: 'red' },
+        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green', link: '/simulations/classroom' },
+        { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow', link: '/simulations/energy' },
+        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'teal', class: 'teal', link: '/transport' },
+        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex ?? 0}`, icon: <FaLeaf />, color: 'red', class: 'red', link: '/dashboard/sustainability' },
     ], [stats]);
 
     const chartData = useMemo(() => [
@@ -109,7 +105,7 @@ const AdminDashboard = () => {
             {/* KPI Cards Row - Using stu-kpi-row classes */}
             <div className="stu-kpi-row">
                 {kpiCards.map((card, i) => (
-                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedDetail(card)}>
+                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => navigate(card.link)}>
                         <div className="kpi-main">
                             <div className="kpi-value">{card.value}</div>
                             <div className="kpi-label">{card.title}</div>
@@ -186,38 +182,6 @@ const AdminDashboard = () => {
                     <InstitutionalAnalytics />
                 </div>
             </div>
-
-            {/* Detail Modal */}
-            <DetailModal
-                isOpen={!!selectedDetail}
-                onClose={() => setSelectedDetail(null)}
-                title={`${selectedDetail?.title} System Report`}
-            >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div style={{ padding: '15px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #0B2C6B' }}>
-                        <h4 style={{ margin: '0 0 5px 0', color: '#0B2C6B' }}>Real-time Status: Optimized</h4>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
-                            Current {selectedDetail?.title} is performing within expected parameters.
-                            AI agents are continuously monitoring for anomalies.
-                        </p>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>EFFICIENCY</div>
-                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>94.2%</div>
-                        </div>
-                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>UPTIME</div>
-                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>99.9%</div>
-                        </div>
-                        <div style={{ padding: '15px', background: '#ecf0f5', borderRadius: '4px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase' }}>ALERTS</div>
-                            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00a65a' }}>NONE</div>
-                        </div>
-                    </div>
-                </div>
-            </DetailModal>
 
         </motion.div>
     );
