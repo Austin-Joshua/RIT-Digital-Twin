@@ -48,4 +48,17 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-charts': ['recharts'],
+          'vendor-ui': ['framer-motion', 'react-icons'],
+          'vendor-utils': ['axios', 'jspdf', 'xlsx']
+        }
+      }
+    }
+  }
 })
