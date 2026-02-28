@@ -48,11 +48,11 @@ const AuthLayout = () => {
                 }}>
                     <AnimatedWaveBackground />
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
-                        <div className="login-logo-desktop-hidden" style={{ marginBottom: '24px' }}>
+                        <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
                             <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT"
-                                style={{ height: '80px', width: 'auto' }}
+                                src="/assets/images/institutional-light-logo.png"
+                                alt="RIT Institutional Logo"
+                                style={{ height: '75px', width: 'auto' }}
                             />
                         </div>
                         <AnimatePresence mode="wait">
@@ -110,11 +110,8 @@ const AuthLayout = () => {
                     .brand-panel p,
                     .brand-description,
                     .brand-tagline { display: none !important; }
-                    .brand-panel img { height: 55px !important; }
+                    .brand-panel img { height: 60px !important; }
                     .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 10px !important; z-index: 2 !important; }
-                }
-                @media (min-width: 1025px) {
-                    .login-logo-desktop-hidden { display: none !important; }
                 }
             `}</style>
         </div>

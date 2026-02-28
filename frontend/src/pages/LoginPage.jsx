@@ -78,30 +78,7 @@ const LoginPage = () => {
                 zIndex: 2
             }}
         >
-            <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    style={{
-                        marginBottom: '28px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}
-                >
-                    <img
-                        src={isDarkMode ? '/assets/images/institutional-light-logo.png' : '/assets/images/institutional-dark-logo.png'}
-                        alt="RIT Institutional Logo"
-                        style={{
-                            height: '70px',
-                            width: 'auto',
-                            maxWidth: '100%',
-                            objectFit: 'contain',
-                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))'
-                        }}
-                    />
-                </motion.div>
+            <div style={{ marginBottom: '32px' }}>
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Login</h2>
                 <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Enter your credentials to access the Digital Twin.</p>
             </div>
@@ -200,55 +177,6 @@ const LoginPage = () => {
                     {loading ? 'Signing in...' : 'Login'}
                 </Button>
             </form>
-
-            <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--glass-border)' }}>
-                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.8rem', textAlign: 'center', marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    Quick Access (Demo)
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                    <button
-                        onClick={() => handleQuickLogin('admin@ritchennai.edu.in', 'admin123')}
-                        className="quick-login-btn"
-                        style={{ '--btn-color': '#var(--color-accent-gold)' }}
-                        disabled={loading}
-                    >
-                        Admin
-                    </button>
-                    <button
-                        onClick={() => handleQuickLogin('faculty@ritchennai.edu.in', 'faculty123')}
-                        className="quick-login-btn"
-                        disabled={loading}
-                    >
-                        Faculty
-                    </button>
-                    <button
-                        onClick={() => handleQuickLogin('student@ritchennai.edu.in', 'student123')}
-                        className="quick-login-btn"
-                        disabled={loading}
-                    >
-                        Student
-                    </button>
-                </div>
-                <style>{`
-                    .quick-login-btn {
-                        padding: 10px;
-                        border-radius: 10px;
-                        border: 1px solid var(--glass-border);
-                        background: rgba(255,255,255,0.03);
-                        color: var(--theme-text-muted);
-                        font-size: 0.75rem;
-                        font-weight: 600;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                    }
-                    .quick-login-btn:hover {
-                        background: rgba(255,255,255,0.08);
-                        color: var(--theme-text);
-                        border-color: var(--color-accent-gold);
-                        transform: translateY(-1px);
-                    }
-                `}</style>
-            </div>
 
             <div style={{ marginTop: '32px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                 New to the ecosystem? {' '}
