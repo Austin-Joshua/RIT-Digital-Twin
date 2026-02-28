@@ -30,8 +30,6 @@ const LoginPage = () => {
                 const storedUser = JSON.parse(localStorage.getItem('user'));
                 if (storedUser?.role === 'STUDENT') {
                     navigate('/student');
-                } else if (storedUser?.role === 'ADMIN') {
-                    navigate('/admin');
                 } else {
                     navigate('/');
                 }

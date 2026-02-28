@@ -20,8 +20,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Loading user by identifier: {}", username);
-        return userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))
+
+        // Handle shorthand notation
+        final String searchEmail = username.contains("@") ? username : username + "@ritchennai.edu.in";
+        final String searchUsername = username;
+
+        return userRepository.findByUsername(searchUsername)
+                .or(() -> userRepository.findByEmail(searchEmail))
+                .or(() -> userRepository.findByEmail(searchUsername))
                 .map(user -> {
                     log.info("Found user: {} with role: {}", user.getUsername(), user.getRole().getRoleName());
                     return user;
