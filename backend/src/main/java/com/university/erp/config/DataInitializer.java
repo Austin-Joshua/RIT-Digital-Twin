@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
 import com.university.erp.model.TransportRoute;
@@ -23,6 +24,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Component
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
         private final UserRepository userRepository;
@@ -54,6 +56,7 @@ public class DataInitializer implements CommandLineRunner {
                 // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
+                                log.info("Seeding role: {}", roleEnum);
                                 roleRepository.save(Role.builder()
                                                 .roleName(roleEnum)
                                                 .build());
@@ -76,10 +79,12 @@ public class DataInitializer implements CommandLineRunner {
                         String lastName) {
                 userRepository.findByEmail(email).ifPresentOrElse(
                                 user -> {
+                                        log.info("Resetting password for demo user: {}", email);
                                         user.setPassword(passwordEncoder.encode(password));
                                         userRepository.save(user);
                                 },
                                 () -> {
+                                        log.info("Seeding new demo user: {}", email);
                                         Role role = roleRepository.findByRoleName(roleEnum)
                                                         .orElseThrow(() -> new RuntimeException(
                                                                         "Error: Role " + roleEnum + " not found."));

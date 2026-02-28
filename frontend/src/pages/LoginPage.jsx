@@ -43,6 +43,23 @@ const LoginPage = () => {
         }
     };
 
+    const handleQuickLogin = async (username, password) => {
+        setError('');
+        setLoading(true);
+        try {
+            const result = await login(username, password);
+            if (result.success) {
+                // Success handled by AuthContext and navigation
+            } else {
+                setError(result.message);
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -165,36 +182,24 @@ const LoginPage = () => {
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                     <button
-                        onClick={() => {
-                            setCredentials({ username: 'admin@ritchennai.edu.in', password: 'admin123' });
-                            setTimeout(() => {
-                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                            }, 100);
-                        }}
+                        onClick={() => handleQuickLogin('admin@ritchennai.edu.in', 'admin123')}
                         className="quick-login-btn"
                         style={{ '--btn-color': '#var(--color-accent-gold)' }}
+                        disabled={loading}
                     >
                         Admin
                     </button>
                     <button
-                        onClick={() => {
-                            setCredentials({ username: 'faculty@ritchennai.edu.in', password: 'faculty123' });
-                            setTimeout(() => {
-                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                            }, 100);
-                        }}
+                        onClick={() => handleQuickLogin('faculty@ritchennai.edu.in', 'faculty123')}
                         className="quick-login-btn"
+                        disabled={loading}
                     >
                         Faculty
                     </button>
                     <button
-                        onClick={() => {
-                            setCredentials({ username: 'student@ritchennai.edu.in', password: 'student123' });
-                            setTimeout(() => {
-                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                            }, 100);
-                        }}
+                        onClick={() => handleQuickLogin('student@ritchennai.edu.in', 'student123')}
                         className="quick-login-btn"
+                        disabled={loading}
                     >
                         Student
                     </button>
