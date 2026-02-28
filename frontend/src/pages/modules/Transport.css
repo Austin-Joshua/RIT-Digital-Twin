@@ -129,3 +129,52 @@
         padding: 8px 10px;
     }
 }
+
+/* =====================================================
+   DARK MODE OVERRIDES
+   ===================================================== */
+
+.dark .routes-table thead {
+    background: #1e293b;
+    /* navy-800 */
+}
+
+.dark .routes-table th {
+    color: #94a3b8;
+    /* slate-400 */
+    border-bottom: 2px solid #334155;
+    /* slate-700 */
+}
+
+.dark .routes-table td {
+    color: #cbd5e1;
+    /* slate-300 */
+    border-bottom: 1px solid #1e293b;
+    /* navy-800 */
+}
+
+.dark .routes-table tbody tr:hover {
+    background: #0f172a;
+    /* navy-900 */
+}
+
+.dark .route-code {
+    color: #fbbf24;
+    /* gold */
+}
+
+.dark .occ-bar-wrap {
+    background: #334155;
+    /* slate-700 */
+}
+
+.dark .occ-label {
+    color: #94a3b8;
+    /* slate-400 */
+}
+
+.dark .score-pill {
+    background: rgba(37, 99, 235, 0.2);
+    color: #60a5fa;
+    /* blue-400 */
+}

@@ -1,0 +1,13 @@
+{
+    "header": {
+        "welcome": "வணக்கம், மீண்டும் வருக!",
+        "search": "எதையும் தேடவும்...",
+        "language": "மொழி"
+    },
+    "menu": {
+        "dashboard": "முகப்பு",
+        "timetable": "கால அட்டவணை",
+        "academics": "கல்வியாளர்கள்",
+        "transport": "போக்குவரத்து (Transport)"
+    }
+}

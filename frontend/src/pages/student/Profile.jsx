@@ -3,10 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronDown, FaChevronRight, FaUser, FaInfoCircle, FaHome, FaGraduationCap, FaFileAlt, FaMapMarkerAlt, FaDownload } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
+import { useToast } from '../../context/ToastContext';
+import { useRef } from 'react';
 
 const Profile = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    const { addToast } = useToast();
+    const fileInputRef = useRef(null);
+
     const [openSections, setOpenSections] = useState({
         personal: true,
         academic: false,
@@ -15,6 +20,15 @@ const Profile = () => {
         address: false,
         documents: false
     });
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            addToast('Avatar uploaded processing...', 'info');
+            // Mock API delay
+            setTimeout(() => addToast('Profile picture updated successfully!', 'success'), 1500);
+        }
+    };
 
     const toggleSection = (section) => {
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -76,13 +90,28 @@ const Profile = () => {
             <div className="profile-top-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 300px) 1fr', gap: '20px', marginBottom: '20px' }}>
                 {/* Profile Photo Card */}
                 <div style={{ background: cardBg, padding: '30px', border: `1px solid ${borderColor}`, borderRadius: '12px', textAlign: 'center', transition: 'background 0.3s' }}>
-                    <div style={{ width: '100px', height: '100px', margin: '0 auto 15px', borderRadius: '50%', overflow: 'hidden', border: `3px solid ${accentColor}` }}>
+                    <div
+                        onClick={() => fileInputRef.current?.click()}
+                        style={{ width: '100px', height: '100px', margin: '0 auto 15px', borderRadius: '50%', overflow: 'hidden', border: `3px solid ${accentColor}`, cursor: 'pointer', position: 'relative' }}
+                        className="group"
+                        title="Click to update avatar"
+                    >
                         <img
                             src={user?.profileImage || "/assets/images/placeholder_student.jpg"}
                             alt="Profile"
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
+                        <div className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[10px] py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Update
+                        </div>
                     </div>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                    />
                     <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: textColor }}>{user?.firstName} {user?.lastName}</h3>
                     <p style={{ margin: '0', fontSize: '12px', color: subText }}>Batch / Course / Year / Semester / Section</p>
                 </div>

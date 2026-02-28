@@ -91,3 +91,37 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
+
+/* Accessibility (a11y) High Contrast & Focus Enhancements */
+*:focus-visible {
+    outline: 3px solid var(--color-accent-gold) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure text meets WCAG AAA where possible */
+.dark body {
+    color: #f8fafc;
+    /* Higher contrast off-white for dark mode */
+}
+
+body {
+    color: #0f172a;
+    /* Deeper slate for light mode */
+}
+
+/* Enhancing link visibility */
+a,
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+a:focus-visible,
+button:focus-visible {
+    text-decoration: underline;
+}
+
+/* High contrast borders for dark cards */
+.dark .card {
+    border-color: #334155;
+}

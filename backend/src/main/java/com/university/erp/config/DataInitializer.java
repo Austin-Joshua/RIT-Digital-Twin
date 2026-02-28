@@ -13,6 +13,12 @@ import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
 import com.university.erp.model.TransportRoute;
 import com.university.erp.model.BusStop;
+import com.university.erp.entity.AlumniProfile;
+import com.university.erp.entity.AssetInventory;
+import com.university.erp.entity.FacultyLeaveRequest;
+import com.university.erp.repository.AlumniProfileRepository;
+import com.university.erp.repository.AssetInventoryRepository;
+import com.university.erp.repository.FacultyLeaveRequestRepository;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -24,15 +30,22 @@ public class DataInitializer implements CommandLineRunner {
         private final PasswordEncoder passwordEncoder;
         private final TransportRouteRepository transportRouteRepository;
         private final BusStopRepository busStopRepository;
+        private final AlumniProfileRepository alumniRepo;
+        private final AssetInventoryRepository assetRepo;
+        private final FacultyLeaveRequestRepository leaveRepo;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
-                        BusStopRepository busStopRepository) {
+                        BusStopRepository busStopRepository, AlumniProfileRepository alumniRepo,
+                        AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
                 this.transportRouteRepository = transportRouteRepository;
                 this.busStopRepository = busStopRepository;
+                this.alumniRepo = alumniRepo;
+                this.assetRepo = assetRepo;
+                this.leaveRepo = leaveRepo;
         }
 
         @Override
@@ -54,6 +67,9 @@ public class DataInitializer implements CommandLineRunner {
 
                 // 3. Initialize Transport Data
                 seedTransportData();
+
+                // 4. Initialize ERP Data
+                seedErpData();
         }
 
         private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
@@ -73,6 +89,55 @@ public class DataInitializer implements CommandLineRunner {
                                         .build();
 
                         userRepository.save(user);
+                }
+        }
+
+        private void seedErpData() {
+                if (alumniRepo.count() == 0) {
+                        AlumniProfile p1 = new AlumniProfile();
+                        p1.setName("Arjun Kumar");
+                        p1.setBatch("2018-2022");
+                        p1.setDepartment("Computer Science");
+                        p1.setCompany("Amazon");
+                        p1.setDesignation("Software Development Eng");
+                        alumniRepo.save(p1);
+
+                        AlumniProfile p2 = new AlumniProfile();
+                        p2.setName("Priya R");
+                        p2.setBatch("2017-2021");
+                        p2.setDepartment("ECE");
+                        p2.setCompany("TCS");
+                        p2.setDesignation("Systems Engineer");
+                        alumniRepo.save(p2);
+                }
+
+                if (assetRepo.count() == 0) {
+                        AssetInventory a1 = new AssetInventory();
+                        a1.setAssetName("Dell Optiplex 7090");
+                        a1.setCategory("Electronics");
+                        a1.setStatus("Active");
+                        a1.setLastMaintained("2024-01-15");
+                        a1.setLocation("Lab 4");
+                        assetRepo.save(a1);
+
+                        AssetInventory a2 = new AssetInventory();
+                        a2.setAssetName("Smart Interactive Whiteboard");
+                        a2.setCategory("Furniture");
+                        a2.setStatus("Maintenance Required");
+                        a2.setLastMaintained("2023-10-12");
+                        a2.setLocation("Room 102");
+                        assetRepo.save(a2);
+                }
+
+                if (leaveRepo.count() == 0) {
+                        FacultyLeaveRequest l1 = new FacultyLeaveRequest();
+                        l1.setFacultyId("FAC-001");
+                        l1.setFacultyName("Dr. Anita S");
+                        l1.setLeaveType("Casual Leave");
+                        l1.setStartDate("2024-04-10");
+                        l1.setEndDate("2024-04-12");
+                        l1.setStatus("Pending");
+                        leaveRepo.save(l1);
                 }
         }
 

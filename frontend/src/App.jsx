@@ -48,6 +48,9 @@ const FacultyAcademics = lazy(() => import('./pages/faculty/FacultyAcademics'));
 const FacultyLeaves = lazy(() => import('./pages/faculty/FacultyLeaves'));
 const FacultyAttendance = lazy(() => import('./pages/faculty/FacultyAttendance'));
 const FacultyAnalytics = lazy(() => import('./pages/faculty/FacultyAnalytics'));
+const AssignmentGrading = lazy(() => import('./pages/faculty/AssignmentGrading'));
+const ProctorDashboard = lazy(() => import('./pages/faculty/ProctorDashboard'));
+const ResearchTracker = lazy(() => import('./pages/faculty/ResearchTracker'));
 
 /* Lazy Loaded Student Pages */
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
@@ -70,6 +73,9 @@ const ChangePassword = lazy(() => import('./pages/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
 const ProfilePage = lazy(() => import('./pages/student/Profile'));
 const ThemeSettingsPage = lazy(() => import('./pages/ThemeSettingsPage'));
+const CourseMaterials = lazy(() => import('./pages/student/CourseMaterials'));
+const EventsClubs = lazy(() => import('./pages/student/EventsClubs'));
+const Library = lazy(() => import('./pages/student/Library'));
 
 /* Lazy Loaded Enterprise ERP Pages (Student) */
 const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
@@ -150,6 +156,9 @@ const App = () => {
                     <Route path="transport" element={<TransportDirectory />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
+                    <Route path="materials" element={<CourseMaterials />} />
+                    <Route path="events" element={<EventsClubs />} />
+                    <Route path="library" element={<Library />} />
                     <Route path="map" element={<CampusMap />} />
 
                     {/* Student ERP Additions */}
@@ -195,6 +204,11 @@ const App = () => {
                     <Route path="management/results" element={<AutomatedResultPublishing />} />
                     <Route path="management/safety" element={<EmergencyDashboard />} />
                     <Route path="management/assets" element={<MaintenanceModule />} />
+
+                    <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
+                    <Route path="management/inventory" element={<InventoryAssets />} />
+                    <Route path="management/alumni" element={<AlumniPortal />} />
+
                     <Route path="change-password" element={<ChangePassword />} />
 
                     {/* Specific Faculty Routes (Currently under general layout constraint) */}
@@ -204,6 +218,10 @@ const App = () => {
                     <Route path="faculty/leaves" element={<FacultyLeaves />} />
                     <Route path="faculty/attendance" element={<FacultyAttendance />} />
                     <Route path="faculty/analytics" element={<FacultyAnalytics />} />
+
+                    <Route path="faculty/assignments" element={<AssignmentGrading />} />
+                    <Route path="faculty/proctor" element={<ProctorDashboard />} />
+                    <Route path="faculty/research" element={<ResearchTracker />} />
 
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />

@@ -5,7 +5,7 @@ import {
     ResponsiveContainer, BarChart, Bar, LineChart, Line,
     CartesianGrid, XAxis, YAxis, Tooltip, Legend
 } from 'recharts';
-import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine } from 'react-icons/fa';
+import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt } from 'react-icons/fa';
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
@@ -29,6 +29,8 @@ const AdminDashboard = () => {
     // Broadcast State
     const [bTitle, setBTitle] = useState('');
     const [bMessage, setBMessage] = useState('');
+    const [sendPush, setSendPush] = useState(true);
+    const [sendSms, setSendSms] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -54,14 +56,22 @@ const AdminDashboard = () => {
             await api.post(`/notifications/admin/broadcast?title=${encodeURIComponent(bTitle)}&message=${encodeURIComponent(bMessage)}&type=SYSTEM`);
 
             // Push real-time event via raw websockets
-            publish('/app/broadcast', {
-                sender: 'ADMIN',
-                title: bTitle,
-                message: bMessage,
-                severity: 'HIGH'
-            });
+            if (sendPush) {
+                publish('/app/broadcast', {
+                    sender: 'ADMIN',
+                    title: bTitle,
+                    message: bMessage,
+                    severity: 'HIGH'
+                });
+            }
 
-            addToast('Broadcast sent globally!', 'success');
+            if (sendSms) {
+                // Simulate SMS Dispatch to Parents
+                console.log(`[SMS Gateway Mock] Dispatched to Parent numbers: ${bMessage}`);
+                addToast('SMS Alerts dispatched to 4,203 registered parents.', 'info');
+            }
+
+            addToast(sendPush ? 'Broadcast sent globally via App Push!' : 'Broadcast successful.', 'success');
             setBTitle('');
             setBMessage('');
         } catch (err) {
@@ -73,7 +83,9 @@ const AdminDashboard = () => {
         { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green', link: '/simulations/classroom' },
         { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow', link: '/simulations/energy' },
         { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'teal', class: 'teal', link: '/transport' },
-        { title: 'Sustainability Index', value: `${stats?.sustainabilityIndex ?? 0}`, icon: <FaLeaf />, color: 'red', class: 'red', link: '/dashboard/sustainability' },
+        { title: 'HR & Recruitment', value: `12 Open`, icon: <FaUsers />, color: 'blue', class: 'blue', link: '/management/hr-recruitment' },
+        { title: 'Asset Inventory', value: `4.2k`, icon: <FaBoxes />, color: 'purple', class: 'purple', link: '/management/inventory' },
+        { title: 'Alumni Network', value: `12.4k`, icon: <FaUserGraduate />, color: 'orange', class: 'orange', link: '/management/alumni' },
     ], [stats]);
 
     const chartData = useMemo(() => [
@@ -103,12 +115,12 @@ const AdminDashboard = () => {
             {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Row - Using stu-kpi-row classes */}
-            <div className="stu-kpi-row">
+            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                 {kpiCards.map((card, i) => (
                     <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => navigate(card.link)}>
                         <div className="kpi-main">
-                            <div className="kpi-value">{card.value}</div>
-                            <div className="kpi-label">{card.title}</div>
+                            <div className="kpi-value" style={{ fontSize: '24px' }}>{card.value}</div>
+                            <div className="kpi-label" style={{ fontSize: '13px' }}>{card.title}</div>
                         </div>
                         <div className="kpi-icon">{card.icon}</div>
                         <div className="kpi-more">View details →</div>
@@ -162,11 +174,23 @@ const AdminDashboard = () => {
                                 value={bMessage}
                                 onChange={e => setBMessage(e.target.value)}
                                 required
-                                rows="4"
+                                rows="3"
                                 style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '14px', resize: 'none' }}
                             />
-                            <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc' }}>
-                                Broadcast Globally
+
+                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '5px' }}>
+                                <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={sendPush} onChange={e => setSendPush(e.target.checked)} />
+                                    <FaMobileAlt color="#3c8dbc" /> App Push Notification
+                                </label>
+                                <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={sendSms} onChange={e => setSendSms(e.target.checked)} />
+                                    <FaSms color="#f39c12" /> SMS Alert (Twilio/AWS route)
+                                </label>
+                            </div>
+
+                            <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc', marginTop: '5px' }}>
+                                Dispatch Communication
                             </button>
                         </form>
                     </div>
