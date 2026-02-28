@@ -42,6 +42,9 @@ const UploadMarks = lazy(() => import('./pages/enterprise/UploadMarks'));
 const EmergencyDashboard = lazy(() => import('./pages/enterprise/EmergencyDashboard'));
 const MaintenanceModule = lazy(() => import('./pages/enterprise/MaintenanceModule'));
 const SustainabilityDashboard = lazy(() => import('./pages/enterprise/SustainabilityDashboard'));
+const RecruitmentHR = lazy(() => import('./pages/enterprise/RecruitmentHR'));
+const AlumniPortal = lazy(() => import('./pages/enterprise/AlumniPortal'));
+const InventoryAssets = lazy(() => import('./pages/enterprise/InventoryAssets'));
 
 /* Lazy Loaded Faculty Pages Placeholder */
 const FacultyAcademics = lazy(() => import('./pages/faculty/FacultyAcademics'));
