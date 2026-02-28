@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+let API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+// Force production URL if hosted on Vercel to override stale env vars
+if (window.location.hostname.includes('vercel.app')) {
+  API_URL = 'https://rit-digital-twin.onrender.com/api';
+}
 
 const api = axios.create({
   baseURL: API_URL
