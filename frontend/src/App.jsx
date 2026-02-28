@@ -41,6 +41,13 @@ const ClassRiskHeatmap = lazy(() => import('./pages/enterprise/ClassRiskHeatmap'
 const UploadMarks = lazy(() => import('./pages/enterprise/UploadMarks'));
 const EmergencyDashboard = lazy(() => import('./pages/enterprise/EmergencyDashboard'));
 const MaintenanceModule = lazy(() => import('./pages/enterprise/MaintenanceModule'));
+const SustainabilityDashboard = lazy(() => import('./pages/enterprise/SustainabilityDashboard'));
+
+/* Lazy Loaded Faculty Pages Placeholder */
+const FacultyAcademics = lazy(() => import('./pages/faculty/FacultyAcademics'));
+const FacultyLeaves = lazy(() => import('./pages/faculty/FacultyLeaves'));
+const FacultyAttendance = lazy(() => import('./pages/faculty/FacultyAttendance'));
+const FacultyAnalytics = lazy(() => import('./pages/faculty/FacultyAnalytics'));
 
 /* Lazy Loaded Student Pages */
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
@@ -173,6 +180,7 @@ const App = () => {
                     <Route path="simulations/transport" element={<TransportSimulation />} />
                     <Route path="transport" element={<TransportDirectory />} />
                     <Route path="simulations/crowd" element={<CrowdPage />} />
+                    <Route path="simulations/sustainability" element={<SustainabilityDashboard />} />
                     <Route path="predictions" element={<PredictionPage />} />
                     <Route path="map" element={<CampusMap />} />
 
@@ -192,6 +200,11 @@ const App = () => {
                     {/* Specific Faculty Routes (Currently under general layout constraint) */}
                     <Route path="faculty/risk-heatmap" element={<ClassRiskHeatmap />} />
                     <Route path="faculty/upload-marks" element={<UploadMarks />} />
+                    <Route path="faculty/academics" element={<FacultyAcademics />} />
+                    <Route path="faculty/leaves" element={<FacultyLeaves />} />
+                    <Route path="faculty/attendance" element={<FacultyAttendance />} />
+                    <Route path="faculty/analytics" element={<FacultyAnalytics />} />
+
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
