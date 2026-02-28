@@ -1,7 +1,6 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import {
     LuLayoutDashboard, LuClock, LuBookOpen, LuFileText, LuCalendarCheck2,
@@ -9,7 +8,7 @@ import {
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
     LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
-    LuSun, LuMoon, LuMonitor, LuGlobe
+    LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
@@ -17,9 +16,9 @@ import { ThemeContext } from '../context/ThemeContext';
 import './student-layout.css';
 
 const studentNav = [
-    { path: '/student', label: 'menu.dashboard', fallback: 'Dashboard', icon: <LuLayoutDashboard />, end: true },
-    { path: '/student/timetable', label: 'menu.timetable', fallback: 'My Time Table', icon: <LuClock /> },
-    { path: '/student/registration', label: 'menu.academics', fallback: 'My Subject Registration', icon: <LuBookOpen /> },
+    { path: '/student', label: 'Dashboard', icon: <LuLayoutDashboard />, end: true },
+    { path: '/student/timetable', label: 'My Time Table', icon: <LuClock /> },
+    { path: '/student/registration', label: 'My Subject Registration', icon: <LuBookOpen /> },
     { path: '/student/leave', label: 'Apply Leave / OD', icon: <LuFileText /> },
     { path: '/student/attendance', label: 'Attendance', icon: <LuCalendarCheck2 /> },
     { path: '/student/certificates', label: 'Apply Certificates', icon: <LuAward /> },
@@ -30,12 +29,11 @@ const studentNav = [
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
     { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
-    { path: '/student/transport', label: 'menu.transport', fallback: 'Transport Directory', icon: <LuBus /> },
+    { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
     { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];
 
 const StudentLayout = () => {
-    const { t, i18n } = useTranslation();
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
@@ -66,11 +64,6 @@ const StudentLayout = () => {
     const handleLogout = () => {
         logout();
         window.location.href = '/login';
-    };
-
-    const toggleLanguage = () => {
-        const newLang = i18n.language?.startsWith('en') ? 'ta' : 'en';
-        i18n.changeLanguage(newLang);
     };
 
     const displayName = user?.firstName && user?.lastName
@@ -137,7 +130,7 @@ const StudentLayout = () => {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <span className="nav-icon">{item.icon}</span>
-                                            <span>{item.label?.startsWith('menu.') ? t(item.label, { defaultValue: item.fallback }) : (item.fallback || item.label)}</span>
+                                            <span>{item.label}</span>
                                         </div>
                                         <span className="nav-chevron">
                                             {item.isOpen ? <LuChevronDown fontSize="14px" /> : <LuChevronRight fontSize="14px" />}
@@ -155,7 +148,7 @@ const StudentLayout = () => {
                                                     }}
                                                 >
                                                     <span className="nav-icon">{sub.icon}</span>
-                                                    <span>{sub.label?.startsWith('menu.') ? t(sub.label, { defaultValue: sub.fallback }) : (sub.fallback || sub.label)}</span>
+                                                    <span>{sub.label}</span>
                                                 </NavLink>
                                             ))}
                                         </div>
@@ -171,7 +164,7 @@ const StudentLayout = () => {
                                     }}
                                 >
                                     <span className="nav-icon">{item.icon}</span>
-                                    <span>{item.label?.startsWith('menu.') ? t(item.label, { defaultValue: item.fallback }) : (item.fallback || item.label)}</span>
+                                    <span>{item.label}</span>
                                 </NavLink>
                             )}
                         </div>
@@ -222,22 +215,6 @@ const StudentLayout = () => {
                             title={`Theme: ${themePreference}`}
                         >
                             {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
-                        </button>
-
-                        <button
-                            onClick={toggleLanguage}
-                            style={{
-                                background: 'none', border: 'none', fontSize: '20px',
-                                cursor: 'pointer', color: 'var(--ims-icon-color)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                position: 'relative'
-                            }}
-                            title={`Language: ${i18n.language?.toUpperCase()}`}
-                        >
-                            <LuGlobe />
-                            <span style={{ fontSize: '10px', position: 'absolute', bottom: '-8px', fontWeight: 'bold' }}>
-                                {i18n.language?.substring(0, 2).toUpperCase()}
-                            </span>
                         </button>
 
                         <NotificationBar />
