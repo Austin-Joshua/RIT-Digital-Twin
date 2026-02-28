@@ -1,10 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { ThemeContext } from '../context/ThemeContext';
 
 const LoginPage = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -12,6 +7,7 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
+    const { isDarkMode } = React.useContext(ThemeContext);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -76,7 +72,30 @@ const LoginPage = () => {
                 zIndex: 2
             }}
         >
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                        marginBottom: '28px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    <img
+                        src={isDarkMode ? '/assets/images/institutional-dark-logo.png' : '/assets/images/institutional-light-logo.png'}
+                        alt="RIT Institutional Logo"
+                        style={{
+                            height: '70px',
+                            width: 'auto',
+                            maxWidth: '100%',
+                            objectFit: 'contain',
+                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))'
+                        }}
+                    />
+                </motion.div>
                 <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Login</h2>
                 <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Enter your credentials to access the Digital Twin.</p>
             </div>
