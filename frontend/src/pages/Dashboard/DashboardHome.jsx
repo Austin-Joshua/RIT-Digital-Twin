@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
     FiGrid,
@@ -10,21 +10,19 @@ import {
 } from 'react-icons/fi';
 import './DashboardHome.css';
 import Card from '../../components/common/Card';
-import DetailModal from '../../components/common/DetailModal';
 import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
-import { useState } from 'react';
 
 const DashboardHome = () => {
     const { user } = useAuth();
-    const [selectedStat, setSelectedStat] = useState(null);
+    const navigate = useNavigate();
 
     const stats = [
-        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid /> },
-        { label: 'Energy Saved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap /> },
-        { label: 'Active Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck /> },
-        { label: 'Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers /> },
-        { label: 'Sustainability', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 /> },
-        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity /> },
+        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid />, link: '/dashboard/classroom' },
+        { label: 'Energy Saved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/dashboard/energy' },
+        { label: 'Active Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/dashboard/transport' },
+        { label: 'Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/dashboard/crowd' },
+        { label: 'Sustainability', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/dashboard/sustainability' },
+        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity />, link: '/dashboard/predictive' },
     ];
 
     const modules = [
@@ -79,9 +77,9 @@ const DashboardHome = () => {
                 {stats.map((stat, i) => (
                     <Card
                         key={i}
-                        onClick={() => setSelectedStat(stat)}
+                        onClick={() => navigate(stat.link)}
                         hoverEffect={true}
-                        style={{ padding: '24px', borderLeft: `4px solid var(--color-primary-navy)` }}
+                        style={{ padding: '24px', borderLeft: '4px solid var(--color-primary-navy)' }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                             <div style={{ fontSize: '1.5rem', color: 'var(--color-primary-navy)' }}>{stat.icon}</div>
@@ -92,22 +90,6 @@ const DashboardHome = () => {
                     </Card>
                 ))}
             </div>
-
-            {selectedStat && (
-                <DetailModal
-                    isOpen={!!selectedStat}
-                    onClose={() => setSelectedStat(null)}
-                    title={selectedStat.label}
-                >
-                    <div className="p-4">
-                        <p><strong>Value:</strong> {selectedStat.value}</p>
-                        <p><strong>Trend:</strong> {selectedStat.trend}</p>
-                        <p><strong>Trend Direction:</strong> {selectedStat.trendDir}</p>
-                        <p><strong>Variant:</strong> {selectedStat.variant}</p>
-                        {/* Add more details as needed */}
-                    </div>
-                </DetailModal>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 <div className="lg:col-span-2">

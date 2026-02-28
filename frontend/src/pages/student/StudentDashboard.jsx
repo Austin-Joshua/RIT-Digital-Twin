@@ -5,7 +5,7 @@ import {
 } from 'react-icons/fa';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
     CartesianGrid, Tooltip
@@ -14,7 +14,6 @@ import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 import Card from '../../components/common/Card';
-import DetailModal from '../../components/common/DetailModal';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -40,10 +39,10 @@ const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
 const StudentDashboard = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [kpiData, setKpiData] = useState({ cgpa: 0, attendance: 0, arrear: 0, leave: 0 });
     const [riskScore, setRiskScore] = useState(null);
     const [ranking, setRanking] = useState(null);
-    const [selectedDetail, setSelectedDetail] = useState(null);
 
     useEffect(() => {
         const fetchKpis = async () => {
@@ -106,7 +105,7 @@ const StudentDashboard = () => {
                     <div
                         key={kpi.label}
                         className={`stu-kpi-card ${kpi.color}`}
-                        onClick={() => setSelectedDetail(kpi)}
+                        onClick={() => navigate(kpi.link)}
                     >
                         <div className="kpi-main">
                             <h3 className="kpi-value">{kpi.value}</h3>
@@ -143,96 +142,6 @@ const StudentDashboard = () => {
                     <div className="info-footer" style={{ padding: '10px 15px', borderTop: '1px solid #f4f4f4', textAlign: 'right' }}><a href="#" style={{ color: '#444', textDecoration: 'none', fontSize: '13px' }}>More..</a></div>
                 </div>
             </div>
-
-            {/* Detail Modal */}
-            <DetailModal
-                isOpen={!!selectedDetail}
-                onClose={() => setSelectedDetail(null)}
-                title={`${selectedDetail?.label} Detailed Record`}
-            >
-                {selectedDetail?.label === 'CGPA' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <p>Semester-wise performance breakdown:</p>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
-                                    <th style={{ textAlign: 'left', padding: '12px' }}>Semester</th>
-                                    <th style={{ textAlign: 'center', padding: '12px' }}>GPA</th>
-                                    <th style={{ textAlign: 'center', padding: '12px' }}>Credits</th>
-                                    <th style={{ textAlign: 'right', padding: '12px' }}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[1, 2, 3].map(sem => (
-                                    <tr key={sem} style={{ borderBottom: '1px solid var(--theme-border)' }}>
-                                        <td style={{ padding: '12px' }}>Semester {sem}</td>
-                                        <td style={{ textAlign: 'center', padding: '12px' }}>{(8.2 + sem * 0.1).toFixed(2)}</td>
-                                        <td style={{ textAlign: 'center', padding: '12px' }}>22</td>
-                                        <td style={{ textAlign: 'right', padding: '12px', color: '#10B981', fontWeight: 'bold' }}>CLEARED</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-                {selectedDetail?.label === 'Arrears In Hand' && (
-                    <div style={{ textAlign: 'center', padding: '40px' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '20px' }}>✅</div>
-                        <h3>No Active Arrears</h3>
-                        <p style={{ color: 'var(--theme-text-muted)' }}>You have cleared all subjects as of the latest semester.</p>
-                    </div>
-                )}
-                {selectedDetail?.label === 'Average Attendance' && (
-                    <div>
-                        <p>Subject-wise attendance breakdown for Semester IV:</p>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
-                                    <th style={{ textAlign: 'left', padding: '12px' }}>Subject</th>
-                                    <th style={{ textAlign: 'center', padding: '12px' }}>Attended</th>
-                                    <th style={{ textAlign: 'center', padding: '12px' }}>Total</th>
-                                    <th style={{ textAlign: 'right', padding: '12px' }}>Percentage</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { code: 'CS23411', attended: 17, total: 22 },
-                                    { code: 'CS23413', attended: 21, total: 28 },
-                                    { code: 'CS23414', attended: 12, total: 13 }
-                                ].map(row => (
-                                    <tr key={row.code} style={{ borderBottom: '1px solid var(--theme-border)' }}>
-                                        <td style={{ padding: '12px' }}>{row.code}</td>
-                                        <td style={{ textAlign: 'center', padding: '12px' }}>{row.attended}</td>
-                                        <td style={{ textAlign: 'center', padding: '12px' }}>{row.total}</td>
-                                        <td style={{ textAlign: 'right', padding: '12px', fontWeight: 'bold', color: (row.attended / row.total * 100) < 75 ? '#EF4444' : '#10B981' }}>
-                                            {(row.attended / row.total * 100).toFixed(1)}%
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-                {selectedDetail?.label === 'Taken Leave' && (
-                    <div>
-                        <p>Your leave history for current academic year:</p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
-                            {[
-                                { date: '2026-02-14', reason: 'Fever', status: 'Approved' },
-                                { date: '2026-01-20', reason: 'Personal Work', status: 'Approved' }
-                            ].map((leave, i) => (
-                                <div key={i} style={{ padding: '16px', background: 'var(--glass-bg)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div>
-                                        <div style={{ fontWeight: 'bold' }}>{leave.date}</div>
-                                        <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>{leave.reason}</div>
-                                    </div>
-                                    <span style={{ padding: '4px 12px', borderRadius: '20px', background: '#DCFCE7', color: '#166534', fontSize: '0.75rem', fontWeight: 'bold' }}>{leave.status}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </DetailModal>
 
             <div style={{ marginTop: '20px', borderTop: '2px solid #ddd', paddingTop: '20px' }}>
                 <h3 style={{ marginBottom: '15px', color: '#333' }}>Advanced ERP Features</h3>

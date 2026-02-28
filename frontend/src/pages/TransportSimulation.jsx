@@ -3,8 +3,8 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
     ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
-import api from '../../services/api';
-import './Transport.css';
+import api from '../services/api';
+import './modules/Transport.css';
 
 const COLORS = ['#003366', '#c9a227', '#0066cc', '#1a8a5c', '#e6c84d', '#cc6600', '#4a90d9'];
 

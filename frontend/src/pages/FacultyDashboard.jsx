@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Skeleton from '../components/common/Skeleton';
@@ -8,6 +9,7 @@ import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 
 const FacultyDashboard = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ const FacultyDashboard = () => {
 
             {/* KPI Cards Placeholder - Matching Student Style */}
             <div className="stu-kpi-row">
-                <div className="stu-kpi-card green" onClick={() => { }}>
+                <div className="stu-kpi-card green" onClick={() => navigate('/faculty/academics')}>
                     <div className="kpi-main">
                         <div className="kpi-value">{subjects.length}</div>
                         <div className="kpi-label">Courses</div>
@@ -46,7 +48,7 @@ const FacultyDashboard = () => {
                     <FaBook className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card teal" onClick={() => { }}>
+                <div className="stu-kpi-card teal" onClick={() => navigate('/faculty/leaves')}>
                     <div className="kpi-main">
                         <div className="kpi-value">4</div>
                         <div className="kpi-label">Pending Requests</div>
@@ -54,7 +56,7 @@ const FacultyDashboard = () => {
                     <FaCalendarCheck className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card yellow" onClick={() => { }}>
+                <div className="stu-kpi-card yellow" onClick={() => navigate('/faculty/attendance')}>
                     <div className="kpi-main">
                         <div className="kpi-value">92%</div>
                         <div className="kpi-label">Avg Attendance</div>
@@ -62,7 +64,7 @@ const FacultyDashboard = () => {
                     <FaUserClock className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card red" onClick={() => { }}>
+                <div className="stu-kpi-card red" onClick={() => navigate('/faculty/analytics')}>
                     <div className="kpi-main">
                         <div className="kpi-value">2</div>
                         <div className="kpi-label">At Risk Students</div>

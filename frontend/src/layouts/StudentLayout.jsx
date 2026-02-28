@@ -29,6 +29,7 @@ const studentNav = [
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
     { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
+    { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
     { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];
 
@@ -192,10 +193,10 @@ const StudentLayout = () => {
                 {/* Top Bar — exact IMS: white topbar, gray icons */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
-                        <button className="stu-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                        <button className="stu-hamburger desktop-hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
                             <LuMenu />
                         </button>
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
+                        <Link to="/" className="desktop-hidden" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
