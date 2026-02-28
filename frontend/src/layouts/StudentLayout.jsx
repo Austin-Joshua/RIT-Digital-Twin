@@ -7,7 +7,8 @@ import {
     LuAward, LuPenTool, LuTestTube, LuClipboardList,
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
-    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap
+    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
+    LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
@@ -212,7 +213,7 @@ const StudentLayout = () => {
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? '🖥️' : isDarkMode ? '☀️' : '🌙'}
+                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuSun /> : <LuMoon />}
                         </button>
                         <NotificationBar />
 
