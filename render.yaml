@@ -1,11 +1,11 @@
 services:
   - type: web
     name: rit-digital-twin-backend
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: ./backend
     region: singapore
-    plan: starter
+    plan: free
     healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_PROFILES_ACTIVE
