@@ -17,12 +17,12 @@ const DashboardHome = () => {
     const navigate = useNavigate();
 
     const stats = [
-        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid />, link: '/dashboard/classroom' },
-        { label: 'Energy Saved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/dashboard/energy' },
-        { label: 'Active Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/dashboard/transport' },
-        { label: 'Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/dashboard/crowd' },
-        { label: 'Sustainability', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/dashboard/sustainability' },
-        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity />, link: '/dashboard/predictive' },
+        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid />, link: '/simulations/classroom' },
+        { label: 'Energy Saved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/simulations/energy' },
+        { label: 'Active Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/transport' },
+        { label: 'Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/simulations/crowd' },
+        { label: 'Sustainability', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/simulations/sustainability' },
+        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity />, link: '/predictions' },
     ];
 
     const modules = [
@@ -30,42 +30,42 @@ const DashboardHome = () => {
             title: 'Smart Classroom Allocation',
             description: 'Room scheduling, occupancy monitoring, and resource optimization across campus buildings.',
             icon: <FiGrid />,
-            path: '/dashboard/classroom',
+            path: '/simulations/classroom',
             status: 'active',
         },
         {
             title: 'Energy Consumption Analytics',
             description: 'Energy monitoring, consumption simulation, and efficiency forecasting for sustainability.',
             icon: <FiZap />,
-            path: '/dashboard/energy',
+            path: '/simulations/energy',
             status: 'active',
         },
         {
             title: 'Transport Route Optimization',
             description: 'Campus bus route planning, fleet analysis, and schedule optimization.',
             icon: <FiTruck />,
-            path: '/dashboard/transport',
+            path: '/transport',
             status: 'active',
         },
         {
             title: 'Crowd Flow & Emergency',
             description: 'Crowd density mapping, emergency evacuation simulation, and readiness scoring.',
             icon: <FiUsers />,
-            path: '/dashboard/crowd',
+            path: '/simulations/crowd',
             status: 'active',
         },
         {
             title: 'Sustainability Dashboard',
             description: 'Environmental impact tracking, carbon footprint analysis, and SDG progress.',
             icon: <FiBarChart2 />,
-            path: '/dashboard/sustainability',
+            path: '/simulations/sustainability',
             status: 'active',
         },
         {
             title: 'Predictive Analytics',
             description: 'Regression-based forecasting for enrollment, infrastructure demand, and planning.',
             icon: <FiActivity />,
-            path: '/dashboard/predictive',
+            path: '/predictions',
             status: 'active',
         },
     ];
