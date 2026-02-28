@@ -14,8 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -34,17 +36,25 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        log.info("Attempting login for user: {}", request.getUsername());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        User user = (User) authentication.getPrincipal();
-        String jwt = jwtUtils.generateToken(user);
+            User user = (User) authentication.getPrincipal();
+            String jwt = jwtUtils.generateToken(user);
 
-        return AuthResponse.builder()
-                .token(jwt)
-                .username(user.getUsername())
-                .role(user.getRole().getRoleName().name())
-                .build();
+            log.info("Login successful for user: {}", user.getUsername());
+            return AuthResponse.builder()
+                    .token(jwt)
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .role(user.getRole().getRoleName().name())
+                    .build();
+        } catch (Exception e) {
+            log.error("Login failed for user: {}. Error: {}", request.getUsername(), e.getMessage());
+            throw e;
+        }
     }
 
     @Transactional
