@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Skeleton from '../components/common/Skeleton';
-import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask } from 'react-icons/fa';
 import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 
 const FacultyDashboard = () => {
@@ -39,7 +39,7 @@ const FacultyDashboard = () => {
             {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Placeholder - Matching Student Style */}
-            <div className="stu-kpi-row">
+            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
                 <div className="stu-kpi-card green" onClick={() => navigate('/faculty/academics')}>
                     <div className="kpi-main">
                         <div className="kpi-value">{subjects.length}</div>
@@ -71,6 +71,31 @@ const FacultyDashboard = () => {
                     </div>
                     <FaExclamationTriangle className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
+                </div>
+                {/* New Cards */}
+                <div className="stu-kpi-card" style={{ background: '#f5f3ff', borderLeft: '4px solid #8b5cf6' }} onClick={() => navigate('/faculty/assignments')}>
+                    <div className="kpi-main">
+                        <div className="kpi-value" style={{ color: '#8b5cf6' }}>3</div>
+                        <div className="kpi-label">Assignments to Grade</div>
+                    </div>
+                    <FaFileAlt className="kpi-icon" style={{ color: '#8b5cf6' }} />
+                    <div className="kpi-more" style={{ color: '#8b5cf6' }}>More info →</div>
+                </div>
+                <div className="stu-kpi-card" style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6' }} onClick={() => navigate('/faculty/proctor')}>
+                    <div className="kpi-main">
+                        <div className="kpi-value" style={{ color: '#3b82f6' }}>12</div>
+                        <div className="kpi-label">Proctor Wards</div>
+                    </div>
+                    <FaUsers className="kpi-icon" style={{ color: '#3b82f6' }} />
+                    <div className="kpi-more" style={{ color: '#3b82f6' }}>More info →</div>
+                </div>
+                <div className="stu-kpi-card" style={{ background: '#f0fdf4', borderLeft: '4px solid #22c55e' }} onClick={() => navigate('/faculty/research')}>
+                    <div className="kpi-main">
+                        <div className="kpi-value" style={{ color: '#22c55e' }}>2</div>
+                        <div className="kpi-label">New Publications</div>
+                    </div>
+                    <FaFlask className="kpi-icon" style={{ color: '#22c55e' }} />
+                    <div className="kpi-more" style={{ color: '#22c55e' }}>More info →</div>
                 </div>
             </div>
 

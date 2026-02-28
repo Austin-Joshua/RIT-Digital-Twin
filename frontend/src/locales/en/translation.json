@@ -1,0 +1,13 @@
+{
+    "header": {
+        "welcome": "Hi, welcome back!",
+        "search": "Search anything...",
+        "language": "Language"
+    },
+    "menu": {
+        "dashboard": "Dashboard",
+        "timetable": "Time Table",
+        "academics": "Academics",
+        "transport": "Transport"
+    }
+}

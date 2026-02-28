@@ -1,6 +1,7 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, Outlet, useNavigate, NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
@@ -10,7 +11,7 @@ import {
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuSettings,
     LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight,
-    LuSun, LuMoon, LuMonitor
+    LuSun, LuMoon, LuMonitor, LuGlobe
 } from 'react-icons/lu';
 import './student-layout.css';
 
@@ -22,6 +23,7 @@ const LayoutLoader = () => (
 );
 
 const InstitutionalLayout = () => {
+    const { t, i18n } = useTranslation();
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -53,13 +55,18 @@ const InstitutionalLayout = () => {
         window.location.href = '/login';
     };
 
+    const toggleLanguage = () => {
+        const newLang = i18n.language?.startsWith('en') ? 'ta' : 'en';
+        i18n.changeLanguage(newLang);
+    };
+
     const displayName = user?.firstName && user?.lastName
         ? `${user.firstName} ${user.lastName}`.toUpperCase()
         : (user?.username || user?.role || 'ADMIN').toUpperCase();
 
     const adminNavItems = [
-        { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },
-        { path: '/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
+        { path: '/', label: 'menu.dashboard', fallback: 'Home', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/analytics', label: 'menu.academics', fallback: 'Analytics', icon: <LuTrendingUp />, exact: true },
         { path: '/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
         { path: '/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
         { path: '/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
@@ -77,7 +84,7 @@ const InstitutionalLayout = () => {
     ];
 
     const facultyNavItems = [
-        { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/', label: 'menu.dashboard', fallback: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/simulations/classroom', label: 'Timetables', icon: <LuSchool /> },
         { path: '/faculty/upload-marks', label: 'Upload Results', icon: <LuPenTool /> },
         { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: <LuFlame /> },
@@ -127,7 +134,7 @@ const InstitutionalLayout = () => {
                                 }}
                             >
                                 <span className="nav-icon" style={{ fontSize: '18px' }}>{item.icon}</span>
-                                <span>{item.label}</span>
+                                <span>{item.label?.startsWith('menu.') ? t(item.label, { defaultValue: item.fallback }) : (item.fallback || item.label)}</span>
                             </NavLink>
                         </div>
                     ))}
@@ -179,6 +186,23 @@ const InstitutionalLayout = () => {
                         >
                             {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
                         </button>
+
+                        <button
+                            onClick={toggleLanguage}
+                            style={{
+                                background: 'none', border: 'none', fontSize: '20px',
+                                cursor: 'pointer', color: 'var(--ims-icon-color)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                position: 'relative'
+                            }}
+                            title={`Language: ${i18n.language?.toUpperCase()}`}
+                        >
+                            <LuGlobe />
+                            <span style={{ fontSize: '10px', position: 'absolute', bottom: '-8px', fontWeight: 'bold' }}>
+                                {i18n.language?.substring(0, 2).toUpperCase()}
+                            </span>
+                        </button>
+
                         <NotificationBar />
 
                         {/* Dropdown User Menu */}

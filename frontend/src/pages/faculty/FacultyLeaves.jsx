@@ -1,20 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../components/common/Card';
 import { FaCalendarCheck, FaCheck, FaTimes } from 'react-icons/fa';
+import api from '../../services/api';
 
 const FacultyLeaves = () => {
-    const [requests, setRequests] = useState([
-        { id: 1, name: 'Rahul Sharma', reg: '211520104055', type: 'Sick Leave', duration: '2 Days (Oct 24 - Oct 25)', reason: 'Fever and cold', status: 'Pending' },
-        { id: 2, name: 'Priya Patel', reg: '211520104042', type: 'On-Duty (OD)', duration: '1 Day (Oct 26)', reason: 'Hackathon Participation', status: 'Pending' },
-        { id: 3, name: 'Vijay Kumar', reg: '211520104088', type: 'Casual Leave', duration: '1 Day (Oct 27)', reason: 'Family Function', status: 'Pending' },
-        { id: 4, name: 'Sneha Reddy', reg: '211520104067', type: 'Sick Leave', duration: '3 Days (Oct 20 - Oct 22)', reason: 'Viral Fever', status: 'Approved' },
-        { id: 5, name: 'Abhishek Iyer', reg: '211520104012', type: 'On-Duty (OD)', duration: '2 Days (Oct 15 - Oct 16)', reason: 'Sports Tournament', status: 'Rejected' },
-    ]);
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleAction = (id, action) => {
-        setRequests(requests.map(req =>
-            req.id === id ? { ...req, status: action } : req
-        ));
+    useEffect(() => {
+        const fetchLeaves = async () => {
+            try {
+                const response = await api.get('/faculty/leaves');
+                const mappedLeaves = response.data.map(l => ({
+                    id: l.id,
+                    name: l.facultyName,
+                    reg: l.facultyId,
+                    type: l.leaveType,
+                    duration: `${l.startDate} to ${l.endDate}`,
+                    reason: 'Leave Application',
+                    status: l.status
+                }));
+                setRequests(mappedLeaves);
+            } catch (error) {
+                console.error("Failed to fetch leaves, using mock", error);
+                setRequests([
+                    { id: 1, name: 'Rahul Sharma', reg: '211520104055', type: 'Sick Leave', duration: '2 Days (Oct 24 - Oct 25)', reason: 'Fever and cold', status: 'Pending' },
+                    { id: 2, name: 'Priya Patel', reg: '211520104042', type: 'On-Duty (OD)', duration: '1 Day (Oct 26)', reason: 'Hackathon Participation', status: 'Pending' },
+                    { id: 3, name: 'Vijay Kumar', reg: '211520104088', type: 'Casual Leave', duration: '1 Day (Oct 27)', reason: 'Family Function', status: 'Pending' },
+                    { id: 4, name: 'Sneha Reddy', reg: '211520104067', type: 'Sick Leave', duration: '3 Days (Oct 20 - Oct 22)', reason: 'Viral Fever', status: 'Approved' },
+                    { id: 5, name: 'Abhishek Iyer', reg: '211520104012', type: 'On-Duty (OD)', duration: '2 Days (Oct 15 - Oct 16)', reason: 'Sports Tournament', status: 'Rejected' },
+                ]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchLeaves();
+    }, []);
+
+    const handleAction = async (id, action) => {
+        try {
+            await api.put(`/faculty/leaves/${id}/status`, { status: action });
+            setRequests(requests.map(req =>
+                req.id === id ? { ...req, status: action } : req
+            ));
+        } catch (error) {
+            console.error("Failed to update leave status", error);
+            setRequests(requests.map(req =>
+                req.id === id ? { ...req, status: action } : req
+            ));
+        }
     };
 
     return (
