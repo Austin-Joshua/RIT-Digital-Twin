@@ -72,7 +72,7 @@ const FacultyDashboard = () => {
                     <FaExclamationTriangle className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card purple-light" onClick={() => navigate('/faculty/assignments')}>
+                <div className="stu-kpi-card purple" onClick={() => navigate('/faculty/assignments')}>
                     <div className="kpi-main">
                         <div className="kpi-value">3</div>
                         <div className="kpi-label">Assignments to Grade</div>
@@ -80,7 +80,7 @@ const FacultyDashboard = () => {
                     <FaFileAlt className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card blue-light" onClick={() => navigate('/faculty/proctor')}>
+                <div className="stu-kpi-card blue" onClick={() => navigate('/faculty/proctor')}>
                     <div className="kpi-main">
                         <div className="kpi-value">12</div>
                         <div className="kpi-label">Proctor Wards</div>
@@ -88,7 +88,7 @@ const FacultyDashboard = () => {
                     <FaUsers className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card green-light" onClick={() => navigate('/faculty/research')}>
+                <div className="stu-kpi-card orange" onClick={() => navigate('/faculty/research')}>
                     <div className="kpi-main">
                         <div className="kpi-value">2</div>
                         <div className="kpi-label">New Publications</div>
