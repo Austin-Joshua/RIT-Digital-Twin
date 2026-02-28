@@ -74,22 +74,27 @@ public class DataInitializer implements CommandLineRunner {
 
         private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
                         String lastName) {
-                if (userRepository.findByUsername(email).isEmpty()) {
-                        Role role = roleRepository.findByRoleName(roleEnum)
-                                        .orElseThrow(() -> new RuntimeException(
-                                                        "Error: Role " + roleEnum + " not found."));
+                userRepository.findByEmail(email).ifPresentOrElse(
+                                user -> {
+                                        user.setPassword(passwordEncoder.encode(password));
+                                        userRepository.save(user);
+                                },
+                                () -> {
+                                        Role role = roleRepository.findByRoleName(roleEnum)
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "Error: Role " + roleEnum + " not found."));
 
-                        User user = User.builder()
-                                        .username(email)
-                                        .email(email)
-                                        .password(passwordEncoder.encode(password))
-                                        .firstName(firstName)
-                                        .lastName(lastName)
-                                        .role(role)
-                                        .build();
+                                        User user = User.builder()
+                                                        .username(email)
+                                                        .email(email)
+                                                        .password(passwordEncoder.encode(password))
+                                                        .firstName(firstName)
+                                                        .lastName(lastName)
+                                                        .role(role)
+                                                        .build();
 
-                        userRepository.save(user);
-                }
+                                        userRepository.save(user);
+                                });
         }
 
         private void seedErpData() {

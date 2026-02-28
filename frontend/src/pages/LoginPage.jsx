@@ -159,6 +159,67 @@ const LoginPage = () => {
                 </Button>
             </form>
 
+            <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--glass-border)' }}>
+                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.8rem', textAlign: 'center', marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    Quick Access (Demo)
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                    <button
+                        onClick={() => {
+                            setCredentials({ username: 'admin@ritchennai.edu.in', password: 'admin123' });
+                            setTimeout(() => {
+                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            }, 100);
+                        }}
+                        className="quick-login-btn"
+                        style={{ '--btn-color': '#var(--color-accent-gold)' }}
+                    >
+                        Admin
+                    </button>
+                    <button
+                        onClick={() => {
+                            setCredentials({ username: 'faculty@ritchennai.edu.in', password: 'faculty123' });
+                            setTimeout(() => {
+                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            }, 100);
+                        }}
+                        className="quick-login-btn"
+                    >
+                        Faculty
+                    </button>
+                    <button
+                        onClick={() => {
+                            setCredentials({ username: 'student@ritchennai.edu.in', password: 'student123' });
+                            setTimeout(() => {
+                                document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            }, 100);
+                        }}
+                        className="quick-login-btn"
+                    >
+                        Student
+                    </button>
+                </div>
+                <style>{`
+                    .quick-login-btn {
+                        padding: 10px;
+                        border-radius: 10px;
+                        border: 1px solid var(--glass-border);
+                        background: rgba(255,255,255,0.03);
+                        color: var(--theme-text-muted);
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    }
+                    .quick-login-btn:hover {
+                        background: rgba(255,255,255,0.08);
+                        color: var(--theme-text);
+                        border-color: var(--color-accent-gold);
+                        transform: translateY(-1px);
+                    }
+                `}</style>
+            </div>
+
             <div style={{ marginTop: '32px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                 New to the ecosystem? {' '}
                 <Link to="/register" style={{ color: 'var(--color-accent-gold)', fontWeight: '600', textDecoration: 'none' }}>
