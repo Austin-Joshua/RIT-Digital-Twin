@@ -17,12 +17,7 @@ export const WebSocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        let baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-
-        // Force production URL if hosted on Vercel
-        if (window.location.hostname.includes('vercel.app')) {
-            baseUrl = 'https://rit-digital-twin.onrender.com/api';
-        }
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
         const wsUrl = baseUrl.replace('/api', '') + '/ws';
 
