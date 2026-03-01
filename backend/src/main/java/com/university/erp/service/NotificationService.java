@@ -42,6 +42,6 @@ public class NotificationService {
         java.util.Objects.requireNonNull(notification, "notification must not be null");
         notificationRepository.save(notification);
         java.util.Objects.requireNonNull(user.getUsername(), "username must not be null");
-        messagingTemplate.convertAndSendToUser(user.getUsername(), "/queue/notifications", message);
+        messagingTemplate.convertAndSendToUser(user.getUsername(), "/queue/notifications", java.util.Objects.requireNonNull(message, "message must not be null"));
     }
 }
