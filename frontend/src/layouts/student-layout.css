@@ -1029,7 +1029,6 @@ html.dark ::-webkit-scrollbar-thumb {
     .stu-data-table {
         display: block;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
     }
 
     .stu-data-table th,
