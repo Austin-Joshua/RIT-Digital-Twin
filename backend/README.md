@@ -39,8 +39,10 @@ The application reads several values from environment variables. A sample templa
   JDBC connection details for the database.
 - **JWT secret**: the property `app.jwt.secret` may be populated from either
   `JWT_SECRET` (used by Docker Compose) or `APP_JWT_SECRET` (shown in the `.env.example`).
-  For convenience a harmless default (`ChangeMeInDev`) is used when neither variable is set,
-  so the application can start in development without additional configuration.
+  For convenience a harmless default (`ChangeMeInDev`) is used when neither
+  variable is set, so the application can start in development without
+  additional configuration.  This fallback logic was added after an earlier
+  startup failure where the placeholder could not be resolved.
 - `APP_JWT_EXPIRATION_MS` – token expiration in milliseconds (defaults to 86400000).
 - `APP_CORS_ALLOWED_ORIGINS` – comma‑separated list of permitted origins for CORS.
 
