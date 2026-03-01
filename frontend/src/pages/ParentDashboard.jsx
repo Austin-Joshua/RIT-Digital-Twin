@@ -193,7 +193,7 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
 
 const ParentDashboard = () => {
     const [students, setStudents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
     const [schedulingFor, setSchedulingFor] = useState(null);
     const [paymentFor, setPaymentFor] = useState(null);

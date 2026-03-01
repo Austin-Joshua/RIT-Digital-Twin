@@ -168,7 +168,7 @@ const TransportPage = () => {
                                 </h3>
 
                                 <div className="relative pl-8 border-l-2 border-navy-900/10 dark:border-white/10 space-y-6 ml-2 pt-2">
-                                    {stops.length > 0 ? stops.map((stop, idx) => (
+                                    {stops.length > 0 ? stops.map((stop, _idx) => (
                                         <div key={stop.id} className="relative group">
                                             <div className="absolute -left-[41px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white dark:bg-navy-900 border-4 border-navy-900 dark:border-gold-500 z-10 group-hover:scale-125 transition-all"></div>
                                             <div className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-navy-800 transition-all border border-transparent hover:border-gray-100 dark:hover:border-navy-700">

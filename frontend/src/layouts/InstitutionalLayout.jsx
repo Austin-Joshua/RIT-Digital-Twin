@@ -23,8 +23,6 @@ const LayoutLoader = () => (
 
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
-    const location = useLocation();
-    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(() => {
         const saved = localStorage.getItem('sidebar-open');
         return saved !== null ? JSON.parse(saved) : window.innerWidth > 768;

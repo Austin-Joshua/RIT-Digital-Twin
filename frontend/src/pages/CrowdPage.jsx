@@ -10,7 +10,7 @@ const CrowdPage = () => {
         try {
             const response = await api.post('/crowd/simulate', { buildingId, occupancy });
             setResult(JSON.parse(response.data.resultJson));
-        } catch (error) {
+        } catch (_error) {
             setResult({
                 congestionLevel: 'HIGH',
                 estimatedEvacuationTimeMin: 15,

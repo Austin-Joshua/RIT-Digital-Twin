@@ -19,7 +19,7 @@ const SustainabilityPage = () => {
                     carbonFootprintEstimate: 1050,
                     sdgAlignment: "SDG 7, 11, 13"
                 });
-            } catch (error) {
+            } catch (_error) {
                 setMetrics({
                     energyScore: 85,
                     transportScore: 70,
@@ -91,7 +91,7 @@ const SustainabilityPage = () => {
                         </div>
                     </div>
                     <div className="mt-4 p-3 bg-white/50 rounded-xl text-xs text-teal-700 italic font-medium">
-                        "Your current energy optimization saves approximately 240kg of CO₂ per month compared to national averages."
+                            &quot;Your current energy optimization saves approximately 240kg of CO₂ per month compared to national averages.&quot;
                     </div>
                 </div>
 

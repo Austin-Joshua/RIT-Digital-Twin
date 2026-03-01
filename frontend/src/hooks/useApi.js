@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import api from '../services/api';
 
 /**
  * Custom hook for API calls with loading + error state management.

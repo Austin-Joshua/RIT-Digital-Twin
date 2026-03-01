@@ -21,7 +21,7 @@ const ChatbotWidget = ({ studentId }) => {
             const res = await api.post(`/api/ai/chatbot/query?studentId=${studentId}`, { query: input });
             const botMsg = { text: res.data.response, isBot: true };
             setMessages(prev => [...prev, botMsg]);
-        } catch (err) {
+        } catch (_err) {
             setMessages(prev => [...prev, { text: "Sorry, I'm having trouble connecting right now.", isBot: true }]);
         }
     };

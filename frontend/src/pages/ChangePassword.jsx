@@ -21,7 +21,7 @@ const ChangePassword = () => {
 
         try {
             // Making API request
-            const response = await api.post('/auth/change-password', { newPassword });
+            const _response = await api.post('/auth/change-password', { newPassword });
             addToast('Password successfully changed!', 'success');
             setNewPassword('');
             setConfirmPassword('');

@@ -13,7 +13,6 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
-    const { isDarkMode } = React.useContext(ThemeContext);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -36,18 +35,18 @@ const LoginPage = () => {
             } else {
                 setError(result.message || 'Invalid username or password.');
             }
-        } catch (err) {
+        } catch (_err) {
             setError('Authentication service unavailable.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleQuickLogin = async (username, password) => {
+    const handleQuickLogin = async (_username, _password) => {
         setError('');
         setLoading(true);
         try {
-            const result = await login(username, password);
+            const result = await login(_username, _password);
             if (result.success) {
                 // Success handled by AuthContext and navigation
             } else {
