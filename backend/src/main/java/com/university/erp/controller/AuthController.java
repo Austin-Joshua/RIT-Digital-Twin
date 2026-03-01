@@ -46,6 +46,7 @@ public class AuthController {
                 .build());
     }
 
+    @SuppressWarnings("null")
     @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
