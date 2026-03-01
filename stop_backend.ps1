@@ -7,9 +7,9 @@ Write-Host "Stopping backend system..." -ForegroundColor Cyan
 $port = 8080
 $portProcess = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
 if ($portProcess) {
-    $pid = $portProcess[0].OwningProcess
-    Write-Host "Stopping local process with PID $pid on port $port..." -ForegroundColor Yellow
-    Stop-Process -Id $pid -Force
+    $processId = $portProcess[0].OwningProcess
+    Write-Host "Stopping local process with PID $processId on port $port..." -ForegroundColor Yellow
+    Stop-Process -Id $processId -Force
 }
 else {
     Write-Host "No local process found on port $port." -ForegroundColor DarkGray
