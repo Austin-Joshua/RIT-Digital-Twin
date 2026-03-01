@@ -66,8 +66,7 @@ public class RevaluationService {
         revaluationRepository.save(request);
 
         java.util.Objects.requireNonNull(request.getStudent(), "student must not be null");
-        java.util.Objects.requireNonNull(request.getStudent().getId(), "student id must not be null");
-        academicService.recalculateCgpa(request.getStudent().getId());
+        academicService.recalculateCgpa(java.util.Objects.requireNonNull(request.getStudent().getId(), "student id must not be null"));
         auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + java.util.Objects.requireNonNull(requestId, "requestId must not be null"));
     }
 }

@@ -35,13 +35,14 @@ public class AuthService {
         this.jwtUtils = jwtUtils;
     }
 
+    @SuppressWarnings("null")
     public AuthResponse login(AuthRequest request) {
         log.info("Attempting login for user: {}", request.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            User user = java.util.Objects.requireNonNull((User) authentication.getPrincipal(), "authenticated user must not be null");
+            @org.springframework.lang.NonNull User user = java.util.Objects.requireNonNull((User) authentication.getPrincipal(), "authenticated user must not be null");
             String jwt = jwtUtils.generateToken(user);
 
             log.info("Login successful for user: {}", user.getUsername());
@@ -91,14 +92,14 @@ public class AuthService {
         Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
-        User user = User.builder()
+        @org.springframework.lang.NonNull User user = java.util.Objects.requireNonNull(User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .role(role)
-                .build();
+                .build(), "registered user must not be null");
 
         userRepository.save(user);
         return "User registered successfully!";

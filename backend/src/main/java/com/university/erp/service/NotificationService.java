@@ -17,6 +17,7 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
+    @SuppressWarnings("null")
     public void sendGlobalNotification(@org.springframework.lang.NonNull String message) {
         java.util.Objects.requireNonNull(message, "message must not be null");
         Notification notification = Notification.builder()
