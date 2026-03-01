@@ -21,12 +21,15 @@ public class FacultyLeaveRequestController {
     }
 
     @PostMapping
-    public FacultyLeaveRequest createLeaveRequest(@RequestBody FacultyLeaveRequest request) {
+    public FacultyLeaveRequest createLeaveRequest(@org.springframework.lang.NonNull @RequestBody FacultyLeaveRequest request) {
+        java.util.Objects.requireNonNull(request, "request body must not be null");
         return repository.save(request);
     }
 
     @PutMapping("/{id}/status")
-    public FacultyLeaveRequest updateStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+    public FacultyLeaveRequest updateStatus(@org.springframework.lang.NonNull @PathVariable Long id, @org.springframework.lang.NonNull @RequestBody java.util.Map<String, String> body) {
+        java.util.Objects.requireNonNull(id, "id must not be null");
+        java.util.Objects.requireNonNull(body, "request body must not be null");
         FacultyLeaveRequest request = repository.findById(id).orElseThrow();
         request.setStatus(body.get("status"));
         return repository.save(request);

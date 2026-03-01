@@ -17,7 +17,8 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public void sendGlobalNotification(String message) {
+    public void sendGlobalNotification(@org.springframework.lang.NonNull String message) {
+        java.util.Objects.requireNonNull(message, "message must not be null");
         Notification notification = Notification.builder()
                 .content(message)
                 .type("GLOBAL")
@@ -27,7 +28,9 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications", message);
     }
 
-    public void sendUserNotification(User user, String message) {
+    public void sendUserNotification(@org.springframework.lang.NonNull User user, @org.springframework.lang.NonNull String message) {
+        java.util.Objects.requireNonNull(user, "user must not be null");
+        java.util.Objects.requireNonNull(message, "message must not be null");
         Notification notification = Notification.builder()
                 .recipient(user)
                 .content(message)

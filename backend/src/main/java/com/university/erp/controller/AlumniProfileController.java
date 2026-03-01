@@ -21,7 +21,8 @@ public class AlumniProfileController {
     }
 
     @PostMapping
-    public AlumniProfile createAlumni(@RequestBody AlumniProfile profile) {
+    public AlumniProfile createAlumni(@org.springframework.lang.NonNull @RequestBody AlumniProfile profile) {
+        java.util.Objects.requireNonNull(profile, "profile must not be null");
         return repository.save(profile);
     }
 }

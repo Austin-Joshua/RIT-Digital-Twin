@@ -21,7 +21,8 @@ public class AssetInventoryController {
     }
 
     @PostMapping
-    public AssetInventory createAsset(@RequestBody AssetInventory asset) {
+    public AssetInventory createAsset(@org.springframework.lang.NonNull @RequestBody AssetInventory asset) {
+        java.util.Objects.requireNonNull(asset, "asset must not be null");
         return repository.save(asset);
     }
 }
