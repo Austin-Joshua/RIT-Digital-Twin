@@ -46,7 +46,6 @@ public class AuthController {
                 .build());
     }
 
-    @SuppressWarnings("null")
     @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
@@ -56,6 +55,6 @@ public class AuthController {
         java.util.Objects.requireNonNull(user, "user principal must not be null");
         java.util.Objects.requireNonNull(request.getNewPassword(), "new password must not be null");
         authService.changePassword(user, request.getNewPassword());
-        return ResponseEntity.ok(java.util.Objects.requireNonNull("Password updated successfully!", "message must not be null"));
+        return ResponseEntity.ok("Password updated successfully!");
     }
 }

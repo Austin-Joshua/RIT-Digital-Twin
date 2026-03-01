@@ -25,7 +25,6 @@ import java.util.List;
 
 @Component
 @Slf4j
-@SuppressWarnings("null")
 public class DataInitializer implements CommandLineRunner {
 
         private final UserRepository userRepository;
