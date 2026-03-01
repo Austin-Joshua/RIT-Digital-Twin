@@ -13,9 +13,9 @@
     </parent>
 
     <groupId>com.university</groupId>
-    <artifactId>erp</artifactId>
+    <artifactId>rit-erp-backend</artifactId>
     <version>1.0.0</version>
-    <name>University Enterprise ERP</name>
+    <name>RIT Digital Twin ERP</name>
     <description>Enterprise Architecture for University Management System</description>
 
     <properties>
