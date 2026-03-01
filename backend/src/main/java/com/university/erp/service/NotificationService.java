@@ -20,13 +20,13 @@ public class NotificationService {
     public void sendGlobalNotification(@org.springframework.lang.NonNull String message) {
         java.util.Objects.requireNonNull(message, "message must not be null");
         Notification notification = Notification.builder()
-                .content(message)
+                .content(java.util.Objects.requireNonNull(message, "message must not be null"))
                 .type("GLOBAL")
                 .isRead(false)
                 .build();
         java.util.Objects.requireNonNull(notification, "notification must not be null");
         notificationRepository.save(notification);
-        messagingTemplate.convertAndSend("/topic/notifications", message);
+        messagingTemplate.convertAndSend("/topic/notifications", java.util.Objects.requireNonNull(message, "message must not be null"));
     }
 
     public void sendUserNotification(@org.springframework.lang.NonNull User user, @org.springframework.lang.NonNull String message) {

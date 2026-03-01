@@ -68,6 +68,6 @@ public class RevaluationService {
         java.util.Objects.requireNonNull(request.getStudent(), "student must not be null");
         java.util.Objects.requireNonNull(request.getStudent().getId(), "student id must not be null");
         academicService.recalculateCgpa(request.getStudent().getId());
-        auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + requestId);
+        auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + java.util.Objects.requireNonNull(requestId, "requestId must not be null"));
     }
 }
