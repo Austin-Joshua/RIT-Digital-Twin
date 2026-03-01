@@ -75,7 +75,7 @@ const AuthLayout = () => {
                                     borderLeft: `2px solid ${isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}`
                                 }}>
                                     Rajalakshmi Institute of Technology is an engineering college in Chennai, Tamil Nadu, India.
-                                    RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>'A++' Grade in NAAC</strong>.
+                                    RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>&apos;A++&apos; Grade in NAAC</strong>.
                                 </div>
 
                                 <div className="brand-tagline" style={{
@@ -87,7 +87,7 @@ const AuthLayout = () => {
                                     borderLeft: '3px solid var(--color-accent-gold)',
                                     paddingLeft: '16px'
                                 }}>
-                                    "Innovation through data, excellence in education."
+                                    &quot;Innovation through data, excellence in education.&quot;
                                 </div>
                             </motion.div>
                         </AnimatePresence>

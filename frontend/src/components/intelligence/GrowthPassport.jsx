@@ -77,7 +77,7 @@ const GrowthPassport = ({ studentId }) => {
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .metric-box {
                     padding: 12px;
                     background: #f8fafc;

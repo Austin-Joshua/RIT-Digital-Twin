@@ -62,7 +62,7 @@ const DetailModal = ({ detail, onClose }) => {
 
 const SuperAdminDashboard = () => {
     const [tenants, setTenants] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
 
     useEffect(() => {

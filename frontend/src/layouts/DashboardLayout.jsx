@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { FaUser, FaBell } from 'react-icons/fa';
 
 const DashboardLayout = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     // If no user, redirect to login
     if (!user && !localStorage.getItem('token')) {

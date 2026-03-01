@@ -13,7 +13,7 @@ import Card from '../../components/common/Card';
 import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
 
 const DashboardHome = () => {
-    const { user } = useAuth();
+    const { user: _user } = useAuth();
     const navigate = useNavigate();
 
     const stats = [

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +7,7 @@ import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaE
 import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 
 const FacultyDashboard = () => {
-    const { user } = useAuth();
+    const { user: _user } = useAuth();
     const navigate = useNavigate();
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);

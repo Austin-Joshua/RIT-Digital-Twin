@@ -10,7 +10,7 @@ const ManagementPage = () => {
         { id: 4, name: 'Information Technology', code: 'IT', head: 'Dr. Anjali Gupta', rooms: 6, faculty: 30 },
     ];
 
-    const users = [
+    const _users = [
         { id: 1, username: 'admin', role: 'ADMIN', status: 'ACTIVE' },
         { id: 2, username: 'registrar', role: 'MANAGEMENT', status: 'ACTIVE' },
         { id: 3, username: 'faculty01', role: 'FACULTY', status: 'PENDING' },

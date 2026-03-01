@@ -35,7 +35,6 @@ const studentNav = [
 
 const StudentLayout = () => {
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [sidebarOpen, setSidebarOpen] = useState(() => {
         const saved = localStorage.getItem('sidebar-open');

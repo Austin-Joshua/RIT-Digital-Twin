@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
             addToast(sendPush ? 'Broadcast sent globally via App Push!' : 'Broadcast successful.', 'success');
             setBTitle('');
             setBMessage('');
-        } catch (err) {
+        } catch (_err) {
             addToast('Failed to send broadcast', 'error');
         }
     };

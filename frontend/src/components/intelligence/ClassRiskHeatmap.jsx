@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { academicAiApi } from '../../services/enterpriseApi';
 import { motion } from 'framer-motion';
 
 const ClassRiskHeatmap = () => {
