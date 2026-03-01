@@ -37,11 +37,15 @@ public class AcademicService {
     }
 
     @Transactional
-    public void enterMarks(Long studentId, Marks newMarks) {
+    public void enterMarks(@org.springframework.lang.NonNull Long studentId, @org.springframework.lang.NonNull Marks newMarks) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
+        java.util.Objects.requireNonNull(newMarks, "newMarks must not be null");
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
 
         Marks existingMarks = marksRepository.findById(newMarks.getId() != null ? newMarks.getId() : -1L)
+        ;
+        java.util.Objects.requireNonNull(existingMarks, "existingMarks should not be null");
                 .orElse(new Marks());
 
         if (existingMarks.getId() != null) {
@@ -138,13 +142,15 @@ public class AcademicService {
 
     private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
         if (oldVal != null && !oldVal.equals(newVal)) {
-            historyRepository.save(com.university.erp.model.MarkHistory.builder()
+            com.university.erp.model.MarkHistory hist = com.university.erp.model.MarkHistory.builder()
                     .mark(mark)
                     .fieldName(field)
                     .oldValue(oldVal)
                     .newValue(newVal)
                     .changedBy("SYSTEM")
-                    .build());
+                    .build();
+            java.util.Objects.requireNonNull(hist, "history entry must not be null");
+            historyRepository.save(hist);
         }
     }
 
@@ -153,7 +159,8 @@ public class AcademicService {
     }
 
     @Transactional
-    public void recalculateCgpa(Long studentId) {
+    public void recalculateCgpa(@org.springframework.lang.NonNull Long studentId) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);
         if (allMarks.isEmpty())
             return;

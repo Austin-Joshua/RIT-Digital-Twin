@@ -16,7 +16,8 @@ public class AiService {
         this.studentRepository = studentRepository;
     }
 
-    public String predictAcademicRisk(Long studentId) {
+    public String predictAcademicRisk(@org.springframework.lang.NonNull Long studentId) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         Student student = studentRepository.findById(studentId).orElseThrow();
 
         if (student.getCurrentCgpa() < 5.0 || student.getArrearCount() > 2) {
@@ -27,7 +28,8 @@ public class AiService {
         return "LOW_RISK";
     }
 
-    public List<String> recommendCareer(Long studentId) {
+    public List<String> recommendCareer(@org.springframework.lang.NonNull Long studentId) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         Student student = studentRepository.findById(studentId).orElseThrow();
         List<String> recommendations = new ArrayList<>();
 

@@ -23,7 +23,9 @@ public class TransportService {
         return routeRepository.findAll();
     }
 
-    public void updateRoute(Long id, TransportRoute updatedRoute) {
+    public void updateRoute(@org.springframework.lang.NonNull Long id, @org.springframework.lang.NonNull TransportRoute updatedRoute) {
+        java.util.Objects.requireNonNull(id, "id must not be null");
+        java.util.Objects.requireNonNull(updatedRoute, "updatedRoute must not be null");
         TransportRoute existing = routeRepository.findById(id).orElseThrow();
         existing.setRouteName(updatedRoute.getRouteName());
         existing.setRouteNumber(updatedRoute.getRouteNumber());
@@ -35,11 +37,13 @@ public class TransportService {
         routeRepository.save(existing);
     }
 
-    public List<BusStop> getStopsByRoute(Long routeId) {
+    public List<BusStop> getStopsByRoute(@org.springframework.lang.NonNull Long routeId) {
+        java.util.Objects.requireNonNull(routeId, "routeId must not be null");
         return stopRepository.findByRouteIdOrderByStopOrderAsc(routeId);
     }
 
-    public List<TransportRoute> searchRoutes(String query) {
+    public List<TransportRoute> searchRoutes(@org.springframework.lang.NonNull String query) {
+        java.util.Objects.requireNonNull(query, "query must not be null");
         // Search by route number or by stop name
         List<TransportRoute> routesByNumber = routeRepository.findAll().stream()
                 .filter(r -> r.getRouteNumber().toLowerCase().contains(query.toLowerCase()) ||

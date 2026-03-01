@@ -42,6 +42,7 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
+        java.util.Objects.requireNonNull(user, "authenticated user must not be null");
             String jwt = jwtUtils.generateToken(user);
 
             log.info("Login successful for user: {}", user.getUsername());
