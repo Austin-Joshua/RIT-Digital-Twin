@@ -19,7 +19,7 @@
     <description>Enterprise Architecture for University Management System</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <ide.sync.timestamp>2026-03-01T19:33</ide.sync.timestamp>
         <jjwt.version>0.12.5</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
