@@ -42,7 +42,7 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            @org.springframework.lang.NonNull User user = java.util.Objects.requireNonNull((User) authentication.getPrincipal(), "authenticated user must not be null");
+            User user = java.util.Objects.requireNonNull((User) authentication.getPrincipal(), "authenticated user must not be null");
             String jwt = jwtUtils.generateToken(user);
 
             log.info("Login successful for user: {}", user.getUsername());
@@ -92,7 +92,7 @@ public class AuthService {
         Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
-        @org.springframework.lang.NonNull User user = java.util.Objects.requireNonNull(User.builder()
+        User user = java.util.Objects.requireNonNull(User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
