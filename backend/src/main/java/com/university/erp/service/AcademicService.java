@@ -116,6 +116,7 @@ public class AcademicService {
             marksRepository.save(mark);
 
             // Re-calc CGPA for the student
+            java.util.Objects.requireNonNull(student.getId(), "student id must not be null");
             recalculateCgpa(student.getId());
             count++;
         }
@@ -164,7 +165,6 @@ public class AcademicService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
         // use fetched student later
-        // (existing logic below uses studentRepository again, so we could reuse variable)
 
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);
         if (allMarks.isEmpty())
@@ -182,7 +182,8 @@ public class AcademicService {
 
         double cgpa = totalGradePoints / totalCredits;
 
-        Student student = studentRepository.findById(studentId).get();
+        // reuse previously fetched student variable
+        java.util.Objects.requireNonNull(student.getId(), "student id must not be null");
         student.setCurrentCgpa(cgpa);
         studentRepository.save(student);
     }
