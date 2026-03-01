@@ -106,7 +106,9 @@ public class AuthService {
     }
 
     @Transactional
-    public void changePassword(User user, String newPassword) {
+    public void changePassword(@org.springframework.lang.NonNull User user, @org.springframework.lang.NonNull String newPassword) {
+        java.util.Objects.requireNonNull(user, "user must not be null");
+        java.util.Objects.requireNonNull(newPassword, "newPassword must not be null");
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

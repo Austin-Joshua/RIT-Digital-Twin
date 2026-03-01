@@ -45,6 +45,8 @@ public class RevaluationService {
     @Transactional
     public void updateMarksByFaculty(@org.springframework.lang.NonNull Long requestId, Double newInternal, Double newExternal) {
         java.util.Objects.requireNonNull(requestId, "requestId must not be null");
+        java.util.Objects.requireNonNull(newInternal, "newInternal must not be null");
+        java.util.Objects.requireNonNull(newExternal, "newExternal must not be null");
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
@@ -63,6 +65,8 @@ public class RevaluationService {
         request.setStatus(RevaluationRequest.RequestStatus.FACULTY_UPDATED);
         revaluationRepository.save(request);
 
+        java.util.Objects.requireNonNull(request.getStudent(), "student must not be null");
+        java.util.Objects.requireNonNull(request.getStudent().getId(), "student id must not be null");
         academicService.recalculateCgpa(request.getStudent().getId());
         auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + requestId);
     }

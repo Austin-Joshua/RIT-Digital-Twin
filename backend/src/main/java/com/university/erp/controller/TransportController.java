@@ -24,12 +24,14 @@ public class TransportController {
     }
 
     @GetMapping("/routes/{id}/stops")
-    public List<BusStop> getStopsByRoute(@PathVariable Long id) {
+    public List<BusStop> getStopsByRoute(@PathVariable @org.springframework.lang.NonNull Long id) {
+        java.util.Objects.requireNonNull(id, "route id must not be null");
         return transportService.getStopsByRoute(id);
     }
 
     @GetMapping("/search")
-    public List<TransportRoute> searchRoutes(@RequestParam String query) {
+    public List<TransportRoute> searchRoutes(@RequestParam @org.springframework.lang.NonNull String query) {
+        java.util.Objects.requireNonNull(query, "search query must not be null");
         return transportService.searchRoutes(query);
     }
 }

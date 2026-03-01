@@ -24,6 +24,7 @@ public class NotificationService {
                 .type("GLOBAL")
                 .isRead(false)
                 .build();
+        java.util.Objects.requireNonNull(notification, "notification must not be null");
         notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/notifications", message);
     }
@@ -37,7 +38,9 @@ public class NotificationService {
                 .type("PERSONAL")
                 .isRead(false)
                 .build();
+        java.util.Objects.requireNonNull(notification, "notification must not be null");
         notificationRepository.save(notification);
+        java.util.Objects.requireNonNull(user.getUsername(), "username must not be null");
         messagingTemplate.convertAndSendToUser(user.getUsername(), "/queue/notifications", message);
     }
 }
