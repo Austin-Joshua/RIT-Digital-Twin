@@ -44,9 +44,8 @@ public class AcademicService {
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
 
         Marks existingMarks = marksRepository.findById(newMarks.getId() != null ? newMarks.getId() : -1L)
-        ;
-        java.util.Objects.requireNonNull(existingMarks, "existingMarks should not be null");
                 .orElse(new Marks());
+        java.util.Objects.requireNonNull(existingMarks, "existingMarks should not be null");
 
         if (existingMarks.getId() != null) {
             logHistory(existingMarks, newMarks);
@@ -161,6 +160,12 @@ public class AcademicService {
     @Transactional
     public void recalculateCgpa(@org.springframework.lang.NonNull Long studentId) {
         java.util.Objects.requireNonNull(studentId, "studentId must not be null");
+        // ensure student exists
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
+        // use fetched student later
+        // (existing logic below uses studentRepository again, so we could reuse variable)
+
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);
         if (allMarks.isEmpty())
             return;

@@ -20,14 +20,17 @@ public class AcademicController {
 
     @PostMapping("/marks/{studentId}")
     @PreAuthorize("hasRole('FACULTY')")
-    public ResponseEntity<String> enterMarks(@PathVariable Long studentId, @RequestBody Marks marks) {
+    public ResponseEntity<String> enterMarks(@PathVariable @org.springframework.lang.NonNull Long studentId, @RequestBody @org.springframework.lang.NonNull Marks marks) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
+        java.util.Objects.requireNonNull(marks, "marks payload must not be null");
         academicService.enterMarks(studentId, marks);
         return ResponseEntity.ok("Marks entered successfully");
     }
 
     @GetMapping("/marks/student/{studentId}")
     @PreAuthorize("hasRole('STUDENT') or hasRole('FACULTY')")
-    public ResponseEntity<List<Marks>> getStudentMarks(@PathVariable Long studentId) {
+    public ResponseEntity<List<Marks>> getStudentMarks(@PathVariable @org.springframework.lang.NonNull Long studentId) {
+        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         return ResponseEntity.ok(academicService.getStudentMarks(studentId));
     }
 }
