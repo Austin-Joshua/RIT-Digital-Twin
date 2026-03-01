@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS departments (
     dept_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dept_name VARCHAR(100) NOT NULL UNIQUE,
+    code VARCHAR(20) NOT NULL UNIQUE,
     head_of_dept VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -181,8 +182,8 @@ CREATE TABLE IF NOT EXISTS timetables (
     subject_name VARCHAR(200),
     department_id BIGINT,
     classroom_id BIGINT,
-    FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL,
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL
+    FOREIGN KEY (department_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(room_id) ON DELETE SET NULL
 );
 
 -- Data Seeding
