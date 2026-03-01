@@ -30,6 +30,7 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications", java.util.Objects.requireNonNull(message, "message must not be null"));
     }
 
+    @SuppressWarnings("null")
     public void sendUserNotification(@org.springframework.lang.NonNull User user, @org.springframework.lang.NonNull String message) {
         java.util.Objects.requireNonNull(user, "user must not be null");
         java.util.Objects.requireNonNull(message, "message must not be null");
