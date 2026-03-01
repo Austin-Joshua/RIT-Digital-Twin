@@ -5,12 +5,12 @@ param (
 # RIT Digital Twin - Backend Startup Script
 # This script loads environment variables from .env and starts the Spring Boot backend.
 
-# Set JAVA_HOME to JDK 21 if available (JDK 24 has issues with Maven plugins)
-$Jdk21Path = "C:\Program Files\Java\jdk-21.0.10"
-if (Test-Path $Jdk21Path) {
-    $env:JAVA_HOME = $Jdk21Path
-    $env:PATH = "$Jdk21Path\bin;" + $env:PATH
-    Write-Host "Using JDK 21 at $Jdk21Path" -ForegroundColor Cyan
+# Set JAVA_HOME to Microsoft OpenJDK 17
+$JdkPath = "C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot"
+if (Test-Path $JdkPath) {
+    $env:JAVA_HOME = $JdkPath
+    $env:PATH = "$JdkPath\bin;" + $env:PATH
+    Write-Host "Using JDK 17 at $JdkPath" -ForegroundColor Cyan
 }
 
 $EnvFile = Join-Path $PSScriptRoot ".env"
