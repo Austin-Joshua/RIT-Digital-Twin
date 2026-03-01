@@ -116,8 +116,7 @@ public class AcademicService {
             marksRepository.save(mark);
 
             // Re-calc CGPA for the student
-            java.util.Objects.requireNonNull(student.getId(), "student id must not be null");
-            recalculateCgpa(student.getId());
+            recalculateCgpa(java.util.Objects.requireNonNull(student.getId(), "student id must not be null"));
             count++;
         }
 
@@ -158,6 +157,7 @@ public class AcademicService {
         return marksRepository.findByStudentId(studentId);
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public void recalculateCgpa(@org.springframework.lang.NonNull Long studentId) {
         java.util.Objects.requireNonNull(studentId, "studentId must not be null");
