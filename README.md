@@ -15,6 +15,20 @@ A full-stack institutional web application for managing smart campus operations:
 
 ---
 
+## 🛠️ Prerequisites / Required Software
+
+To run this project locally from scratch, ensure you have the following installed:
+
+1. **[Git](https://git-scm.com/)**: To clone the repository.
+2. **[Node.js](https://nodejs.org/) (v18+)**: Required to build and run the React frontend.
+3. **[Java Development Kit (JDK) 21](https://adoptium.net/)**: Required for the Spring Boot backend. *(Note: JDK 24 currently causes Maven build conflicts in this project).*
+4. **[MySQL Server 8.0+](https://dev.mysql.com/downloads/mysql/)**: For the local database instance.
+5. *(Optional)* **[Docker Desktop](https://www.docker.com/products/docker-desktop/)**: If you prefer to run the database via the provided `docker-compose.yml` file.
+
+> **Note on Maven**: You do **not** need to install Maven manually. The `run_backend.ps1` script will automatically use your system Maven or the included Maven wrapper (`mvnw.cmd`).
+
+---
+
 ## 🚀 Quick Start (Docker)
 
 **Requirements:** Docker Desktop must be running.
