@@ -25,16 +25,14 @@ public class RevaluationService {
     }
 
     @Transactional
-    public void applyForRevaluation(@org.springframework.lang.NonNull RevaluationRequest request) {
-        java.util.Objects.requireNonNull(request, "request must not be null");
+    public void applyForRevaluation(RevaluationRequest request) {
         request.setStatus(RevaluationRequest.RequestStatus.PENDING);
         revaluationRepository.save(request);
         auditService.log("REVALUATION_APPLIED", "Student applied for revaluation ID: " + request.getId());
     }
 
     @Transactional
-    public void approveByAdmin(@org.springframework.lang.NonNull Long requestId, String remarks) {
-        java.util.Objects.requireNonNull(requestId, "requestId must not be null");
+    public void approveByAdmin(Long requestId, String remarks) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
         request.setStatus(RevaluationRequest.RequestStatus.ADMIN_APPROVED);
@@ -43,10 +41,7 @@ public class RevaluationService {
     }
 
     @Transactional
-    public void updateMarksByFaculty(@org.springframework.lang.NonNull Long requestId, Double newInternal, Double newExternal) {
-        java.util.Objects.requireNonNull(requestId, "requestId must not be null");
-        java.util.Objects.requireNonNull(newInternal, "newInternal must not be null");
-        java.util.Objects.requireNonNull(newExternal, "newExternal must not be null");
+    public void updateMarksByFaculty(Long requestId, Double newInternal, Double newExternal) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
@@ -65,8 +60,7 @@ public class RevaluationService {
         request.setStatus(RevaluationRequest.RequestStatus.FACULTY_UPDATED);
         revaluationRepository.save(request);
 
-        java.util.Objects.requireNonNull(request.getStudent(), "student must not be null");
-        academicService.recalculateCgpa(java.util.Objects.requireNonNull(request.getStudent().getId(), "student id must not be null"));
-        auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + java.util.Objects.requireNonNull(requestId, "requestId must not be null"));
+        academicService.recalculateCgpa(request.getStudent().getId());
+        auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + requestId);
     }
 }

@@ -37,15 +37,12 @@ public class AcademicService {
     }
 
     @Transactional
-    public void enterMarks(@org.springframework.lang.NonNull Long studentId, @org.springframework.lang.NonNull Marks newMarks) {
-        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
-        java.util.Objects.requireNonNull(newMarks, "newMarks must not be null");
+    public void enterMarks(Long studentId, Marks newMarks) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
 
         Marks existingMarks = marksRepository.findById(newMarks.getId() != null ? newMarks.getId() : -1L)
                 .orElse(new Marks());
-        java.util.Objects.requireNonNull(existingMarks, "existingMarks should not be null");
 
         if (existingMarks.getId() != null) {
             logHistory(existingMarks, newMarks);
@@ -116,7 +113,7 @@ public class AcademicService {
             marksRepository.save(mark);
 
             // Re-calc CGPA for the student
-            recalculateCgpa(java.util.Objects.requireNonNull(student.getId(), "student id must not be null"));
+            recalculateCgpa(student.getId());
             count++;
         }
 
@@ -141,15 +138,13 @@ public class AcademicService {
 
     private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
         if (oldVal != null && !oldVal.equals(newVal)) {
-            com.university.erp.model.MarkHistory hist = com.university.erp.model.MarkHistory.builder()
+            historyRepository.save(com.university.erp.model.MarkHistory.builder()
                     .mark(mark)
                     .fieldName(field)
                     .oldValue(oldVal)
                     .newValue(newVal)
                     .changedBy("SYSTEM")
-                    .build();
-            java.util.Objects.requireNonNull(hist, "history entry must not be null");
-            historyRepository.save(hist);
+                    .build());
         }
     }
 
@@ -157,15 +152,8 @@ public class AcademicService {
         return marksRepository.findByStudentId(studentId);
     }
 
-    @SuppressWarnings("null")
     @Transactional
-    public void recalculateCgpa(@org.springframework.lang.NonNull Long studentId) {
-        java.util.Objects.requireNonNull(studentId, "studentId must not be null");
-        // ensure student exists
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
-        // use fetched student later
-
+    public void recalculateCgpa(Long studentId) {
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);
         if (allMarks.isEmpty())
             return;
@@ -182,8 +170,7 @@ public class AcademicService {
 
         double cgpa = totalGradePoints / totalCredits;
 
-        // reuse previously fetched student variable
-        java.util.Objects.requireNonNull(student.getId(), "student id must not be null");
+        Student student = studentRepository.findById(studentId).get();
         student.setCurrentCgpa(cgpa);
         studentRepository.save(student);
     }
