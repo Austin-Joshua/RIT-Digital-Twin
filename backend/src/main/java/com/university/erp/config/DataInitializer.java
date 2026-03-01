@@ -68,6 +68,11 @@ public class DataInitializer implements CommandLineRunner {
                 seedUser("faculty@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "John", "Faculty");
                 seedUser("student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
 
+                // Additional Demo Users
+                seedUser("faculty2@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "Sarah", "Professor");
+                seedUser("student2@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Michael", "Lee");
+                seedUser("student3@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Emily", "Chen");
+
                 // 3. Initialize Transport Data
                 seedTransportData();
 
