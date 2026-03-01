@@ -35,7 +35,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> getMe() {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication();
+        java.util.Objects.requireNonNull(authentication, "authentication must not be null");
         User user = (User) authentication.getPrincipal();
+        java.util.Objects.requireNonNull(user, "user principal must not be null");
+        java.util.Objects.requireNonNull(user.getUsername(), "username must not be null");
+        java.util.Objects.requireNonNull(user.getRole(), "user role must not be null");
         return ResponseEntity.ok(AuthResponse.builder()
                 .username(user.getUsername())
                 .role(user.getRole().getRoleName().name())
@@ -46,7 +50,10 @@ public class AuthController {
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication();
+        java.util.Objects.requireNonNull(authentication, "authentication must not be null");
         User user = (User) authentication.getPrincipal();
+        java.util.Objects.requireNonNull(user, "user principal must not be null");
+        java.util.Objects.requireNonNull(request.getNewPassword(), "new password must not be null");
         authService.changePassword(user, request.getNewPassword());
         return ResponseEntity.ok("Password updated successfully!");
     }
