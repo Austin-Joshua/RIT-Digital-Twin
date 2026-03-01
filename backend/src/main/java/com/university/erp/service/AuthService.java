@@ -35,14 +35,13 @@ public class AuthService {
         this.jwtUtils = jwtUtils;
     }
 
-    @SuppressWarnings("null")
     public AuthResponse login(AuthRequest request) {
         log.info("Attempting login for user: {}", request.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            User user = java.util.Objects.requireNonNull((User) authentication.getPrincipal(), "authenticated user must not be null");
+            User user = (User) authentication.getPrincipal();
             String jwt = jwtUtils.generateToken(user);
 
             log.info("Login successful for user: {}", user.getUsername());
@@ -92,23 +91,21 @@ public class AuthService {
         Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
-        User user = java.util.Objects.requireNonNull(User.builder()
+        User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .role(role)
-                .build(), "registered user must not be null");
+                .build();
 
         userRepository.save(user);
         return "User registered successfully!";
     }
 
     @Transactional
-    public void changePassword(@org.springframework.lang.NonNull User user, @org.springframework.lang.NonNull String newPassword) {
-        java.util.Objects.requireNonNull(user, "user must not be null");
-        java.util.Objects.requireNonNull(newPassword, "newPassword must not be null");
+    public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
