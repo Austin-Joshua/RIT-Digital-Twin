@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <ide.sync.timestamp>2026-03-01T19:33</ide.sync.timestamp>
+        <ide.sync.timestamp>2026-03-02T17:15</ide.sync.timestamp>
         <jjwt.version>0.12.5</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok.version>1.18.30</lombok.version>
