@@ -17,6 +17,7 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
+    @SuppressWarnings("null")
     public void sendGlobalNotification(String message) {
         Notification notification = Notification.builder()
                 .content(message)
@@ -27,6 +28,7 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications", message);
     }
 
+    @SuppressWarnings("null")
     public void sendUserNotification(User user, String message) {
         Notification notification = Notification.builder()
                 .recipient(user)
