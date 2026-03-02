@@ -8,30 +8,28 @@ A full-stack institutional web application for managing smart campus operations:
 
 | Layer | Technology |
 |---|---|
-| Frontend | React (Vite), Recharts, Axios |
-| Backend | Spring Boot 3.2 (Java 17), Spring Security (JWT) |
+| Frontend | React 19 (Vite 7), Tailwind CSS 4, Recharts, Framer Motion |
+| Backend | Spring Boot 3.2 (Java 25), Spring Security (JWT) |
 | Database | MySQL 8.0 |
-| Infrastructure | Docker, Docker Compose |
+| Infrastructure | Docker, Docker Compose, Vercel (frontend), Render (backend) |
 
 ---
 
-## 🛠️ Prerequisites / Required Software
+## 🛠️ Prerequisites
 
-To run this project locally from scratch, ensure you have the following installed:
+| Software | Version |
+|---|---|
+| [Node.js](https://nodejs.org/) | v24+ |
+| [JDK](https://www.oracle.com/java/technologies/downloads/) | 25 |
+| [MySQL](https://dev.mysql.com/downloads/mysql/) | 8.0+ |
+| [Maven](https://maven.apache.org/) | 3.9+ |
+| *(Optional)* [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Latest |
 
-1. **[Git](https://git-scm.com/)**: To clone the repository.
-2. **[Node.js](https://nodejs.org/) (v18+)**: Required to build and run the React frontend.
-3. **[Java Development Kit (JDK) 21](https://adoptium.net/)**: Required for the Spring Boot backend. *(Note: JDK 24 currently causes Maven build conflicts in this project).*
-4. **[MySQL Server 8.0+](https://dev.mysql.com/downloads/mysql/)**: For the local database instance.
-5. *(Optional)* **[Docker Desktop](https://www.docker.com/products/docker-desktop/)**: If you prefer to run the database via the provided `docker-compose.yml` file.
-
-> **Note on Maven**: You do **not** need to install Maven manually. The `run_backend.ps1` script will automatically use your system Maven or the included Maven wrapper (`mvnw.cmd`).
+> **Note on Maven**: The `run_backend.ps1` script will automatically use your system Maven or the included Maven wrapper (`mvnw.cmd`).
 
 ---
 
 ## 🚀 Quick Start (Docker)
-
-**Requirements:** Docker Desktop must be running.
 
 ```powershell
 # Start all services (MySQL → Backend → Frontend)
@@ -41,8 +39,7 @@ docker-compose up --build -d
 docker-compose down
 
 # Full reset (wipes database)
-docker-compose down -v
-docker-compose up --build -d
+docker-compose down -v && docker-compose up --build -d
 ```
 
 | Service | URL |
@@ -57,27 +54,32 @@ docker-compose up --build -d
 
 | Role | Username | Password |
 |---|---|---|
-| Admin | `admin` | `admin123` |
-| Faculty | `faculty` | `faculty123` |
-| Student | `student` | `student123` |
+| Admin | `admin@ritchennai.edu.in` | `admin123` |
+| Faculty | `faculty@ritchennai.edu.in` | `faculty123` |
+| Student | `student@ritchennai.edu.in` | `student123` |
 
 ---
 
 ## 🛠️ Local Development
 
 ### Backend
-```bash
-cd backend
-./mvnw spring-boot:run
+```powershell
+.\run_backend.ps1
 ```
-> Update `backend/src/main/resources/application.properties` to point to your local MySQL instance.
 
 ### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
+```powershell
+.\run_frontend.ps1
 ```
+
+---
+
+## 🌐 Deployment
+
+| Component | Platform | URL |
+|---|---|---|
+| Frontend | Vercel | https://digital-twin-lemon.vercel.app |
+| Backend | Render | https://rit-digital-twin-backend.onrender.com |
 
 ---
 
@@ -86,10 +88,12 @@ npm run dev
 ```
 RIT-Digital-Twin/
 ├── backend/          # Spring Boot API
-├── frontend/         # React app
+├── frontend/         # React app (Vite)
 ├── database/         # schema.sql + seed-data.sql
 ├── docker-compose.yml
-└── start_app.ps1     # PowerShell convenience script
+├── run_backend.ps1   # Backend startup script
+├── run_frontend.ps1  # Frontend startup script
+└── stop_backend.ps1  # Backend shutdown script
 ```
 
 ---
