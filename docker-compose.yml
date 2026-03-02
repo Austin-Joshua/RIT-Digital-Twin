@@ -41,7 +41,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       JWT_SECRET: RITDigitalTwinSmartCampusIntelligencePlatformSecretKey2026VeryLongSecureKey
-      APP_CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:5173,https://digital-twin-git-main-austin-joshua-ms-projects.vercel.app,https://digital-twin-lemon.vercel.app"
+      APP_CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:5173,https://digital-twin-lemon.vercel.app,https://digital-twin-phi.vercel.app,https://digital-twin-git-main-austin-joshua-ms-projects.vercel.app,https://*.vercel.app"
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
 

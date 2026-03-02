@@ -4,16 +4,13 @@
     "private": true,
     "description": "Root management for RIT Digital Twin",
     "workspaces": [
-        "frontend",
-        "scrape_ims"
+        "frontend"
     ],
     "scripts": {
         "install:frontend": "npm install -w frontend",
-        "install:scrape": "npm install -w scrape_ims",
         "install:all": "npm install",
         "dev": "npm run dev -w frontend",
         "build": "npm run build -w frontend",
-        "scrape": "npm run test -w scrape_ims",
         "start": "npm run dev -w frontend"
     }
 }
