@@ -71,8 +71,8 @@ const LoginPage = () => {
             <div className="login-form-panel">
                 <div className="login-form-container">
                     <div className="login-form-header">
-                        <h2>Welcome Back</h2>
-                        <p>Sign in to access your campus intelligence dashboard</p>
+                        <h2>Institutional Access</h2>
+                        <p>Authenticate to access the Smart Campus Intelligence Platform</p>
                     </div>
 
                     {error && (
@@ -84,14 +84,14 @@ const LoginPage = () => {
 
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="username">Username</label>
+                            <label htmlFor="username">Institutional Email or Username</label>
                             <div className="form-input-wrapper">
                                 <HiOutlineUser className="input-icon" />
                                 <input
                                     id="username"
                                     type="text"
                                     className="form-input"
-                                    placeholder="Enter your username"
+                                    placeholder="Provide your institutional credentials"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     autoComplete="username"
@@ -101,14 +101,14 @@ const LoginPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="password">Password</label>
+                            <label htmlFor="password">Security Password</label>
                             <div className="form-input-wrapper">
                                 <HiOutlineLockClosed className="input-icon" />
                                 <input
                                     id="password"
                                     type="password"
                                     className="form-input"
-                                    placeholder="Enter your password"
+                                    placeholder="Provide your account password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     autoComplete="current-password"
@@ -120,43 +120,13 @@ const LoginPage = () => {
                             {loading ? (
                                 <>
                                     <div className="spinner" />
-                                    Signing in...
+                                    Authenticating...
                                 </>
                             ) : (
                                 'Sign In'
                             )}
                         </button>
                     </form>
-
-                    <div className="quick-login-section">
-                        <h3>Quick Access</h3>
-                        <div className="quick-login-grid">
-                            <button
-                                className="quick-btn admin"
-                                onClick={() => { setUsername('admin@ritchennai.edu.in'); setPassword('admin123'); }}
-                                title="Login as Admin"
-                            >
-                                <FiZap className="quick-icon" />
-                                <span>Admin</span>
-                            </button>
-                            <button
-                                className="quick-btn faculty"
-                                onClick={() => { setUsername('faculty@ritchennai.edu.in'); setPassword('faculty123'); }}
-                                title="Login as Faculty"
-                            >
-                                <FiUsers className="quick-icon" />
-                                <span>Faculty</span>
-                            </button>
-                            <button
-                                className="quick-btn student"
-                                onClick={() => { setUsername('student@ritchennai.edu.in'); setPassword('student123'); }}
-                                title="Login as Student"
-                            >
-                                <HiOutlineUser className="quick-icon" />
-                                <span>Student</span>
-                            </button>
-                        </div>
-                    </div>
 
                     <div className="login-footer">
                         <p>

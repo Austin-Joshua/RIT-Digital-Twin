@@ -27,7 +27,7 @@ const ChangePassword = () => {
             setConfirmPassword('');
         } catch (error) {
             console.error("Change password error:", error);
-            const errorMsg = error.response?.data?.message || 'Failed to update password. Please try again.';
+            const errorMsg = error.response?.data?.message || 'Your password could not be updated at this time. Please try again later.';
             addToast(errorMsg, 'error');
         }
     };

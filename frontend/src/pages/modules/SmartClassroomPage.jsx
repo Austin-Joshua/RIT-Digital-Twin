@@ -64,7 +64,7 @@ function SmartClassroomPage() {
             setResults(response.data);
             setActiveTab('results');
         } catch (err) {
-            setError(err.response?.data?.message || 'Simulation failed. Please check your inputs and try again.');
+            setError(err.response?.data?.message || 'The simulation could not be completed. Please verify your inputs and try again.');
         } finally {
             setLoading(false);
         }

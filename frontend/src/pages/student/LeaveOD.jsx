@@ -28,7 +28,7 @@ const LeaveOD = () => {
             setFormData({ startDate: '', endDate: '', reason: '', type: 'LEAVE' });
             fetchApplications();
         } catch (err) {
-            alert('Failed to submit application');
+            alert('Your application could not be submitted. Please try again later.');
         } finally {
             setLoading(false);
         }

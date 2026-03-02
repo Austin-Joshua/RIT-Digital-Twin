@@ -22,7 +22,7 @@ function SustainabilityPage() {
             const res = await api.get('/api/sustainability/dashboard');
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to load dashboard.');
+            setError(err.response?.data?.message || 'Unable to load the sustainability dashboard. Please try again later.');
         } finally {
             setLoading(false);
         }

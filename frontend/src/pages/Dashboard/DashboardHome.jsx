@@ -18,10 +18,10 @@ const DashboardHome = () => {
 
     const stats = [
         { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid />, link: '/simulations/classroom' },
-        { label: 'Energy Saved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/simulations/energy' },
-        { label: 'Active Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/transport' },
-        { label: 'Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/simulations/crowd' },
-        { label: 'Sustainability', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/simulations/sustainability' },
+        { label: 'Energy Conserved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/simulations/energy' },
+        { label: 'Active Transport Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/transport' },
+        { label: 'Current Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/simulations/crowd' },
+        { label: 'Sustainability Rating', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/simulations/sustainability' },
         { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity />, link: '/predictions' },
     ];
 
@@ -42,28 +42,28 @@ const DashboardHome = () => {
         },
         {
             title: 'Transport Route Optimization',
-            description: 'Campus bus route planning, fleet analysis, and schedule optimization.',
+            description: 'Comprehensive campus bus route planning, fleet utilisation analysis, and schedule optimisation.',
             icon: <FiTruck />,
             path: '/transport',
             status: 'active',
         },
         {
             title: 'Crowd Flow & Emergency',
-            description: 'Crowd density mapping, emergency evacuation simulation, and readiness scoring.',
+            description: 'Real-time crowd density mapping, emergency evacuation simulation, and institutional readiness assessment.',
             icon: <FiUsers />,
             path: '/simulations/crowd',
             status: 'active',
         },
         {
             title: 'Sustainability Dashboard',
-            description: 'Environmental impact tracking, carbon footprint analysis, and SDG progress.',
+            description: 'Institutional environmental impact tracking, carbon footprint analysis, and Sustainable Development Goals progress monitoring.',
             icon: <FiBarChart2 />,
             path: '/simulations/sustainability',
             status: 'active',
         },
         {
             title: 'Predictive Analytics',
-            description: 'Regression-based forecasting for enrollment, infrastructure demand, and planning.',
+            description: 'Regression-based forecasting for enrolment trends, infrastructure demand projections, and strategic planning.',
             icon: <FiActivity />,
             path: '/predictions',
             status: 'active',
@@ -104,7 +104,7 @@ const DashboardHome = () => {
                                     <div className="module-card-icon">{mod.icon}</div>
                                     <h3>{mod.title}</h3>
                                     <span className={`module-status ${mod.status}`}>
-                                        {mod.status === 'active' ? 'Active' : 'Coming Soon'}
+                                        {mod.status === 'active' ? 'Operational' : 'Coming Soon'}
                                     </span>
                                 </div>
                                 <p>{mod.description}</p>

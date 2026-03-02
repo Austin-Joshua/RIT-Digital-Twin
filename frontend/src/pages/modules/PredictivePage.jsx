@@ -23,7 +23,7 @@ function PredictivePage() {
             const res = await api.get('/api/analytics/predictive');
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to load forecast.');
+            setError(err.response?.data?.message || 'Unable to retrieve forecast data. Please try again later.');
         } finally {
             setLoading(false);
         }
