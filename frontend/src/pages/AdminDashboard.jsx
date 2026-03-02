@@ -75,7 +75,7 @@ const AdminDashboard = () => {
             setBTitle('');
             setBMessage('');
         } catch (_err) {
-            addToast('Failed to send broadcast', 'error');
+            addToast('The broadcast could not be sent. Please try again later.', 'error');
         }
     };
 

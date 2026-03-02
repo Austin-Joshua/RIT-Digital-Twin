@@ -43,7 +43,7 @@ function CrowdFlowPage() {
             const res = await api.post('/api/simulate/crowdflow', params);
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Simulation failed.');
+            setError(err.response?.data?.message || 'The simulation could not be completed. Please try again later.');
         } finally {
             setLoading(false);
         }

@@ -75,7 +75,7 @@ const EnergyPage = () => {
 
     return (
         <div className="space-y-6">
-            <h1 className="page-header">Energy Optimization Report</h1>
+            <h1 className="page-header">Campus Energy Optimization Report</h1>
 
             {/* Quick Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -83,7 +83,7 @@ const EnergyPage = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-gray-400 text-xs uppercase font-bold flex items-center gap-2">
-                                Current Load
+                                Real-Time Campus Load
                                 {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                             </p>
                             <h3 className="text-2xl font-bold">{liveMetrics.currentLoad} kW</h3>
@@ -92,19 +92,19 @@ const EnergyPage = () => {
                     </div>
                 </div>
                 <div className="card p-4">
-                    <p className="text-gray-500 text-xs uppercase font-bold">Daily Peak</p>
+                    <p className="text-gray-500 text-xs uppercase font-bold">Peak Daily Consumption</p>
                     <h3 className="text-2xl font-bold">800 kW</h3>
                 </div>
                 <div className="card p-4">
                     <p className="text-gray-500 text-xs uppercase font-bold flex items-center gap-2">
-                        Solar Yield
+                        Solar Panel Output
                         {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                     </p>
                     <h3 className="text-2xl font-bold text-green-600">{liveMetrics.solarYield} kW</h3>
                 </div>
                 <div className="card p-4">
                     <p className="text-gray-500 text-xs uppercase font-bold flex items-center gap-2">
-                        Grid Import
+                        External Grid Import
                         {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                     </p>
                     <h3 className="text-2xl font-bold text-red-600">{liveMetrics.gridImport} kW</h3>
@@ -115,7 +115,7 @@ const EnergyPage = () => {
                 {/* Usage Chart */}
                 <div className="card">
                     <h3 className="section-header !text-[18px] flex items-center gap-2">
-                        Live Consumption Pattern
+                        Real-Time Energy Consumption Pattern
                         {connected && <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-bold ml-auto animate-pulse">LIVE</span>}
                     </h3>
                     <div className="h-72">
@@ -133,23 +133,23 @@ const EnergyPage = () => {
 
                 {/* Optimization Simulation */}
                 <div className="card flex flex-col">
-                    <h3 className="section-header !text-[18px]">Optimization Simulation</h3>
+                    <h3 className="section-header !text-[18px]">Energy Optimization Simulation</h3>
                     <div className="flex-1 space-y-4">
                         <p className="text-sm text-gray-600 leading-relaxed">
-                            Analyze building-wise sensors to redistribute load and maximize renewable source integration.
+                            Analyse building-specific sensor data to optimise load distribution and maximise the integration of renewable energy sources.
                         </p>
                         <button
                             onClick={handleSimulate}
                             disabled={loading}
                             className="btn-accent w-full flex items-center justify-center gap-2"
                         >
-                            {loading ? 'Analyzing Sensors...' : <><FaChartLine /> Run Analysis</>}
+                            {loading ? 'Processing Sensor Data...' : <><FaChartLine /> Execute Analysis</>}
                         </button>
 
                         {optimizationResult && (
                             <div className="grid grid-cols-2 gap-3 mt-4">
                                 <div className="p-3 bg-green-50 rounded border border-green-100">
-                                    <p className="text-xs text-gray-500 uppercase">Savings</p>
+                                    <p className="text-xs text-gray-500 uppercase">Projected Savings</p>
                                     <p className="text-lg font-bold text-green-700">{optimizationResult.savings} kWh/day</p>
                                 </div>
                                 <div className="p-3 bg-blue-50 rounded border border-blue-100">

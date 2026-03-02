@@ -41,7 +41,7 @@ const SubjectRegistration = () => {
             setRegistrations([...registrations, res.data]);
             setMessage({ type: 'success', text: 'Successfully registered for subject!' });
         } catch (err) {
-            setMessage({ type: 'error', text: 'Registration failed. Subject may be full or already registered.' });
+            setMessage({ type: 'error', text: 'Registration could not be completed. The subject may be at capacity or you may already be enrolled.' });
         }
     };
 

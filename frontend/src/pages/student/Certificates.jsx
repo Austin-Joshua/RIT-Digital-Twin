@@ -32,7 +32,7 @@ const Certificates = () => {
             addToast('Certificate request submitted successfully!', 'success');
         } catch (err) {
             console.error(err);
-            addToast('Failed to submit certificate request. Please try again.', 'error');
+            addToast('Your certificate request could not be submitted. Please try again later.', 'error');
         } finally {
             setSubmitting(false);
         }

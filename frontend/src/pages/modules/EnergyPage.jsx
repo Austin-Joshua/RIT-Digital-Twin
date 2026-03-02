@@ -29,7 +29,7 @@ function EnergyPage() {
             const res = await api.post('/api/simulate/energy', params);
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Simulation failed. Please try again.');
+            setError(err.response?.data?.message || 'The simulation could not be completed. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -42,7 +42,7 @@ function EnergyPage() {
             const res = await api.get('/api/analytics/energy');
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to load analytics.');
+            setError(err.response?.data?.message || 'Unable to retrieve analytics data. Please try again later.');
         } finally {
             setLoading(false);
         }

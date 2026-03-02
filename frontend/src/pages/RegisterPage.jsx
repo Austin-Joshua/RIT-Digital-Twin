@@ -36,7 +36,7 @@ const RegisterPage = () => {
             await api.post('/auth/register', { ...formData, email, username });
             navigate('/login?registered=true');
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed. Please check your inputs.');
+            setError(err.response?.data?.message || 'Registration could not be completed. Please verify your details and try again.');
         } finally {
             setLoading(false);
         }
@@ -57,8 +57,8 @@ const RegisterPage = () => {
             }}
         >
             <div style={{ marginBottom: '32px' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Register</h2>
-                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Join the RIT institutional digital platform.</p>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Create Account</h2>
+                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Register for access to the RIT Digital Twin Platform.</p>
             </div>
 
             {error && (
@@ -86,7 +86,7 @@ const RegisterPage = () => {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    placeholder="username"
+                    placeholder="Provide your preferred username"
                     required
                 />
 
@@ -96,7 +96,7 @@ const RegisterPage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="email"
+                    placeholder="Provide your institutional email address"
                     required
                 />
 
@@ -106,7 +106,7 @@ const RegisterPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="password"
+                    placeholder="Create a secure password"
                     required
                 />
 
@@ -116,7 +116,7 @@ const RegisterPage = () => {
                     name="inviteCode"
                     value={formData.inviteCode}
                     onChange={handleChange}
-                    placeholder="invite code"
+                    placeholder="Provide your invitation code, if applicable"
                 />
 
                 <Button
@@ -150,12 +150,12 @@ const RegisterPage = () => {
                         }
                     }}
                 >
-                    {loading ? 'Processing...' : 'Register'}
+                    {loading ? 'Processing Registration...' : 'Create Account'}
                 </Button>
             </form>
 
             <div style={{ marginTop: '32px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-                Already have access? {' '}
+                Already have an account? {' '}
                 <Link to="/login" style={{ color: 'var(--color-accent-gold)', fontWeight: '600', textDecoration: 'none' }}>
                     Sign In
                 </Link>

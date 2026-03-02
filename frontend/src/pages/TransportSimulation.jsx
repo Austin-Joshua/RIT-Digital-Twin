@@ -28,7 +28,7 @@ function TransportPage() {
             const res = await api.post('/api/simulate/transport', params);
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Simulation failed.');
+            setError(err.response?.data?.message || 'The simulation could not be completed. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -61,9 +61,9 @@ function TransportPage() {
                     </div>
                 </div>
                 <div className="module-stats">
-                    <div className="stat-chip"><span className="stat-icon">🚌</span><span>12 Routes</span></div>
-                    <div className="stat-chip"><span className="stat-icon">👥</span><span>2,800 Students</span></div>
-                    <div className="stat-chip"><span className="stat-icon">⛽</span><span>20% Target</span></div>
+                    <div className="stat-chip"><span className="stat-icon">🚌</span><span>Twelve Active Campus Routes</span></div>
+                    <div className="stat-chip"><span className="stat-icon">👥</span><span>Total Students Served: 2,800</span></div>
+                    <div className="stat-chip"><span className="stat-icon">⛽</span><span>Target Efficiency Improvement: 20%</span></div>
                 </div>
             </div>
 
@@ -102,8 +102,8 @@ function TransportPage() {
                     </div>
                     <div className="control-actions">
                         <button className="btn-primary" onClick={runSimulation} disabled={loading}>
-                            {loading ? <><span className="spinner"></span>Simulating...</> :
-                                <>🚌 Run Simulation</>}
+                            {loading ? <><span className="spinner"></span>Processing Simulation Data...</> :
+                                <>🚌 Execute Simulation Analysis</>}
                         </button>
                     </div>
                 </div>
@@ -126,12 +126,12 @@ function TransportPage() {
                     {activeView === 'overview' && (
                         <div className="energy-overview">
                             <div className="overview-cards">
-                                <div className="e-card"><div className="e-card-icon">🚌</div><div className="e-card-value">{data.fleetOverview?.totalRoutes}</div><div className="e-card-label">Routes Active</div></div>
-                                <div className="e-card"><div className="e-card-icon">👥</div><div className="e-card-value">{fmt(data.fleetOverview?.totalStudents)}</div><div className="e-card-label">Students Served</div></div>
-                                <div className="e-card highlight-gold"><div className="e-card-icon">⛽</div><div className="e-card-value">{fmt(data.fuelAnalysis?.dailyFuelLitres)} L</div><div className="e-card-label">Daily Fuel</div></div>
-                                <div className="e-card"><div className="e-card-icon">📏</div><div className="e-card-value">{fmt(data.fleetOverview?.totalDailyTripsKm)} km</div><div className="e-card-label">Daily Distance</div></div>
-                                <div className="e-card highlight-green"><div className="e-card-icon">📊</div><div className="e-card-value">{data.optimization?.optimizationScore}</div><div className="e-card-label">Optimization Score</div></div>
-                                <div className="e-card"><div className="e-card-icon">🪑</div><div className="e-card-value">{data.fleetOverview?.averageOccupancyPercent}%</div><div className="e-card-label">Avg Occupancy</div></div>
+                                <div className="e-card"><div className="e-card-icon">🚌</div><div className="e-card-value">{data.fleetOverview?.totalRoutes}</div><div className="e-card-label">Active Transport Routes</div></div>
+                                <div className="e-card"><div className="e-card-icon">👥</div><div className="e-card-value">{fmt(data.fleetOverview?.totalStudents)}</div><div className="e-card-label">Total Students Accommodated</div></div>
+                                <div className="e-card highlight-gold"><div className="e-card-icon">⛽</div><div className="e-card-value">{fmt(data.fuelAnalysis?.dailyFuelLitres)} L</div><div className="e-card-label">Estimated Daily Fuel Consumption</div></div>
+                                <div className="e-card"><div className="e-card-icon">📏</div><div className="e-card-value">{fmt(data.fleetOverview?.totalDailyTripsKm)} km</div><div className="e-card-label">Cumulative Daily Distance</div></div>
+                                <div className="e-card highlight-green"><div className="e-card-icon">📊</div><div className="e-card-value">{data.optimization?.optimizationScore}</div><div className="e-card-label">Network Optimization Score</div></div>
+                                <div className="e-card"><div className="e-card-icon">🪑</div><div className="e-card-value">{data.fleetOverview?.averageOccupancyPercent}%</div><div className="e-card-label">Average Fleet Occupancy</div></div>
                             </div>
                             {data.summary && <div className="results-insight"><p>{data.summary}</p></div>}
                         </div>
@@ -302,8 +302,8 @@ function TransportPage() {
             {!data && !loading && !error && (
                 <div className="empty-state">
                     <div className="empty-icon">🚌</div>
-                    <h3>Transport Route Simulation</h3>
-                    <p>Configure parameters and run the simulation to analyze route efficiency, fuel consumption, and optimization opportunities.</p>
+                    <h3>Campus Transport Network Simulation</h3>
+                    <p>Please configure the simulation parameters and execute the analysis to evaluate route efficiency and optimization potential.</p>
                 </div>
             )}
         </div>
