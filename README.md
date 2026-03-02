@@ -81,6 +81,11 @@ docker-compose down -v && docker-compose up --build -d
 | Frontend | Vercel | https://digital-twin-lemon.vercel.app |
 | Backend | Render | https://rit-digital-twin-backend.onrender.com |
 
+### 📖 Deployment Guides
+
+- **[Vercel Frontend to Backend Setup](./FRONTEND_BACKEND_SETUP.md)** - Quick start guide for connecting Vercel frontend to backend
+- **[Detailed Vercel Deployment Guide](./VERCEL_DEPLOYMENT.md)** - Comprehensive architecture and troubleshooting guide
+
 ---
 
 ## 📦 Project Structure
