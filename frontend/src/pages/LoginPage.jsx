@@ -33,10 +33,10 @@ const LoginPage = () => {
                     navigate('/');
                 }
             } else {
-                setError(result.message || 'Invalid username or password.');
+                setError(result.message || 'The credentials provided do not match our records. Please verify and try again.');
             }
         } catch (_err) {
-            setError('Authentication service unavailable.');
+            setError('The authentication service is currently unavailable. Please contact the administrator.');
         } finally {
             setLoading(false);
         }
@@ -76,8 +76,8 @@ const LoginPage = () => {
             }}
         >
             <div style={{ marginBottom: '32px' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Login</h2>
-                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Enter your credentials to access the Digital Twin.</p>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Institutional Access</h2>
+                <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Authenticate to access the RIT Digital Twin Platform.</p>
             </div>
 
             {error && (
@@ -100,22 +100,22 @@ const LoginPage = () => {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <Input
-                    label="username"
+                    label="Institutional Email or Username"
                     type="text"
                     name="username"
                     value={credentials.username}
                     onChange={handleChange}
-                    placeholder="username"
+                    placeholder="Provide your institutional identifier"
                     required
                 />
 
                 <Input
-                    label="password"
+                    label="Security Password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={credentials.password}
                     onChange={handleChange}
-                    placeholder="password"
+                    placeholder="Provide your account security password"
                     required
                     rightElement={
                         <button
@@ -171,12 +171,12 @@ const LoginPage = () => {
                         }
                     }}
                 >
-                    {loading ? 'Signing in...' : 'Login'}
+                    {loading ? 'Authenticating...' : 'Sign In'}
                 </Button>
             </form>
 
             <div style={{ marginTop: '32px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-                New to the ecosystem? {' '}
+                New to the platform? {' '}
                 <Link to="/register" style={{ color: 'var(--color-accent-gold)', fontWeight: '600', textDecoration: 'none' }}>
                     Request Access
                 </Link>
