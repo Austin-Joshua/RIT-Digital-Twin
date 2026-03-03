@@ -35,6 +35,13 @@ const LeaveOD = () => {
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [activeTab, setActiveTab] = useState('apply');
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const showToast = (msg, type = 'success') => {
         setToast({ msg, type });
@@ -147,7 +154,11 @@ const LeaveOD = () => {
                             <h3 style={{ margin: '0 0 24px', fontSize: '16px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <LuFileText color="var(--color-primary-navy)" /> New Application
                             </h3>
-                            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <form onSubmit={handleSubmit} style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                                gap: '20px'
+                            }}>
                                 <FieldGroup label="Application Type">
                                     <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} style={inputStyle}>
                                         <option value="LEAVE">🏠 Leave (Medical / Personal)</option>
@@ -155,7 +166,7 @@ const LeaveOD = () => {
                                     </select>
                                 </FieldGroup>
 
-                                <div /> {/* spacer */}
+                                {!isMobile && <div />} {/* spacer only on desktop */}
 
                                 <FieldGroup label="Start Date">
                                     <input type="date" required value={formData.startDate}
@@ -204,6 +215,36 @@ const LeaveOD = () => {
                                 <div style={{ padding: '48px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>
                                     <LuCalendarDays style={{ fontSize: '48px', marginBottom: '12px', opacity: 0.4 }} />
                                     <p>No applications found.<br />Apply for leave to see your history here.</p>
+                                </div>
+                            ) : isMobile ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px' }}>
+                                    {applications.map((app, idx) => {
+                                        const st = STATUS_STYLES[app.status] || STATUS_STYLES.PENDING;
+                                        return (
+                                            <div key={idx} style={{
+                                                background: 'var(--theme-bg-muted)', borderRadius: '12px', padding: '16px',
+                                                border: '1px solid var(--theme-border)', display: 'flex', flexDirection: 'column', gap: '10px'
+                                            }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <span style={{
+                                                        background: app.applicationType === 'OD' ? 'rgba(60,141,188,0.12)' : 'rgba(11,44,107,0.08)',
+                                                        color: app.applicationType === 'OD' ? '#3c8dbc' : 'var(--color-primary-navy)',
+                                                        padding: '3px 10px', borderRadius: '30px', fontSize: '11px', fontWeight: '700'
+                                                    }}>
+                                                        {app.applicationType || 'LEAVE'}
+                                                    </span>
+                                                    <span style={{ padding: '3px 10px', borderRadius: '30px', fontSize: '11px', fontWeight: '700', background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
+                                                        {app.status}
+                                                    </span>
+                                                </div>
+                                                <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--theme-text)' }}>{app.reason}</div>
+                                                <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: 'var(--theme-text-muted)' }}>
+                                                    <div>From: <span style={{ color: 'var(--theme-text)' }}>{app.startDate}</span></div>
+                                                    <div>To: <span style={{ color: 'var(--theme-text)' }}>{app.endDate}</span></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <div style={{ overflowX: 'auto' }}>

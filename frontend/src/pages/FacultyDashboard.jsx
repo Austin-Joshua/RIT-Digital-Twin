@@ -108,7 +108,7 @@ const FacultyDashboard = () => {
 
             {/* Info Cards Row */}
             <div className="stu-info-row">
-                <div className="stu-info-card">
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <FaChalkboardTeacher color="var(--color-primary-navy)" />
                         <span style={{ color: 'var(--theme-text)' }}>My Assigned Subjects</span>

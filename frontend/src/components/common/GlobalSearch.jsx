@@ -122,8 +122,12 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search functionalities..."
                                     padding: '10px 12px',
                                     borderRadius: '8px',
                                     cursor: 'pointer',
-                                    background: index === selectedIndex ? 'rgba(11, 44, 107, 0.1)' : 'transparent',
-                                    color: index === selectedIndex ? 'var(--color-primary-navy)' : 'var(--theme-text)',
+                                    background: index === selectedIndex
+                                        ? 'var(--color-primary-navy-alpha, rgba(11, 44, 107, 0.1))'
+                                        : 'transparent',
+                                    color: index === selectedIndex
+                                        ? 'var(--search-active-text, var(--color-primary-navy))'
+                                        : 'var(--theme-text)',
                                     transition: 'all 0.2s'
                                 }}
                             >
@@ -143,6 +147,14 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search functionalities..."
                 .global-search-container input:focus {
                     border-color: var(--color-accent-gold) !important;
                     box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+                }
+                :root {
+                    --color-primary-navy-alpha: rgba(11, 44, 107, 0.1);
+                    --search-active-text: var(--color-primary-navy);
+                }
+                .dark {
+                    --color-primary-navy-alpha: rgba(255, 215, 0, 0.15);
+                    --search-active-text: var(--color-accent-gold);
                 }
                 @media (max-width: 768px) {
                     .global-search-container input {

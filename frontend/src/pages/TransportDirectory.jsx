@@ -10,6 +10,13 @@ const TransportPage = () => {
     const [stops, setStops] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searching, setSearching] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => { fetchRoutes(); }, []);
 
@@ -94,48 +101,70 @@ const TransportPage = () => {
                 </form>
             </div>
 
-            {/* Main Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px', alignItems: 'start' }}>
+            {/* Main Grid / Mobile Flow */}
+            <div style={{
+                display: isMobile ? 'block' : 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+                gap: '20px',
+                alignItems: 'start'
+            }}>
 
-                {/* Route List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
-                    {loading ? (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>Loading routes...</div>
-                    ) : routes.length === 0 ? (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>No routes found.</div>
-                    ) : routes.map(route => (
-                        <div
-                            key={route.id}
-                            onClick={() => viewRouteDetails(route)}
-                            style={{
-                                background: selectedRoute?.id === route.id ? 'rgba(11,44,107,0.1)' : 'var(--card-bg)',
-                                border: `1.5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : 'var(--theme-border)'}`,
-                                borderLeft: `5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : '#D4AF37'}`,
-                                borderRadius: '10px',
-                                padding: '14px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                transform: selectedRoute?.id === route.id ? 'translateX(2px)' : 'none',
-                            }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                <span style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{route.routeNumber}</span>
-                                <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', background: 'var(--color-primary-navy)', color: 'white', letterSpacing: '0.5px' }}>{route.busNumber}</span>
+                {/* Route List - Hidden on mobile if detail is selected */}
+                {(!isMobile || !selectedRoute) && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: isMobile ? 'none' : '70vh', overflowY: 'auto', paddingRight: '4px' }}>
+                        {loading ? (
+                            <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>Loading routes...</div>
+                        ) : routes.length === 0 ? (
+                            <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>No routes found.</div>
+                        ) : routes.map(route => (
+                            <div
+                                key={route.id}
+                                onClick={() => viewRouteDetails(route)}
+                                style={{
+                                    background: selectedRoute?.id === route.id ? 'rgba(11,44,107,0.1)' : 'var(--card-bg)',
+                                    border: `1.5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : 'var(--theme-border)'}`,
+                                    borderLeft: `5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : '#D4AF37'}`,
+                                    borderRadius: '10px',
+                                    padding: '14px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    transform: selectedRoute?.id === route.id ? 'translateX(2px)' : 'none',
+                                }}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{route.routeNumber}</span>
+                                    <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', background: 'var(--color-primary-navy)', color: 'white', letterSpacing: '0.5px' }}>{route.busNumber}</span>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-text)', marginBottom: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{route.routeName}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                                    <LuMapPin style={{ flexShrink: 0 }} />
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{route.startPoint} → {route.endPoint}</span>
+                                </div>
                             </div>
-                            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-text)', marginBottom: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{route.routeName}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
-                                <LuMapPin style={{ flexShrink: 0 }} />
-                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{route.startPoint} → {route.endPoint}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {/* Route Detail Panel */}
                 <AnimatePresence mode="wait">
                     {selectedRoute ? (
                         <motion.div key={selectedRoute.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                             style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                            {/* Back Button for Mobile */}
+                            {isMobile && (
+                                <button
+                                    onClick={() => setSelectedRoute(null)}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px',
+                                        background: 'var(--color-primary-navy)', border: 'none',
+                                        borderRadius: '8px', color: 'white', fontWeight: '600', width: 'fit-content',
+                                        cursor: 'pointer', marginBottom: '8px', fontSize: '14px'
+                                    }}
+                                >
+                                    <LuNavigation style={{ transform: 'rotate(-90deg)' }} /> Back to Route List
+                                </button>
+                            )}
 
                             {/* Route Header Card */}
                             <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', borderTop: '4px solid var(--color-primary-navy)', padding: '20px 24px' }}>

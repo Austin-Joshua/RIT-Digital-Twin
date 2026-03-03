@@ -130,9 +130,9 @@ const AdminDashboard = () => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="admin-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px' }}>
+            <div className="stu-info-row">
                 {/* Analytics Chart */}
-                <div className="stu-info-card" style={{ borderTopColor: '#0B2C6B' }}>
+                <div className="stu-info-card">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <FaChartLine color="#0B2C6B" />
                         <span>Weekly Simulation Analytics</span>
@@ -155,10 +155,10 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Broadcast Panel */}
-                <div className="stu-info-card" style={{ borderTopColor: '#3c8dbc' }}>
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--ims-teal)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaBullhorn color="#3c8dbc" />
-                        <span>Global Broadcast</span>
+                        <FaBullhorn color="var(--ims-teal)" />
+                        <span style={{ color: 'var(--theme-text)' }}>Global Broadcast</span>
                     </div>
                     <div className="info-body">
                         <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
                                 value={bTitle}
                                 onChange={e => setBTitle(e.target.value)}
                                 required
-                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '14px' }}
+                                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px' }}
                             />
                             <textarea
                                 placeholder="Type your global message here..."
@@ -176,7 +176,7 @@ const AdminDashboard = () => {
                                 onChange={e => setBMessage(e.target.value)}
                                 required
                                 rows="3"
-                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '14px', resize: 'none' }}
+                                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', resize: 'none' }}
                             />
 
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '5px' }}>
