@@ -73,24 +73,35 @@ const LoginPage = () => {
             <div className="auth-form-wrapper">
 
 
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <img
+                        src="/assets/images/RIT_LOGO.webp"
+                        alt="Rajalakshmi Institute of Technology"
+                        style={{ width: '120px', height: '120px', objectFit: 'contain', marginBottom: '16px', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))' }}
+                    />
+                    <h1 style={{ color: 'var(--color-primary-navy)', fontSize: '1.5rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Rajalakshmi Institute of Technology
+                    </h1>
+                </div>
+
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     style={{
-                        background: 'var(--glass-bg)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid var(--glass-border)',
-                        padding: '36px 40px',
-                        borderRadius: '20px',
-                        boxShadow: 'var(--shadow-soft)',
+                        background: 'var(--card-bg)',
+                        border: '1.5px solid var(--theme-border)',
+                        padding: '40px',
+                        borderRadius: '24px',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
                         width: '100%',
+                        maxWidth: '440px',
                         position: 'relative',
                         zIndex: 2
                     }}
                 >
-                    <div style={{ marginBottom: '28px' }}>
-                        <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '10px' }}>Institutional Access</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>Authenticate to access the Smart Campus Intelligence Platform</p>
+                    <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--theme-text)', marginBottom: '8px' }}>Institutional Access</h2>
+                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '1rem', lineHeight: '1.5' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 
                     {error && (

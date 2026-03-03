@@ -404,6 +404,45 @@
     color: white !important;
 }
 
+/* ── Enlarged Desktop Sidebar Toggle ── */
+.stu-sidebar-toggle-desktop {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    /* Enlarged */
+    cursor: pointer;
+    color: var(--color-primary-navy) !important;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border-right: 1px solid #d2d6de;
+}
+
+.stu-sidebar-toggle-desktop:hover {
+    background-color: rgba(11, 44, 107, 0.05);
+    color: var(--color-accent-gold) !important;
+    font-size: 26px;
+}
+
+.dark .stu-sidebar-toggle-desktop {
+    border-right-color: #334155;
+    color: #f8fafc !important;
+}
+
+.dark .stu-sidebar-toggle-desktop:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 1024px) {
+    .stu-sidebar-toggle-desktop {
+        display: none !important;
+    }
+}
+
+
 .stu-topbar-right {
     display: flex;
     align-items: center;

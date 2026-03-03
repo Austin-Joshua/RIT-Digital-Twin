@@ -78,64 +78,69 @@ const EnergyPage = () => {
             <h1 className="page-header">Campus Energy Optimization Report</h1>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="card bg-navy-900 text-white p-4">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                Real-Time Campus Load
-                                {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
-                            </p>
-                            <h3 className="text-2xl font-bold">{liveMetrics.currentLoad} kW</h3>
-                        </div>
-                        <FaBolt className="text-gold-500" />
+            <div className="stu-kpi-row">
+                <div className="stu-kpi-card blue">
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.currentLoad} <span style={{ fontSize: '14px' }}>kW</span></h3>
+                        <p className="kpi-label">Real-Time Load</p>
                     </div>
+                    <FaBolt className="kpi-icon" />
+                    <div className="kpi-more">Live Monitoring</div>
                 </div>
-                <div className="card p-4">
-                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Peak Daily Consumption</p>
-                    <h3 className="text-2xl font-bold">800 kW</h3>
+                <div className="stu-kpi-card yellow">
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>800 <span style={{ fontSize: '14px' }}>kW</span></h3>
+                        <p className="kpi-label">Peak Daily</p>
+                    </div>
+                    <FaChartLine className="kpi-icon" />
+                    <div className="kpi-more">Consumption Trend</div>
                 </div>
-                <div className="card p-4">
-                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        Solar Panel Output
-                        {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
-                    </p>
-                    <h3 className="text-2xl font-bold text-green-600">{liveMetrics.solarYield} kW</h3>
+                <div className="stu-kpi-card green">
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.solarYield} <span style={{ fontSize: '14px' }}>kW</span></h3>
+                        <p className="kpi-label">Solar Output</p>
+                    </div>
+                    <FaSolarPanel className="kpi-icon" />
+                    <div className="kpi-more">Renewable Energy</div>
                 </div>
-                <div className="card p-4">
-                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        External Grid Import
-                        {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
-                    </p>
-                    <h3 className="text-2xl font-bold text-red-600">{liveMetrics.gridImport} kW</h3>
+                <div className="stu-kpi-card red">
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.gridImport} <span style={{ fontSize: '14px' }}>kW</span></h3>
+                        <p className="kpi-label">Grid Import</p>
+                    </div>
+                    <FaBolt className="kpi-icon" />
+                    <div className="kpi-more">External Sourcing</div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="stu-info-row">
                 {/* Usage Chart */}
-                <div className="card">
-                    <h3 className="section-header !text-[18px] flex items-center gap-2">
-                        Real-Time Energy Consumption Pattern
-                        {connected && <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-bold ml-auto animate-pulse">LIVE</span>}
-                    </h3>
-                    <div className="h-72">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
-                                <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
-                                <Tooltip />
-                                <Area type="monotone" dataKey="Usage" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.15} isAnimationActive={false} />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                <div className="stu-info-card">
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FaBolt color="var(--color-primary-navy)" />
+                        <span style={{ color: 'var(--theme-text)' }}>Energy Consumption Pattern</span>
+                        {connected && <span style={{ textShadow: 'none', background: 'var(--color-error)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: '900', marginLeft: 'auto', animation: 'pulse 2s infinite' }}>LIVE</span>}
+                    </div>
+                    <div className="info-body">
+                        <div className="h-72">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6B7280' }} />
+                                    <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
+                                    <Tooltip />
+                                    <Area type="monotone" dataKey="Usage" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.15} isAnimationActive={false} />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
 
                 {/* Optimization Simulation */}
-                <div className="card flex flex-col">
-                    <h3 className="section-header !text-[18px]">Energy Optimization Simulation</h3>
-                    <div className="flex-1 space-y-4">
-                        <p style={{ fontSize: '14px', color: 'var(--theme-text-muted)', lineHeight: '1.6' }}>
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-accent-gold)' }}>
+                    <div className="info-header">Energy Optimization Simulation</div>
+                    <div className="info-body">
+                        <p style={{ fontSize: '14px', color: 'var(--theme-text-muted)', lineHeight: '1.6', marginBottom: '20px' }}>
                             Analyse building-specific sensor data to optimise load distribution and maximise the integration of renewable energy sources.
                         </p>
                         <button

@@ -34,7 +34,7 @@ function TransportPage() {
             const res = await api.post('/api/simulate/transport', params);
             setData(res.data);
         } catch (err) {
-            setError(err.response?.data?.message || 'The simulation could not be completed. Please try again later.');
+            setError(err.response?.data?.message || 'Unable to complete network analysis. Please verify your connection to the institution server.');
         } finally {
             setLoading(false);
         }
@@ -48,7 +48,7 @@ function TransportPage() {
         return n.toFixed?.(1) ?? n;
     };
 
-    const statusColor = (s) => s === 'OPTIMAL' ? '#059669' : s === 'MODERATE' ? '#d97706' : '#dc2626';
+    const statusColor = (s) => s === 'OPTIMAL' ? 'var(--color-success)' : s === 'MODERATE' ? 'var(--color-warning)' : 'var(--color-error)';
 
     return (
         <div className="transport-page">
@@ -62,8 +62,8 @@ function TransportPage() {
                         </svg>
                     </div>
                     <div>
-                        <h1 style={{ color: '#fff', margin: 0, fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.5px' }}>Transport Route Optimization</h1>
-                        <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0', fontWeight: '500' }}>Simulate fleet efficiency, fuel savings, and student cluster mapping</p>
+                        <h1 style={{ color: '#fff', margin: 0, fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.5px' }}>Institutional Fleet Intelligence</h1>
+                        <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0', fontWeight: '500' }}>Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
                     </div>
                 </div>
                 <div className="module-stats">
@@ -121,8 +121,8 @@ function TransportPage() {
                     </div>
                     <div className="control-actions" style={{ marginTop: '24px' }}>
                         <button className="btn-primary" onClick={runSimulation} disabled={loading} style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
-                            {loading ? <><span className="spinner"></span>Processing Simulation Data...</> :
-                                <>🚌 Execute Simulation Analysis</>}
+                            {loading ? <><span className="spinner"></span>Synthesizing Fleet Data...</> :
+                                <>🚌 Run Predictive Network Analysis</>}
                         </button>
                     </div>
                 </div>
@@ -351,8 +351,8 @@ function TransportPage() {
             {!data && !loading && !error && (
                 <div className="empty-state">
                     <div className="empty-icon">🚌</div>
-                    <h3>Campus Transport Network Simulation</h3>
-                    <p>Please configure the simulation parameters and execute the analysis to evaluate route efficiency and optimization potential.</p>
+                    <h3>Fleet Network Intelligence</h3>
+                    <p>Configure institutional parameters and run the analysis to generate optimized route maps and sustainability projections.</p>
                 </div>
             )}
         </div>

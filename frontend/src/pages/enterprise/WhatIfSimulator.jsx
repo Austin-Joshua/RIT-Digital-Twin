@@ -42,6 +42,13 @@ const WhatIfSimulator = () => {
     const [subjects, setSubjects] = useState(DEFAULT_SUBJECTS);
     const [projected, setProjected] = useState(null);
     const [simulating, setSimulating] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const calcLocal = () => {
         const semCredits = subjects.reduce((s, x) => s + Number(x.credits), 0);
@@ -96,7 +103,12 @@ const WhatIfSimulator = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }}>
+            <div style={{
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: isMobile ? 'column' : 'row',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 340px',
+                gap: '24px'
+            }}>
 
                 {/* Left: Input Panel */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -104,7 +116,7 @@ const WhatIfSimulator = () => {
                     {/* Base Inputs */}
                     <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '24px' }}>
                         <h3 style={{ margin: '0 0 18px', fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)' }}>Current Academic Standing</h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-text-muted)' }}>Credits Completed</label>
                                 <input type="number" min="0" max="200" value={completedCredits}
@@ -136,12 +148,14 @@ const WhatIfSimulator = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {subjects.map((sub, idx) => (
                                 <div key={idx} style={{
-                                    display: 'grid', gridTemplateColumns: '1fr 90px 160px 36px',
-                                    gap: '10px', alignItems: 'end',
-                                    padding: '14px', background: 'rgba(11,44,107,0.04)',
-                                    borderRadius: '10px', border: '1px solid var(--theme-border)'
+                                    display: 'grid',
+                                    gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 90px 160px 36px',
+                                    gap: '12px', alignItems: 'end',
+                                    padding: '16px', background: 'rgba(11,44,107,0.04)',
+                                    borderRadius: '12px', border: '1px solid var(--theme-border)',
+                                    position: 'relative'
                                 }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', gridColumn: isMobile ? '1 / -1' : 'auto' }}>
                                         <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--theme-text-muted)', textTransform: 'uppercase' }}>Subject Name</label>
                                         <input value={sub.name} placeholder="e.g. Data Structures" onChange={e => updateSubject(idx, 'name', e.target.value)} style={inputStyle} />
                                     </div>
@@ -156,7 +170,14 @@ const WhatIfSimulator = () => {
                                         </select>
                                     </div>
                                     <button onClick={() => removeSubject(idx)} disabled={subjects.length === 1}
-                                        style={{ background: 'rgba(220,38,38,0.08)', border: 'none', borderRadius: '8px', padding: '10px', cursor: 'pointer', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: subjects.length === 1 ? 0.3 : 1 }}>
+                                        style={{
+                                            background: 'rgba(220,38,38,0.08)', border: 'none', borderRadius: '8px', padding: '10px',
+                                            cursor: 'pointer', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            opacity: subjects.length === 1 ? 0.3 : 1,
+                                            position: isMobile ? 'absolute' : 'static',
+                                            top: isMobile ? '10px' : 'auto',
+                                            right: isMobile ? '10px' : 'auto'
+                                        }}>
                                         <LuTrash2 />
                                     </button>
                                 </div>
@@ -180,7 +201,7 @@ const WhatIfSimulator = () => {
                     <div style={{
                         background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px',
                         padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
-                        minHeight: '320px', justifyContent: 'center', position: 'sticky', top: '80px'
+                        minHeight: isMobile ? 'auto' : '320px', justifyContent: 'center', position: isMobile ? 'static' : 'sticky', top: '80px'
                     }}>
                         <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)', alignSelf: 'flex-start' }}>Projection Result</h3>
 
