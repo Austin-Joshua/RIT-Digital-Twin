@@ -58,7 +58,6 @@ public class AuthService {
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public String register(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Error: Username is already taken!");
@@ -106,7 +105,6 @@ public class AuthService {
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);

@@ -37,7 +37,6 @@ public class AcademicService {
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public void enterMarks(Long studentId, Marks newMarks) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
@@ -137,10 +136,9 @@ public class AcademicService {
                 String.valueOf(newMarks.getFinalExamScore()));
     }
 
-    @SuppressWarnings("null")
     private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
         if (oldVal != null && !oldVal.equals(newVal)) {
-                historyRepository.save(com.university.erp.model.MarkHistory.builder()
+            historyRepository.save(com.university.erp.model.MarkHistory.builder()
                     .mark(mark)
                     .fieldName(field)
                     .oldValue(oldVal)
@@ -155,7 +153,6 @@ public class AcademicService {
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public void recalculateCgpa(Long studentId) {
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);
         if (allMarks.isEmpty())
@@ -174,7 +171,7 @@ public class AcademicService {
         double cgpa = totalGradePoints / totalCredits;
 
         Student student = studentRepository.findById(studentId)
-            .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
         student.setCurrentCgpa(cgpa);
         studentRepository.save(student);
     }
