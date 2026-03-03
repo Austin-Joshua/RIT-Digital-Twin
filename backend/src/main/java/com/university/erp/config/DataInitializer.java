@@ -1,7 +1,7 @@
 package com.university.erp.config;
 
-import com.university.erp.model.Role;
-import com.university.erp.model.User;
+import com.university.erp.entity.Role;
+import com.university.erp.entity.User;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
-import com.university.erp.model.TransportRoute;
-import com.university.erp.model.BusStop;
-import com.university.erp.model.AlumniProfile;
-import com.university.erp.model.AssetInventory;
-import com.university.erp.model.FacultyLeaveRequest;
+import com.university.erp.entity.TransportRoute;
+import com.university.erp.entity.BusStop;
+import com.university.erp.entity.AlumniProfile;
+import com.university.erp.entity.AssetInventory;
+import com.university.erp.entity.FacultyLeaveRequest;
 import com.university.erp.repository.AlumniProfileRepository;
 import com.university.erp.repository.AssetInventoryRepository;
 import com.university.erp.repository.FacultyLeaveRequestRepository;

@@ -518,3 +518,14 @@
         font-size: 0.9rem;
     }
 }
+
+/* ── Dark Mode: Auth Error ── */
+.dark .auth-error {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: rgba(220, 38, 38, 0.3);
+    color: #f87171;
+}
+
+.dark .auth-footer p {
+    color: #64748b;
+}

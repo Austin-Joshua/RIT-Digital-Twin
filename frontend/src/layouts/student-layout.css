@@ -545,11 +545,7 @@
     }
 }
 
-@media (max-width: 768px) {
-    .stu-kpi-row {
-        grid-template-columns: 1fr;
-    }
-}
+/* Mobile KPI grid: 2 cards per row — handled in the consolidated mobile block below */
 
 .stu-info-card {
     background: white;
@@ -831,7 +827,7 @@ html.dark ::-webkit-scrollbar-thumb {
 
 @media (max-width: 768px) {
     .stu-ranking-panel {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -914,11 +910,13 @@ html.dark ::-webkit-scrollbar-thumb {
     padding: 15px;
     font-size: 20px;
     font-weight: 500;
+    color: var(--theme-text, #333);
 }
 
 .info-body {
     padding: 10px;
     min-height: 100px;
+    color: var(--theme-text-muted, #666);
 }
 
 .info-footer {
@@ -928,9 +926,38 @@ html.dark ::-webkit-scrollbar-thumb {
 }
 
 .info-footer a {
-    color: #444;
+    color: var(--theme-text-muted, #444);
     font-size: 13px;
     text-decoration: none;
+}
+
+/* Dark mode: info panels */
+html.dark .info-header {
+    border-bottom-color: #334155;
+    color: #f8fafc;
+}
+
+html.dark .info-body {
+    color: #cbd5e1;
+}
+
+html.dark .info-footer {
+    border-top-color: #334155;
+}
+
+html.dark .info-footer a {
+    color: #94a3b8;
+}
+
+html.dark .simulator-title,
+html.dark .simulator-text {
+    color: #e2e8f0;
+}
+
+html.dark .stu-calendar-grid th {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
 }
 
 /* ── Calendar ── */

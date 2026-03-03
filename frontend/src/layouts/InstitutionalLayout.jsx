@@ -6,7 +6,7 @@ import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import {
-    LuUser, LuMenu, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
+    LuUser, LuMenu, LuLayoutGrid, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuSettings,
     LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight,
@@ -176,10 +176,10 @@ const InstitutionalLayout = () => {
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
                         <button className="stu-sidebar-toggle-desktop" onClick={() => setSidebarOpen(!sidebarOpen)} title="Institutional Menu">
-                            {sidebarOpen ? <LuChevronRight style={{ transform: 'rotate(180deg)' }} /> : <LuGrid />}
+                            {sidebarOpen ? <LuChevronRight style={{ transform: 'rotate(180deg)' }} /> : <LuLayoutGrid />}
                         </button>
                         <button className="stu-hamburger desktop-hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <LuGrid />
+                            <LuLayoutGrid />
                         </button>
                         <Link to="/" className="desktop-hidden" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img

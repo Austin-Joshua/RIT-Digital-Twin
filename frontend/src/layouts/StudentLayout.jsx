@@ -8,7 +8,7 @@ import {
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
     LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
-    LuSun, LuMoon, LuMonitor
+    LuSun, LuMoon, LuMonitor, LuLayoutGrid
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
@@ -211,10 +211,10 @@ const StudentLayout = () => {
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
                         <button className="stu-sidebar-toggle-desktop" onClick={() => setSidebarOpen(!sidebarOpen)} title="Institutional Menu">
-                            {sidebarOpen ? <LuChevronDown style={{ transform: 'rotate(90deg)' }} /> : <LuGrid />}
+                            {sidebarOpen ? <LuChevronDown style={{ transform: 'rotate(90deg)' }} /> : <LuLayoutGrid />}
                         </button>
                         <button className="stu-hamburger desktop-hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <LuGrid />
+                            <LuLayoutGrid />
                         </button>
                         <Link to="/" className="desktop-hidden" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
                             <img

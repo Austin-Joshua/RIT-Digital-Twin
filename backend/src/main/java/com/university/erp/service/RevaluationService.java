@@ -1,8 +1,8 @@
 package com.university.erp.service;
 
 import com.university.erp.exception.ErpException;
-import com.university.erp.model.RevaluationRequest;
-import com.university.erp.model.Marks;
+import com.university.erp.entity.RevaluationRequest;
+import com.university.erp.entity.Marks;
 import com.university.erp.repository.RevaluationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -55,15 +55,15 @@ const RegisterPage = () => {
                     background: 'var(--glass-bg)',
                     backdropFilter: 'blur(12px)',
                     border: '1px solid var(--glass-border)',
-                    padding: '24px 32px',
+                    padding: 'clamp(16px, 3vw, 32px)',
                     borderRadius: '20px',
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     width: '100%'
                 }}
             >
-                <div style={{ marginBottom: '20px' }}>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Create Account</h2>
-                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Register for access to the RIT Digital Twin Platform.</p>
+                <div style={{ marginBottom: '16px' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '4px' }}>Create Account</h2>
+                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem' }}>Register for access to the RIT Digital Twin Platform.</p>
                 </div>
 
                 {error && (
@@ -84,7 +84,7 @@ const RegisterPage = () => {
                     </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <Input
                         label="Username"
                         type="text"
@@ -129,10 +129,10 @@ const RegisterPage = () => {
                         disabled={loading}
                         style={{
                             width: '100%',
-                            marginTop: '16px',
-                            padding: '12px 24px',
-                            fontSize: '1.1rem',
-                            borderRadius: '12px',
+                            marginTop: '4px',
+                            padding: '8px',
+                            fontSize: '0.95rem',
+                            borderRadius: '8px',
                             backgroundColor: 'var(--color-primary-navy)',
                             color: '#ffffff',
                             fontWeight: '700'

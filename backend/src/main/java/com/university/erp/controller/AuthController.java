@@ -5,7 +5,7 @@ import com.university.erp.dto.AuthResponse;
 import com.university.erp.dto.GoogleAuthRequest;
 import com.university.erp.dto.ChangePasswordRequest;
 import com.university.erp.dto.RegisterRequest;
-import com.university.erp.model.User;
+import com.university.erp.entity.User;
 import com.university.erp.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

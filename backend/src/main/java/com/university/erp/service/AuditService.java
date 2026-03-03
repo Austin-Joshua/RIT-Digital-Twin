@@ -1,7 +1,7 @@
 package com.university.erp.service;
 
-import com.university.erp.model.AuditLog;
-import com.university.erp.model.User;
+import com.university.erp.entity.AuditLog;
+import com.university.erp.entity.User;
 import com.university.erp.repository.AuditLogRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

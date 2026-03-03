@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.model.Marks;
+import com.university.erp.entity.Marks;
 import com.university.erp.service.AcademicService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

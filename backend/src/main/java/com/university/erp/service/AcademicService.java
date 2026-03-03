@@ -1,10 +1,10 @@
 package com.university.erp.service;
 
 import com.university.erp.exception.ErpException;
-import com.university.erp.model.Marks;
+import com.university.erp.entity.Marks;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import com.university.erp.model.Student;
+import com.university.erp.entity.Student;
 import com.university.erp.repository.MarksRepository;
 import com.university.erp.repository.MarkHistoryRepository;
 import com.university.erp.repository.StudentRepository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.university.erp.dto.MarksUploadRequestDto;
-import com.university.erp.model.Subject;
+import com.university.erp.entity.Subject;
 import com.university.erp.repository.SubjectRepository;
 
 import java.util.List;
@@ -99,13 +99,13 @@ public class AcademicService {
 
             // Safe assignment with null checks
             if (dto.getCat1() != null)
-                mark.setCat1Score(BigDecimal.valueOf(dto.getCat1()));
+                mark.setCat1Score(dto.getCat1());
             if (dto.getCat2() != null)
-                mark.setCat2Score(BigDecimal.valueOf(dto.getCat2()));
+                mark.setCat2Score(dto.getCat2());
             if (dto.getCat3() != null)
-                mark.setCat3Score(BigDecimal.valueOf(dto.getCat3()));
+                mark.setCat3Score(dto.getCat3());
             if (dto.getAssignment() != null)
-                mark.setAssignmentScore(BigDecimal.valueOf(dto.getAssignment()));
+                mark.setAssignmentScore(dto.getAssignment());
             if (dto.getSemesterGrade() != null && !dto.getSemesterGrade().isEmpty())
                 mark.setGrade(dto.getSemesterGrade());
             if (mark.getSemester() == null)
@@ -140,7 +140,7 @@ public class AcademicService {
 
     private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
         if (oldVal != null && !oldVal.equals(newVal)) {
-            historyRepository.save(com.university.erp.model.MarkHistory.builder()
+            historyRepository.save(com.university.erp.entity.MarkHistory.builder()
                     .mark(mark)
                     .fieldName(field)
                     .oldValue(oldVal)

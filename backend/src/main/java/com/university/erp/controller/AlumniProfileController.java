@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.model.AlumniProfile;
+import com.university.erp.entity.AlumniProfile;
 import com.university.erp.repository.AlumniProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

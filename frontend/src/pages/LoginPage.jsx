@@ -73,13 +73,13 @@ const LoginPage = () => {
             <div className="auth-form-wrapper">
 
 
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '12px' }}>
                     <img
                         src="/assets/images/RIT_LOGO.webp"
                         alt="Rajalakshmi Institute of Technology"
-                        style={{ width: '120px', height: '120px', objectFit: 'contain', marginBottom: '16px', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))' }}
+                        style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '8px', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))' }}
                     />
-                    <h1 style={{ color: 'var(--color-primary-navy)', fontSize: '1.5rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <h1 style={{ color: 'var(--color-primary-navy)', fontSize: '1.05rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
                         Rajalakshmi Institute of Technology
                     </h1>
                 </div>
@@ -90,18 +90,18 @@ const LoginPage = () => {
                     style={{
                         background: 'var(--card-bg)',
                         border: '1.5px solid var(--theme-border)',
-                        padding: '40px',
-                        borderRadius: '24px',
-                        boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
+                        padding: 'clamp(16px, 3vw, 28px)',
+                        borderRadius: '16px',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
                         width: '100%',
-                        maxWidth: '440px',
+                        maxWidth: '420px',
                         position: 'relative',
                         zIndex: 2
                     }}
                 >
-                    <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--theme-text)', marginBottom: '8px' }}>Institutional Access</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '1rem', lineHeight: '1.5' }}>Authenticate to access the Smart Campus platform</p>
+                    <div style={{ marginBottom: '12px', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--theme-text)', marginBottom: '4px' }}>Institutional Access</h2>
+                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 
                     {error && (
@@ -122,7 +122,7 @@ const LoginPage = () => {
                         </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <Input
                             label="Username"
                             type="text"
@@ -166,10 +166,10 @@ const LoginPage = () => {
                             disabled={loading}
                             style={{
                                 width: '100%',
-                                marginTop: '16px',
-                                padding: '12px 24px',
-                                fontSize: '1.1rem',
-                                borderRadius: '12px',
+                                marginTop: '4px',
+                                padding: '8px 16px',
+                                fontSize: '0.95rem',
+                                borderRadius: '8px',
                                 backgroundColor: 'var(--color-primary-navy)',
                                 color: '#ffffff',
                                 border: 'none',
@@ -179,7 +179,7 @@ const LoginPage = () => {
                             {loading ? 'Authenticating...' : 'Sign In'}
                         </Button>
 
-                        <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0', gap: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0', gap: '15px' }}>
                             <div style={{ flex: 1, height: '1px', background: 'var(--theme-border)' }}></div>
                             <span style={{ color: 'var(--theme-text-muted)', fontSize: '0.85rem' }}>OR</span>
                             <div style={{ flex: 1, height: '1px', background: 'var(--theme-border)' }}></div>
@@ -197,7 +197,7 @@ const LoginPage = () => {
                         </div>
                     </form>
 
-                    <div style={{ marginTop: '20px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
+                    <div style={{ marginTop: '12px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
                         New to the platform? {' '}
                         <Link to="/register" style={{ color: 'var(--color-accent-gold)', fontWeight: '600', textDecoration: 'none' }}>
                             Request Access
