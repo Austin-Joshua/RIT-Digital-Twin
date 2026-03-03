@@ -52,7 +52,6 @@ public class DataInitializer implements CommandLineRunner {
 
         @Override
         @Transactional
-        @SuppressWarnings("null")
         public void run(String... args) throws Exception {
                 // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
@@ -81,7 +80,6 @@ public class DataInitializer implements CommandLineRunner {
                 seedErpData();
         }
 
-        @SuppressWarnings("null")
         private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
                         String lastName) {
                 userRepository.findByEmail(email).ifPresentOrElse(
@@ -252,7 +250,6 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        @SuppressWarnings("null")
         private void seedRoute(String num, String name, String start, LocalTime time, String coord, String phone,
                         List<StopInfo> stops) {
                 TransportRoute route = transportRouteRepository.save(TransportRoute.builder()

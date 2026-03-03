@@ -32,17 +32,15 @@ public class RevaluationService {
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public void approveByAdmin(Long requestId, String remarks) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
-            .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
         request.setStatus(RevaluationRequest.RequestStatus.ADMIN_APPROVED);
         request.setAdminRemarks(remarks);
         revaluationRepository.save(request);
     }
 
     @Transactional
-    @SuppressWarnings("null")
     public void updateMarksByFaculty(Long requestId, Double newInternal, Double newExternal) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
