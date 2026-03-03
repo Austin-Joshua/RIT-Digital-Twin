@@ -3,8 +3,8 @@ package com.university.erp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "departments")
+@Entity(name="ModelDepartment")
+@Table(name = "model_departments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

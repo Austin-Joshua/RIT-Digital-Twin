@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "bus_stops")
+@Entity(name="ModelBusStop")
+@Table(name = "model_bus_stops")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

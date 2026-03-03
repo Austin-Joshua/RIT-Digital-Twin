@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity
+@Entity(name="ModelAssetInventory")
 public class AssetInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

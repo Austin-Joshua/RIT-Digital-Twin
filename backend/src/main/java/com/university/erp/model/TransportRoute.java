@@ -3,8 +3,8 @@ package com.university.erp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "transport_routes")
+@Entity(name="ModelTransportRoute")
+@Table(name = "model_transport_routes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

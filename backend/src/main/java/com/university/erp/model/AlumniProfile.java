@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity
+@Entity(name="ModelAlumniProfile")
 public class AlumniProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

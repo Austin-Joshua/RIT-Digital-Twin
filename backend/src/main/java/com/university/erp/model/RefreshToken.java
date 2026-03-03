@@ -6,8 +6,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "refresh_tokens", indexes = {
+@Entity(name = "ModelRefreshToken")
+@Table(name = "model_refresh_tokens", indexes = {
         @Index(name = "idx_token", columnList = "token"),
         @Index(name = "idx_user_id", columnList = "user_id")
 })
@@ -19,7 +19,7 @@ public class RefreshToken {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false, unique = true)

@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Entity
+@Entity(name="ModelFacultyLeaveRequest")
 public class FacultyLeaveRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

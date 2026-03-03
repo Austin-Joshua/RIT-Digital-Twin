@@ -73,16 +73,6 @@ const LoginPage = () => {
             <div className="auth-form-wrapper">
 
 
-                <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-                    <img
-                        src="/assets/images/RIT_LOGO.webp"
-                        alt="Rajalakshmi Institute of Technology"
-                        style={{ width: '80px', height: '80px', objectFit: 'contain', marginBottom: '8px', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))' }}
-                    />
-                    <h1 style={{ color: 'var(--color-primary-navy)', fontSize: '1.05rem', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                        Rajalakshmi Institute of Technology
-                    </h1>
-                </div>
 
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -100,7 +90,7 @@ const LoginPage = () => {
                     }}
                 >
                     <div style={{ marginBottom: '12px', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--theme-text)', marginBottom: '4px' }}>Institutional Access</h2>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--color-accent-gold)', marginBottom: '4px' }}>Institutional Access</h2>
                         <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 

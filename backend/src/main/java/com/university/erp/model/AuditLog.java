@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "audit_logs")
+@Entity(name="ModelAuditLog")
+@Table(name = "model_audit_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
