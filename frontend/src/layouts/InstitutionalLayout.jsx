@@ -25,8 +25,10 @@ const LayoutLoader = () => (
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(() => {
+        // Always open on desktop; respect localStorage only on mobile
+        if (window.innerWidth >= 1025) return true;
         const saved = localStorage.getItem('sidebar-open');
-        return saved !== null ? JSON.parse(saved) : window.innerWidth > 768;
+        return saved !== null ? JSON.parse(saved) : false;
     });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -133,6 +135,17 @@ const InstitutionalLayout = () => {
                         </div>
                     ))}
                 </nav>
+
+                {/* Desktop-only collapse button at sidebar bottom */}
+                <button
+                    className="stu-sidebar-collapse-btn"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    title={sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+                >
+                    <span style={{ fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {sidebarOpen ? '\u276e' : '\u276f'}
+                    </span>
+                </button>
             </aside>
 
             {/* Mobile Sidebar Backdrop */}
