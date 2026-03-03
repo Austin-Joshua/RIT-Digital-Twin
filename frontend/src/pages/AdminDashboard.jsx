@@ -116,7 +116,7 @@ const AdminDashboard = () => {
             {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Row - Using stu-kpi-row classes */}
-            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div className="stu-kpi-row">
                 {kpiCards.map((card, i) => (
                     <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => navigate(card.link)}>
                         <div className="kpi-main">

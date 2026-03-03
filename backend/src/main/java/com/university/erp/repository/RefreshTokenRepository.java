@@ -1,7 +1,7 @@
 package com.university.erp.repository;
 
-import com.university.erp.model.RefreshToken;
-import com.university.erp.model.User;
+import com.university.erp.entity.RefreshToken;
+import com.university.erp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;

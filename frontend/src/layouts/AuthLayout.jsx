@@ -43,33 +43,33 @@ const AuthLayout = () => {
                 <motion.div className="brand-panel" animate={isLogin ? 'login' : 'signup'} variants={panelVariants} style={{
                     width: '50%', height: '100%',
                     background: 'linear-gradient(135deg, #0B2C6B 0%, #123C8C 100%)',
-                    position: 'absolute', left: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px',
+                    position: 'absolute', left: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px',
                     color: '#ffffff'
                 }}>
                     <AnimatedWaveBackground />
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
-                        <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT Institutional Logo"
-                                style={{ height: '75px', width: 'auto' }}
+                                style={{ height: '65px', width: 'auto' }}
                             />
                         </div>
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
-                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '8px', lineHeight: '1.2', color: '#ffffff' }}>
+                                <h1 style={{ fontSize: '2.4rem', fontWeight: '800', marginBottom: '4px', lineHeight: '1.2', color: '#ffffff' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
+                                <p style={{ fontSize: '1.1rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '24px', lineHeight: '1.6', fontWeight: '500' }}>
                                     Smart Campus Intelligence Platform
                                 </p>
 
                                 <div className="brand-description" style={{
-                                    fontSize: '0.95rem',
+                                    fontSize: '0.9rem',
                                     color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.65)',
-                                    lineHeight: '1.7',
-                                    marginBottom: '40px',
-                                    padding: '16px',
+                                    lineHeight: '1.5',
+                                    marginBottom: '24px',
+                                    padding: '14px',
                                     background: 'rgba(0,0,0,0.1)',
                                     borderRadius: '12px',
                                     borderLeft: `2px solid ${isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}`
@@ -79,13 +79,13 @@ const AuthLayout = () => {
                                 </div>
 
                                 <div className="brand-tagline" style={{
-                                    fontSize: '1rem',
+                                    fontSize: '0.95rem',
                                     fontStyle: 'italic',
                                     color: 'var(--color-accent-gold)',
                                     fontWeight: '500',
-                                    marginTop: '60px',
+                                    marginTop: '30px',
                                     borderLeft: '3px solid var(--color-accent-gold)',
-                                    paddingLeft: '16px'
+                                    paddingLeft: '14px'
                                 }}>
                                     &quot;Innovation through data, excellence in education.&quot;
                                 </div>
@@ -112,6 +112,13 @@ const AuthLayout = () => {
                     .brand-tagline { display: none !important; }
                     .brand-panel img { height: 60px !important; }
                     .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 10px !important; z-index: 2 !important; }
+                }
+                @media (max-width: 480px) {
+                    .brand-panel { padding: 16px 16px 12px !important; }
+                    .brand-panel h1 { font-size: 1.2rem !important; }
+                    .brand-panel img { height: 48px !important; }
+                    .form-panel { padding: 16px 12px !important; }
+                    .auth-form-wrapper { padding: 0 !important; }
                 }
             `}</style>
         </div>

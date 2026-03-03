@@ -4,7 +4,7 @@ const Input = ({ label, error, rightElement, ...props }) => {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
-        <div style={{ marginBottom: 'var(--spacing-md)', width: '100%' }}>
+        <div style={{ marginBottom: 0, width: '100%' }}>
             {label && (
                 <label style={{
                     display: 'block',

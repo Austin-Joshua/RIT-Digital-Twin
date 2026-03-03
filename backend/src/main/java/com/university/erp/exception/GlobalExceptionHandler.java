@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
+        // Log the exception internally but do not expose it to the client
         return buildErrorResponse("An unexpected error occurred. Please contact support.",
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }

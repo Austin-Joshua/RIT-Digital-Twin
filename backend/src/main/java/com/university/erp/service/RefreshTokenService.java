@@ -1,7 +1,7 @@
 package com.university.erp.service;
 
-import com.university.erp.model.RefreshToken;
-import com.university.erp.model.User;
+import com.university.erp.entity.RefreshToken;
+import com.university.erp.entity.User;
 import com.university.erp.repository.RefreshTokenRepository;
 import com.university.erp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +54,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public int deleteByUserId(Long userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+    public void deleteByUserId(Long userId) {
+        userRepository.findById(userId).ifPresent(refreshTokenRepository::deleteByUser);
     }
 }

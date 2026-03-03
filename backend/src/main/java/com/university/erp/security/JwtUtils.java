@@ -1,6 +1,6 @@
 package com.university.erp.security;
 
-import com.university.erp.model.User;
+import com.university.erp.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

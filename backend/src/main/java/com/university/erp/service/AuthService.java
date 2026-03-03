@@ -3,8 +3,8 @@ package com.university.erp.service;
 import com.university.erp.dto.AuthRequest;
 import com.university.erp.dto.AuthResponse;
 import com.university.erp.dto.RegisterRequest;
-import com.university.erp.model.Role;
-import com.university.erp.model.User;
+import com.university.erp.entity.Role;
+import com.university.erp.entity.User;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import com.university.erp.security.JwtUtils;
@@ -64,7 +64,8 @@ public class AuthService {
             User user = (User) authentication.getPrincipal();
             bruteForceProtectionService.loginSucceeded(request.getUsername());
             String jwt = jwtUtils.generateToken(user);
-            com.university.erp.model.RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+            com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
+                    .createRefreshToken(user.getId());
 
             log.info("Login successful for user: {}", user.getUsername());
             return (AuthResponse) AuthResponse.builder()
@@ -121,7 +122,8 @@ public class AuthService {
             }
 
             String jwt = jwtUtils.generateToken(user);
-            com.university.erp.model.RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+            com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
+                    .createRefreshToken(user.getId());
             log.info("Google login successful for user: {}", user.getUsername());
 
             return AuthResponse.builder()
@@ -197,7 +199,7 @@ public class AuthService {
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(com.university.erp.model.RefreshToken::getUser)
+                .map(com.university.erp.entity.RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtils.generateToken(user);
                     return AuthResponse.builder()

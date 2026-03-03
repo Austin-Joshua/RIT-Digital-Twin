@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.model.FacultyLeaveRequest;
+import com.university.erp.entity.FacultyLeaveRequest;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
