@@ -1,110 +1,251 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LuCalendarDays, LuClipboardList, LuCheckCircle2, LuXCircle, LuClock, LuFileText, LuSend } from 'react-icons/lu';
 import api from '../../services/api';
+
+const STATUS_STYLES = {
+    APPROVED: { bg: 'rgba(22,163,74,0.12)', color: '#166534', border: '#16a34a' },
+    REJECTED: { bg: 'rgba(220,38,38,0.12)', color: '#991b1b', border: '#dc2626' },
+    PENDING: { bg: 'rgba(202,138,4,0.12)', color: '#854d0e', border: '#ca8a04' },
+};
+
+const FieldGroup = ({ label, children }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-text-muted)' }}>{label}</label>
+        {children}
+    </div>
+);
+
+const inputStyle = {
+    padding: '11px 14px',
+    borderRadius: '8px',
+    border: '1.5px solid var(--theme-border)',
+    background: 'var(--card-bg)',
+    color: 'var(--theme-text)',
+    fontSize: '14px',
+    outline: 'none',
+    width: '100%',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s',
+};
 
 const LeaveOD = () => {
     const [applications, setApplications] = useState([]);
     const [formData, setFormData] = useState({ startDate: '', endDate: '', reason: '', type: 'LEAVE' });
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [activeTab, setActiveTab] = useState('apply');
+
+    const showToast = (msg, type = 'success') => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3500);
+    };
 
     const fetchApplications = async () => {
         try {
             const res = await api.get('/academic/leave/my-leaves');
             setApplications(res.data);
-        } catch (err) {
-            console.error(err);
+        } catch {
+            setApplications([]);
         }
     };
 
-    useEffect(() => {
-        fetchApplications();
-    }, []);
+    useEffect(() => { fetchApplications(); }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (new Date(formData.endDate) < new Date(formData.startDate)) {
+            showToast('End date cannot be before start date.', 'error');
+            return;
+        }
         setLoading(true);
         try {
             await api.post('/academic/leave/apply', formData);
-            alert('Application submitted successfully!');
+            showToast('Application submitted successfully!');
             setFormData({ startDate: '', endDate: '', reason: '', type: 'LEAVE' });
             fetchApplications();
-        } catch (err) {
-            alert('Your application could not be submitted. Please try again later.');
+            setActiveTab('history');
+        } catch {
+            showToast('Could not submit application. Please try again.', 'error');
         } finally {
             setLoading(false);
         }
     };
 
+    const counts = {
+        total: applications.length,
+        approved: applications.filter(a => a.status === 'APPROVED').length,
+        pending: applications.filter(a => a.status === 'PENDING').length,
+        rejected: applications.filter(a => a.status === 'REJECTED').length,
+    };
+
     return (
-        <div style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '24px', color: 'var(--color-primary-navy)' }}>Apply for Leave / On-Duty</h2>
+        <div style={{ padding: '24px', maxWidth: '1080px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-            <div className="stu-info-card" style={{ padding: '24px', marginBottom: '32px' }}>
-                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <label>Application Type</label>
-                        <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }}>
-                            <option value="LEAVE">Leave</option>
-                            <option value="OD">On-Duty</option>
-                        </select>
-                    </div>
+            {/* Toast Notification */}
+            <AnimatePresence>
+                {toast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                        style={{
+                            position: 'fixed', top: '80px', right: '24px', zIndex: 9999,
+                            padding: '14px 20px', borderRadius: '10px', fontWeight: '600', fontSize: '14px',
+                            background: toast.type === 'success' ? '#166534' : '#991b1b', color: '#fff',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '10px'
+                        }}
+                    >
+                        {toast.type === 'success' ? <LuCheckCircle2 /> : <LuXCircle />} {toast.msg}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                            <label>Start Date</label>
-                            <input type="date" required value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }} />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                            <label>End Date</label>
-                            <input type="date" required value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }} />
-                        </div>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / span 2' }}>
-                        <label>Reason / Description</label>
-                        <textarea required value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })} rows="3" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', resize: 'vertical', background: 'var(--theme-bg)', color: 'var(--theme-text)' }}></textarea>
-                    </div>
-
-                    <button type="submit" disabled={loading} style={{ gridColumn: '1 / span 2', padding: '12px', background: 'var(--color-primary-navy)', color: 'white', borderRadius: '6px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
-                        {loading ? 'Submitting...' : 'Submit Application'}
-                    </button>
-                </form>
+            {/* Page Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ background: 'var(--color-primary-navy)', borderRadius: '10px', padding: '10px', color: 'white', fontSize: '20px', display: 'flex' }}>
+                    <LuCalendarDays />
+                </div>
+                <div>
+                    <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '700', color: 'var(--theme-text)' }}>Leave / On-Duty Application</h2>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text-muted)' }}>Apply for academic leave or on-duty requests</p>
+                </div>
             </div>
 
-            <h3 style={{ marginBottom: '16px' }}>My Application History</h3>
-            <div className="stu-info-card" style={{ overflow: 'hidden' }}>
-                <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                    <thead>
-                        <tr>
-                            <th style={{ padding: '16px' }}>Type</th>
-                            <th style={{ padding: '16px' }}>Start Date</th>
-                            <th style={{ padding: '16px' }}>End Date</th>
-                            <th style={{ padding: '16px' }}>Reason</th>
-                            <th style={{ padding: '16px' }}>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {applications.length > 0 ? applications.map((app, idx) => (
-                            <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '16px', fontWeight: 'bold' }}>{app.applicationType || 'LEAVE'}</td>
-                                <td style={{ padding: '16px' }}>{app.startDate}</td>
-                                <td style={{ padding: '16px' }}>{app.endDate}</td>
-                                <td style={{ padding: '16px', maxWidth: '300px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{app.reason}</td>
-                                <td style={{ padding: '16px' }}>
-                                    <span style={{
-                                        padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold',
-                                        background: app.status === 'APPROVED' ? '#dcfce7' : app.status === 'REJECTED' ? '#fee2e2' : '#fef9c3',
-                                        color: app.status === 'APPROVED' ? '#166534' : app.status === 'REJECTED' ? '#991b1b' : '#854d0e'
+            {/* Summary Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px' }}>
+                {[
+                    { label: 'Total Applications', value: counts.total, color: '#3c8dbc', bg: 'rgba(60,141,188,0.1)' },
+                    { label: 'Approved', value: counts.approved, color: '#16a34a', bg: 'rgba(22,163,74,0.1)' },
+                    { label: 'Pending', value: counts.pending, color: '#ca8a04', bg: 'rgba(202,138,4,0.1)' },
+                    { label: 'Rejected', value: counts.rejected, color: '#dc2626', bg: 'rgba(220,38,38,0.1)' },
+                ].map(s => (
+                    <div key={s.label} style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '10px', padding: '16px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '28px', fontWeight: '800', color: s.color }}>{s.value}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)', marginTop: '4px', fontWeight: '600' }}>{s.label}</div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '4px', background: 'var(--card-bg)', padding: '4px', borderRadius: '10px', border: '1.5px solid var(--theme-border)', width: 'fit-content' }}>
+                {[
+                    { id: 'apply', label: 'Apply', icon: <LuSend /> },
+                    { id: 'history', label: 'History', icon: <LuClipboardList /> },
+                ].map(t => (
+                    <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
+                        padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '14px',
+                        display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s',
+                        background: activeTab === t.id ? 'var(--color-primary-navy)' : 'transparent',
+                        color: activeTab === t.id ? '#fff' : 'var(--theme-text-muted)',
+                    }}>{t.icon} {t.label}</button>
+                ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+                {activeTab === 'apply' && (
+                    <motion.div key="apply" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                        <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
+                            <h3 style={{ margin: '0 0 24px', fontSize: '16px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <LuFileText color="var(--color-primary-navy)" /> New Application
+                            </h3>
+                            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <FieldGroup label="Application Type">
+                                    <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} style={inputStyle}>
+                                        <option value="LEAVE">🏠 Leave (Medical / Personal)</option>
+                                        <option value="OD">🎓 On-Duty (Event / Exam)</option>
+                                    </select>
+                                </FieldGroup>
+
+                                <div /> {/* spacer */}
+
+                                <FieldGroup label="Start Date">
+                                    <input type="date" required value={formData.startDate}
+                                        onChange={e => setFormData({ ...formData, startDate: e.target.value })}
+                                        style={inputStyle} min={new Date().toISOString().split('T')[0]} />
+                                </FieldGroup>
+
+                                <FieldGroup label="End Date">
+                                    <input type="date" required value={formData.endDate}
+                                        onChange={e => setFormData({ ...formData, endDate: e.target.value })}
+                                        style={inputStyle} min={formData.startDate || new Date().toISOString().split('T')[0]} />
+                                </FieldGroup>
+
+                                <FieldGroup label="Reason / Description" >
+                                    <div style={{ gridColumn: '1 / -1' }}>
+                                        <textarea required value={formData.reason}
+                                            onChange={e => setFormData({ ...formData, reason: e.target.value })}
+                                            rows="4" placeholder="Provide a clear reason for your application..."
+                                            style={{ ...inputStyle, resize: 'vertical' }} />
+                                    </div>
+                                </FieldGroup>
+
+                                <div style={{ gridColumn: '1 / -1' }}>
+                                    <button type="submit" disabled={loading} style={{
+                                        width: '100%', padding: '13px', borderRadius: '10px', border: 'none',
+                                        background: loading ? '#ccc' : 'var(--color-primary-navy)',
+                                        color: 'white', fontWeight: '700', fontSize: '15px', cursor: loading ? 'not-allowed' : 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s'
                                     }}>
-                                        {app.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr><td colSpan="5" style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>No past applications found.</td></tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                        <LuSend /> {loading ? 'Submitting...' : 'Submit Application'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </motion.div>
+                )}
+
+                {activeTab === 'history' && (
+                    <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                        <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
+                            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <LuClipboardList color="var(--color-primary-navy)" />
+                                <span style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '16px' }}>Application History</span>
+                            </div>
+                            {applications.length === 0 ? (
+                                <div style={{ padding: '48px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>
+                                    <LuCalendarDays style={{ fontSize: '48px', marginBottom: '12px', opacity: 0.4 }} />
+                                    <p>No applications found.<br />Apply for leave to see your history here.</p>
+                                </div>
+                            ) : (
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ background: 'rgba(11,44,107,0.07)' }}>
+                                                {['Type', 'Start Date', 'End Date', 'Reason', 'Status'].map(h => (
+                                                    <th key={h} style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-primary-navy)', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {applications.map((app, idx) => {
+                                                const st = STATUS_STYLES[app.status] || STATUS_STYLES.PENDING;
+                                                return (
+                                                    <tr key={idx} style={{ borderBottom: '1px solid var(--theme-border)', transition: 'background 0.15s' }}
+                                                        onMouseEnter={e => e.currentTarget.style.background = 'var(--theme-bg-muted)'}
+                                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                                        <td style={{ padding: '14px 16px' }}>
+                                                            <span style={{ background: app.applicationType === 'OD' ? 'rgba(60,141,188,0.12)' : 'rgba(11,44,107,0.08)', color: app.applicationType === 'OD' ? '#3c8dbc' : 'var(--color-primary-navy)', padding: '3px 10px', borderRadius: '30px', fontSize: '12px', fontWeight: '700' }}>
+                                                                {app.applicationType || 'LEAVE'}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--theme-text)', whiteSpace: 'nowrap' }}>{app.startDate}</td>
+                                                        <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--theme-text)', whiteSpace: 'nowrap' }}>{app.endDate}</td>
+                                                        <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--theme-text-muted)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.reason}</td>
+                                                        <td style={{ padding: '14px 16px' }}>
+                                                            <span style={{ padding: '4px 12px', borderRadius: '30px', fontSize: '12px', fontWeight: '700', background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
+                                                                {app.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
