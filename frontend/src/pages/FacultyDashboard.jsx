@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Skeleton from '../components/common/Skeleton';
 import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask, FaBus } from 'react-icons/fa';
 import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
+import MiniCalendar from '../components/common/MiniCalendar';
 
 const FacultyDashboard = () => {
     const { user: _user } = useAuth();
@@ -181,6 +182,9 @@ const FacultyDashboard = () => {
                     <ClassRiskHeatmap />
                 </div>
             </div>
+
+            {/* Academic Calendar */}
+            <MiniCalendar />
         </div>
     );
 };

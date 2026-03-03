@@ -13,6 +13,7 @@ import { useWebSocket } from '../context/WebSocketContext';
 import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
 import Card from '../components/common/Card';
 import { useNavigate } from 'react-router-dom';
+import MiniCalendar from '../components/common/MiniCalendar';
 
 const stagger = {
     hidden: { opacity: 0 },
@@ -206,6 +207,9 @@ const AdminDashboard = () => {
                     <InstitutionalAnalytics />
                 </div>
             </div>
+
+            {/* Academic Calendar */}
+            <MiniCalendar />
 
         </motion.div>
     );
