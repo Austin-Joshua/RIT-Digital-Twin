@@ -124,6 +124,28 @@
     flex-direction: column;
     transition: width 0.15s ease-out, transform 0.15s ease-out;
     z-index: 1000;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .stu-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        width: 280px !important;
+    }
+
+    .stu-sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stu-main {
+        margin-left: 0 !important;
+        width: 100%;
+    }
 }
 
 .stu-sidebar:not(.open) {
@@ -302,6 +324,31 @@
     /* Removing left padding so hamburger touches the edge */
     border-bottom: 1px solid #d2d6de;
     transition: background-color 0.4s ease-in-out, border-color 0.4s ease-in-out;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+@media (max-width: 768px) {
+    .stu-topbar {
+        padding-left: 5px;
+    }
+
+    .stu-topbar-right {
+        gap: 10px;
+    }
+
+    .stu-user-badge span {
+        display: none;
+    }
+
+    .stu-user-badge {
+        padding: 5px;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        justify-content: center;
+    }
 }
 
 .stu-hamburger {
@@ -375,6 +422,12 @@
     overflow-y: auto;
     padding: 20px 25px;
     transition: background-color 0.4s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .stu-content {
+        padding: 15px;
+    }
 }
 
 /* ── Dashboard Cards upscale ── */
@@ -506,31 +559,31 @@
 }
 
 .stu-kpi-card.green {
-    background: linear-gradient(135deg, #00a65a 0%, #00ca6d 100%);
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
 }
 
 .stu-kpi-card.yellow {
-    background: linear-gradient(135deg, #f39c12 0%, #ffb136 100%);
+    background: linear-gradient(135deg, #f57f17 0%, #fbc02d 100%);
 }
 
 .stu-kpi-card.teal {
-    background: linear-gradient(135deg, #00c0ef 0%, #34d3f9 100%);
+    background: linear-gradient(135deg, #006064 0%, #00acc1 100%);
 }
 
 .stu-kpi-card.red {
-    background: linear-gradient(135deg, #dd4b39 0%, #f56954 100%);
+    background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
 }
 
 .stu-kpi-card.blue {
-    background: linear-gradient(135deg, #0073b7 0%, #0089db 100%);
+    background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
 }
 
 .stu-kpi-card.purple {
-    background: linear-gradient(135deg, #605ca8 0%, #7d79c7 100%);
+    background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);
 }
 
 .stu-kpi-card.orange {
-    background: linear-gradient(135deg, #ff851b 0%, #ff9d4b 100%);
+    background: linear-gradient(135deg, #e65100 0%, #fb8c00 100%);
 }
 
 .stu-kpi-card.indigo {
@@ -557,13 +610,19 @@
 .stu-kpi-card.blue-light {
     background: #eff6ff;
     border-left: 4px solid #3b82f6;
-    color: #3b82f6;
+    color: #1e3a8a;
+}
+
+.dark .stu-kpi-card.blue-light {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #ffffff;
 }
 
 .stu-kpi-card.blue-light .kpi-value,
 .stu-kpi-card.blue-light .kpi-label,
 .stu-kpi-card.blue-light .kpi-more {
-    color: #3b82f6;
+    color: inherit;
 }
 
 .stu-kpi-card.blue-light .kpi-icon {
@@ -678,9 +737,103 @@ html.dark ::-webkit-scrollbar-thumb {
 
 .stu-info-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-bottom: 30px;
+}
+
+@media (max-width: 1024px) {
+    .stu-info-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Enterprise Features Styles ── */
+.stu-ranking-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .stu-ranking-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ranking-card {
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+}
+
+.rank-dept {
+    background: linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%);
+}
+
+.rank-class {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.ranking-label {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ranking-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.ranking-icon {
+    font-size: 3rem;
+    opacity: 0.2;
+}
+
+.stu-trend-row,
+.stu-simulator-row {
+    margin-bottom: 24px;
+}
+
+.trend-card {
+    padding: 25px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 350px;
+}
+
+@media (max-width: 600px) {
+    .chart-container {
+        height: 250px;
+    }
+
+    .trend-card {
+        padding: 15px;
+    }
+}
+
+.simulator-card {
+    padding: 20px;
+}
+
+.simulator-title {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.simulator-text {
+    font-size: 14px;
+    margin-top: 8px;
+    opacity: 0.8;
 }
 
 .info-header {
@@ -711,8 +864,26 @@ html.dark ::-webkit-scrollbar-thumb {
 .stu-calendar-card {
     background: white;
     border-top: 3px solid var(--ims-teal);
-    border-radius: 3px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 20px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.stu-calendar-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    .stu-calendar-card {
+        padding: 10px;
+    }
+
+    .stu-calendar-header {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 
 .stu-calendar-header {
@@ -779,7 +950,13 @@ html.dark ::-webkit-scrollbar-thumb {
     text-align: center;
     font-size: 16px;
     background: #fff;
+    color: #1a2332;
+    /* Ensure black/navy text for numbers on light cells */
     vertical-align: top;
+}
+
+.dark .stu-calendar-grid td {
+    color: #f8fafc !important;
 }
 
 .stu-calendar-grid td.today {
@@ -907,7 +1084,73 @@ html.dark ::-webkit-scrollbar-thumb {
 }
 
 .percent-cell.good {
-    color: #333;
+    color: var(--color-success);
+    background: var(--color-success-light);
+    border: 1px solid rgba(27, 122, 61, 0.2);
+}
+
+.dark .percent-cell.good {
+    background: rgba(27, 122, 61, 0.15);
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge.pending {
+    background: #fff8e1;
+    color: #b7791f;
+    border: 1px solid rgba(183, 121, 31, 0.2);
+}
+
+.dark .status-badge.pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.status-badge.approved {
+    background: #e6f7ed;
+    color: #1b7a3d;
+    border: 1px solid rgba(27, 122, 61, 0.2);
+}
+
+.dark .status-badge.approved {
+    background: rgba(27, 122, 61, 0.15);
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+}
+
+.status-badge.rejected {
+    background: #fde8e8;
+    color: #c53030;
+    border: 1px solid rgba(197, 48, 48, 0.2);
+}
+
+.dark .status-badge.rejected {
+    background: rgba(197, 48, 48, 0.15);
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+.status-badge.od {
+    background: var(--color-info-light);
+    color: var(--color-info);
+    border: 1px solid rgba(26, 95, 180, 0.2);
+}
+
+.dark .status-badge.od {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.3);
 }
 
 /* -- Mobile Responsiveness -- */

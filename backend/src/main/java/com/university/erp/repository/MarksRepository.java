@@ -10,5 +10,11 @@ import java.util.List;
 public interface MarksRepository extends JpaRepository<Marks, Long> {
     List<Marks> findByStudentId(Long studentId);
 
+    org.springframework.data.domain.Page<Marks> findByStudentId(Long studentId,
+            org.springframework.data.domain.Pageable pageable);
+
     List<Marks> findByStudentIdAndSemester(Long studentId, Integer semester);
+
+    org.springframework.data.domain.Page<Marks> findByStudentIdAndSemester(Long studentId, Integer semester,
+            org.springframework.data.domain.Pageable pageable);
 }

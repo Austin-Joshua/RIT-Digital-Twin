@@ -8,12 +8,11 @@ const CATMark = () => (
                 textAlign: 'center',
                 fontWeight: 'bold',
                 fontSize: '14px',
-                borderBottom: '1px solid #f4f4f4',
-                color: '#333'
+                borderBottom: '1px solid var(--theme-border)'
             }}>
                 CAT Marks
             </div>
-            <div style={{ padding: '30px', textAlign: 'center', fontSize: '14px', color: '#333' }}>
+            <div style={{ padding: '30px', textAlign: 'center', fontSize: '14px', opacity: 0.8 }}>
                 NO Exam Result Available
             </div>
         </div>

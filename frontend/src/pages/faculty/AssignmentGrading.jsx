@@ -28,21 +28,21 @@ const AssignmentGrading = () => {
         <div className="space-y-6 animate-in fade-in duration-500 p-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaFileAlt className="text-gold-500" /> Assignment Assessment Portal
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-primary-navy)' }}>
+                        <FaFileAlt style={{ color: 'var(--color-accent-gold)' }} /> Assignment Assessment Portal
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Review student submissions, provide feedback, and assign grades</p>
+                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Review student submissions, provide feedback, and assign grades</p>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm border border-gray-100 dark:border-navy-700 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 dark:border-navy-700 bg-gray-50 dark:bg-navy-900/50">
-                    <h3 className="font-bold text-navy-900 dark:text-white">CS8651 - Assignment 1 Submissions</h3>
+            <div className="rounded-xl shadow-sm border overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                <div className="p-4 border-b" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
+                    <h3 className="font-bold" style={{ color: 'var(--theme-text)' }}>CS8651 - Assignment 1 Submissions</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-navy-800 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-navy-700">
+                            <tr className="text-xs uppercase tracking-wider border-b" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text-muted)', borderColor: 'var(--theme-border)' }}>
                                 <th className="p-4 font-bold">Student</th>
                                 <th className="p-4 font-bold">Submitted Date</th>
                                 <th className="p-4 font-bold">Document</th>
@@ -53,14 +53,14 @@ const AssignmentGrading = () => {
                         </thead>
                         <tbody className="text-sm">
                             {assignments.map(item => (
-                                <tr key={item.id} className="border-b border-gray-50 dark:border-navy-800">
+                                <tr key={item.id} className="border-b transition-colors" style={{ borderColor: 'var(--theme-border)' }}>
                                     <td className="p-4">
-                                        <div className="font-bold text-navy-900 dark:text-white">{item.student}</div>
-                                        <div className="text-xs text-gray-500 font-mono">{item.reg}</div>
+                                        <div className="font-bold" style={{ color: 'var(--theme-text)' }}>{item.student}</div>
+                                        <div className="text-xs font-mono" style={{ color: 'var(--theme-text-muted)' }}>{item.reg}</div>
                                     </td>
-                                    <td className="p-4 text-gray-600 dark:text-gray-400">{item.submittedAt}</td>
+                                    <td className="p-4" style={{ color: 'var(--theme-text-muted)' }}>{item.submittedAt}</td>
                                     <td className="p-4">
-                                        <button className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 transition-colors">
+                                        <button className="flex items-center gap-2 hover:underline transition-colors" style={{ color: 'var(--color-primary-navy)' }}>
                                             <FaDownload /> {item.file}
                                         </button>
                                     </td>
@@ -71,7 +71,12 @@ const AssignmentGrading = () => {
                                             value={item.score}
                                             onChange={(e) => handleScoreChange(item.id, e.target.value)}
                                             disabled={item.status === 'graded'}
-                                            className="w-20 px-3 py-1 border border-gray-200 dark:border-navy-600 rounded bg-white dark:bg-navy-900 text-gray-800 dark:text-white disabled:opacity-50"
+                                            className="w-20 px-3 py-1 border rounded disabled:opacity-50"
+                                            style={{
+                                                background: 'var(--theme-bg-muted)',
+                                                color: 'var(--theme-text)',
+                                                borderColor: 'var(--theme-border)'
+                                            }}
                                         />
                                     </td>
                                     <td className="p-4">
@@ -85,7 +90,8 @@ const AssignmentGrading = () => {
                                         {item.status === 'pending' && (
                                             <button
                                                 onClick={() => handleGrade(item.id)}
-                                                className="bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 font-bold px-4 py-1.5 rounded-lg hover:bg-navy-800 hover:scale-105 transition-all text-sm"
+                                                className="font-bold px-4 py-1.5 rounded-lg hover:scale-105 transition-all text-sm"
+                                                style={{ background: 'var(--color-primary-navy)', color: 'white' }}
                                             >
                                                 Submit
                                             </button>

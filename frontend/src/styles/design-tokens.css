@@ -10,8 +10,10 @@
     --color-accent-gold: #D4AF37;
     --color-bg-light: #F4F6F9;
     --color-bg-dark: #0F172A;
-    --color-text-primary: #1F2937;
-    --color-text-secondary: #64748B;
+    --color-text-primary: #111827;
+    /* Near black for high contrast */
+    --color-text-secondary: #475569;
+    /* Slate 600 for better readability */
     --color-text-light: #E5E7EB;
     --color-border: #E5E7EB;
     --color-success: #16A34A;
@@ -57,8 +59,11 @@
 /* Dark Mode Overrides */
 .dark {
     --theme-bg: var(--color-bg-dark);
-    --theme-text: var(--color-text-light);
+    --theme-text: #F8FAFC;
+    /* Light slate 50 for high contrast */
     --theme-text-muted: #94A3B8;
+    --color-accent-gold: #FFD700;
+    /* Brighter gold for better visibility on dark */
     --theme-border: #1E293B;
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);

@@ -1,4 +1,4 @@
-package com.university.erp.entity;
+package com.university.erp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

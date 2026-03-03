@@ -12,8 +12,8 @@ const ThemeSettingsPage = () => {
 
     return (
         <div style={{ maxWidth: '600px', margin: '0 auto', padding: '30px 20px' }}>
-            <h2 style={{ marginBottom: '8px', color: isDarkMode ? '#f8fafc' : '#0B2C6B' }}>Theme Settings</h2>
-            <p style={{ color: isDarkMode ? '#94a3b8' : '#64748b', marginBottom: '28px', fontSize: '14px' }}>
+            <h2 style={{ marginBottom: '8px', color: 'var(--theme-text)' }}>Theme Settings</h2>
+            <p style={{ color: 'var(--theme-text-muted)', marginBottom: '28px', fontSize: '14px' }}>
                 Choose your preferred appearance. The <strong>System Default</strong> option automatically adapts
                 to your device's light or dark mode setting.
             </p>
@@ -30,11 +30,11 @@ const ThemeSettingsPage = () => {
                             padding: '18px 20px',
                             borderRadius: '12px',
                             border: themePreference === opt.value
-                                ? '2px solid #0B2C6B'
-                                : `1px solid ${isDarkMode ? '#334155' : '#e2e8f0'}`,
+                                ? '2px solid var(--color-primary-navy)'
+                                : `1px solid var(--theme-border)`,
                             background: themePreference === opt.value
                                 ? (isDarkMode ? 'rgba(11,44,107,0.2)' : 'rgba(11,44,107,0.05)')
-                                : (isDarkMode ? '#1e293b' : '#fff'),
+                                : 'var(--card-bg)',
                             cursor: 'pointer',
                             textAlign: 'left',
                             transition: 'all 0.2s ease',
@@ -45,7 +45,7 @@ const ThemeSettingsPage = () => {
                             <div style={{
                                 fontWeight: 'bold',
                                 fontSize: '15px',
-                                color: isDarkMode ? '#f8fafc' : '#1e293b',
+                                color: 'var(--theme-text)',
                                 marginBottom: '3px'
                             }}>
                                 {opt.label}
@@ -63,7 +63,7 @@ const ThemeSettingsPage = () => {
                             </div>
                             <div style={{
                                 fontSize: '13px',
-                                color: isDarkMode ? '#94a3b8' : '#64748b',
+                                color: 'var(--theme-text-muted)',
                             }}>
                                 {opt.desc}
                             </div>

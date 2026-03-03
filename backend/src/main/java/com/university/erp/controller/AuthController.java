@@ -2,6 +2,7 @@ package com.university.erp.controller;
 
 import com.university.erp.dto.AuthRequest;
 import com.university.erp.dto.AuthResponse;
+import com.university.erp.dto.GoogleAuthRequest;
 import com.university.erp.dto.ChangePasswordRequest;
 import com.university.erp.dto.RegisterRequest;
 import com.university.erp.model.User;
@@ -26,9 +27,20 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(authRequest));
     }
 
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> authenticateGoogle(@Valid @RequestBody GoogleAuthRequest googleRequest) {
+        return ResponseEntity.ok(authService.googleLogin(googleRequest));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.register(registerRequest));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(
+            @Valid @RequestBody com.university.erp.dto.TokenRefreshRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request));
     }
 
     @GetMapping("/me")

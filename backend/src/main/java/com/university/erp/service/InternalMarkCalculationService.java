@@ -2,9 +2,18 @@ package com.university.erp.service;
 
 import com.university.erp.model.Marks;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class InternalMarkCalculationService {
+
+    private static final BigDecimal HUNDRED = new BigDecimal("100.0");
+    private static final BigDecimal SIXTY = new BigDecimal("60.0");
+    private static final BigDecimal FORTY = new BigDecimal("40.0");
+    private static final BigDecimal EIGHT = new BigDecimal("8.0");
+    private static final BigDecimal FIFTY = new BigDecimal("50.0");
+    private static final BigDecimal TWENTY_FIVE = new BigDecimal("25.0");
 
     public void calculateAll(Marks marks) {
         calculateInternal(marks);
@@ -14,64 +23,67 @@ public class InternalMarkCalculationService {
     }
 
     public void calculateInternal(Marks marks) {
-        double cat1 = (marks.getCat1Score() != null) ? marks.getCat1Score() : 0;
-        double cat2 = (marks.getCat2Score() != null) ? marks.getCat2Score() : 0;
-        double cat3 = (marks.getCat3Score() != null) ? marks.getCat3Score() : 0;
-        double assignment = (marks.getAssignmentScore() != null) ? marks.getAssignmentScore() : 0;
-        double attendance = (marks.getAttendancePercentage() != null) ? marks.getAttendancePercentage() : 0;
+        BigDecimal cat1 = (marks.getCat1Score() != null) ? marks.getCat1Score() : BigDecimal.ZERO;
+        BigDecimal cat2 = (marks.getCat2Score() != null) ? marks.getCat2Score() : BigDecimal.ZERO;
+        BigDecimal cat3 = (marks.getCat3Score() != null) ? marks.getCat3Score() : BigDecimal.ZERO;
+        BigDecimal assignment = (marks.getAssignmentScore() != null) ? marks.getAssignmentScore() : BigDecimal.ZERO;
+        BigDecimal attendance = (marks.getAttendancePercentage() != null) ? marks.getAttendancePercentage()
+                : BigDecimal.ZERO;
 
-        // Step 1-3: CAT Exams (8 + 8 + 8 = 24 marks)
-        double cat1Weight = (cat1 / 50.0) * 8.0;
-        double cat2Weight = (cat2 / 25.0) * 8.0;
-        double cat3Weight = (cat3 / 50.0) * 8.0;
+        // Step 1-3: CAT Exams
+        BigDecimal cat1Weight = cat1.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
+        BigDecimal cat2Weight = cat2.divide(TWENTY_FIVE, 4, RoundingMode.HALF_UP).multiply(EIGHT);
+        BigDecimal cat3Weight = cat3.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
 
-        // Step 4: Assignment (8 marks)
-        double assignmentWeight = (assignment / 50.0) * 8.0;
+        // Step 4: Assignment
+        BigDecimal assignmentWeight = assignment.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
 
-        // Step 5: Attendance (8 marks)
-        double attendanceWeight = calculateAttendanceWeight(attendance);
+        // Step 5: Attendance
+        BigDecimal attendanceWeight = calculateAttendanceWeight(attendance);
 
-        double totalInternal = cat1Weight + cat2Weight + cat3Weight + assignmentWeight + attendanceWeight;
-        marks.setCalculatedInternal(Math.min(40.0, totalInternal));
+        BigDecimal totalInternal = cat1Weight.add(cat2Weight).add(cat3Weight).add(assignmentWeight)
+                .add(attendanceWeight);
+        marks.setCalculatedInternal(totalInternal.min(FORTY).setScale(2, RoundingMode.HALF_UP));
     }
 
-    private double calculateAttendanceWeight(double percentage) {
-        if (percentage >= 90)
-            return 8.0;
-        if (percentage >= 80)
-            return 6.0;
-        if (percentage >= 70)
-            return 4.0;
-        return 0.0;
+    private BigDecimal calculateAttendanceWeight(BigDecimal percentage) {
+        if (percentage.compareTo(new BigDecimal("90")) >= 0)
+            return EIGHT;
+        if (percentage.compareTo(new BigDecimal("80")) >= 0)
+            return new BigDecimal("6.0");
+        if (percentage.compareTo(new BigDecimal("70")) >= 0)
+            return new BigDecimal("4.0");
+        return BigDecimal.ZERO;
     }
 
     public void calculateFinalConverted(Marks marks) {
-        double examScore = (marks.getFinalExamScore() != null) ? marks.getFinalExamScore() : 0;
-        double converted = (examScore / 100.0) * 60.0;
-        marks.setFinalConvertedScore(Math.min(60.0, converted));
+        BigDecimal examScore = (marks.getFinalExamScore() != null) ? marks.getFinalExamScore() : BigDecimal.ZERO;
+        BigDecimal converted = examScore.divide(HUNDRED, 4, RoundingMode.HALF_UP).multiply(SIXTY);
+        marks.setFinalConvertedScore(converted.min(SIXTY).setScale(2, RoundingMode.HALF_UP));
     }
 
     public void calculateTotal(Marks marks) {
-        double internal = (marks.getCalculatedInternal() != null) ? marks.getCalculatedInternal() : 0;
-        double external = (marks.getFinalConvertedScore() != null) ? marks.getFinalConvertedScore() : 0;
-        marks.setTotalScore(internal + external);
+        BigDecimal internal = (marks.getCalculatedInternal() != null) ? marks.getCalculatedInternal() : BigDecimal.ZERO;
+        BigDecimal external = (marks.getFinalConvertedScore() != null) ? marks.getFinalConvertedScore()
+                : BigDecimal.ZERO;
+        marks.setTotalScore(internal.add(external).setScale(2, RoundingMode.HALF_UP));
     }
 
     public void calculateGrade(Marks marks) {
-        double total = (marks.getTotalScore() != null) ? marks.getTotalScore() : 0;
-        if (total >= 90)
+        BigDecimal total = (marks.getTotalScore() != null) ? marks.getTotalScore() : BigDecimal.ZERO;
+        if (total.compareTo(new BigDecimal("90")) >= 0)
             marks.setGrade("O");
-        else if (total >= 80)
+        else if (total.compareTo(new BigDecimal("80")) >= 0)
             marks.setGrade("A+");
-        else if (total >= 70)
+        else if (total.compareTo(new BigDecimal("70")) >= 0)
             marks.setGrade("A");
-        else if (total >= 60)
+        else if (total.compareTo(new BigDecimal("60")) >= 0)
             marks.setGrade("B+");
-        else if (total >= 50)
+        else if (total.compareTo(new BigDecimal("50")) >= 0)
             marks.setGrade("B");
-        else if (total >= 40)
+        else if (total.compareTo(new BigDecimal("40")) >= 0)
             marks.setGrade("C");
         else
-            marks.setGrade("RA"); // Re-appearance
+            marks.setGrade("RA");
     }
 }

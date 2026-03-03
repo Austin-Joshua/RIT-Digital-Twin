@@ -10,7 +10,7 @@ const Messages = () => {
                 <div className="messages-sidebar" style={{ width: '230px', flexShrink: 0 }}>
                     <button className="table-btn" style={{
                         width: '100%',
-                        background: '#007bff',
+                        background: 'var(--color-primary-navy)',
                         color: 'white',
                         border: 'none',
                         padding: '10px',
@@ -22,9 +22,9 @@ const Messages = () => {
                     </button>
 
                     <div className="stu-info-card" style={{ padding: '0' }}>
-                        <div style={{ padding: '12px 15px', color: '#007bff', fontWeight: 'bold', borderBottom: '1px solid var(--border-color, #f4f4f4)' }}>All Messages</div>
-                        <div style={{ padding: '12px 15px', color: 'var(--text-primary, #333)', borderBottom: '1px solid var(--border-color, #f4f4f4)', cursor: 'pointer' }}>Inbox</div>
-                        <div style={{ padding: '12px 15px', color: 'var(--text-primary, #333)', cursor: 'pointer' }}>Outbox</div>
+                        <div style={{ padding: '12px 15px', color: 'var(--color-primary-navy)', fontWeight: 'bold', borderBottom: '1px solid var(--theme-border)' }}>All Messages</div>
+                        <div style={{ padding: '12px 15px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', cursor: 'pointer' }}>Inbox</div>
+                        <div style={{ padding: '12px 15px', color: 'var(--theme-text)', cursor: 'pointer' }}>Outbox</div>
                     </div>
                 </div>
 

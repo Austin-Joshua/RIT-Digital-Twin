@@ -36,13 +36,13 @@ const LeaveOD = () => {
 
     return (
         <div style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '24px', color: '#0B2C6B' }}>Apply for Leave / On-Duty</h2>
+            <h2 style={{ marginBottom: '24px', color: 'var(--color-primary-navy)' }}>Apply for Leave / On-Duty</h2>
 
-            <div style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginBottom: '32px' }}>
+            <div className="stu-info-card" style={{ padding: '24px', marginBottom: '32px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <label>Application Type</label>
-                        <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
+                        <select value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }}>
                             <option value="LEAVE">Leave</option>
                             <option value="OD">On-Duty</option>
                         </select>
@@ -51,29 +51,29 @@ const LeaveOD = () => {
                     <div style={{ display: 'flex', gap: '16px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
                             <label>Start Date</label>
-                            <input type="date" required value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                            <input type="date" required value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
                             <label>End Date</label>
-                            <input type="date" required value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                            <input type="date" required value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)', color: 'var(--theme-text)' }} />
                         </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / span 2' }}>
                         <label>Reason / Description</label>
-                        <textarea required value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })} rows="3" style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc', resize: 'vertical' }}></textarea>
+                        <textarea required value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })} rows="3" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--theme-border)', resize: 'vertical', background: 'var(--theme-bg)', color: 'var(--theme-text)' }}></textarea>
                     </div>
 
-                    <button type="submit" disabled={loading} style={{ gridColumn: '1 / span 2', padding: '12px', background: '#0B2C6B', color: 'white', borderRadius: '6px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
+                    <button type="submit" disabled={loading} style={{ gridColumn: '1 / span 2', padding: '12px', background: 'var(--color-primary-navy)', color: 'white', borderRadius: '6px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
                         {loading ? 'Submitting...' : 'Submit Application'}
                     </button>
                 </form>
             </div>
 
-            <h3 style={{ marginBottom: '16px', color: '#333' }}>My Application History</h3>
-            <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                    <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+            <h3 style={{ marginBottom: '16px' }}>My Application History</h3>
+            <div className="stu-info-card" style={{ overflow: 'hidden' }}>
+                <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
                         <tr>
                             <th style={{ padding: '16px' }}>Type</th>
                             <th style={{ padding: '16px' }}>Start Date</th>

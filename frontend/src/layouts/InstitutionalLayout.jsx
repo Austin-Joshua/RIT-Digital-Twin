@@ -12,6 +12,7 @@ import {
     LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight,
     LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
+import GlobalSearch from '../components/common/GlobalSearch';
 import './student-layout.css';
 
 const LayoutLoader = () => (
@@ -76,10 +77,13 @@ const InstitutionalLayout = () => {
 
     const facultyNavItems = [
         { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
-        { path: '/simulations/classroom', label: 'Timetables', icon: <LuSchool /> },
-        { path: '/faculty/upload-marks', label: 'Upload Results', icon: <LuPenTool /> },
-        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: <LuFlame /> },
-
+        { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
+        { path: '/faculty/attendance', label: 'Attendance', icon: <LuCalendar /> },
+        { path: '/faculty/leaves', label: 'Leaves & Approvals', icon: <LuRefreshCcw /> },
+        { path: '/faculty/analytics', label: 'Class Analytics', icon: <LuTrendingUp /> },
+        { path: '/faculty/proctor', label: 'Proctor Wards', icon: <LuUsers /> },
+        { path: '/faculty/research', label: 'Research Tracker', icon: <LuLightbulb /> },
+        { path: '/transport', label: 'Transport Directory', icon: <LuBus /> },
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
@@ -107,9 +111,8 @@ const InstitutionalLayout = () => {
                     </Link>
                 </div>
 
-                {/* Search */}
                 <div className="stu-sidebar-search">
-                    <input type="text" placeholder="Search..." />
+                    <GlobalSearch navItems={navItems} />
                 </div>
 
                 {/* Nav */}
@@ -133,20 +136,26 @@ const InstitutionalLayout = () => {
             </aside>
 
             {/* Mobile Sidebar Backdrop */}
-            {sidebarOpen && window.innerWidth <= 768 && (
-                <div
-                    onClick={() => setSidebarOpen(false)}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        zIndex: 999
-                    }}
-                />
-            )}
+            <AnimatePresence>
+                {sidebarOpen && window.innerWidth <= 768 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSidebarOpen(false)}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            backdropFilter: 'blur(4px)',
+                            zIndex: 999
+                        }}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* ── Main ── */}
             <div className="stu-main">

@@ -20,9 +20,12 @@ public class AiService {
         java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         Student student = studentRepository.findById(studentId).orElseThrow();
 
-        if (student.getCurrentCgpa() < 5.0 || student.getArrearCount() > 2) {
+        if (student.getCurrentCgpa() != null
+                && (student.getCurrentCgpa().compareTo(java.math.BigDecimal.valueOf(5.0)) < 0
+                        || student.getArrearCount() > 2)) {
             return "HIGH_RISK";
-        } else if (student.getCurrentCgpa() < 7.0) {
+        } else if (student.getCurrentCgpa() != null
+                && student.getCurrentCgpa().compareTo(java.math.BigDecimal.valueOf(7.0)) < 0) {
             return "MODERATE_RISK";
         }
         return "LOW_RISK";
@@ -34,10 +37,12 @@ public class AiService {
         List<String> recommendations = new ArrayList<>();
 
         // Simple logic based on CGPA and performance indicators
-        if (student.getCurrentCgpa() > 8.5) {
+        if (student.getCurrentCgpa() != null
+                && student.getCurrentCgpa().compareTo(java.math.BigDecimal.valueOf(8.5)) > 0) {
             recommendations.add("Research Scientist");
             recommendations.add("Software Architect");
-        } else if (student.getCurrentCgpa() > 7.0) {
+        } else if (student.getCurrentCgpa() != null
+                && student.getCurrentCgpa().compareTo(java.math.BigDecimal.valueOf(7.0)) > 0) {
             recommendations.add("Full Stack Developer");
             recommendations.add("Systems Analyst");
         } else {

@@ -41,7 +41,8 @@ public class RevaluationService {
     }
 
     @Transactional
-    public void updateMarksByFaculty(Long requestId, Double newInternal, Double newExternal) {
+    public void updateMarksByFaculty(Long requestId, java.math.BigDecimal newInternal,
+            java.math.BigDecimal newExternal) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
@@ -50,8 +51,8 @@ public class RevaluationService {
         }
 
         Marks marks = request.getOriginalMarks();
-        marks.setCalculatedInternal(newInternal.doubleValue());
-        marks.setFinalExamScore(newExternal.doubleValue());
+        marks.setCalculatedInternal(newInternal);
+        marks.setFinalExamScore(newExternal);
 
         calculationService.calculateFinalConverted(marks);
         calculationService.calculateTotal(marks);

@@ -15,6 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import com.university.erp.dto.GoogleAuthRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Collections;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,35 +33,108 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final RefreshTokenService refreshTokenService;
+    private final BruteForceProtectionService bruteForceProtectionService;
+
+    @Value("${app.google.client-id:}")
+    private String googleClientId;
 
     public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
-            RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+            RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils,
+            RefreshTokenService refreshTokenService, BruteForceProtectionService bruteForceProtectionService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.refreshTokenService = refreshTokenService;
+        this.bruteForceProtectionService = bruteForceProtectionService;
     }
 
     public AuthResponse login(AuthRequest request) {
         log.info("Attempting login for user: {}", request.getUsername());
+        if (bruteForceProtectionService.isBlocked(request.getUsername())) {
+            log.warn("Account is blocked due to too many failed attempts: {}", request.getUsername());
+            throw new RuntimeException("Account is temporarily blocked. Please try again later.");
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
+            bruteForceProtectionService.loginSucceeded(request.getUsername());
             String jwt = jwtUtils.generateToken(user);
+            com.university.erp.model.RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
             log.info("Login successful for user: {}", user.getUsername());
-            return AuthResponse.builder()
+            return (AuthResponse) AuthResponse.builder()
                     .token(jwt)
+                    .refreshToken(refreshToken.getToken())
                     .id(user.getId())
                     .username(user.getUsername())
                     .role(user.getRole().getRoleName().name())
                     .build();
         } catch (Exception e) {
+            bruteForceProtectionService.loginFailed(request.getUsername());
             log.error("Login failed for user: {}. Error: {}", request.getUsername(), e.getMessage());
             throw e;
+        }
+    }
+
+    public AuthResponse googleLogin(GoogleAuthRequest request) {
+        log.info("Attempting Google login");
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                    new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(request.getToken());
+            if (idToken == null) {
+                throw new RuntimeException("Invalid Google ID Token");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String googleId = payload.getSubject();
+
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            User user;
+
+            if (userOpt.isPresent()) {
+                user = userOpt.get();
+                if (user.getGoogleId() == null) {
+                    user.setGoogleId(googleId);
+                    userRepository.save(user);
+                    log.info("Linked Google account for user: {}", email);
+                }
+            } else {
+                // If user doesn't exist, we could potentially auto-register them if they have
+                // @ritchennai.edu.in
+                if (!email.toLowerCase().matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@[\\w.-]+\\.ritchennai\\.edu\\.in$")) {
+                    throw new RuntimeException(
+                            "Google account must use a departmental email (e.g., @department.ritchennai.edu.in).");
+                }
+
+                log.info("User {} not found, auto-registration required or linking to existing student record.", email);
+                throw new RuntimeException("Account not found. Please register first with your institutional email.");
+            }
+
+            String jwt = jwtUtils.generateToken(user);
+            com.university.erp.model.RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+            log.info("Google login successful for user: {}", user.getUsername());
+
+            return AuthResponse.builder()
+                    .token(jwt)
+                    .refreshToken(refreshToken.getToken())
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .role(user.getRole().getRoleName().name())
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Google login failed: {}", e.getMessage());
+            throw new RuntimeException("Google authentication failed: " + e.getMessage());
         }
     }
 
@@ -63,9 +144,10 @@ public class AuthService {
             throw new RuntimeException("Error: Username is already taken!");
         }
 
-        if (request.getEmail() == null || !request.getEmail().toLowerCase().endsWith("@ritchennai.edu.in")) {
+        if (request.getEmail() == null || !request.getEmail().toLowerCase()
+                .matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@[\\w.-]+\\.ritchennai\\.edu\\.in$")) {
             throw new RuntimeException(
-                    "Error: Registration is restricted to official @ritchennai.edu.in email addresses.");
+                    "Error: Registration is restricted to departmental @department.ritchennai.edu.in email addresses.");
         }
 
         String roleEnumName = "STUDENT";
@@ -108,5 +190,24 @@ public class AuthService {
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    public AuthResponse refreshToken(com.university.erp.dto.TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(com.university.erp.model.RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateToken(user);
+                    return AuthResponse.builder()
+                            .token(token)
+                            .refreshToken(requestRefreshToken)
+                            .id(user.getId())
+                            .username(user.getUsername())
+                            .role(user.getRole().getRoleName().name())
+                            .build();
+                })
+                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
 }

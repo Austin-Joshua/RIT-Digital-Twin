@@ -1,4 +1,4 @@
-package com.university.erp.entity;
+package com.university.erp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,14 +8,14 @@ import lombok.Data;
 
 @Data
 @Entity
-public class AlumniProfile {
+public class AssetInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String batch;
-    private String department;
-    private String company;
-    private String designation;
+    private String assetName;
+    private String category;
+    private String status;
+    private String lastMaintained;
+    private String location;
 }

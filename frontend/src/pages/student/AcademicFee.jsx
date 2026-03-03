@@ -32,10 +32,10 @@ const AcademicFee = () => {
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaFileInvoiceDollar className="text-gold-500" /> Academic Fee Management
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
+                        <FaFileInvoiceDollar style={{ color: 'var(--color-accent-gold)' }} /> Academic Fee Management
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Review dues and make payments securely via internal gateway</p>
+                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Review dues and make payments securely via internal gateway</p>
                 </div>
             </div>
 
@@ -43,7 +43,7 @@ const AcademicFee = () => {
 
                 {/* Payment Gateway Modal / Status Area */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="card bg-navy-900 text-white shadow-xl relative overflow-hidden">
+                    <div className="card text-white shadow-xl relative overflow-hidden" style={{ background: 'var(--color-primary-navy)' }}>
                         {/* Decorative circle */}
                         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-white opacity-5 rounded-full"></div>
 
@@ -68,7 +68,8 @@ const AcademicFee = () => {
                         ) : (
                             <button
                                 onClick={() => handlePayClick(totalRequired)}
-                                className="w-full bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold py-3 rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
+                                className="w-full font-bold py-3 rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
+                                style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}
                             >
                                 <FaCreditCard /> Pay Full Amount Now
                             </button>
@@ -109,7 +110,7 @@ const AcademicFee = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-gray-50 dark:bg-navy-800 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
+                                    <tr className="text-xs uppercase tracking-wider" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text-muted)' }}>
                                         <th className="p-3 font-bold rounded-tl-lg">Description</th>
                                         <th className="p-3 font-bold">Category</th>
                                         <th className="p-3 font-bold text-right rounded-tr-lg">Amount (₹)</th>
@@ -128,9 +129,9 @@ const AcademicFee = () => {
                                             </td>
                                         </tr>
                                     ))}
-                                    <tr className="bg-blue-50/50 dark:bg-navy-900/30">
-                                        <td colSpan="2" className="p-4 font-black text-navy-900 dark:text-white text-right uppercase text-xs tracking-widest">Total Mandatory Dues</td>
-                                        <td className="p-4 font-black text-right text-lg text-navy-900 dark:text-gold-500">
+                                    <tr style={{ background: 'var(--theme-bg-muted)' }}>
+                                        <td colSpan="2" className="p-4 font-black text-right uppercase text-xs tracking-widest" style={{ color: 'var(--theme-text)' }}>Total Mandatory Dues</td>
+                                        <td className="p-4 font-black text-right text-lg" style={{ color: 'var(--color-accent-gold)' }}>
                                             ₹{totalRequired.toLocaleString('en-IN')}
                                         </td>
                                     </tr>

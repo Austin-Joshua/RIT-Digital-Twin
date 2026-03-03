@@ -4,6 +4,7 @@ import com.university.erp.model.Student;
 import com.university.erp.repository.StudentRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +25,14 @@ public class AnalyticsService {
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalStudents", students.size());
-        stats.put("averageCgpa", students.stream()
-                .mapToDouble(s -> s.getCurrentCgpa() != null ? s.getCurrentCgpa() : 0.0)
-                .average().orElse(0.0));
+        BigDecimal totalCgpa = students.stream()
+                .map(s -> s.getCurrentCgpa() != null ? s.getCurrentCgpa() : java.math.BigDecimal.ZERO)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
+        java.math.BigDecimal averageCgpa = students.isEmpty() ? java.math.BigDecimal.ZERO
+                : totalCgpa.divide(java.math.BigDecimal.valueOf(students.size()), 2, java.math.RoundingMode.HALF_UP);
+
+        stats.put("averageCgpa", averageCgpa);
 
         long highRiskCount = students.stream()
                 .filter(s -> s.getArrearCount() != null && s.getArrearCount() > 2)

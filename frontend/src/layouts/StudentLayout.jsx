@@ -10,6 +10,7 @@ import {
     LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
     LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
+import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import { ThemeContext } from '../context/ThemeContext';
@@ -111,9 +112,13 @@ const StudentLayout = () => {
                     </Link>
                 </div>
 
-                {/* Search */}
                 <div className="stu-sidebar-search">
-                    <input type="text" placeholder="Search..." />
+                    <GlobalSearch
+                        navItems={navItems.filter(item => !item.isDropdown).concat(
+                            navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
+                        )}
+                        placeholder="Search student portal..."
+                    />
                 </div>
 
                 {/* Nav */}
