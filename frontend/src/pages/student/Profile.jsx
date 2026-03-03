@@ -34,13 +34,13 @@ const Profile = () => {
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
-    const cardBg = isDarkMode ? '#1e293b' : '#fff';
-    const borderColor = isDarkMode ? '#334155' : '#ddd';
-    const textColor = isDarkMode ? '#f8fafc' : '#333';
-    const subText = isDarkMode ? '#94a3b8' : '#666';
-    const headerBg = isDarkMode ? '#0f172a' : '#f8f9fa';
-    const accentColor = isDarkMode ? '#60a5fa' : '#0B2C6B';
-    const rowBorder = isDarkMode ? '#334155' : '#f0f0f0';
+    const cardBg = 'var(--card-bg)';
+    const borderColor = 'var(--theme-border)';
+    const textColor = 'var(--theme-text)';
+    const subText = 'var(--theme-text-muted)';
+    const headerBg = 'var(--theme-bg-muted, var(--color-bg-light))';
+    const accentColor = 'var(--color-primary-navy)';
+    const rowBorder = 'var(--theme-border)';
 
     const SectionHeader = ({ id, title, icon }) => (
         <div
@@ -117,13 +117,30 @@ const Profile = () => {
                 </div>
 
                 {/* Student Info Card */}
-                <div style={{ background: cardBg, padding: '20px', border: `1px solid ${borderColor}`, borderRadius: '12px', transition: 'background 0.3s' }}>
+                <div style={{ background: cardBg, padding: '20px', border: `1px solid ${borderColor}`, borderRadius: '12px', transition: 'background 0.3s', display: 'flex', flexDirection: 'column' }}>
                     <h4 style={{ color: accentColor, margin: '0 0 15px 0', borderBottom: `1px solid ${borderColor}`, paddingBottom: '10px' }}>Student Info</h4>
-                    <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
+                    <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px', flex: 1 }}>
                         <InfoRow label="Full Name" value={`${user?.firstName} ${user?.lastName}`} />
-                        <InfoRow label="Register Number" value="..." />
-                        <InfoRow label="Email" value={user?.email || "..."} />
-                        <InfoRow label="Phone" value="..." />
+                        <InfoRow label="Register Number" value={user?.username || "..."} />
+                        <InfoRow label="Institutional Email" value={user?.email || "..."} />
+                        <InfoRow label="Academic Status" value="Active / Regular" />
+                    </div>
+
+                    {/* Account Security / Integration */}
+                    <div style={{ marginTop: '20px', padding: '15px', background: 'var(--theme-bg-muted)', borderRadius: '10px', border: '1px solid var(--theme-border)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--theme-text)' }}>Social Authentication</div>
+                                <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>Link your @department.ritchennai.edu.in account</div>
+                            </div>
+                            <button
+                                onClick={() => addToast('Redirecting to Google SSO...', 'info')}
+                                style={{ padding: '8px 16px', borderRadius: '6px', background: 'white', color: '#444', border: '1px solid #ddd', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                            >
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style={{ width: '14px' }} />
+                                Link Google
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

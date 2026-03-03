@@ -1,10 +1,15 @@
 package com.university.erp.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "students")
+@Table(name = "students", indexes = {
+        @Index(name = "idx_student_id_num", columnList = "student_id_number"),
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_dept_id", columnList = "dept_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +32,7 @@ public class Student extends BaseEntity {
     private Integer year;
 
     private String section;
-    private Double currentCgpa;
+    private BigDecimal currentCgpa;
     private Integer arrearCount;
 
     @ManyToOne(fetch = FetchType.LAZY)

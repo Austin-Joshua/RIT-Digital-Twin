@@ -40,10 +40,10 @@ const Certificates = () => {
 
     return (
         <div className="stu-report-page" style={{ padding: '24px' }}>
-            <div className="cert-apply-row" style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px', background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+            <div className="stu-info-card" style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px', padding: '24px' }}>
                 <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Certificate Type</label>
-                    <select value={type} onChange={(e) => setType(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--theme-text-muted)' }}>Certificate Type</label>
+                    <select value={type} onChange={(e) => setType(e.target.value)} className="table-btn" style={{ width: '100%', padding: '12px' }}>
                         <option value="BONAFIDE">Bonafide Certificate</option>
                         <option value="FEE_RECEIPT">Fee Receipt</option>
                         <option value="TRANSCRIPT">Transcript</option>
@@ -59,7 +59,7 @@ const Certificates = () => {
             </div>
 
             <div className="stu-info-card" style={{ padding: '20px' }}>
-                <div className="info-header" style={{ border: 'none', fontSize: '1.2rem', color: '#333', marginBottom: '16px' }}>
+                <div className="info-header" style={{ border: 'none', fontSize: '1.2rem', marginBottom: '16px' }}>
                     My Certificate Applications
                 </div>
 
@@ -76,7 +76,7 @@ const Certificates = () => {
                         <tbody>
                             {requests.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" style={{ textAlign: 'center', padding: '30px', color: '#777', background: '#f9f9f9', borderBottom: '1px solid var(--border-color)' }}>
+                                    <td colSpan="4" style={{ textAlign: 'center', padding: '30px', opacity: 0.7 }}>
                                         No certificate requests found.
                                     </td>
                                 </tr>

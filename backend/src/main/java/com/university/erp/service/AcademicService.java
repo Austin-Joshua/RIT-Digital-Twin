@@ -2,6 +2,8 @@ package com.university.erp.service;
 
 import com.university.erp.exception.ErpException;
 import com.university.erp.model.Marks;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import com.university.erp.model.Student;
 import com.university.erp.repository.MarksRepository;
 import com.university.erp.repository.MarkHistoryRepository;
@@ -97,13 +99,13 @@ public class AcademicService {
 
             // Safe assignment with null checks
             if (dto.getCat1() != null)
-                mark.setCat1Score(dto.getCat1());
+                mark.setCat1Score(BigDecimal.valueOf(dto.getCat1()));
             if (dto.getCat2() != null)
-                mark.setCat2Score(dto.getCat2());
+                mark.setCat2Score(BigDecimal.valueOf(dto.getCat2()));
             if (dto.getCat3() != null)
-                mark.setCat3Score(dto.getCat3());
+                mark.setCat3Score(BigDecimal.valueOf(dto.getCat3()));
             if (dto.getAssignment() != null)
-                mark.setAssignmentScore(dto.getAssignment());
+                mark.setAssignmentScore(BigDecimal.valueOf(dto.getAssignment()));
             if (dto.getSemesterGrade() != null && !dto.getSemesterGrade().isEmpty())
                 mark.setGrade(dto.getSemesterGrade());
             if (mark.getSemester() == null)
@@ -158,17 +160,17 @@ public class AcademicService {
         if (allMarks.isEmpty())
             return;
 
-        double totalGradePoints = 0;
+        BigDecimal totalGradePoints = BigDecimal.ZERO;
         int totalCredits = 0;
 
         for (Marks m : allMarks) {
             int gradePoint = convertToGradePoint(m.getGrade());
             int credits = m.getSubject().getCredits();
-            totalGradePoints += (gradePoint * credits);
+            totalGradePoints = totalGradePoints.add(BigDecimal.valueOf(gradePoint * credits));
             totalCredits += credits;
         }
 
-        double cgpa = totalGradePoints / totalCredits;
+        BigDecimal cgpa = totalGradePoints.divide(BigDecimal.valueOf(totalCredits), 2, RoundingMode.HALF_UP);
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));

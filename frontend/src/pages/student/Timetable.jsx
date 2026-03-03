@@ -32,11 +32,11 @@ const Timetable = () => {
 
     return (
         <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '24px', color: '#0B2C6B' }}>My Weekly Time Table</h2>
+            <h2 style={{ marginBottom: '24px', color: 'var(--color-primary-navy)' }}>My Weekly Time Table</h2>
 
-            <div style={{ overflowX: 'auto', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', WebkitOverflowScrolling: 'touch' }}>
-                <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', minWidth: '700px' }}>
-                    <thead style={{ background: '#0B2C6B', color: 'white' }}>
+            <div style={{ overflowX: 'auto', borderRadius: '12px', boxShadow: 'var(--shadow-soft)', WebkitOverflowScrolling: 'touch' }}>
+                <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', minWidth: '700px', background: 'var(--card-bg)' }}>
+                    <thead style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
                         <tr>
                             <th style={{ padding: '16px', borderRight: '1px solid rgba(255,255,255,0.2)' }}>Day / Time</th>
                             {ALIGN_TIMES.map(t => (
@@ -48,19 +48,19 @@ const Timetable = () => {
                     </thead>
                     <tbody>
                         {DAYS.map((day, rowIndex) => (
-                            <tr key={day} style={{ borderBottom: '1px solid var(--border-color, #e2e8f0)' }}>
-                                <td style={{ padding: '16px', fontWeight: 'bold', borderRight: '1px solid #e2e8f0', color: '#333' }}>
+                            <tr key={day} style={{ borderBottom: '1px solid var(--theme-border)' }}>
+                                <td style={{ padding: '16px', fontWeight: 'bold', borderRight: '1px solid var(--theme-border)', color: 'var(--theme-text)' }}>
                                     {day}
                                 </td>
                                 {ALIGN_TIMES.map(time => {
                                     const slot = getSlot(day, time.substring(0, 5));
                                     return (
-                                        <td key={time} style={{ padding: '12px', borderRight: '1px solid var(--border-color, #e2e8f0)', height: '70px', verticalAlign: 'middle' }}>
+                                        <td key={time} style={{ padding: '12px', borderRight: '1px solid var(--theme-border)', height: '70px', verticalAlign: 'middle' }}>
                                             {slot ? (
-                                                <div style={{ background: '#e0f2fe', padding: '8px', borderRadius: '8px', color: '#0369a1', fontSize: '0.85rem' }}>
+                                                <div style={{ background: 'var(--color-bg-light)', padding: '8px', borderRadius: '8px', color: 'var(--color-primary-navy)', fontSize: '0.85rem', border: '1px solid var(--color-primary-navy)' }}>
                                                     <div style={{ fontWeight: 'bold' }}>{slot.subject?.subjectName || slot.subject?.subjectCode || 'Class'}</div>
                                                     <div>{slot.faculty?.user?.firstName}</div>
-                                                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '4px' }}>Section: {slot.section}</div>
+                                                    <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '4px' }}>Section: {slot.section}</div>
                                                 </div>
                                             ) : (
                                                 <span style={{ color: '#cbd5e1' }}>--</span>

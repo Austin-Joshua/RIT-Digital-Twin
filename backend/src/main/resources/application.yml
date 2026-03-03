@@ -8,17 +8,18 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: ${HIKARI_MAX_POOL:5}
-      minimum-idle: 2
+      maximum-pool-size: ${HIKARI_MAX_POOL:10}
+      minimum-idle: 5
       idle-timeout: 300000
       max-lifetime: 1200000
       connection-timeout: 20000
+      pool-name: RITHikariPool
 
   jpa:
-    hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
     open-in-view: false
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     properties:
       hibernate:
         format_sql: false
@@ -44,7 +45,10 @@ app:
     # APP_JWT_SECRET (referenced by .env.example).  Provide a harmless default
     # for development so the app can start without requiring extra vars.
     secret: ${JWT_SECRET:${APP_JWT_SECRET:ChangeMeInDev}}
-    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000} # 24 hours
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:900000} # 15 minutes
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000} # 7 days
+  google:
+    client-id: ${GOOGLE_AUTH_CLIENT_ID:YOUR_GOOGLE_CLIENT_ID}
 
 # Swagger
 springdoc:
@@ -53,9 +57,8 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-# CORS
 app.cors:
-  allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:https://digital-twin-lemon.vercel.app,https://digital-twin-phi.vercel.app,https://*.vercel.app,https://rit-digital-twin.onrender.com,http://localhost:5173,http://localhost:3000}
+  allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:https://digital-twin-lemon.vercel.app,https://digital-twin-phi.vercel.app,https://*.vercel.app,http://localhost:5173,http://localhost:3000}
 
 # Actuator
 management:

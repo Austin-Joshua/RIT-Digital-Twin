@@ -50,18 +50,18 @@ const AuthLayout = () => {
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
                         <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
                             <img
-                                src="/assets/images/institutional-light-logo.png"
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT Institutional Logo"
                                 style={{ height: '75px', width: 'auto' }}
                             />
                         </div>
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
-                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '24px', lineHeight: '1.2', color: isDarkMode ? '#ffffff' : '#f8f9fa' }}>
-                                    {isLogin ? "Institutional Intelligence Portal" : "Campus Digital Ecosystem"}
+                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '8px', lineHeight: '1.2', color: '#ffffff' }}>
+                                    Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.2rem', color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '400' }}>
-                                    {isLogin ? "Access real-time analytics, campus simulations, and predictive tools for the smart future." : "Join the next generation of institutional management with our integrated digital twin platform."}
+                                <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
+                                    Smart Campus Intelligence Platform
                                 </p>
 
                                 <div className="brand-description" style={{

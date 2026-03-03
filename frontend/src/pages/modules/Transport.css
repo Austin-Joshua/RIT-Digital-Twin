@@ -4,7 +4,24 @@
    ===================================================== */
 
 .transport-header {
-    background: linear-gradient(135deg, #003366 0%, #001a33 40%, #1a1a3e 100%);
+    background: linear-gradient(135deg, var(--color-primary-navy) 0%, var(--color-primary-800) 100%);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.transport-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--color-accent-gold-rgba, rgba(255, 215, 0, 0.05)) 0%, transparent 70%);
+    border-radius: 50%;
 }
 
 .transport-icon {
@@ -24,7 +41,7 @@
 }
 
 .routes-table thead {
-    background: #f0f4f8;
+    background: var(--theme-bg-muted);
 }
 
 .routes-table th {
@@ -34,32 +51,32 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #475569;
+    color: var(--theme-text-muted);
     white-space: nowrap;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--theme-border);
 }
 
 .routes-table td {
     padding: 12px 14px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
+    border-bottom: 1px solid var(--theme-border);
+    color: var(--theme-text);
     white-space: nowrap;
 }
 
 .routes-table tbody tr:hover {
-    background: #f8fafc;
+    background: var(--theme-bg-muted);
 }
 
 .route-code {
     font-weight: 700;
-    color: #003366;
+    color: var(--color-primary-navy);
 }
 
 /* Occupancy Bar */
 .occ-bar-wrap {
     width: 60px;
     height: 6px;
-    background: #e2e8f0;
+    background: var(--theme-border);
     border-radius: 3px;
     overflow: hidden;
     display: inline-block;
@@ -76,7 +93,7 @@
 .occ-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--theme-text-muted);
 }
 
 /* Score Pill */
@@ -86,8 +103,8 @@
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 700;
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--color-primary-50);
+    color: var(--color-primary-600);
 }
 
 /* Status Badge */
@@ -140,10 +157,10 @@
 }
 
 .dark .routes-table th {
-    color: #94a3b8;
-    /* slate-400 */
+    color: #f8fafc;
+    /* Higher contrast */
+    background: #0f172a;
     border-bottom: 2px solid #334155;
-    /* slate-700 */
 }
 
 .dark .routes-table td {

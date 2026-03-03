@@ -4,11 +4,17 @@ import {
     ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 import './modules/Transport.css';
 
-const COLORS = ['#003366', '#c9a227', '#0066cc', '#1a8a5c', '#e6c84d', '#cc6600', '#4a90d9'];
+const COLORS = ['var(--color-primary-navy)', 'var(--color-accent-gold)', 'var(--color-primary-600)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-error)', 'var(--color-primary-400)'];
 
 function TransportPage() {
+    const { user } = useAuth();
+    if (user?.role !== 'ADMIN') {
+        return <Navigate to="/transport" replace />;
+    }
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState(null);
@@ -47,61 +53,74 @@ function TransportPage() {
     return (
         <div className="transport-page">
             {/* Header */}
-            <div className="module-header transport-header">
+            <div className="module-header transport-header" style={{ background: 'linear-gradient(135deg, var(--color-primary-navy), var(--color-primary-800))' }}>
                 <div className="module-header-content">
-                    <div className="module-icon transport-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+                    <div className="module-icon transport-icon" style={{ background: 'var(--color-primary-navy)' }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
                             <rect x="1" y="3" width="15" height="13" rx="2" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
                             <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
                         </svg>
                     </div>
                     <div>
-                        <h1>Transport Route Optimization</h1>
-                        <p>Simulate fleet efficiency, fuel savings, and student cluster mapping</p>
+                        <h1 className="text-white font-black italic tracking-tighter">Transport Route Optimization</h1>
+                        <p className="text-white/80 font-medium">Simulate fleet efficiency, fuel savings, and student cluster mapping</p>
                     </div>
                 </div>
                 <div className="module-stats">
-                    <div className="stat-chip"><span className="stat-icon">🚌</span><span>Twelve Active Campus Routes</span></div>
-                    <div className="stat-chip"><span className="stat-icon">👥</span><span>Total Students Served: 2,800</span></div>
-                    <div className="stat-chip"><span className="stat-icon">⛽</span><span>Target Efficiency Improvement: 20%</span></div>
+                    <div className="stat-chip bg-white/10 border border-white/20 backdrop-blur-md">
+                        <span className="stat-icon">🚌</span>
+                        <span className="text-white font-bold">12 Active Routes</span>
+                    </div>
+                    <div className="stat-chip bg-white/10 border border-white/20 backdrop-blur-md">
+                        <span className="stat-icon">👥</span>
+                        <span className="text-white font-bold">2,800 Students</span>
+                    </div>
+                    <div className="stat-chip" style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}>
+                        <span className="stat-icon">⛽</span>
+                        <span className="font-black italic">20% Target</span>
+                    </div>
                 </div>
             </div>
 
             {/* Controls */}
-            <div className="energy-controls">
+            <div className="energy-controls" style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', borderRadius: '16px', padding: '24px' }}>
                 <div className="control-panel">
-                    <h3>Simulation Parameters</h3>
-                    <div className="param-grid">
+                    <h3 style={{ color: 'var(--theme-text)', marginBottom: '16px' }}>Simulation Parameters</h3>
+                    <div className="param-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px' }}>
                         <div className="param-group">
-                            <label>Routes</label>
+                            <label style={{ color: 'var(--theme-text-muted)', fontSize: '13px', fontWeight: 'bold' }}>Routes</label>
                             <input type="number" value={params.routeCount} min={1} max={12}
+                                style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)', padding: '8px', borderRadius: '4px' }}
                                 onChange={e => setParams(p => ({ ...p, routeCount: +e.target.value }))} />
                         </div>
                         <div className="param-group">
-                            <label>Total Students</label>
+                            <label style={{ color: 'var(--theme-text-muted)', fontSize: '13px', fontWeight: 'bold' }}>Total Students</label>
                             <input type="number" value={params.totalStudents} min={100} max={5000}
+                                style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)', padding: '8px', borderRadius: '4px' }}
                                 onChange={e => setParams(p => ({ ...p, totalStudents: +e.target.value }))} />
                         </div>
                         <div className="param-group">
-                            <label>Fuel Cost (₹/L)</label>
+                            <label style={{ color: 'var(--theme-text-muted)', fontSize: '13px', fontWeight: 'bold' }}>Fuel Cost (₹/L)</label>
                             <input type="number" value={params.fuelCostPerLitre} min={50} max={200}
+                                style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)', padding: '8px', borderRadius: '4px' }}
                                 onChange={e => setParams(p => ({ ...p, fuelCostPerLitre: +e.target.value }))} />
                         </div>
                         <div className="param-group">
-                            <label>Optimization (%)</label>
+                            <label style={{ color: 'var(--theme-text-muted)', fontSize: '13px', fontWeight: 'bold' }}>Optimization (%)</label>
                             <input type="number" value={params.optimizationTarget} min={5} max={50}
+                                style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)', padding: '8px', borderRadius: '4px' }}
                                 onChange={e => setParams(p => ({ ...p, optimizationTarget: +e.target.value }))} />
                         </div>
-                        <div className="param-toggle">
-                            <label>
+                        <div className="param-toggle" style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '8px' }}>
+                            <label style={{ color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                                 <input type="checkbox" checked={params.includeEvScenario}
                                     onChange={e => setParams(p => ({ ...p, includeEvScenario: e.target.checked }))} />
-                                <span>EV Scenario</span>
+                                <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '500' }}>EV Scenario</span>
                             </label>
                         </div>
                     </div>
-                    <div className="control-actions">
-                        <button className="btn-primary" onClick={runSimulation} disabled={loading}>
+                    <div className="control-actions" style={{ marginTop: '24px' }}>
+                        <button className="btn-primary" onClick={runSimulation} disabled={loading} style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
                             {loading ? <><span className="spinner"></span>Processing Simulation Data...</> :
                                 <>🚌 Execute Simulation Analysis</>}
                         </button>
@@ -125,15 +144,41 @@ function TransportPage() {
                     {/* Overview */}
                     {activeView === 'overview' && (
                         <div className="energy-overview">
-                            <div className="overview-cards">
-                                <div className="e-card"><div className="e-card-icon">🚌</div><div className="e-card-value">{data.fleetOverview?.totalRoutes}</div><div className="e-card-label">Active Transport Routes</div></div>
-                                <div className="e-card"><div className="e-card-icon">👥</div><div className="e-card-value">{fmt(data.fleetOverview?.totalStudents)}</div><div className="e-card-label">Total Students Accommodated</div></div>
-                                <div className="e-card highlight-gold"><div className="e-card-icon">⛽</div><div className="e-card-value">{fmt(data.fuelAnalysis?.dailyFuelLitres)} L</div><div className="e-card-label">Estimated Daily Fuel Consumption</div></div>
-                                <div className="e-card"><div className="e-card-icon">📏</div><div className="e-card-value">{fmt(data.fleetOverview?.totalDailyTripsKm)} km</div><div className="e-card-label">Cumulative Daily Distance</div></div>
-                                <div className="e-card highlight-green"><div className="e-card-icon">📊</div><div className="e-card-value">{data.optimization?.optimizationScore}</div><div className="e-card-label">Network Optimization Score</div></div>
-                                <div className="e-card"><div className="e-card-icon">🪑</div><div className="e-card-value">{data.fleetOverview?.averageOccupancyPercent}%</div><div className="e-card-label">Average Fleet Occupancy</div></div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="e-card group border-l-4 border-blue-500 hover:scale-[1.02] transition-all" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)', borderLeftColor: 'var(--color-primary-500)' }}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted)' }}>Routes</div>
+                                            <div className="text-3xl font-black italic" style={{ color: 'var(--theme-text)' }}>{data.fleetOverview?.totalRoutes}</div>
+                                        </div>
+                                        <div className="p-3 rounded-xl" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-600)' }}>🚌</div>
+                                    </div>
+                                    <div className="mt-4 text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>Active Network Coverage</div>
+                                </div>
+
+                                <div className="e-card group border-l-4 border-gold-500 hover:scale-[1.02] transition-all" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)', borderLeftColor: 'var(--color-accent-gold)' }}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted)' }}>Fuel Consumption</div>
+                                            <div className="text-3xl font-black italic" style={{ color: 'var(--theme-text)' }}>{fmt(data.fuelAnalysis?.dailyFuelLitres)} L</div>
+                                        </div>
+                                        <div className="p-3 rounded-xl" style={{ background: 'var(--color-accent-gold-rgba, rgba(201, 162, 39, 0.1))', color: 'var(--color-accent-gold)' }}>⛽</div>
+                                    </div>
+                                    <div className="mt-4 text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>Estimated Daily Usage</div>
+                                </div>
+
+                                <div className="e-card group border-l-4 border-green-500 hover:scale-[1.02] transition-all" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)', borderLeftColor: 'var(--color-success)' }}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted)' }}>Opt Score</div>
+                                            <div className="text-3xl font-black italic" style={{ color: 'var(--theme-text)' }}>{data.optimization?.optimizationScore}</div>
+                                        </div>
+                                        <div className="p-3 rounded-xl" style={{ background: 'var(--color-success-rgba, rgba(26, 138, 92, 0.1))', color: 'var(--color-success)' }}>📊</div>
+                                    </div>
+                                    <div className="mt-4 text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>Network Efficiency Rating</div>
+                                </div>
                             </div>
-                            {data.summary && <div className="results-insight"><p>{data.summary}</p></div>}
+                            {data.summary && <div className="results-insight p-6 rounded-r-xl" style={{ background: 'var(--theme-bg-muted)', borderLeft: '4px solid var(--color-primary-navy)' }}><p className="font-medium italic" style={{ color: 'var(--theme-text)' }}>"{data.summary}"</p></div>}
                         </div>
                     )}
 
@@ -203,15 +248,19 @@ function TransportPage() {
                                 <div className="saving-item"><span>Daily CO₂</span><strong>{fmt(data.fuelAnalysis.co2EmissionsKgDaily)} kg</strong></div>
                             </div>
                             {/* Fuel by route */}
-                            <div className="chart-card" style={{ marginTop: 24 }}>
-                                <h3>Fuel Consumption by Route</h3>
+                            <div className="chart-card" style={{ marginTop: 24, background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+                                <h3 style={{ color: 'var(--theme-text)', marginBottom: '20px' }}>Fuel Consumption by Route</h3>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={data.routes} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                        <XAxis dataKey="routeCode" />
-                                        <YAxis label={{ value: 'Litres', angle: -90, position: 'insideLeft' }} />
-                                        <Tooltip formatter={(v) => `${v} L`} />
-                                        <Bar dataKey="fuelLitres" name="Fuel (L)" fill="#003366" radius={[6, 6, 0, 0]} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--theme-border)" />
+                                        <XAxis dataKey="routeCode" stroke="var(--theme-text-muted)" />
+                                        <YAxis stroke="var(--theme-text-muted)" label={{ value: 'Litres', angle: -90, position: 'insideLeft', fill: 'var(--theme-text-muted)' }} />
+                                        <Tooltip
+                                            contentStyle={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)', color: 'var(--theme-text)' }}
+                                            itemStyle={{ color: 'var(--theme-text)' }}
+                                            formatter={(v) => [`${v} L`, 'Fuel']}
+                                        />
+                                        <Bar dataKey="fuelLitres" name="Fuel (L)" fill="var(--color-primary-navy)" radius={[6, 6, 0, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>

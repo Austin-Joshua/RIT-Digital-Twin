@@ -15,8 +15,8 @@ const CommitteeMinutes = () => {
                             <option>10</option>
                         </select>
                         &nbsp; entries &nbsp;
-                        <button className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none' }}>Select all</button>
-                        <button className="table-btn" style={{ background: '#007bff', color: 'white', border: 'none', marginLeft: '5px' }}>Deselect all</button>
+                        <button className="table-btn" style={{ background: 'var(--color-primary-navy)', color: 'white', border: 'none' }}>Select all</button>
+                        <button className="table-btn" style={{ background: 'var(--color-primary-navy)', color: 'white', border: 'none', marginLeft: '5px' }}>Deselect all</button>
                         <button className="table-btn" style={{ marginLeft: '5px' }}>Copy</button>
                         <button className="table-btn">CSV</button>
                         <button className="table-btn">Excel</button>
@@ -55,11 +55,11 @@ const CommitteeMinutes = () => {
                     </tbody>
                 </table>
 
-                <div style={{ marginTop: '15px', color: '#777', fontSize: '13px' }}>
+                <div style={{ marginTop: '15px', opacity: 0.7, fontSize: '13px' }}>
                     Showing 1 to 1 of 1 entries
                     <div style={{ float: 'right' }}>
                         <button className="table-btn" disabled>Previous</button>
-                        <span className="table-btn active" style={{ background: '#007bff', color: 'white' }}>1</span>
+                        <span className="table-btn active" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>1</span>
                         <button className="table-btn" disabled>Next</button>
                     </div>
                 </div>

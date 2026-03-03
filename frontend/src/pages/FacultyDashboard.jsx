@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Skeleton from '../components/common/Skeleton';
-import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask, FaBus } from 'react-icons/fa';
 import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 
 const FacultyDashboard = () => {
@@ -61,7 +61,7 @@ const FacultyDashboard = () => {
                         <div className="kpi-label">Avg Attendance</div>
                     </div>
                     <FaUserClock className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+                    <div className="kpi-more">View Register →</div>
                 </div>
                 <div className="stu-kpi-card red" onClick={() => navigate('/faculty/analytics')}>
                     <div className="kpi-main">
@@ -69,7 +69,7 @@ const FacultyDashboard = () => {
                         <div className="kpi-label">At Risk Students</div>
                     </div>
                     <FaExclamationTriangle className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+                    <div className="kpi-more">View Analytics →</div>
                 </div>
                 <div className="stu-kpi-card purple" onClick={() => navigate('/faculty/assignments')}>
                     <div className="kpi-main">
@@ -95,14 +95,22 @@ const FacultyDashboard = () => {
                     <FaFlask className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
+                <div className="stu-kpi-card blue-light" onClick={() => navigate('/transport')}>
+                    <div className="kpi-main">
+                        <div className="kpi-value">RIT</div>
+                        <div className="kpi-label">Transport Routes</div>
+                    </div>
+                    <FaBus className="kpi-icon" />
+                    <div className="kpi-more">View Directory →</div>
+                </div>
             </div>
 
             {/* Info Cards Row */}
             <div className="stu-info-row">
                 <div className="stu-info-card">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaChalkboardTeacher color="#0B2C6B" />
-                        <span>My Assigned Subjects</span>
+                        <FaChalkboardTeacher color="var(--color-primary-navy)" />
+                        <span style={{ color: 'var(--theme-text)' }}>My Assigned Subjects</span>
                     </div>
                     <div className="info-body">
                         <table className="stu-data-table">
@@ -130,33 +138,33 @@ const FacultyDashboard = () => {
                     </div>
                 </div>
 
-                <div className="stu-info-card" style={{ borderTopColor: '#f39c12' }}>
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-accent-gold)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaTasks color="#f39c12" />
-                        <span>Recent Tasks / Approvals</span>
+                        <FaTasks color="var(--color-accent-gold)" />
+                        <span style={{ color: 'var(--theme-text)' }}>Recent Tasks / Approvals</span>
                     </div>
                     <div className="info-body">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <div
                                 onClick={() => navigate('/faculty/leaves')}
-                                style={{ padding: '10px', borderLeft: '3px solid #f39c12', background: '#fffef0', fontSize: '13px', cursor: 'pointer', transition: '0.2s' }}
+                                style={{ padding: '12px', borderLeft: '4px solid var(--color-warning)', background: 'var(--theme-bg-muted)', fontSize: '13px', cursor: 'pointer', transition: '0.2s', color: 'var(--theme-text)', borderRadius: '0 8px 8px 0' }}
                                 className="hover:opacity-80"
                             >
-                                <strong>3 New Leave requests</strong> pending review for CSE-A
+                                <strong style={{ color: 'var(--color-warning)' }}>3 New Leave requests</strong> pending review for CSE-A
                             </div>
                             <div
                                 onClick={() => navigate('/faculty/leaves')}
-                                style={{ padding: '10px', borderLeft: '3px solid #00c0ef', background: '#f0fbff', fontSize: '13px', cursor: 'pointer', transition: '0.2s' }}
+                                style={{ padding: '12px', borderLeft: '4px solid var(--color-primary-navy)', background: 'var(--theme-bg-muted)', fontSize: '13px', cursor: 'pointer', transition: '0.2s', color: 'var(--theme-text)', borderRadius: '0 8px 8px 0' }}
                                 className="hover:opacity-80"
                             >
-                                <strong>1 OD request</strong> pending for Sports quota
+                                <strong style={{ color: 'var(--color-primary-navy)' }}>1 OD request</strong> pending for Sports quota
                             </div>
                         </div>
                     </div>
                     <div className="info-footer">
                         <button
-                            className="table-btn primary"
-                            style={{ width: '100%', background: '#f39c12', borderColor: '#f39c12' }}
+                            className="table-btn"
+                            style={{ width: '100%', background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-700) 100%)', color: 'var(--color-primary-navy)', fontWeight: 'bold', border: 'none' }}
                             onClick={() => navigate('/faculty/leaves')}
                         >
                             Review All Approvals

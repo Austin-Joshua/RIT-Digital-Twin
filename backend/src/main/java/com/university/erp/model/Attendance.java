@@ -1,10 +1,13 @@
 package com.university.erp.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "attendance")
+@Table(name = "attendance", indexes = {
+        @Index(name = "idx_student_subject_attendance", columnList = "student_id, subject_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +26,7 @@ public class Attendance extends BaseEntity {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    private Double percentage;
+    private BigDecimal percentage;
     private Integer totalClasses;
     private Integer attendedClasses;
 }

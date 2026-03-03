@@ -51,17 +51,23 @@ const FacultyAttendance = () => {
         <div className="space-y-6 animate-in fade-in duration-500 p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaUserClock className="text-gold-500" /> Attendance Management
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
+                        <FaUserClock style={{ color: 'var(--color-accent-gold)' }} /> Attendance Management
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Record daily attendance and monitor student risk levels</p>
+                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Record daily attendance and monitor student risk levels</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
                     <select
                         value={selectedCourse}
                         onChange={(e) => setSelectedCourse(e.target.value)}
-                        className="px-4 py-2 rounded-lg border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-900 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold-500"
+                        className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
+                        style={{
+                            background: 'var(--card-bg)',
+                            color: 'var(--theme-text)',
+                            borderColor: 'var(--theme-border)',
+                            '--tw-ring-color': 'var(--color-accent-gold)'
+                        }}
                     >
                         <option value="CS8651 - Internet Programming">CS8651 - Internet Programming / CSE-A</option>
                         <option value="CS8691 - Artificial Intelligence">CS8691 - Artificial Intelligence / CSE-B</option>
@@ -72,7 +78,8 @@ const FacultyAttendance = () => {
                     {!markingMode ? (
                         <button
                             onClick={() => setMarkingMode(true)}
-                            className="bg-navy-900 hover:bg-navy-800 dark:bg-gold-500 dark:hover:bg-gold-600 dark:text-navy-900 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors shadow-sm"
+                            className="text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors shadow-sm"
+                            style={{ background: 'var(--color-primary-navy)' }}
                         >
                             Mark Attendance
                         </button>
@@ -88,39 +95,40 @@ const FacultyAttendance = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-navy-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-navy-700 flex justify-between items-center">
+                <div className="p-6 rounded-xl shadow-sm border flex justify-between items-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Overall Class Attendance</div>
-                        <div className="text-4xl font-black text-navy-900 dark:text-white">84.5%</div>
+                        <div className="text-sm mb-1" style={{ color: 'var(--theme-text-muted)' }}>Overall Class Attendance</div>
+                        <div className="text-4xl font-black" style={{ color: 'var(--theme-text)' }}>84.5%</div>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                        <FaChartPie className="text-3xl text-blue-500" />
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'var(--color-primary-100)' }}>
+                        <FaChartPie className="text-3xl" style={{ color: 'var(--color-primary-navy)' }} />
                     </div>
                 </div>
-                <div className="bg-red-50 dark:bg-red-900/10 p-6 rounded-xl shadow-sm border border-red-100 dark:border-red-900/30 flex justify-between items-center">
+                <div className="p-6 rounded-xl shadow-sm border flex justify-between items-center" style={{ background: 'var(--color-error-100)', borderColor: 'var(--color-error)' }}>
                     <div>
-                        <div className="text-sm text-red-600/80 dark:text-red-400/80 mb-1">Students Below 75% Risk</div>
-                        <div className="text-4xl font-black text-red-600 dark:text-red-500">{students.filter(s => s.percentage < 75).length}</div>
+                        <div className="text-sm mb-1" style={{ color: 'var(--color-error)' }}>Students Below 75% Risk</div>
+                        <div className="text-4xl font-black" style={{ color: 'var(--color-error)' }}>{students.filter(s => s.percentage < 75).length}</div>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
-                        <FaUserClock className="text-3xl text-red-500 text-opacity-80" />
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'var(--color-error-100)', opacity: 0.8 }}>
+                        <FaUserClock className="text-3xl" style={{ color: 'var(--color-error)' }} />
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm border border-gray-100 dark:border-navy-700 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 dark:border-navy-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50 dark:bg-navy-900/50">
-                    <h3 className="font-bold text-navy-900 dark:text-white text-lg">Student Roster</h3>
+            <div className="rounded-xl shadow-sm border overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                <div className="p-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
+                    <h3 className="font-bold text-lg" style={{ color: 'var(--theme-text)' }}>Student Roster</h3>
 
                     {markingMode && (
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 bg-white dark:bg-navy-900 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-navy-700">
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                                 <FaCalendarAlt className="text-gray-400" />
                                 <input
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="text-sm bg-transparent outline-none dark:text-white text-navy-900 font-medium"
+                                    className="text-sm bg-transparent outline-none font-medium"
+                                    style={{ color: 'var(--theme-text)' }}
                                 />
                             </div>
                             <div className="flex gap-2">
@@ -134,7 +142,7 @@ const FacultyAttendance = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 dark:bg-navy-800text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-navy-700">
+                            <tr className="text-xs uppercase tracking-wider border-b" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text-muted)', borderColor: 'var(--theme-border)' }}>
                                 <th className="p-4 font-bold">Register Number</th>
                                 <th className="p-4 font-bold">Student Name</th>
                                 <th className="p-4 font-bold text-center">History (Att/Tot)</th>
@@ -144,11 +152,11 @@ const FacultyAttendance = () => {
                         </thead>
                         <tbody className="text-sm">
                             {students.map((student, idx) => (
-                                <tr key={idx} className="border-b border-gray-50 dark:border-navy-800 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-colors">
-                                    <td className="p-4 font-mono text-navy-900 dark:text-gray-300 font-medium">{student.reg}</td>
-                                    <td className="p-4 font-bold text-gray-800 dark:text-white">{student.name}</td>
-                                    <td className="p-4 text-center text-gray-600 dark:text-gray-400 font-mono">
-                                        <span className="text-navy-900 dark:text-white font-bold">{student.attended}</span> / {student.total}
+                                <tr key={idx} className="border-b transition-colors" style={{ borderColor: 'var(--theme-border)' }}>
+                                    <td className="p-4 font-mono font-medium" style={{ color: 'var(--theme-text-muted)' }}>{student.reg}</td>
+                                    <td className="p-4 font-bold" style={{ color: 'var(--theme-text)' }}>{student.name}</td>
+                                    <td className="p-4 text-center font-mono" style={{ color: 'var(--theme-text-muted)' }}>
+                                        <span className="font-bold" style={{ color: 'var(--theme-text)' }}>{student.attended}</span> / {student.total}
                                     </td>
                                     <td className="p-4 text-center">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${student.percentage >= 75 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
