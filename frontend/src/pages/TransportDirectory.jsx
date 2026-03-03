@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
-import { FaBus, FaRoute, FaCheckCircle, FaSearch, FaPhoneAlt, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { LuBus, LuSearch, LuPhone, LuMapPin, LuClock, LuNavigation, LuRoute, LuCheckCircle } from 'react-icons/lu';
 
 const TransportPage = () => {
     const [routes, setRoutes] = useState([]);
@@ -10,227 +11,223 @@ const TransportPage = () => {
     const [loading, setLoading] = useState(false);
     const [searching, setSearching] = useState(false);
 
-    useEffect(() => {
-        fetchRoutes();
-    }, []);
+    useEffect(() => { fetchRoutes(); }, []);
 
     const fetchRoutes = async () => {
         setLoading(true);
         try {
-            const response = await api.get('/transport/routes');
-            setRoutes(response.data);
-        } catch (error) {
-            console.error("Error fetching routes:", error);
-        } finally {
-            setLoading(false);
-        }
+            const res = await api.get('/transport/routes');
+            setRoutes(res.data);
+        } catch { setRoutes([]); }
+        finally { setLoading(false); }
     };
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        if (!searchQuery.trim()) {
-            fetchRoutes();
-            return;
-        }
+        if (!searchQuery.trim()) { fetchRoutes(); return; }
         setSearching(true);
         try {
-            const response = await api.get(`/transport/search?query=${searchQuery}`);
-            setRoutes(response.data);
-        } catch (error) {
-            console.error("Error searching routes:", error);
-        } finally {
-            setSearching(false);
-        }
+            const res = await api.get(`/transport/search?query=${searchQuery}`);
+            setRoutes(res.data);
+        } catch { }
+        finally { setSearching(false); }
     };
 
     const viewRouteDetails = async (route) => {
         setSelectedRoute(route);
         try {
-            const response = await api.get(`/transport/routes/${route.id}/stops`);
-            setStops(response.data);
-        } catch (error) {
-            console.error("Error fetching stops:", error);
-            setStops([]);
-        }
+            const res = await api.get(`/transport/routes/${route.id}/stops`);
+            setStops(res.data);
+        } catch { setStops([]); }
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h1 className="stu-welcome h2 !mb-0" style={{ fontSize: '24px' }}>Official RIT Transport Directory</h1>
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg font-black italic tracking-tight" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
-                        <FaPhoneAlt className="animate-pulse" style={{ color: 'var(--color-accent-gold)' }} />
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+
+            {/* Header */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ background: 'var(--color-primary-navy)', borderRadius: '10px', padding: '10px', color: 'white', fontSize: '20px', display: 'flex' }}>
+                        <LuBus />
+                    </div>
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '700', color: 'var(--theme-text)' }}>RIT Transport Directory</h2>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text-muted)' }}>Official bus routes, boarding points & timings</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '10px', background: 'var(--color-primary-navy)', color: 'white', fontSize: '13px', fontWeight: '600' }}>
+                        <LuPhone style={{ color: '#D4AF37' }} />
                         <div>
-                            <span className="text-[10px] uppercase tracking-widest block opacity-70">Helpline</span>
-                            <span>63807 51700 / 75488 62447</span>
+                            <div style={{ fontSize: '10px', opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Helpline</div>
+                            <div>63807 51700 / 75488 62447</div>
                         </div>
                     </div>
-                    <div className="flex gap-2 text-sm px-4 py-2 rounded-lg border shadow-sm font-semibold h-full items-center" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)' }}>
-                        <FaBus style={{ color: 'var(--color-primary-navy)' }} /> {routes.length} Active Routes
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '10px', background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', color: 'var(--theme-text)', fontSize: '13px', fontWeight: '600' }}>
+                        <LuBus color="var(--color-primary-navy)" />
+                        {routes.length} Active Routes
                     </div>
                 </div>
             </div>
 
             {/* Search Bar */}
-            <div className="card border-none shadow-xl overflow-hidden relative" style={{ background: 'var(--color-primary-navy)' }}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                <div className="relative z-10 p-6">
-                    <h3 className="text-white text-lg font-bold mb-4 flex items-center gap-2">
-                        <FaSearch style={{ color: 'var(--color-accent-gold)' }} /> Find Your Route
-                    </h3>
-                    <form onSubmit={handleSearch} className="flex gap-3">
-                        <input
-                            type="text"
-                            className="flex-1 bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-all font-medium"
-                            placeholder="Search by Route No (e.g. R01) or Area (e.g. Ennore)..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <button
-                            type="submit"
-                            disabled={searching}
-                            className="px-8 py-3 rounded-lg font-bold transition-all shadow-lg active:scale-95 disabled:opacity-50"
-                            style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}
-                        >
-                            {searching ? 'Searching...' : 'Search'}
-                        </button>
-                    </form>
-                </div>
+            <div style={{ background: 'var(--color-primary-navy)', borderRadius: '14px', padding: '20px 24px', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
+                <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', position: 'relative', zIndex: 1, alignItems: 'center' }}>
+                    <LuSearch color="#D4AF37" style={{ fontSize: '20px', flexShrink: 0 }} />
+                    <input
+                        type="text"
+                        placeholder="Search by Route No (R01) or Area (Ennore, Ambattur)..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        style={{
+                            flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                            borderRadius: '8px', padding: '11px 16px', color: 'white', fontSize: '14px', outline: 'none'
+                        }}
+                    />
+                    <button type="submit" disabled={searching} style={{
+                        padding: '11px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                        background: '#D4AF37', color: 'var(--color-primary-navy)', fontWeight: '700', fontSize: '14px', flexShrink: 0
+                    }}>
+                        {searching ? 'Searching...' : 'Search'}
+                    </button>
+                </form>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px', alignItems: 'start' }}>
+
                 {/* Route List */}
-                <div className="lg:col-span-1 space-y-4 max-h-[40vh] lg:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
                     {loading ? (
-                        <div className="text-center py-10 text-gray-500 font-medium">Loading Routes...</div>
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>Loading routes...</div>
                     ) : routes.length === 0 ? (
-                        <div className="text-center py-10 text-gray-500 font-medium">No routes found matching your query.</div>
-                    ) : (
-                        routes.map((route) => (
-                            <div
-                                key={route.id}
-                                onClick={() => viewRouteDetails(route)}
-                                className="card cursor-pointer transition-all border-l-8 hover:shadow-2xl"
-                                style={{
-                                    background: selectedRoute?.id === route.id ? 'var(--color-primary-100)' : 'var(--card-bg)',
-                                    borderColor: selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : 'var(--color-accent-gold)',
-                                    transform: selectedRoute?.id === route.id ? 'scale(1.02)' : 'none',
-                                    color: 'var(--theme-text)'
-                                }}
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <div className="font-black text-2xl italic" style={{ color: 'var(--color-primary-navy)' }}>{route.routeNumber}</div>
-                                        <div className="font-bold mt-1 line-clamp-1" style={{ color: 'var(--theme-text)' }}>{route.routeName}</div>
-                                    </div>
-                                    <div className="text-[10px] font-black px-2 py-0.5 rounded tracking-widest uppercase" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>{route.busNumber}</div>
-                                </div>
-                                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400">
-                                    <FaMapMarkerAlt className="text-navy-900/40 dark:text-gold-500/50" />
-                                    <span>{route.startPoint} <span className="mx-1 text-gold-500">→</span> {route.endPoint}</span>
-                                </div>
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>No routes found.</div>
+                    ) : routes.map(route => (
+                        <div
+                            key={route.id}
+                            onClick={() => viewRouteDetails(route)}
+                            style={{
+                                background: selectedRoute?.id === route.id ? 'rgba(11,44,107,0.1)' : 'var(--card-bg)',
+                                border: `1.5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : 'var(--theme-border)'}`,
+                                borderLeft: `5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : '#D4AF37'}`,
+                                borderRadius: '10px',
+                                padding: '14px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                transform: selectedRoute?.id === route.id ? 'translateX(2px)' : 'none',
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                <span style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{route.routeNumber}</span>
+                                <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', background: 'var(--color-primary-navy)', color: 'white', letterSpacing: '0.5px' }}>{route.busNumber}</span>
                             </div>
-                        ))
-                    )}
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-text)', marginBottom: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{route.routeName}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                                <LuMapPin style={{ flexShrink: 0 }} />
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{route.startPoint} → {route.endPoint}</span>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Route Details / Timings */}
-                <div className="lg:col-span-2">
+                {/* Route Detail Panel */}
+                <AnimatePresence mode="wait">
                     {selectedRoute ? (
-                        <div className="space-y-6 animate-in slide-in-from-right duration-500">
-                            <div className="card bg-white" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)', borderTop: '8px solid var(--color-primary-navy)' }}>
-                                <div className="flex justify-between items-end border-b pb-4 mb-4" style={{ borderColor: 'var(--theme-border)' }}>
+                        <motion.div key={selectedRoute.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                            {/* Route Header Card */}
+                            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', borderTop: '4px solid var(--color-primary-navy)', padding: '20px 24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
                                     <div>
-                                        <h2 className="text-2xl font-black italic tracking-tighter" style={{ color: 'var(--color-primary-navy)' }}>{selectedRoute.routeNumber} Detailed Schedule</h2>
-                                        <p style={{ color: 'var(--theme-text-muted)', fontWeight: 500 }}>{selectedRoute.routeName}</p>
+                                        <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{selectedRoute.routeNumber} — {selectedRoute.routeName}</h2>
+                                        <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--theme-text-muted)' }}>{selectedRoute.startPoint} → RIT Campus</p>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-xs font-bold uppercase" style={{ color: 'var(--theme-text-muted)' }}>Capacity</div>
-                                        <div className="text-lg font-bold" style={{ color: 'var(--theme-text)' }}>{selectedRoute.currentOccupancy} / {selectedRoute.capacity}</div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl border mb-6" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-3 rounded-lg shadow-sm" style={{ background: 'var(--card-bg)', color: 'var(--color-primary-navy)' }}><FaPhoneAlt /></div>
-                                        <div>
-                                            <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Coordinator</div>
-                                            <div className="text-sm font-bold" style={{ color: 'var(--theme-text)' }}>{selectedRoute.coordinatorName || 'To be Assigned'}</div>
-                                            <div className="text-sm font-medium" style={{ color: 'var(--color-primary-600)' }}>{selectedRoute.coordinatorPhone || '--'}</div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-3 rounded-lg shadow-sm" style={{ background: 'var(--card-bg)', color: 'var(--color-primary-navy)' }}><FaBus /></div>
-                                        <div>
-                                            <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Bus Details</div>
-                                            <div className="text-sm font-bold" style={{ color: 'var(--theme-text)' }}>{selectedRoute.busNumber}</div>
-                                            <div className="text-[10px] font-medium italic" style={{ color: 'var(--theme-text-muted)' }}>Compliant with University Standards</div>
-                                        </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Capacity</div>
+                                        <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--theme-text)' }}>{selectedRoute.currentOccupancy || 'N/A'} / {selectedRoute.capacity || 'N/A'}</div>
                                     </div>
                                 </div>
 
-                                <h3 className="section-header !text-[16px] mb-4 flex items-center gap-2 dark:text-white">
-                                    <FaClock className="text-navy-900 dark:text-gold-500" /> Boarding Points & Timings
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    {[
+                                        { icon: <LuPhone />, label: 'Coordinator', value: selectedRoute.coordinatorName || 'To be Assigned', sub: selectedRoute.coordinatorPhone || '' },
+                                        { icon: <LuBus />, label: 'Bus Details', value: selectedRoute.busNumber, sub: 'Compliant with University Standards' },
+                                    ].map((item, i) => (
+                                        <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'rgba(11,44,107,0.05)', borderRadius: '10px', border: '1px solid var(--theme-border)' }}>
+                                            <div style={{ padding: '10px', borderRadius: '8px', background: 'var(--card-bg)', color: 'var(--color-primary-navy)', fontSize: '16px', display: 'flex', flexShrink: 0 }}>{item.icon}</div>
+                                            <div>
+                                                <div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--theme-text-muted)', letterSpacing: '0.5px' }}>{item.label}</div>
+                                                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--theme-text)' }}>{item.value}</div>
+                                                {item.sub && <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>{item.sub}</div>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Stops Timeline */}
+                            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '20px 24px' }}>
+                                <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <LuClock color="var(--color-primary-navy)" /> Boarding Points & Timings
                                 </h3>
 
-                                <div className="relative pl-8 space-y-6 ml-2 pt-2" style={{ borderLeft: '2px solid var(--theme-border)' }}>
-                                    {stops.length > 0 ? stops.map((stop, _idx) => (
-                                        <div key={stop.id} className="relative group">
-                                            <div className="absolute -left-[41px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-4 z-10 group-hover:scale-125 transition-all" style={{ background: 'var(--card-bg)', borderColor: 'var(--color-primary-navy)' }}></div>
-                                            <div className="flex justify-between items-center p-3 rounded-lg transition-all border border-transparent hover:bg-[var(--theme-bg-muted)] hover:border-[var(--theme-border)]">
+                                <div style={{ position: 'relative', paddingLeft: '32px', borderLeft: '2px solid var(--theme-border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    {stops.length > 0 ? stops.map((stop, idx) => (
+                                        <div key={stop.id} style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--color-primary-navy)' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--theme-border)', transition: 'background 0.2s' }}
+                                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(11,44,107,0.05)'}
+                                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                                                 <div>
-                                                    <div className="font-bold" style={{ color: 'var(--theme-text)' }}>{stop.stopName}</div>
-                                                    {stop.landmark && <div className="text-[10px] font-medium italic" style={{ color: 'var(--theme-text-muted)' }}>{stop.landmark}</div>}
+                                                    <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--theme-text)' }}>{stop.stopName}</div>
+                                                    {stop.landmark && <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', fontStyle: 'italic' }}>{stop.landmark}</div>}
                                                 </div>
-                                                <div className="px-3 py-1 rounded text-sm font-black italic tracking-widest" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
+                                                <div style={{ padding: '5px 12px', borderRadius: '8px', background: 'var(--color-primary-navy)', color: 'white', fontSize: '13px', fontWeight: '800', fontStyle: 'italic', letterSpacing: '0.5px', flexShrink: 0 }}>
                                                     {stop.pickupTime ? stop.pickupTime.substring(0, 5) : '--:--'} AM
                                                 </div>
                                             </div>
                                         </div>
                                     )) : (
-                                        <div className="font-medium italic py-4" style={{ color: 'var(--theme-text-muted)' }}>No specific boarding points recorded for this route yet.</div>
+                                        <div style={{ fontSize: '14px', color: 'var(--theme-text-muted)', padding: '12px 0' }}>No boarding points recorded yet.</div>
                                     )}
 
-                                    {/* Final Stop */}
-                                    <div className="relative group pt-4 border-t border-dashed" style={{ borderColor: 'var(--theme-border)' }}>
-                                        <div className="absolute -left-[41px] top-[18px] w-6 h-6 rounded-full flex items-center justify-center text-white z-10" style={{ background: 'var(--color-primary-navy)' }}>
-                                            <FaCheckCircle className="text-[10px]" />
+                                    {/* Destination */}
+                                    <div style={{ position: 'relative', paddingTop: '8px', borderTop: '1px dashed var(--theme-border)' }}>
+                                        <div style={{ position: 'absolute', left: '-42px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--color-primary-navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px' }}>
+                                            <LuCheckCircle />
                                         </div>
-                                        <div className="flex justify-between items-center">
-                                            <div className="font-black tracking-tight uppercase" style={{ color: 'var(--theme-text)' }}>RIT Campus</div>
-                                            <div className="font-bold border-b-2" style={{ color: 'var(--color-primary-navy)', borderColor: 'var(--color-primary-navy)' }}>Reach On-Time</div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ fontWeight: '900', fontSize: '15px', textTransform: 'uppercase', color: 'var(--theme-text)', letterSpacing: '0.5px' }}>🏫 RIT Campus</div>
+                                            <div style={{ fontWeight: '700', color: 'var(--color-primary-navy)', borderBottom: '2px solid var(--color-primary-navy)', fontSize: '13px' }}>Reach On-Time</div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <h3 className="section-header !text-[16px] mb-4 flex items-center gap-2 mt-8" style={{ color: 'var(--theme-text)' }}>
-                                    <FaMapMarkerAlt style={{ color: 'var(--color-primary-navy)' }} /> Interactive Route Map
-                                </h3>
-                                <div className="rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-navy-700 h-[300px] w-full">
-                                    <iframe
-                                        width="100%"
-                                        height="100%"
-                                        frameBorder="0"
-                                        style={{ border: 0, filter: 'contrast(1.1) saturate(1.1)' }}
-                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedRoute.startPoint + ' to Rajalakshmi Institute of Technology, Chennai')}&t=&z=11&ie=UTF8&iwloc=&output=embed`}
-                                        allowFullScreen
-                                        title={`${selectedRoute.routeName} Map`}
-                                        className="dark:invert dark:hue-rotate-180" // simple trick for dark mode google maps
-                                    ></iframe>
+                            {/* Map */}
+                            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden' }}>
+                                <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <LuNavigation color="var(--color-primary-navy)" />
+                                    <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>Route Map</span>
                                 </div>
+                                <iframe
+                                    width="100%" height="280" frameBorder="0" style={{ border: 0, display: 'block' }}
+                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedRoute.startPoint + ' to Rajalakshmi Institute of Technology, Chennai')}&t=&z=11&ie=UTF8&iwloc=&output=embed`}
+                                    allowFullScreen title={`${selectedRoute.routeName} Map`}
+                                />
                             </div>
-                        </div>
+                        </motion.div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center card border-dashed border-2 opacity-60" style={{ borderColor: 'var(--theme-border)' }}>
-                            <div className="p-6 rounded-full mb-4 text-4xl" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text-muted)' }}>
-                                <FaRoute />
-                            </div>
-                            <h3 className="font-bold text-lg" style={{ color: 'var(--theme-text)' }}>Select a route to view its timetable</h3>
-                            <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Click any route from the left panel to see its boarding points.</p>
-                        </div>
+                        <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', background: 'var(--card-bg)', border: '1.5px dashed var(--theme-border)', borderRadius: '14px', gap: '12px', color: 'var(--theme-text-muted)' }}>
+                            <LuRoute style={{ fontSize: '48px', opacity: 0.3 }} />
+                            <div style={{ fontWeight: '700', fontSize: '16px', color: 'var(--theme-text)' }}>Select a Route</div>
+                            <div style={{ fontSize: '13px' }}>Click any route from the left panel to view its timetable and boarding points.</div>
+                        </motion.div>
                     )}
-                </div>
+                </AnimatePresence>
             </div>
         </div>
     );
