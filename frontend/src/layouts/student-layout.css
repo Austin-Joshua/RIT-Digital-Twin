@@ -314,6 +314,40 @@
     text-align: center;
 }
 
+/* ── Desktop Sidebar Collapse Button ── */
+.stu-sidebar-collapse-btn {
+    display: none;
+    margin-top: auto;
+    width: 100%;
+    padding: 14px 0;
+    background: rgba(255, 255, 255, 0.07);
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a1a1aa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.stu-sidebar-collapse-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+@media (min-width: 1025px) {
+    .stu-sidebar-collapse-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 1024px) {
+    .stu-sidebar-collapse-btn {
+        display: none !important;
+    }
+}
+
 .stu-topbar {
     background-color: var(--ims-topbar-bg);
     height: 50px;
