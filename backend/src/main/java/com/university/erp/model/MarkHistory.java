@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "mark_history")
+@Entity(name="ModelMarkHistory")
+@Table(name = "model_mark_history")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

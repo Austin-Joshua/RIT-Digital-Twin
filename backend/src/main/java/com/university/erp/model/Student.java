@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "students", indexes = {
+@Entity(name="ModelStudent")
+@Table(name = "model_students", indexes = {
         @Index(name = "idx_student_id_num", columnList = "student_id_number"),
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_dept_id", columnList = "dept_id")
