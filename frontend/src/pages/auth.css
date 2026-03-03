@@ -470,6 +470,44 @@
     }
 }
 
+/* ── Dark Mode Overrides ── */
+.dark .auth-heading h2 {
+    color: var(--color-accent-gold);
+}
+
+.dark .auth-heading p {
+    color: var(--theme-text-muted);
+}
+
+.dark .form-group label {
+    color: #F8FAFC;
+    opacity: 0.9;
+}
+
+.dark .input-wrapper input {
+    background: #0F172A;
+    border-color: #334155;
+    color: #FFFFFF;
+}
+
+.dark .input-wrapper input::placeholder {
+    color: #64748B;
+}
+
+.dark .remember-me,
+.dark .auth-switch {
+    color: var(--theme-text-muted);
+}
+
+.dark .forgot-link,
+.dark .auth-switch a {
+    color: var(--color-accent-gold);
+}
+
+.dark .auth-footer {
+    border-top-color: #334155;
+}
+
 @media (max-width: 480px) {
     .auth-form-panel {
         padding: 1rem;
