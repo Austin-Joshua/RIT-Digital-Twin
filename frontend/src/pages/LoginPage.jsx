@@ -80,7 +80,7 @@ const LoginPage = () => {
                         background: 'var(--glass-bg)',
                         backdropFilter: 'blur(12px)',
                         border: '1px solid var(--glass-border)',
-                        padding: '24px 32px',
+                        padding: '36px 40px',
                         borderRadius: '20px',
                         boxShadow: 'var(--shadow-soft)',
                         width: '100%',
@@ -88,9 +88,9 @@ const LoginPage = () => {
                         zIndex: 2
                     }}
                 >
-                    <div style={{ marginBottom: '20px' }}>
-                        <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '8px' }}>Institutional Access</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem' }}>Authenticate to access the Smart Campus Intelligence Platform</p>
+                    <div style={{ marginBottom: '28px' }}>
+                        <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--color-accent-gold)', marginBottom: '10px' }}>Institutional Access</h2>
+                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>Authenticate to access the Smart Campus Intelligence Platform</p>
                     </div>
 
                     {error && (
@@ -111,7 +111,7 @@ const LoginPage = () => {
                         </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                         <Input
                             label="Username"
                             type="text"

@@ -14,6 +14,7 @@ import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 import Card from '../../components/common/Card';
+import MiniCalendar from '../../components/common/MiniCalendar';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -231,50 +232,8 @@ const StudentDashboard = () => {
                 </div>
             </div>
 
-            {/* Calendar — EXACT IMS MIRROR */}
-            <div className="stu-calendar-card" style={{ background: 'var(--card-bg)', borderTop: '3px solid var(--ims-teal)', borderColor: 'var(--theme-border)' }}>
-                <div className="stu-calendar-header">
-                    <span className="cal-title" style={{ color: 'var(--theme-text)' }}>February &nbsp; 2026</span>
-                    <div className="stu-calendar-legend">
-                        <span className="legend-item" style={{ color: 'var(--theme-text-muted)' }}><span className="legend-dot holiday"></span> Holiday</span>
-                        <span className="legend-item" style={{ color: 'var(--theme-text-muted)' }}><span className="legend-dot no-order"></span> No Order Day</span>
-                        <span className="legend-item" style={{ color: 'var(--theme-text-muted)' }}><span className="legend-dot today"></span> Today</span>
-                    </div>
-                </div>
-                <div className="stu-calendar-grid">
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr>
-                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-                                    <th key={d} style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-navy)', padding: '10px' }}>{d}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {feb2026.map((week, wi) => (
-                                <tr key={wi}>
-                                    {week.map((day, di) => {
-                                        let cls = '';
-                                        if (day === 0) cls = 'empty';
-                                        else if (isCurrentMonth && day === todayDate) cls = 'today';
-                                        else if (holidays.includes(day)) cls = 'holiday';
-                                        else if (noOrderDays.includes(day)) cls = 'no-order';
-                                        return <td key={di} className={cls} style={{
-                                            border: '1px solid var(--theme-border)',
-                                            background: cls === 'today' ? 'var(--color-primary-50)' : cls === 'holiday' ? 'var(--color-error-rgba, rgba(239, 68, 68, 0.05))' : 'var(--card-bg)',
-                                            color: 'var(--theme-text)',
-                                            height: '70px',
-                                            padding: '10px',
-                                            textAlign: 'center',
-                                            verticalAlign: 'top'
-                                        }}>{day > 0 ? day : ''}</td>;
-                                    })}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {/* Calendar — Dynamic MiniCalendar */}
+            <MiniCalendar />
 
             {/* AI Academic Chatbot */}
             <ChatbotWidget studentId={user?.studentId || 1} />
