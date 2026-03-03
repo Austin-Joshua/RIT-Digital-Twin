@@ -62,18 +62,18 @@ function TransportPage() {
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-white font-black italic tracking-tighter">Transport Route Optimization</h1>
-                        <p className="text-white/80 font-medium">Simulate fleet efficiency, fuel savings, and student cluster mapping</p>
+                        <h1 style={{ color: '#fff', margin: 0, fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.5px' }}>Transport Route Optimization</h1>
+                        <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0', fontWeight: '500' }}>Simulate fleet efficiency, fuel savings, and student cluster mapping</p>
                     </div>
                 </div>
                 <div className="module-stats">
-                    <div className="stat-chip bg-white/10 border border-white/20 backdrop-blur-md">
+                    <div className="stat-chip" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
                         <span className="stat-icon">🚌</span>
-                        <span className="text-white font-bold">12 Active Routes</span>
+                        <span style={{ color: '#fff', fontWeight: '700' }}>12 Active Routes</span>
                     </div>
-                    <div className="stat-chip bg-white/10 border border-white/20 backdrop-blur-md">
+                    <div className="stat-chip" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
                         <span className="stat-icon">👥</span>
-                        <span className="text-white font-bold">2,800 Students</span>
+                        <span style={{ color: '#fff', fontWeight: '700' }}>2,800 Students</span>
                     </div>
                     <div className="stat-chip" style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}>
                         <span className="stat-icon">⛽</span>
@@ -291,7 +291,7 @@ function TransportPage() {
                                                     <span className="building-name">{c.zoneName}</span>
                                                     <span className="building-kwh">{c.area} • {c.distanceFromCampusKm} km • Route {c.assignedRoute}</span>
                                                 </div>
-                                                <strong style={{ color: '#003366', fontSize: '0.85rem' }}>{c.studentCount}</strong>
+                                                <strong style={{ color: 'var(--theme-text)', fontSize: '0.85rem' }}>{c.studentCount}</strong>
                                             </div>
                                         ))}
                                     </div>

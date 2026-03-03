@@ -82,9 +82,9 @@ const EnergyPage = () => {
                 <div className="card bg-navy-900 text-white p-4">
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold flex items-center gap-2">
+                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 Real-Time Campus Load
-                                {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                                {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
                             </p>
                             <h3 className="text-2xl font-bold">{liveMetrics.currentLoad} kW</h3>
                         </div>
@@ -92,20 +92,20 @@ const EnergyPage = () => {
                     </div>
                 </div>
                 <div className="card p-4">
-                    <p className="text-gray-500 text-xs uppercase font-bold">Peak Daily Consumption</p>
+                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Peak Daily Consumption</p>
                     <h3 className="text-2xl font-bold">800 kW</h3>
                 </div>
                 <div className="card p-4">
-                    <p className="text-gray-500 text-xs uppercase font-bold flex items-center gap-2">
+                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         Solar Panel Output
-                        {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                        {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
                     </p>
                     <h3 className="text-2xl font-bold text-green-600">{liveMetrics.solarYield} kW</h3>
                 </div>
                 <div className="card p-4">
-                    <p className="text-gray-500 text-xs uppercase font-bold flex items-center gap-2">
+                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         External Grid Import
-                        {connected && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                        {connected && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></span>}
                     </p>
                     <h3 className="text-2xl font-bold text-red-600">{liveMetrics.gridImport} kW</h3>
                 </div>
@@ -135,7 +135,7 @@ const EnergyPage = () => {
                 <div className="card flex flex-col">
                     <h3 className="section-header !text-[18px]">Energy Optimization Simulation</h3>
                     <div className="flex-1 space-y-4">
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p style={{ fontSize: '14px', color: 'var(--theme-text-muted)', lineHeight: '1.6' }}>
                             Analyse building-specific sensor data to optimise load distribution and maximise the integration of renewable energy sources.
                         </p>
                         <button
