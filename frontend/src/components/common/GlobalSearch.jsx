@@ -137,8 +137,12 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search functionalities..."
             </AnimatePresence>
             <style>{`
                 .global-search-container input::placeholder {
-                    color: var(--ims-icon-color);
-                    opacity: 0.5;
+                    color: var(--theme-text-muted);
+                    opacity: 0.8;
+                }
+                .global-search-container input:focus {
+                    border-color: var(--color-accent-gold) !important;
+                    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
                 }
                 @media (max-width: 768px) {
                     .global-search-container input {

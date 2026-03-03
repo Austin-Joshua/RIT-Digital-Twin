@@ -61,10 +61,14 @@
     --theme-bg: var(--color-bg-dark);
     --theme-text: #F8FAFC;
     /* Light slate 50 for high contrast */
-    --theme-text-muted: #94A3B8;
+    --theme-text-muted: #CBD5E1;
+    /* Optimized for AAA contrast against dark bg */
     --color-accent-gold: #FFD700;
     /* Brighter gold for better visibility on dark */
-    --theme-border: #1E293B;
+    --color-text-secondary: #94A3B8;
+    /* Slate 400 for secondary text in dark mode */
+    --theme-border: #334155;
+    /* More visible against deep navy */
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
     --card-bg: #1E293B;
