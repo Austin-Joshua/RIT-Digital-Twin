@@ -11,7 +11,7 @@ A full-stack institutional web application for managing smart campus operations:
 | Frontend | React 19 (Vite 7), Tailwind CSS 4, Recharts, Framer Motion |
 | Backend | Spring Boot 3.2 (Java 25), Spring Security (JWT) |
 | Database | MySQL 8.0 |
-| Infrastructure | Docker, Docker Compose, Vercel (frontend), Render (backend) |
+| Infrastructure | Docker, Docker Compose |
 
 ---
 
@@ -74,17 +74,7 @@ docker-compose down -v && docker-compose up --build -d
 
 ---
 
-## 🌐 Deployment
-
-| Component | Platform | URL |
-|---|---|---|
-| Frontend | Vercel | https://digital-twin-lemon.vercel.app |
-| Backend | Render | https://rit-digital-twin-backend.onrender.com |
-
-### 📖 Deployment Guides
-
-- **[Vercel Frontend to Backend Setup](./FRONTEND_BACKEND_SETUP.md)** - Quick start guide for connecting Vercel frontend to backend
-- **[Detailed Vercel Deployment Guide](./VERCEL_DEPLOYMENT.md)** - Comprehensive architecture and troubleshooting guide
+---
 
 ---
 

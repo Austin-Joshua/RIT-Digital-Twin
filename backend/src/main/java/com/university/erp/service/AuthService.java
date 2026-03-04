@@ -51,6 +51,7 @@ public class AuthService {
         this.bruteForceProtectionService = bruteForceProtectionService;
     }
 
+    @Transactional
     public AuthResponse login(AuthRequest request) {
         log.info("Attempting login for user: {}", request.getUsername());
         if (bruteForceProtectionService.isBlocked(request.getUsername())) {
