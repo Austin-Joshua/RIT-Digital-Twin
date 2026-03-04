@@ -29,6 +29,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    @Transactional
     public RefreshToken createRefreshToken(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -36,6 +37,7 @@ public class RefreshTokenService {
         // Delete existing token if any for this user (one session per user for now,
         // simple)
         refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.flush();
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
