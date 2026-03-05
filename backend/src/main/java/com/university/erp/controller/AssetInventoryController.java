@@ -9,18 +9,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/assets")
-@CrossOrigin(origins = "*")
 public class AssetInventoryController {
 
     @Autowired
     private AssetInventoryRepository repository;
 
     @GetMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','MANAGEMENT')")
     public List<AssetInventory> getAllAssets() {
         return repository.findAll();
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','MANAGEMENT')")
     public AssetInventory createAsset(@org.springframework.lang.NonNull @RequestBody AssetInventory asset) {
         java.util.Objects.requireNonNull(asset, "asset must not be null");
         return repository.save(asset);

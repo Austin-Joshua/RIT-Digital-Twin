@@ -41,13 +41,28 @@ public class RevaluationService {
     }
 
     @Transactional
+    public void approveByHod(Long requestId, String remarks) {
+        RevaluationRequest request = revaluationRepository.findById(requestId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
+
+        if (request.getStatus() != RevaluationRequest.RequestStatus.ADMIN_APPROVED) {
+            throw new ErpException.InvalidOperationException("Request must be admin-approved before HOD review.");
+        }
+
+        request.setStatus(RevaluationRequest.RequestStatus.HOD_APPROVED);
+        request.setHodRemarks(remarks);
+        revaluationRepository.save(request);
+        auditService.log("REVALUATION_HOD_APPROVED", "HOD approved revaluation ID: " + requestId);
+    }
+
+    @Transactional
     public void updateMarksByFaculty(Long requestId, java.math.BigDecimal newInternal,
             java.math.BigDecimal newExternal) {
         RevaluationRequest request = revaluationRepository.findById(requestId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
-        if (request.getStatus() != RevaluationRequest.RequestStatus.ADMIN_APPROVED) {
-            throw new ErpException.InvalidOperationException("Request not yet approved by Admin/HOD");
+        if (request.getStatus() != RevaluationRequest.RequestStatus.HOD_APPROVED) {
+            throw new ErpException.InvalidOperationException("Request not yet approved by Admin and HOD");
         }
 
         Marks marks = request.getOriginalMarks();
@@ -63,5 +78,36 @@ public class RevaluationService {
 
         academicService.recalculateCgpa(request.getStudent().getId());
         auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + requestId);
+    }
+
+    @Transactional
+    public void finalizeByHod(Long requestId, String remarks) {
+        RevaluationRequest request = revaluationRepository.findById(requestId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
+
+        if (request.getStatus() != RevaluationRequest.RequestStatus.FACULTY_UPDATED) {
+            throw new ErpException.InvalidOperationException("Faculty must update marks before HOD finalization.");
+        }
+
+        request.setHodRemarks(remarks);
+        revaluationRepository.save(request);
+        auditService.log("REVALUATION_HOD_FINALIZED", "HOD finalized revaluation ID: " + requestId);
+    }
+
+    @Transactional
+    public void finalizeByAdmin(Long requestId, String remarks) {
+        RevaluationRequest request = revaluationRepository.findById(requestId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
+
+        if (request.getStatus() != RevaluationRequest.RequestStatus.FACULTY_UPDATED
+                && request.getStatus() != RevaluationRequest.RequestStatus.HOD_APPROVED) {
+            throw new ErpException.InvalidOperationException("Request must be updated by faculty before admin closure.");
+        }
+
+        request.setAdminRemarks(remarks);
+        request.setStatus(RevaluationRequest.RequestStatus.COMPLETED);
+        revaluationRepository.save(request);
+        academicService.recalculateCgpa(request.getStudent().getId());
+        auditService.log("REVALUATION_ADMIN_CLOSED", "Admin closed revaluation ID: " + requestId);
     }
 }

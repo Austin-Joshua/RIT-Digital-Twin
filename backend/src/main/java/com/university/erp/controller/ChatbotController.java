@@ -7,10 +7,10 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/ai/chatbot")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class ChatbotController {
 
     @PostMapping("/query")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','HOD','FACULTY','STUDENT','PARENT')")
     public ResponseEntity<Map<String, String>> chatQuery(
             @RequestParam(required = false, defaultValue = "1") Long studentId,
             @RequestBody Map<String, String> request) {

@@ -9,10 +9,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL:10}
-      minimum-idle: 5
+      minimum-idle: 3
       idle-timeout: 30000
       max-lifetime: 600000
-      connection-timeout: 10000
+      connection-timeout: 30000
       pool-name: RITHikariPool
 
   jpa:

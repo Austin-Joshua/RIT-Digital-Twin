@@ -7,7 +7,9 @@ import lombok.*;
 @Entity
 @Table(name = "marks", indexes = {
         @Index(name = "idx_student_subject", columnList = "student_id, subject_id"),
-        @Index(name = "idx_semester", columnList = "semester")
+        @Index(name = "idx_semester", columnList = "semester"),
+        @Index(name = "idx_student_id", columnList = "student_id"),
+        @Index(name = "idx_subject_id", columnList = "subject_id")
 })
 @Data
 @NoArgsConstructor

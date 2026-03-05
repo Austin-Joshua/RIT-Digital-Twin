@@ -20,6 +20,6 @@ public class Role {
     private UserRole roleName;
 
     public enum UserRole {
-        SUPER_ADMIN, ADMIN, MANAGEMENT, HOD, FACULTY, STUDENT
+        SUPER_ADMIN, ADMIN, MANAGEMENT, HOD, FACULTY, STUDENT, PARENT
     }
 }
