@@ -1,14 +1,56 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+/**
+ * API Service Configuration
+ * Handles both local development and Vercel production environments
+ * 
+ * Priority:
+ * 1. VITE_API_BASE_URL environment variable (set in .env.local or .env.production)
+ * 2. Window location detection for Vercel (*.vercel.app)
+ * 3. Default localhost for development
+ */
+const getAPIBaseURL = () => {
+  // Check environment variable first (most reliable)
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // Detect if running on Vercel or localhost
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    
+    // Development: use localhost
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return 'http://localhost:8080/api';
+    }
+    
+    // Production on Vercel: use /api prefix (will be proxied or use absolute URL)
+    if (host.includes('vercel.app')) {
+      // This will be resolved by Vercel's rewrite rules or backend CORS
+      // Backend should be configured with Vercel domain in CORS origins
+      return 'http://localhost:8080/api'; // Fallback - update when backend deployed
+    }
+  }
+
+  // Default fallback
+  return 'http://localhost:8080/api';
+};
+
+const API_URL = getAPIBaseURL();
+
+console.log(`[API Service] Using API endpoint: ${API_URL}`); // Debug logging
 
 const api = axios.create({
-  baseURL: API_URL
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
+// Request interceptor: Add JWT token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || localStorage.getItem('rit_dt_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -19,6 +61,7 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor: Handle authentication errors
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -27,14 +70,20 @@ api.interceptors.response.use(
     // Don't intercept 401 on the login endpoint — let AuthContext handle it
     const isLoginRequest = error.config && error.config.url && error.config.url.includes('/auth/login');
     if (error.response && error.response.status === 401 && !isLoginRequest) {
+      // Clear tokens and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      localStorage.removeItem('rit_dt_token');
+      localStorage.removeItem('rit_dt_user');
+      
+      // Only redirect if we're in a browser environment
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
 );
 
 export default api;
-
-// Trigger Vercel redeploy to pick up new env variable
+export { getAPIBaseURL };
