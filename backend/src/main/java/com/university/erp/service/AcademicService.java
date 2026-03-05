@@ -154,6 +154,11 @@ public class AcademicService {
         return marksRepository.findByStudentId(studentId);
     }
 
+    public java.util.List<Marks> getStudentMarksPaged(Long studentId, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return marksRepository.findByStudentId(studentId, pageable).getContent();
+    }
+
     @Transactional
     public void recalculateCgpa(Long studentId) {
         List<Marks> allMarks = marksRepository.findByStudentId(studentId);

@@ -4,6 +4,7 @@ import com.university.erp.entity.TransportRoute;
 import com.university.erp.entity.BusStop;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class TransportService {
         this.stopRepository = stopRepository;
     }
 
+    @Cacheable("transportRoutes")
     public List<TransportRoute> getAllRoutes() {
         return routeRepository.findAll();
     }
@@ -37,6 +39,7 @@ public class TransportService {
         routeRepository.save(existing);
     }
 
+    @Cacheable(cacheNames = "routeStops", key = "#routeId")
     public List<BusStop> getStopsByRoute(@org.springframework.lang.NonNull Long routeId) {
         java.util.Objects.requireNonNull(routeId, "routeId must not be null");
         return stopRepository.findByRouteIdOrderByStopOrderAsc(routeId);
@@ -44,16 +47,18 @@ public class TransportService {
 
     public List<TransportRoute> searchRoutes(@org.springframework.lang.NonNull String query) {
         java.util.Objects.requireNonNull(query, "query must not be null");
-        // Search by route number or by stop name
-        List<TransportRoute> routesByNumber = routeRepository.findAll().stream()
-                .filter(r -> r.getRouteNumber().toLowerCase().contains(query.toLowerCase()) ||
-                        r.getRouteName().toLowerCase().contains(query.toLowerCase()))
-                .toList();
+        String normalized = query.trim().toLowerCase();
 
-        if (!routesByNumber.isEmpty())
-            return routesByNumber;
+        // First try optimized indexed lookup by route number / name
+        List<TransportRoute> routesByNumberOrName =
+                routeRepository.findByRouteNumberContainingIgnoreCaseOrRouteNameContainingIgnoreCase(normalized, normalized);
 
-        return stopRepository.findByStopNameContainingIgnoreCase(query).stream()
+        if (!routesByNumberOrName.isEmpty()) {
+            return routesByNumberOrName;
+        }
+
+        // Fallback to stop-name based resolution
+        return stopRepository.findByStopNameContainingIgnoreCase(normalized).stream()
                 .map(BusStop::getRoute)
                 .distinct()
                 .toList();

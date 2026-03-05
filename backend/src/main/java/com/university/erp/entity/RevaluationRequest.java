@@ -36,6 +36,11 @@ public class RevaluationRequest extends BaseEntity {
     private String hodRemarks;
 
     public enum RequestStatus {
-        PENDING, ADMIN_APPROVED, HOD_APPROVED, FACULTY_UPDATED, REJECTED
+        PENDING,
+        ADMIN_APPROVED,
+        HOD_APPROVED,
+        FACULTY_UPDATED,
+        COMPLETED,
+        REJECTED
     }
 }

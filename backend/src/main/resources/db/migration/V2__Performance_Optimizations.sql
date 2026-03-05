@@ -2,12 +2,11 @@
 
 -- Indexing for rapid authentication and user lookups
 CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_role_id ON users(role_id);
 
 -- Indexing for Simulation data (Audit & Filtering)
-CREATE INDEX idx_simulation_building ON simulation_results(building_id);
-CREATE INDEX idx_simulation_timestamp ON simulation_results(timestamp);
-CREATE INDEX idx_simulation_type ON simulation_results(simulation_type);
+CREATE INDEX idx_simulation_type ON simulation_results(sim_type);
+CREATE INDEX idx_simulation_started_at ON simulation_results(started_at);
 
 -- Indexing for Energy monitoring
 CREATE INDEX idx_energy_building_time ON energy_logs(building_id, timestamp);
