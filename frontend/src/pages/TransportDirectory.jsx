@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
-import { LuBus, LuSearch, LuPhone, LuMapPin, LuClock, LuNavigation, LuRoute, LuCheckCircle } from 'react-icons/lu';
+import { transportRoutes } from '../data/transportRoutes';
+import { LuBus, LuSearch, LuPhone, LuMapPin, LuClock, LuNavigation, LuRoute, LuCircleCheckBig } from 'react-icons/lu';
 
 const TransportPage = () => {
     const [routes, setRoutes] = useState([]);
@@ -24,8 +25,12 @@ const TransportPage = () => {
         setLoading(true);
         try {
             const res = await api.get('/transport/routes');
-            setRoutes(res.data);
-        } catch { setRoutes([]); }
+            if (res.data && res.data.length > 0) {
+                setRoutes(res.data);
+            } else {
+                setRoutes(transportRoutes);
+            }
+        } catch { setRoutes(transportRoutes); }
         finally { setLoading(false); }
     };
 
@@ -35,8 +40,16 @@ const TransportPage = () => {
         setSearching(true);
         try {
             const res = await api.get(`/transport/search?query=${searchQuery}`);
-            setRoutes(res.data);
-        } catch { }
+            if (res.data && res.data.length > 0) {
+                setRoutes(res.data);
+            } else {
+                const q = searchQuery.toLowerCase();
+                setRoutes(transportRoutes.filter(r => r.routeNumber.toLowerCase().includes(q) || r.routeName.toLowerCase().includes(q) || r.startPoint.toLowerCase().includes(q)));
+            }
+        } catch {
+            const q = searchQuery.toLowerCase();
+            setRoutes(transportRoutes.filter(r => r.routeNumber.toLowerCase().includes(q) || r.routeName.toLowerCase().includes(q) || r.startPoint.toLowerCase().includes(q)));
+        }
         finally { setSearching(false); }
     };
 
@@ -44,8 +57,12 @@ const TransportPage = () => {
         setSelectedRoute(route);
         try {
             const res = await api.get(`/transport/routes/${route.id}/stops`);
-            setStops(res.data);
-        } catch { setStops([]); }
+            if (res.data && res.data.length > 0) {
+                setStops(res.data);
+            } else {
+                setStops(route.stops || []);
+            }
+        } catch { setStops(route.stops || []); }
     };
 
     return (
@@ -225,7 +242,7 @@ const TransportPage = () => {
                                     {/* Destination */}
                                     <div style={{ position: 'relative', paddingTop: '8px', borderTop: '1px dashed var(--theme-border)' }}>
                                         <div style={{ position: 'absolute', left: '-42px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--color-primary-navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px' }}>
-                                            <LuCheckCircle />
+                                            <LuCircleCheckBig />
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ fontWeight: '900', fontSize: '15px', textTransform: 'uppercase', color: 'var(--theme-text)', letterSpacing: '0.5px' }}>🏫 RIT Campus</div>
