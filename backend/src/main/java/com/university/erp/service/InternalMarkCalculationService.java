@@ -8,12 +8,13 @@ import java.math.RoundingMode;
 @Service
 public class InternalMarkCalculationService {
 
+    private static final BigDecimal CAT_MAX_50 = new BigDecimal("50.0");
+    private static final BigDecimal CAT_MAX_25 = new BigDecimal("25.0");
+    private static final BigDecimal WEIGHT_8 = new BigDecimal("8.0");
     private static final BigDecimal HUNDRED = new BigDecimal("100.0");
     private static final BigDecimal SIXTY = new BigDecimal("60.0");
     private static final BigDecimal FORTY = new BigDecimal("40.0");
     private static final BigDecimal EIGHT = new BigDecimal("8.0");
-    private static final BigDecimal FIFTY = new BigDecimal("50.0");
-    private static final BigDecimal TWENTY_FIVE = new BigDecimal("25.0");
 
     public void calculateAll(Marks marks) {
         calculateInternal(marks);
@@ -30,19 +31,18 @@ public class InternalMarkCalculationService {
         BigDecimal attendance = (marks.getAttendancePercentage() != null) ? marks.getAttendancePercentage()
                 : BigDecimal.ZERO;
 
-        // Step 1-3: CAT Exams
-        BigDecimal cat1Weight = cat1.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
-        BigDecimal cat2Weight = cat2.divide(TWENTY_FIVE, 4, RoundingMode.HALF_UP).multiply(EIGHT);
-        BigDecimal cat3Weight = cat3.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
+        // Formula: (Score / Max) * Weight
+        // Refactored to (Score * Weight) / Max for better precision
+        BigDecimal cat1Weight = cat1.multiply(WEIGHT_8).divide(CAT_MAX_50, 4, RoundingMode.HALF_UP);
+        BigDecimal cat2Weight = cat2.multiply(WEIGHT_8).divide(CAT_MAX_25, 4, RoundingMode.HALF_UP);
+        BigDecimal cat3Weight = cat3.multiply(WEIGHT_8).divide(CAT_MAX_50, 4, RoundingMode.HALF_UP);
+        BigDecimal assignmentWeight = assignment.multiply(WEIGHT_8).divide(CAT_MAX_50, 4, RoundingMode.HALF_UP);
 
-        // Step 4: Assignment
-        BigDecimal assignmentWeight = assignment.divide(FIFTY, 4, RoundingMode.HALF_UP).multiply(EIGHT);
-
-        // Step 5: Attendance
         BigDecimal attendanceWeight = calculateAttendanceWeight(attendance);
 
-        BigDecimal totalInternal = cat1Weight.add(cat2Weight).add(cat3Weight).add(assignmentWeight)
-                .add(attendanceWeight);
+        BigDecimal totalInternal = cat1Weight.add(cat2Weight).add(cat3Weight)
+                .add(assignmentWeight).add(attendanceWeight);
+
         marks.setCalculatedInternal(totalInternal.min(FORTY).setScale(2, RoundingMode.HALF_UP));
     }
 
@@ -58,7 +58,8 @@ public class InternalMarkCalculationService {
 
     public void calculateFinalConverted(Marks marks) {
         BigDecimal examScore = (marks.getFinalExamScore() != null) ? marks.getFinalExamScore() : BigDecimal.ZERO;
-        BigDecimal converted = examScore.divide(HUNDRED, 4, RoundingMode.HALF_UP).multiply(SIXTY);
+        // (Exam Score / 100) * 60 -> (Exam Score * 60) / 100
+        BigDecimal converted = examScore.multiply(SIXTY).divide(HUNDRED, 4, RoundingMode.HALF_UP);
         marks.setFinalConvertedScore(converted.min(SIXTY).setScale(2, RoundingMode.HALF_UP));
     }
 
