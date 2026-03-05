@@ -1681,27 +1681,6 @@ html.dark .stu-calendar-grid th {
     }
 }
 
-    /* Report header: stack year/semester */
-    .stu-report-header div {
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    /* Certificate & form controls: stack on mobile */
-    .cert-apply-row {
-        flex-direction: column !important;
-    }
-
-    .cert-apply-row>div {
-        width: 100% !important;
-    }
-
-    .cert-apply-row button {
-        width: 100% !important;
-        align-self: stretch !important;
-    }
-}
-
 /* === Admin & Enterprise Pages Mobile === */
 @media (max-width: 768px) {
     .admin-main-grid {
