@@ -12,7 +12,7 @@ import lombok.*;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
+    @Column(name = "id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -20,6 +20,6 @@ public class Role {
     private UserRole roleName;
 
     public enum UserRole {
-        SUPER_ADMIN, ADMIN, HOD, FACULTY, STUDENT, PARENT
+        SUPER_ADMIN, ADMIN, MANAGEMENT, HOD, FACULTY, STUDENT
     }
 }
