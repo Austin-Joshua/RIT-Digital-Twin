@@ -43,10 +43,10 @@ public class AcademicService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
 
-        Marks existingMarks = marksRepository.findById(newMarks.getId() != null ? newMarks.getId() : -1L)
+        Marks existingMarks = marksRepository.findById(newMarks.getMarkId() != null ? newMarks.getMarkId() : -1L)
                 .orElse(new Marks());
 
-        if (existingMarks.getId() != null) {
+        if (existingMarks.getMarkId() != null) {
             logHistory(existingMarks, newMarks);
         }
 
@@ -57,7 +57,7 @@ public class AcademicService {
         recalculateCgpa(studentId);
 
         auditService.log("MARKS_ENTRY", "Updated marks for student: " + student.getStudentIdNumber() +
-                " in subject ID: " + newMarks.getSubject().getId());
+                " in subject ID: " + newMarks.getSubject().getSubjectId());
     }
 
     @Transactional
@@ -89,8 +89,8 @@ public class AcademicService {
             }
 
             // Find existing marks or create new
-            Marks mark = marksRepository.findByStudentId(student.getId()).stream()
-                    .filter(m -> m.getSubject().getId().equals(subject.getId()))
+            Marks mark = marksRepository.findByStudentId(student.getStudentId()).stream()
+                    .filter(m -> m.getSubject().getSubjectId().equals(subject.getSubjectId()))
                     .findFirst()
                     .orElse(new Marks());
 
@@ -115,7 +115,7 @@ public class AcademicService {
             marksRepository.save(mark);
 
             // Re-calc CGPA for the student
-            recalculateCgpa(student.getId());
+            recalculateCgpa(student.getStudentId());
             count++;
         }
 

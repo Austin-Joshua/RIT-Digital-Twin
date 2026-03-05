@@ -17,12 +17,12 @@ const DashboardHome = () => {
     const navigate = useNavigate();
 
     const stats = [
-        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', variant: 'primary', icon: <FiGrid />, link: '/simulations/classroom' },
-        { label: 'Energy Conserved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', variant: 'success', icon: <FiZap />, link: '/simulations/energy' },
-        { label: 'Active Transport Routes', value: '12', trend: 'Live', trendDir: 'up', variant: 'info', icon: <FiTruck />, link: '/transport' },
-        { label: 'Current Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', variant: 'accent', icon: <FiUsers />, link: '/simulations/crowd' },
-        { label: 'Sustainability Rating', value: 'A+', trend: 'Excellent', trendDir: 'up', variant: 'success', icon: <FiBarChart2 />, link: '/simulations/sustainability' },
-        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', variant: 'warning', icon: <FiActivity />, link: '/predictions' },
+        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', color: '#3B82F6', icon: <FiGrid />, link: '/simulations/classroom' }, // Blue
+        { label: 'Energy Conserved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', color: '#10B981', icon: <FiZap />, link: '/simulations/energy' }, // Green
+        { label: 'Active Transport Routes', value: '12', trend: 'Live', trendDir: 'up', color: '#8B5CF6', icon: <FiTruck />, link: '/transport' }, // Purple
+        { label: 'Current Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', color: '#F59E0B', icon: <FiUsers />, link: '/simulations/crowd' }, // Orange
+        { label: 'Sustainability Rating', value: 'A+', trend: 'Excellent', trendDir: 'up', color: '#14B8A6', icon: <FiBarChart2 />, link: '/simulations/sustainability' }, // Teal
+        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', color: '#6366F1', icon: <FiActivity />, link: '/predictions' }, // Indigo
     ];
 
     const modules = [
@@ -73,20 +73,26 @@ const DashboardHome = () => {
     return (
         <div className="dashboard-home">
 
-            <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+            <div className="stats-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 mb-8">
                 {stats.map((stat, i) => (
                     <Card
                         key={i}
                         onClick={() => navigate(stat.link)}
                         hoverEffect={true}
-                        style={{ padding: '24px', borderLeft: '4px solid var(--color-primary-navy)' }}
+                        style={{
+                            padding: '20px',
+                            borderLeft: `4px solid ${stat.color}`,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            textAlign: 'center'
+                        }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                            <div style={{ fontSize: '1.5rem', color: 'var(--color-primary-navy)' }}>{stat.icon}</div>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#10B981' }}>{stat.trend}</span>
-                        </div>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '4px' }}>{stat.value}</div>
-                        <div style={{ fontSize: '0.9rem', color: 'var(--theme-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{stat.label}</div>
+                        <div style={{ fontSize: '1.5rem', color: stat.color, marginBottom: '10px' }}>{stat.icon}</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2px' }}>{stat.value}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--theme-text-muted)', textTransform: 'uppercase', fontWeight: '600' }}>{stat.label}</div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#10B981', marginTop: '8px' }}>{stat.trend}</div>
                     </Card>
                 ))}
             </div>

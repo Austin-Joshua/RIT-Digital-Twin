@@ -76,7 +76,7 @@ public class RevaluationService {
         request.setStatus(RevaluationRequest.RequestStatus.FACULTY_UPDATED);
         revaluationRepository.save(request);
 
-        academicService.recalculateCgpa(request.getStudent().getId());
+        academicService.recalculateCgpa(request.getStudent().getStudentId());
         auditService.log("REVALUATION_COMPLETED", "Marks updated for request ID: " + requestId);
     }
 
@@ -101,13 +101,14 @@ public class RevaluationService {
 
         if (request.getStatus() != RevaluationRequest.RequestStatus.FACULTY_UPDATED
                 && request.getStatus() != RevaluationRequest.RequestStatus.HOD_APPROVED) {
-            throw new ErpException.InvalidOperationException("Request must be updated by faculty before admin closure.");
+            throw new ErpException.InvalidOperationException(
+                    "Request must be updated by faculty before admin closure.");
         }
 
         request.setAdminRemarks(remarks);
         request.setStatus(RevaluationRequest.RequestStatus.COMPLETED);
         revaluationRepository.save(request);
-        academicService.recalculateCgpa(request.getStudent().getId());
+        academicService.recalculateCgpa(request.getStudent().getStudentId());
         auditService.log("REVALUATION_ADMIN_CLOSED", "Admin closed revaluation ID: " + requestId);
     }
 }

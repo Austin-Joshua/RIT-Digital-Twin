@@ -175,13 +175,13 @@ const InstitutionalLayout = () => {
                 {/* Top Bar — exact IMS mirror */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
-                        <button className="stu-sidebar-toggle-desktop" onClick={() => setSidebarOpen(!sidebarOpen)} title="Institutional Menu">
+                        <button className="stu-sidebar-toggle-desktop md:flex hidden" onClick={() => setSidebarOpen(!sidebarOpen)} title="Institutional Menu">
                             {sidebarOpen ? <LuChevronRight style={{ transform: 'rotate(180deg)' }} /> : <LuLayoutGrid />}
                         </button>
-                        <button className="stu-hamburger desktop-hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <LuLayoutGrid />
+                        <button className="stu-hamburger md:hidden flex" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                            <LuMenu />
                         </button>
-                        <Link to="/" className="desktop-hidden" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: 0 }}>
+                        <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: '0 10px' }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"

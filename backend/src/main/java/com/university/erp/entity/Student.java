@@ -19,7 +19,12 @@ public class Student extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "student_id")
     private Long id;
+
+    public Long getStudentId() {
+        return id;
+    }
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, unique = true)

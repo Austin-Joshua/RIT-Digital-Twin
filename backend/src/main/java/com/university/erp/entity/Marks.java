@@ -19,7 +19,12 @@ import lombok.*;
 public class Marks extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "mark_id")
     private Long id;
+
+    public Long getMarkId() {
+        return id;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)

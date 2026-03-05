@@ -18,10 +18,10 @@ public class AuditService {
     public void log(String action, String details) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AuditLog log = AuditLog.builder()
-                .userId(user.getId())
+                .userId(user.getUserId())
                 .role(user.getRole().getRoleName().name())
                 .action(action)
-                .departmentId(user.getDepartment() != null ? user.getDepartment().getId() : null)
+                .departmentId(user.getDepartment() != null ? user.getDepartment().getDeptId() : null)
                 .details(details)
                 .build();
         java.util.Objects.requireNonNull(log, "log entry must not be null");
