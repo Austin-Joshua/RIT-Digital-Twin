@@ -66,13 +66,13 @@ public class AuthService {
             bruteForceProtectionService.loginSucceeded(request.getUsername());
             String jwt = jwtUtils.generateToken(user);
             com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
-                    .createRefreshToken(user.getId());
+                    .createRefreshToken(user.getUserId());
 
             log.info("Login successful for user: {}", user.getUsername());
             return (AuthResponse) AuthResponse.builder()
                     .token(jwt)
                     .refreshToken(refreshToken.getToken())
-                    .id(user.getId())
+                    .id(user.getUserId())
                     .username(user.getUsername())
                     .role(user.getRole().getRoleName().name())
                     .build();
@@ -124,13 +124,13 @@ public class AuthService {
 
             String jwt = jwtUtils.generateToken(user);
             com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
-                    .createRefreshToken(user.getId());
+                    .createRefreshToken(user.getUserId());
             log.info("Google login successful for user: {}", user.getUsername());
 
             return AuthResponse.builder()
                     .token(jwt)
                     .refreshToken(refreshToken.getToken())
-                    .id(user.getId())
+                    .id(user.getUserId())
                     .username(user.getUsername())
                     .role(user.getRole().getRoleName().name())
                     .build();
@@ -157,9 +157,8 @@ public class AuthService {
         String inviteCode = request.getInviteCode();
 
         if (inviteCode != null && !inviteCode.isBlank()) {
-            switch (inviteCode) {
                 case "RIT-SUPER":
-                    roleEnumName = "SUPER_ADMIN";
+                    roleEnumName = "SA";
                     break;
                 case "RIT-ADMIN":
                     roleEnumName = "ADMIN";
@@ -167,13 +166,16 @@ public class AuthService {
                 case "RIT-FACULTY":
                     roleEnumName = "FACULTY";
                     break;
+                case "RIT-M":
+                    roleEnumName = "M";
+                    break;
                 case "RIT-PARENT":
                     roleEnumName = "PARENT";
                     break;
             }
         }
 
-        Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
+    Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
         User user = User.builder()
@@ -206,7 +208,7 @@ public class AuthService {
                     return AuthResponse.builder()
                             .token(token)
                             .refreshToken(requestRefreshToken)
-                            .id(user.getId())
+                            .id(user.getUserId())
                             .username(user.getUsername())
                             .role(user.getRole().getRoleName().name())
                             .build();

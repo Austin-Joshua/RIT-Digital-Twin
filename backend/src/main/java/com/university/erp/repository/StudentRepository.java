@@ -12,7 +12,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
     Optional<Student> findByStudentIdNumber(String studentIdNumber);
 
-    Optional<Student> findByUser_Id(Long userId);
+    Optional<Student> findByUser_UserId(Long userId);
 
     List<Student> findByDepartmentId(Long departmentId);
 

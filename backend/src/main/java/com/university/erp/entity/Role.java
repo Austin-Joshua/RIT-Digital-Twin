@@ -12,14 +12,22 @@ import lombok.*;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "role_id")
+    private Long roleId;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public Long getId() {
+        return roleId;
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false)
     private UserRole roleName;
 
     public enum UserRole {
-        SUPER_ADMIN, ADMIN, MANAGEMENT, HOD, FACULTY, STUDENT, PARENT
+        ADMIN, STUDENT, FACULTY, PARENT, M, SA
     }
 }

@@ -21,8 +21,16 @@ public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Long getId() {
+        return userId;
+    }
 
     @Column(unique = true, nullable = false)
     private String username;

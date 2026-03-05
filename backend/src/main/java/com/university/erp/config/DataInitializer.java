@@ -54,6 +54,8 @@ public class DataInitializer implements CommandLineRunner {
         @Transactional
         public void run(String... args) throws Exception {
                 // 1. Initialize Roles
+                seedRole(Role.UserRole.M);
+                seedRole(Role.UserRole.SA);
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -105,6 +107,15 @@ public class DataInitializer implements CommandLineRunner {
 
                                         userRepository.save(user);
                                 });
+        }
+
+        private void seedRole(Role.UserRole roleEnum) {
+                if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
+                        log.info("Seeding role: {}", roleEnum);
+                        roleRepository.save(Role.builder()
+                                        .roleName(roleEnum)
+                                        .build());
+                }
         }
 
         private void seedErpData() {

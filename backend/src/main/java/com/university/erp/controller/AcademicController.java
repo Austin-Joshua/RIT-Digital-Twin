@@ -29,7 +29,8 @@ public class AcademicController {
 
     @PostMapping("/marks/{studentId}")
     @PreAuthorize("hasRole('FACULTY')")
-    public ResponseEntity<String> enterMarks(@PathVariable @org.springframework.lang.NonNull Long studentId, @RequestBody @org.springframework.lang.NonNull Marks marks) {
+    public ResponseEntity<String> enterMarks(@PathVariable @org.springframework.lang.NonNull Long studentId,
+            @RequestBody @org.springframework.lang.NonNull Marks marks) {
         java.util.Objects.requireNonNull(studentId, "studentId must not be null");
         java.util.Objects.requireNonNull(marks, "marks payload must not be null");
         academicService.enterMarks(studentId, marks);
@@ -37,7 +38,7 @@ public class AcademicController {
     }
 
     @GetMapping("/marks/student/{studentId}")
-    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','HOD','ADMIN','SUPER_ADMIN','PARENT')")
+    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','M','ADMIN','SA','PARENT')")
     public ResponseEntity<List<Marks>> getStudentMarks(
             @PathVariable @org.springframework.lang.NonNull Long studentId,
             @RequestParam(name = "page", required = false) Integer page,
@@ -60,18 +61,19 @@ public class AcademicController {
             }
         }
 
-        // Parents are strictly view-only; access control to specific wards can be extended
+        // Parents are strictly view-only; access control to specific wards can be
+        // extended
         // via an explicit parent-student mapping if introduced later.
 
         // Faculty and HOD are limited to their department where available
-        if (role == Role.UserRole.FACULTY || role == Role.UserRole.HOD) {
+        if (role == Role.UserRole.FACULTY || role == Role.UserRole.M) {
             if (currentUser.getDepartment() != null && targetStudent.getDepartment() != null
                     && !currentUser.getDepartment().getId().equals(targetStudent.getDepartment().getId())) {
-                throw new AccessDeniedException("Faculty/HOD can only view students within their department.");
+                throw new AccessDeniedException("Faculty/M can only view students within their department.");
             }
         }
 
-        // ADMIN / SUPER_ADMIN / MANAGEMENT are allowed by role guard alone
+        // ADMIN / SA / M are allowed by role guard alone
 
         List<Marks> marks;
         if (page != null && size != null) {
