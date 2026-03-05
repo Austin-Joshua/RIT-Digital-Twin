@@ -110,28 +110,3 @@ export const WebSocketProvider = ({ children }) => {
         </WebSocketContext.Provider>
     );
 };
-            }
-        };
-    }, []);
-
-    const subscribe = (destination, callback) => {
-        if (!stompClient || !connected) return null;
-        return stompClient.subscribe(destination, (message) => {
-            callback(JSON.parse(message.body));
-        });
-    };
-
-    const publish = (destination, body) => {
-        if (!stompClient || !connected) return;
-        stompClient.publish({
-            destination: destination,
-            body: JSON.stringify(body)
-        });
-    };
-
-    return (
-        <WebSocketContext.Provider value={{ subscribe, publish, connected }}>
-            {children}
-        </WebSocketContext.Provider>
-    );
-};
