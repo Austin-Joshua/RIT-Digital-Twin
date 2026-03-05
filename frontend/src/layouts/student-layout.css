@@ -633,6 +633,17 @@
 
 .stu-kpi-card.yellow {
     background: linear-gradient(135deg, #f57f17 0%, #fbc02d 100%);
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.stu-kpi-card.yellow .kpi-label,
+.stu-kpi-card.yellow .kpi-value {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.stu-kpi-card.yellow .kpi-more {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.87);
 }
 
 .stu-kpi-card.teal {
@@ -657,6 +668,58 @@
 
 .stu-kpi-card.indigo {
     background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+}
+
+/* Extended Color Palette for More Unique Cards */
+.stu-kpi-card.cyan {
+    background: linear-gradient(135deg, #0097a7 0%, #00bcd4 100%);
+}
+
+.stu-kpi-card.lime {
+    background: linear-gradient(135deg, #558b2f 0%, #7cb342 100%);
+}
+
+.stu-kpi-card.pink {
+    background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
+}
+
+.stu-kpi-card.deep-orange {
+    background: linear-gradient(135deg, #d84315 0%, #ff5722 100%);
+}
+
+.stu-kpi-card.amber {
+    background: linear-gradient(135deg, #f57f17 0%, #ffa000 100%);
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.stu-kpi-card.amber .kpi-label,
+.stu-kpi-card.amber .kpi-value {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.stu-kpi-card.amber .kpi-more {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.stu-kpi-card.brown {
+    background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
+}
+
+.stu-kpi-card.deep-purple {
+    background: linear-gradient(135deg, #512da8 0%, #6a1b9a 100%);
+}
+
+.stu-kpi-card.light-blue {
+    background: linear-gradient(135deg, #0277bd 0%, #0288d1 100%);
+}
+
+.stu-kpi-card.dark-green {
+    background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
+}
+
+.stu-kpi-card.slate {
+    background: linear-gradient(135deg, #37474f 0%, #455a64 100%);
 }
 
 /* Light Palette with Borders */
@@ -972,7 +1035,8 @@ html.dark .stu-calendar-grid th {
 
 .stu-calendar-grid {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Removed deprecated -webkit-overflow-scrolling; modern browsers handle momentum scrolling natively */
 }
 
 @media (max-width: 768px) {
@@ -1380,6 +1444,242 @@ html.dark .stu-calendar-grid th {
         font-size: 12px;
         padding: 8px;
     }
+
+    /* ───────────────────────────────────────────────────────────── */
+    /* ENHANCED MOBILE RESPONSIVE DESIGN (max-width: 768px)           */
+    /* ───────────────────────────────────────────────────────────── */
+
+    /* Complete page responsiveness */
+    .stu-layout {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Sidebar behavior on mobile */
+    .stu-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .stu-sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Main content takes full width on mobile */
+    .stu-main {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    /* KPI Row: exactly 2 columns on mobile */
+    .stu-kpi-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* Smaller KPI cards on mobile */
+    .stu-kpi-card {
+        min-height: 90px;
+        padding: 0;
+    }
+
+    .kpi-main {
+        padding: 12px 14px;
+    }
+
+    .kpi-value {
+        font-size: 24px;
+    }
+
+    .kpi-label {
+        font-size: 11px;
+    }
+
+    .kpi-icon {
+        font-size: 40px;
+        top: 5px;
+        right: 8px;
+    }
+
+    .kpi-more {
+        padding: 6px 0;
+        font-size: 11px;
+    }
+
+    /* Info row: stack cards vertically on mobile */
+    .stu-info-row {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Info cards adapt to mobile */
+    .stu-info-card {
+        width: 100%;
+        border-radius: 8px;
+        padding: 12px;
+    }
+
+    .info-header {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .info-body {
+        padding: 8px;
+        min-height: 80px;
+    }
+
+    /* Ensure no horizontal scroll */
+    .stu-content {
+        overflow-x: hidden !important;
+        padding: 12px 10px !important;
+    }
+
+    /* Charts & visualizations responsive */
+    .chart-container {
+        height: 200px !important;
+    }
+
+    /* Responsive grid for module cards */
+    .module-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    /* Padding standardization */
+    .stu-welcome {
+        margin: 10px 0;
+        padding: 12px;
+    }
+
+    .stu-welcome h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+
+    /* Calendar responsive */
+    .stu-calendar-card {
+        margin-bottom: 20px;
+        padding: 8px;
+    }
+
+    .stu-calendar-grid td {
+        height: 50px;
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    /* Status badges responsive */
+    .status-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    /* Flexbox items center alignment */
+    .stu-kpi-row > * {
+        justify-self: stretch;
+    }
+
+    /* Hide elements that don't fit on mobile */
+    @media (max-width: 640px) {
+        .stu-kpi-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+        }
+
+        .kpi-label {
+            font-size: 10px;
+        }
+
+        .kpi-icon {
+            font-size: 32px;
+        }
+
+        .breadcrumb-bar {
+            display: none;
+        }
+
+        /* Ultra-compact mobile view */
+        .stu-kpi-card {
+            min-height: 80px;
+        }
+
+        .stu-content {
+            padding: 10px 8px;
+        }
+    }
+
+    /* Tablet adjustments (768px to 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .stu-kpi-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stu-info-row {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .module-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Desktop view restoration (1025px+) */
+    @media (min-width: 1025px) {
+        .stu-sidebar {
+            transform: translateX(0);
+            position: fixed;
+        }
+
+        .stu-main {
+            margin-left: var(--sidebar-width, 230px);
+            width: calc(100% - var(--sidebar-width, 230px));
+        }
+
+        .stu-kpi-row {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stu-info-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .module-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .chart-container {
+            height: 350px;
+        }
+    }
+
+    /* Center content for tablets in landscape */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .stu-kpi-row {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stu-content {
+            padding: 10px 15px;
+        }
+    }
+}
 
     /* Report header: stack year/semester */
     .stu-report-header div {
