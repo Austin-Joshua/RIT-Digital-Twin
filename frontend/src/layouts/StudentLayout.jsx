@@ -114,7 +114,7 @@ const StudentLayout = () => {
                     </Link>
                 </div>
 
-                <div className="stu-sidebar-search">
+                <div className="stu-sidebar-search" style={{ display: 'none' }}>
                     <GlobalSearch
                         navItems={navItems.filter(item => !item.isDropdown).concat(
                             navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
@@ -208,23 +208,43 @@ const StudentLayout = () => {
             {/* ── Main ── */}
             <div className="stu-main">
                 {/* Top Bar — exact IMS: white topbar, gray icons */}
-                <header className="stu-topbar">
-                    <div className="stu-topbar-left" style={{ display: 'flex', alignItems: 'center', padding: 0 }}>
-                        <button className="stu-sidebar-toggle-desktop md:flex hidden" onClick={() => setSidebarOpen(!sidebarOpen)} title="Institutional Menu">
-                            {sidebarOpen ? <LuChevronDown style={{ transform: 'rotate(90deg)' }} /> : <LuLayoutGrid />}
-                        </button>
-                        <button className="stu-hamburger md:hidden flex" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <LuMenu />
-                        </button>
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', padding: '0 10px' }}>
+                {/* Top Bar — contents moved to right */}
+                <header className="stu-topbar" style={{ justifyContent: 'flex-end' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%', justifyContent: 'flex-end', padding: '0 20px' }}>
+
+                        {/* 1. Logo (Always Visible) */}
+                        <Link to="/" style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
-                                style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
+                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
                             />
                         </Link>
-                    </div>
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+                        {/* 2. Global Search (Moved from sidebar) */}
+                        <div className="topbar-search-wrapper" style={{ flex: '1', maxWidth: '400px', margin: '0 20px' }}>
+                            <GlobalSearch
+                                navItems={navItems.filter(item => !item.isDropdown).concat(
+                                    navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
+                                )}
+                                placeholder="Search student portal..."
+                            />
+                        </div>
+
+                        {/* 3. Hamburger Toggle */}
+                        <button
+                            className="stu-hamburger"
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            style={{
+                                background: 'none', border: 'none', fontSize: '24px',
+                                cursor: 'pointer', color: 'var(--ims-icon-color)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}
+                        >
+                            <LuMenu />
+                        </button>
+
+                        {/* 4. Theme Toggle */}
                         <button
                             onClick={toggleTheme}
                             style={{
@@ -237,15 +257,17 @@ const StudentLayout = () => {
                             {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
                         </button>
 
+                        {/* 5. Notifications */}
                         <NotificationBar />
 
+                        {/* 6. User Profile */}
                         <div style={{ position: 'relative' }} ref={dropdownRef}>
                             <button
                                 className="stu-user-badge"
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                             >
                                 <LuUser className="user-icon" />
-                                <span>{displayName}</span>
+                                <span className="hidden md:inline">{displayName}</span>
                             </button>
 
                             <AnimatePresence>

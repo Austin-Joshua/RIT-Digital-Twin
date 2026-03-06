@@ -106,6 +106,20 @@
     color: #f8fafc;
 }
 
+/* Improve text visibility in dark mode for specific labels */
+.dark .kpi-label {
+    color: #cbd5e1 !important;
+    font-weight: 500;
+}
+
+.dark .stu-nav-item {
+    color: #94a3b8;
+}
+
+.dark .stu-nav-item:hover, .dark .stu-nav-item.active {
+    color: #f8fafc;
+}
+
 .stu-layout {
     display: flex;
     height: 100vh;
@@ -122,7 +136,7 @@
     color: #ffffff;
     display: flex;
     flex-direction: column;
-    transition: width 0.15s ease-out, transform 0.15s ease-out;
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
     z-index: 1000;
     overflow-y: auto;
 }
@@ -446,7 +460,40 @@
 .stu-topbar-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+    width: 100%;
+}
+
+.topbar-search-wrapper {
+    flex: 1;
+    max-width: 400px;
+}
+
+.topbar-search-wrapper .global-search-container {
+    background: var(--ims-bg-light);
+    border-radius: 8px;
+    padding: 2px 10px;
+    border: 1px solid #d2d6de;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.dark .topbar-search-wrapper .global-search-container {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #334155;
+}
+
+.topbar-search-wrapper .global-search-container:focus-within {
+    border-color: var(--ims-active-blue);
+    box-shadow: 0 0 0 3px rgba(11, 44, 107, 0.1);
+}
+
+.stu-topbar-right .stu-hamburger {
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
 }
 
 .stu-topbar-icons {
@@ -532,8 +579,8 @@
 
 .stu-kpi-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    /* Force 4 columns on desktop */
+    grid-template-columns: repeat(4, 1fr) !important;
+    /* Force 4 columns on desktop as per user request */
     gap: 15px;
     margin-bottom: 30px;
     width: 100%;

@@ -157,6 +157,7 @@ public class AuthService {
         String inviteCode = request.getInviteCode();
 
         if (inviteCode != null && !inviteCode.isBlank()) {
+            switch (inviteCode) {
                 case "RIT-SUPER":
                     roleEnumName = "SA";
                     break;

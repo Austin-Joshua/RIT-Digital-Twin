@@ -25,10 +25,12 @@ const TransportRoute = ({ studentId }) => {
 
     useEffect(() => {
         const fetchRoute = async () => {
+            if (!studentId) return;
             try {
-                const res = await api.get(`/api/operations/transport/student/${studentId}`);
-                if (res.data && res.data.length > 0) {
-                    setRouteData(res.data[0].route);
+                // Standardized endpoint search
+                const res = await api.get(`/transport/routes/student/${studentId}`);
+                if (res.data) {
+                    setRouteData(res.data.route || res.data);
                 }
             } catch (err) {
                 console.error("Failed to fetch transport data", err);
