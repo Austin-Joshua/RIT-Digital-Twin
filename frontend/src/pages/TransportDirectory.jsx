@@ -121,25 +121,21 @@ const TransportPage = () => {
             </div>
 
             {/* Search Bar */}
-            <div style={{ background: 'var(--color-primary-navy)', borderRadius: '14px', padding: '20px 24px', position: 'relative', overflow: 'hidden' }}>
+            <div className="p-4 sm:p-5 md:p-6" style={{ background: 'var(--color-primary-navy)', borderRadius: '14px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
-                <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', position: 'relative', zIndex: 1, alignItems: 'center' }}>
-                    <LuSearch color="#D4AF37" style={{ fontSize: '20px', flexShrink: 0 }} />
-                    <input
-                        type="text"
-                        placeholder="Search by Route No (R01) or Area (Ennore, Ambattur)..."
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        style={{
-                            flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-                            borderRadius: '8px', padding: '11px 16px', color: 'white', fontSize: '14px', outline: 'none'
-                        }}
-                    />
-                    <button type="submit" disabled={searching} style={{
-                        padding: '11px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                        background: '#D4AF37', color: 'var(--color-primary-navy)', fontWeight: '700', fontSize: '14px', flexShrink: 0
-                    }}>
-                        {searching ? 'Searching...' : 'Search'}
+                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 sm:gap-4 relative z-10 items-stretch sm:items-center">
+                    <div className="flex items-center border border-white/20 rounded-lg px-3 sm:px-4 py-2 sm:py-3 bg-white/10 flex-1 focus-within:border-[#D4AF37] transition-colors">
+                        <LuSearch color="#D4AF37" className="text-xl flex-shrink-0 mr-3" />
+                        <input
+                            type="text"
+                            placeholder="Search Route No (R01) or Area (Ennore)..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            className="bg-transparent border-none outline-none text-white text-sm w-full placeholder-gray-300"
+                        />
+                    </div>
+                    <button type="submit" disabled={searching} className="w-full sm:w-auto px-6 py-3 sm:py-[13px] rounded-lg border-none cursor-pointer text-[var(--color-primary-navy)] font-bold text-sm shadow-md transition-all hover:opacity-90 active:scale-95 flex-shrink-0 whitespace-nowrap" style={{ background: '#D4AF37' }}>
+                        {searching ? 'Searching...' : 'Search Route'}
                     </button>
                 </form>
             </div>

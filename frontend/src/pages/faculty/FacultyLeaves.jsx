@@ -96,27 +96,27 @@ const FacultyLeaves = () => {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-                <Card style={{ padding: '20px', borderLeft: '4px solid var(--color-warning)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ background: 'var(--color-warning-100)', padding: '15px', borderRadius: '50%' }}>
-                        <FaCalendarCheck size={24} color="var(--color-warning)" />
+            <div className="grid grid-cols-2 gap-4 md:gap-6" style={{ marginBottom: '24px' }}>
+                <Card style={{ padding: '16px md:padding:20px', borderLeft: '4px solid var(--color-warning)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }} className="md:flex-row md:items-center md:gap-[15px]">
+                    <div style={{ background: 'var(--color-warning-100)', padding: '10px', borderRadius: '50%' }} className="md:p-[15px]">
+                        <FaCalendarCheck className="text-xl md:text-2xl" color="var(--color-warning)" />
                     </div>
                     <div>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--theme-text)' }}>
+                        <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--theme-text)' }} className="md:text-[24px]">
                             {requests.filter(r => r.status === 'Pending').length}
                         </div>
-                        <div style={{ color: 'var(--theme-text-muted)', fontSize: '14px' }}>Pending Requests</div>
+                        <div style={{ color: 'var(--theme-text-muted)', fontSize: '12px' }} className="md:text-[14px]">Pending Requests</div>
                     </div>
                 </Card>
-                <Card style={{ padding: '20px', borderLeft: '4px solid var(--color-success)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ background: 'var(--color-success-100)', padding: '15px', borderRadius: '50%' }}>
-                        <FaCheck size={24} color="var(--color-success)" />
+                <Card style={{ padding: '16px md:padding:20px', borderLeft: '4px solid var(--color-success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }} className="md:flex-row md:items-center md:gap-[15px]">
+                    <div style={{ background: 'var(--color-success-100)', padding: '10px', borderRadius: '50%' }} className="md:p-[15px]">
+                        <FaCheck className="text-xl md:text-2xl" color="var(--color-success)" />
                     </div>
                     <div>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--theme-text)' }}>
+                        <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--theme-text)' }} className="md:text-[24px]">
                             {requests.filter(r => r.status === 'Approved').length}
                         </div>
-                        <div style={{ color: 'var(--theme-text-muted)', fontSize: '14px' }}>Approved This Month</div>
+                        <div style={{ color: 'var(--theme-text-muted)', fontSize: '12px' }} className="md:text-[14px]">Approved This Month</div>
                     </div>
                 </Card>
             </div>

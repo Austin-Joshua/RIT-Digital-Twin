@@ -114,23 +114,23 @@ const FacultyAttendance = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-xl shadow-sm border flex justify-between items-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+            <div className="grid grid-cols-2 gap-4 md:gap-6 mb-6">
+                <div className="p-4 md:p-6 rounded-xl shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div>
-                        <div className="text-sm mb-1" style={{ color: 'var(--theme-text-muted)' }}>Overall Class Attendance</div>
-                        <div className="text-4xl font-black" style={{ color: 'var(--theme-text)' }}>84.5%</div>
+                        <div className="text-[11px] md:text-sm mb-1" style={{ color: 'var(--theme-text-muted)' }}>Overall Class Attendance</div>
+                        <div className="text-2xl md:text-4xl font-black" style={{ color: 'var(--theme-text)' }}>84.5%</div>
                     </div>
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'var(--color-primary-100)' }}>
-                        <FaChartPie className="text-3xl" style={{ color: 'var(--color-primary-navy)' }} />
+                    <div className="w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center self-end md:self-auto" style={{ background: 'var(--color-primary-100)' }}>
+                        <FaChartPie className="text-lg md:text-3xl" style={{ color: 'var(--color-primary-navy)' }} />
                     </div>
                 </div>
-                <div className="p-6 rounded-xl shadow-sm border flex justify-between items-center" style={{ background: 'var(--color-error-100)', borderColor: 'var(--color-error)' }}>
+                <div className="p-4 md:p-6 rounded-xl shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0" style={{ background: 'var(--color-error-100)', borderColor: 'var(--color-error)' }}>
                     <div>
-                        <div className="text-sm mb-1" style={{ color: 'var(--color-error)' }}>Students Below 75% Risk</div>
-                        <div className="text-4xl font-black" style={{ color: 'var(--color-error)' }}>{students.filter(s => s.percentage < 75).length}</div>
+                        <div className="text-[11px] md:text-sm mb-1 font-bold" style={{ color: 'var(--color-error)' }}>Students Below 75% Risk</div>
+                        <div className="text-2xl md:text-4xl font-black" style={{ color: 'var(--color-error)' }}>{students.filter(s => s.percentage < 75).length}</div>
                     </div>
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'var(--color-error-100)', opacity: 0.8 }}>
-                        <FaUserClock className="text-3xl" style={{ color: 'var(--color-error)' }} />
+                    <div className="w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center self-end md:self-auto" style={{ background: 'var(--color-error-100)', opacity: 0.8 }}>
+                        <FaUserClock className="text-lg md:text-3xl" style={{ color: 'var(--color-error)' }} />
                     </div>
                 </div>
             </div>

@@ -56,22 +56,22 @@ const ResearchTracker = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                    <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Publications</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--theme-text)' }}>{allPapers.length}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6">
+                <div className="p-3 md:p-5 rounded-xl border shadow-sm flex flex-col justify-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                    <div className="text-[10px] md:text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Publications</div>
+                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--theme-text)' }}>{allPapers.length}</div>
                 </div>
-                <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                    <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Citations</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-primary-navy)' }}>{totalCitations}</div>
+                <div className="p-3 md:p-5 rounded-xl border shadow-sm flex flex-col justify-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                    <div className="text-[10px] md:text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Citations</div>
+                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--color-primary-navy)' }}>{totalCitations}</div>
                 </div>
-                <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                    <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>h-index</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-success)' }}>6</div>
+                <div className="p-3 md:p-5 rounded-xl border shadow-sm flex flex-col justify-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                    <div className="text-[10px] md:text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>h-index</div>
+                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--color-success)' }}>6</div>
                 </div>
-                <div className="p-5 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center" style={{ background: 'linear-gradient(135deg, var(--color-accent-gold), #b45309)' }}>
-                    <div className="font-bold">Next Appraisal</div>
-                    <div className="opacity-80 text-sm">Target: 2 Scopus Indexed Papers</div>
+                <div className="p-3 md:p-5 rounded-xl shadow-sm text-white flex flex-col justify-center items-center text-center" style={{ background: 'linear-gradient(135deg, var(--color-accent-gold), #b45309)' }}>
+                    <div className="font-bold text-xs md:text-base">Next Appraisal</div>
+                    <div className="opacity-80 text-[10px] md:text-sm mt-1">Target: 2 Scopus Papers</div>
                 </div>
             </div>
 
