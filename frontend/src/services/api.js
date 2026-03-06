@@ -18,12 +18,12 @@ const getAPIBaseURL = () => {
   // Detect if running on Vercel or localhost
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
-    
+
     // Development: use localhost
     if (host.includes('localhost') || host.includes('127.0.0.1')) {
       return 'http://localhost:8080/api';
     }
-    
+
     // Production on Vercel: use /api prefix (will be proxied or use absolute URL)
     if (host.includes('vercel.app')) {
       // This will be resolved by Vercel's rewrite rules or backend CORS
@@ -44,6 +44,7 @@ const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true'
   }
 });
 
@@ -75,7 +76,7 @@ api.interceptors.response.use(
       localStorage.removeItem('user');
       localStorage.removeItem('rit_dt_token');
       localStorage.removeItem('rit_dt_user');
-      
+
       // Only redirect if we're in a browser environment
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
