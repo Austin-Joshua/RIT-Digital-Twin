@@ -44,7 +44,7 @@ app:
     # the secret may come from either JWT_SECRET (used in docker-compose) or
     # APP_JWT_SECRET (referenced by .env.example).  Provide a harmless default
     # for development so the app can start without requiring extra vars.
-    secret: ${JWT_SECRET:${APP_JWT_SECRET:8z%C*F-JaNdRgUkXp2s5v8y/B?E(G+KbPeShVmYq3t6w9z$C&F)J@McQfTjWnZr4}}
+    secret: ${APP_JWT_SECRET:v9yB2E5H8KcNfUjXn2r5u8xA2D4G7KbPeShVkYp3s6v9y8B0E1H2McQfTjWnZr4}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:900000} # 15 minutes
     refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000} # 7 days
   google:
