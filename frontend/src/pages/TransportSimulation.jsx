@@ -71,7 +71,7 @@ function TransportPage() {
             </div>
 
             {/* Redesigned KPI Row - Matching Alumni Portal Style */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6">
                 <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('routes')}>
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Active Routes</div>
@@ -148,13 +148,23 @@ function TransportPage() {
 
             {data && (
                 <>
-                    <div className="tab-nav">
-                        {['overview', 'routes', 'fuel', 'clusters', 'optimization', ...(data.evScenario ? ['ev'] : [])].map(v => (
-                            <button key={v} className={`tab-btn ${activeView === v ? 'active' : ''}`}
-                                onClick={() => setActiveView(v)}>
-                                {v === 'ev' ? 'EV Scenario' : v.charAt(0).toUpperCase() + v.slice(1)}
+                    <div className="tab-nav flex items-center justify-between">
+                        <div>
+                            {['overview', 'routes', 'fuel', 'clusters', 'optimization', ...(data.evScenario ? ['ev'] : [])].map(v => (
+                                <button key={v} className={`tab-btn ${activeView === v ? 'active' : ''}`}
+                                    onClick={() => setActiveView(v)}>
+                                    {v === 'ev' ? 'EV Scenario' : v.charAt(0).toUpperCase() + v.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                        {activeView !== 'overview' && (
+                            <button
+                                onClick={() => setActiveView('overview')}
+                                className="px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                            >
+                                ✕ Close
                             </button>
-                        ))}
+                        )}
                     </div>
 
                     {/* Overview */}

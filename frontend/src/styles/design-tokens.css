@@ -23,6 +23,8 @@
     --color-warning: #D97706;
     /* Darker Amber for contrast */
     --color-danger: #DC2626;
+    --color-error: #DC2626;
+    --color-error-rgba: rgba(220, 38, 38, 0.1);
 
     /* Premium Gradients for KPI Cards */
     --grad-blue: linear-gradient(135deg, #0B2C6B 0%, #1E40AF 100%);
