@@ -175,7 +175,7 @@ const InstitutionalLayout = () => {
                 {/* Top Bar — exact IMS mirror */}
                 {/* Top Bar — refined visibility */}
                 <header className="stu-topbar">
-                    <div className="stu-topbar-left lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
+                    <div className="stu-topbar-left lg:hidden desktop-hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
                         {/* 1. Hamburger Toggle (Mobile Only) */}
                         <button
                             className="stu-hamburger"
