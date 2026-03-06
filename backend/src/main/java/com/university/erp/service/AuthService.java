@@ -176,7 +176,7 @@ public class AuthService {
             }
         }
 
-    Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
+        Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
         User user = User.builder()
