@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import {
@@ -24,17 +25,16 @@ const LayoutLoader = () => (
 
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
+    const { addToast } = useToast();
     const [sidebarOpen, setSidebarOpen] = useState(() => {
-        // Always open on desktop; respect localStorage only on mobile
+        // Always open on desktop, always closed on mobile initially
         if (window.innerWidth >= 1025) return true;
-        const saved = localStorage.getItem('sidebar-open');
-        return saved !== null ? JSON.parse(saved) : false;
+        return false;
     });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
 
-    // Persist sidebar state
     useEffect(() => {
         localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
     }, [sidebarOpen]);
@@ -46,8 +46,20 @@ const InstitutionalLayout = () => {
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+
+        const handleBroadcastSync = (e) => {
+            if (e.key === 'connectivity_broadcasts' && e.newValue) {
+                const broadcast = JSON.parse(e.newValue);
+                addToast(`📢 Admin Broadcast: ${broadcast.title} - ${broadcast.message}`, 'info');
+            }
+        };
+        window.addEventListener('storage', handleBroadcastSync);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('storage', handleBroadcastSync);
+        };
+    }, [addToast]);
 
     const handleLogout = () => {
         logout();
@@ -72,7 +84,6 @@ const InstitutionalLayout = () => {
         { path: '/simulations/transport', label: 'Transport Analytics', icon: <LuBus /> },
         { path: '/transport', label: 'Transport Directory', icon: <LuBus /> },
         { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
-        { path: '/predictions', label: 'Predictive Analytics', icon: <LuCpu /> },
 
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
@@ -80,6 +91,7 @@ const InstitutionalLayout = () => {
     const facultyNavItems = [
         { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
+        { path: '/faculty/grading', label: 'Performance Grading', icon: <LuAward /> },
         { path: '/faculty/attendance', label: 'Attendance', icon: <LuCalendar /> },
         { path: '/faculty/leaves', label: 'Leaves & Approvals', icon: <LuRefreshCcw /> },
         { path: '/faculty/analytics', label: 'Class Analytics', icon: <LuTrendingUp /> },
@@ -136,16 +148,6 @@ const InstitutionalLayout = () => {
                     ))}
                 </nav>
 
-                {/* Desktop-only collapse button at sidebar bottom */}
-                <button
-                    className="stu-sidebar-collapse-btn"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    title={sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
-                >
-                    <span style={{ fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {sidebarOpen ? '\u276e' : '\u276f'}
-                    </span>
-                </button>
             </aside>
 
             {/* Mobile Sidebar Backdrop */}
@@ -239,49 +241,51 @@ const InstitutionalLayout = () => {
                                             top: '100%',
                                             right: 0,
                                             marginTop: '8px',
-                                            background: isDarkMode ? 'var(--ims-topbar-bg)' : 'white',
-                                            borderRadius: '4px',
-                                            boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.15)',
-                                            width: '180px',
+                                            background: 'var(--card-bg)',
+                                            borderRadius: '12px',
+                                            boxShadow: 'var(--shadow-medium)',
+                                            width: '200px',
                                             zIndex: 1000,
-                                            border: isDarkMode ? '1px solid #444' : '1px solid #eee'
+                                            border: '1px solid var(--theme-border)',
+                                            overflow: 'hidden'
                                         }}
                                     >
-                                        <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: isDarkMode ? 'var(--ims-bg-dark)' : '#f8fafc' }}>
-                                            <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
-                                            <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
+                                        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
+                                            <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Signed in as</div>
+                                            <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/change-password"
-                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
+                                            <LuKey /> <span>Change Password</span>
                                         </NavLink>
                                         <NavLink
                                             to="/profile"
-                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            <LuUser style={{ marginRight: '8px', verticalAlign: 'middle' }} /> My Profile
+                                            <LuUser /> <span>My Profile</span>
                                         </NavLink>
                                         <NavLink
                                             to="/settings"
-                                            style={{ display: 'block', padding: '12px 16px', textDecoration: 'none', color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4' }}
+                                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            <LuSettings style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Settings
+                                            <LuSettings /> <span>Settings</span>
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
                                             style={{
                                                 width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                border: 'none', background: 'none', color: '#dd4b39',
-                                                fontSize: '14px', cursor: 'pointer', fontWeight: '500'
+                                                border: 'none', background: 'none', color: '#ef4444',
+                                                fontSize: '14px', cursor: 'pointer', fontWeight: '800',
+                                                display: 'flex', alignItems: 'center', gap: '8px'
                                             }}
                                         >
-                                            Logout
+                                            <LuLogOut /> <span>Logout</span>
                                         </button>
                                     </motion.div>
                                 )}

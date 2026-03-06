@@ -38,10 +38,9 @@ const StudentLayout = () => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [sidebarOpen, setSidebarOpen] = useState(() => {
-        // Always open on desktop; respect localStorage only on mobile
+        // Always open on desktop, always closed on mobile initially
         if (window.innerWidth >= 1025) return true;
-        const saved = localStorage.getItem('sidebar-open');
-        return saved !== null ? JSON.parse(saved) : false;
+        return false;
     });
     const [committeeOpen, setCommitteeOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -177,16 +176,6 @@ const StudentLayout = () => {
                     ))}
                 </nav>
 
-                {/* Desktop-only collapse button at sidebar bottom */}
-                <button
-                    className="stu-sidebar-collapse-btn"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    title={sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
-                >
-                    <span style={{ fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {sidebarOpen ? '\u276e' : '\u276f'}
-                    </span>
-                </button>
             </aside>
 
             {/* Mobile Sidebar Backdrop */}
@@ -321,11 +310,12 @@ const StudentLayout = () => {
                                             onClick={handleLogout}
                                             style={{
                                                 width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                border: 'none', background: 'none', color: '#333',
-                                                fontSize: '14px', cursor: 'pointer'
+                                                border: 'none', background: 'none', color: '#ef4444',
+                                                fontSize: '14px', cursor: 'pointer', fontWeight: '800',
+                                                display: 'flex', alignItems: 'center', gap: '8px'
                                             }}
                                         >
-                                            Logout
+                                            <LuLogOut /> <span>Logout</span>
                                         </button>
                                     </motion.div>
                                 )}

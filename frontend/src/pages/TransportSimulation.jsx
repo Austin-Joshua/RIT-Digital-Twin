@@ -51,34 +51,50 @@ function TransportPage() {
     const statusColor = (s) => s === 'OPTIMAL' ? 'var(--color-success)' : s === 'MODERATE' ? 'var(--color-warning)' : 'var(--color-error)';
 
     return (
-        <div className="transport-page">
-            {/* Header */}
-            <div className="module-header transport-header" style={{ background: 'linear-gradient(135deg, var(--color-primary-navy), var(--color-primary-800))' }}>
-                <div className="module-header-content">
-                    <div className="module-icon transport-icon" style={{ background: 'var(--color-primary-navy)' }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="28" height="28">
-                            <rect x="1" y="3" width="15" height="13" rx="2" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                            <circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 style={{ color: '#fff', margin: 0, fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.5px' }}>Institutional Fleet Intelligence</h1>
-                        <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0', fontWeight: '500' }}>Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
-                    </div>
+        <div className="space-y-6 animate-in fade-in duration-500 p-6">
+            {/* Redesigned Header - Matching Alumni Portal */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
+                        <span className="p-2 bg-navy-900 text-white rounded-lg">🚌</span> Institutional Fleet Intelligence
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
                 </div>
-                <div className="module-stats">
-                    <div className="stat-chip" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
-                        <span className="stat-icon">🚌</span>
-                        <span style={{ color: '#fff', fontWeight: '700' }}>12 Active Routes</span>
+                <div className="flex gap-3">
+                    <button className="bg-white text-navy-900 dark:bg-navy-800 dark:text-white border border-gray-200 dark:border-navy-600 px-4 py-2 font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors flex items-center gap-2">
+                        Network Map
+                    </button>
+                    <button className="bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 px-4 py-2 font-bold rounded-lg hover:bg-navy-800 transition-colors">
+                        Optimise All
+                    </button>
+                </div>
+            </div>
+
+            {/* Redesigned KPI Row - Matching Alumni Portal Style */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('routes')}>
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Active Routes</div>
+                        <div className="text-4xl font-black mb-1 text-white">12</div>
+                        <div className="text-sm text-blue-100">Across Campus Network</div>
                     </div>
-                    <div className="stat-chip" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
-                        <span className="stat-icon">👥</span>
-                        <span style={{ color: '#fff', fontWeight: '700' }}>2,800 Students</span>
+                    <div className="kpi-icon">🚌</div>
+                </div>
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('clusters')}>
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-green-200 uppercase tracking-wider mb-2">Total Students</div>
+                        <div className="text-4xl font-black mb-1 text-white">2,800</div>
+                        <div className="text-sm text-green-100">Bus Commuters</div>
                     </div>
-                    <div className="stat-chip" style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}>
-                        <span className="stat-icon">⛽</span>
-                        <span className="font-black italic">20% Target</span>
+                    <div className="kpi-icon">👥</div>
+                </div>
+                <div className="stu-kpi-card amber cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('optimization')}>
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-amber-900 uppercase tracking-wider mb-2">Target Efficiency</div>
+                        <div className="text-4xl font-black mb-1" style={{ color: 'var(--ims-bg-light)' }}>20%</div>
+                        <div className="text-sm text-amber-900">Projected Fuel Savings Goal</div>
                     </div>
+                    <div className="kpi-icon">📈</div>
                 </div>
             </div>
 
@@ -223,29 +239,41 @@ function TransportPage() {
                     {/* Fuel Analysis */}
                     {activeView === 'fuel' && data.fuelAnalysis && (
                         <div className="fuel-section">
-                            <div className="comparison-grid" style={{ justifyContent: 'flex-start' }}>
-                                <div className="comp-card before" style={{ borderColor: '#fecaca' }}>
-                                    <div className="comp-badge">CURRENT MONTHLY</div>
-                                    <div className="comp-value">{fmt(data.fuelAnalysis.monthlyFuelLitres)} L</div>
-                                    <div className="comp-cost">₹{fmt(data.fuelAnalysis.monthlyCostInr)}</div>
+                            <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
+                                <div className="comp-card before w-full md:w-auto" style={{ borderColor: '#fecaca', flex: 1 }}>
+                                    <div className="comp-badge text-center">CURRENT MONTHLY</div>
+                                    <div className="comp-value text-center">{fmt(data.fuelAnalysis.monthlyFuelLitres)} L</div>
+                                    <div className="comp-cost text-center">₹{fmt(data.fuelAnalysis.monthlyCostInr)}</div>
                                 </div>
-                                <div className="comp-arrow">
-                                    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#c9a227" strokeWidth="2">
+                                <div className="comp-arrow flex flex-col items-center">
+                                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#c9a227" strokeWidth="2" className="rotate-90 md:rotate-0">
                                         <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
                                     </svg>
                                     <span className="savings-badge">-{params.optimizationTarget}%</span>
                                 </div>
-                                <div className="comp-card after" style={{ borderColor: '#a7f3d0' }}>
-                                    <div className="comp-badge">OPTIMIZED MONTHLY</div>
-                                    <div className="comp-value">{fmt(data.fuelAnalysis.monthlyFuelLitres * (1 - params.optimizationTarget / 100))} L</div>
-                                    <div className="comp-cost">₹{fmt(data.fuelAnalysis.monthlyCostInr * (1 - params.optimizationTarget / 100))}</div>
+                                <div className="comp-card after w-full md:w-auto" style={{ borderColor: '#a7f3d0', flex: 1 }}>
+                                    <div className="comp-badge text-center">OPTIMIZED MONTHLY</div>
+                                    <div className="comp-value text-center">{fmt(data.fuelAnalysis.monthlyFuelLitres * (1 - params.optimizationTarget / 100))} L</div>
+                                    <div className="comp-cost text-center">₹{fmt(data.fuelAnalysis.monthlyCostInr * (1 - params.optimizationTarget / 100))}</div>
                                 </div>
                             </div>
-                            <div className="savings-summary" style={{ marginTop: 20 }}>
-                                <div className="saving-item"><span>Daily Fuel</span><strong>{fmt(data.fuelAnalysis.dailyFuelLitres)} L</strong></div>
-                                <div className="saving-item"><span>Daily Cost</span><strong>₹{fmt(data.fuelAnalysis.dailyCostInr)}</strong></div>
-                                <div className="saving-item"><span>Fuel per Student</span><strong>{data.fuelAnalysis.avgFuelPerStudent} L</strong></div>
-                                <div className="saving-item"><span>Daily CO₂</span><strong>{fmt(data.fuelAnalysis.co2EmissionsKgDaily)} kg</strong></div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{ marginTop: 20 }}>
+                                <div className="p-4 rounded-xl border text-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase text-gray-400 mb-1">Daily Fuel</div>
+                                    <div className="text-lg font-black" style={{ color: 'var(--theme-text)' }}>{fmt(data.fuelAnalysis.dailyFuelLitres)} L</div>
+                                </div>
+                                <div className="p-4 rounded-xl border text-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase text-gray-400 mb-1">Daily Cost</div>
+                                    <div className="text-lg font-black" style={{ color: 'var(--theme-text)' }}>₹{fmt(data.fuelAnalysis.dailyCostInr)}</div>
+                                </div>
+                                <div className="p-4 rounded-xl border text-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase text-gray-400 mb-1">Fuel/Student</div>
+                                    <div className="text-lg font-black" style={{ color: 'var(--theme-text)' }}>{data.fuelAnalysis.avgFuelPerStudent} L</div>
+                                </div>
+                                <div className="p-4 rounded-xl border text-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase text-gray-400 mb-1">Daily CO₂</div>
+                                    <div className="text-lg font-black" style={{ color: 'var(--theme-text)' }}>{fmt(data.fuelAnalysis.co2EmissionsKgDaily)} kg</div>
+                                </div>
                             </div>
                             {/* Fuel by route */}
                             <div className="chart-card" style={{ marginTop: 24, background: 'var(--card-bg)', padding: '24px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>

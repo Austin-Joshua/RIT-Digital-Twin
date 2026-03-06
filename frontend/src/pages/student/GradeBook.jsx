@@ -6,15 +6,43 @@ const GradeBook = () => {
     const [semester, setSemester] = useState('');
     const [showData, setShowData] = useState(false);
     const { addToast } = useToast();
-
-    const grades = [
+    const [grades, setGrades] = useState([
         { year: '2025-26', sem: 'III', code: 'CS3301', title: 'Data Structures', grade: 'O', result: 'PASS', monthYear: 'DEC 2025' },
         { year: '2025-26', sem: 'III', code: 'CS3302', title: 'Discrete Mathematics', grade: 'A+', result: 'PASS', monthYear: 'DEC 2025' },
         { year: '2025-26', sem: 'III', code: 'CS3303', title: 'Digital Principles', grade: 'A', result: 'PASS', monthYear: 'DEC 2025' },
         { year: '2025-26', sem: 'III', code: 'EE3301', title: 'Electrical Circuits', grade: 'B+', result: 'PASS', monthYear: 'DEC 2025' },
         { year: '2024-25', sem: 'II', code: 'MA3201', title: 'Calculus', grade: 'A+', result: 'PASS', monthYear: 'MAY 2025' },
-        { year: '2024-25', sem: 'I', code: 'PH3101', title: 'Physics', grade: 'O', result: 'PASS', monthYear: 'DEC 2024' }
-    ];
+        { year: '2024-25', sem: 'I', code: 'PH3101', title: 'Physics', grade: 'O', result: 'PASS', monthYear: 'DEC 2024' },
+        { year: '2025-26', sem: 'VI', code: 'CS8651', title: 'Internet Programming', grade: 'A+', result: 'PASS', monthYear: 'MAY 2026' }
+    ]);
+
+    React.useEffect(() => {
+        const checkConnectivity = () => {
+            const syncedData = localStorage.getItem('connectivity_grading');
+            if (syncedData) {
+                const data = JSON.parse(syncedData);
+                const courseCode = data.course.split(' - ')[0];
+
+                setGrades(prev => prev.map(g => {
+                    if (g.code === courseCode) {
+                        const studentData = data.students.find(s => s.reg === '211520104001');
+                        if (studentData) {
+                            return {
+                                ...g,
+                                grade: studentData.currentGrade,
+                                result: 'PASS' // Simple assumption
+                            };
+                        }
+                    }
+                    return g;
+                }));
+            }
+        };
+
+        checkConnectivity();
+        window.addEventListener('storage', checkConnectivity);
+        return () => window.removeEventListener('storage', checkConnectivity);
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -39,18 +67,29 @@ const GradeBook = () => {
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', maxWidth: '600px' }}>
                     <div style={{ flex: 1 }}>
-                        <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            Academic Semester <span style={{ color: 'var(--color-error)' }}>*</span>
+                        <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '8px', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Academic Semester <span style={{ color: 'var(--color-danger)' }}>*</span>
                         </label>
                         <select
                             className="table-btn"
-                            style={{ width: '100%', height: '40px', padding: '0 12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', outline: 'none' }}
+                            style={{
+                                width: '100%',
+                                height: '40px',
+                                padding: '0 12px',
+                                borderRadius: '8px',
+                                border: '1.5px solid var(--theme-border)',
+                                background: 'var(--theme-bg-muted)',
+                                color: 'var(--theme-text)',
+                                outline: 'none',
+                                cursor: 'pointer',
+                                fontWeight: '600'
+                            }}
                             value={semester}
                             onChange={(e) => setSemester(e.target.value)}
                         >
-                            <option value="">-- Choose Semester --</option>
+                            <option value="" style={{ background: 'var(--card-bg)', color: 'var(--theme-text)' }}>-- Choose Semester --</option>
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                                <option key={num} value={num}>{num}</option>
+                                <option key={num} value={num} style={{ background: 'var(--card-bg)', color: 'var(--theme-text)' }}>{num}</option>
                             ))}
                         </select>
                     </div>
@@ -100,7 +139,7 @@ const GradeBook = () => {
                                             <td style={{ textAlign: 'center', padding: '16px' }}><input type="checkbox" /></td>
                                             <td style={{ textAlign: 'center', padding: '16px' }}>{g.year}</td>
                                             <td style={{ textAlign: 'center', padding: '16px' }}>{g.sem}</td>
-                                            <td style={{ textAlign: 'center', padding: '16px', fontWeight: 'bold', color: 'var(--color-primary-navy)' }}>{g.code}</td>
+                                            <td style={{ textAlign: 'center', padding: '16px', fontWeight: 'bold', color: 'var(--theme-text)' }}>{g.code}</td>
                                             <td style={{ padding: '16px' }}>{g.title}</td>
                                             <td style={{ textAlign: 'center', padding: '16px' }}>
                                                 <span style={{ fontWeight: '800', color: g.grade === 'O' ? '#10B981' : 'inherit' }}>{g.grade}</span>

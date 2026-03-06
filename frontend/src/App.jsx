@@ -52,6 +52,7 @@ const FacultyLeaves = lazy(() => import('./pages/faculty/FacultyLeaves'));
 const FacultyAttendance = lazy(() => import('./pages/faculty/FacultyAttendance'));
 const FacultyAnalytics = lazy(() => import('./pages/faculty/FacultyAnalytics'));
 const AssignmentGrading = lazy(() => import('./pages/faculty/AssignmentGrading'));
+const FacultyGrading = lazy(() => import('./pages/faculty/FacultyGrading'));
 const ProctorDashboard = lazy(() => import('./pages/faculty/ProctorDashboard'));
 const ResearchTracker = lazy(() => import('./pages/faculty/ResearchTracker'));
 
@@ -223,6 +224,7 @@ const App = () => {
                     <Route path="faculty/analytics" element={<FacultyAnalytics />} />
 
                     <Route path="faculty/assignments" element={<AssignmentGrading />} />
+                    <Route path="faculty/grading" element={<FacultyGrading />} />
                     <Route path="faculty/proctor" element={<ProctorDashboard />} />
                     <Route path="faculty/research" element={<ResearchTracker />} />
 

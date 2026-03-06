@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, RadialBarChart, RadialBar, PolarAngleAxis, Tooltip } from 'recharts';
 import { LuCalculator, LuTrendingUp, LuRefreshCw, LuPlus, LuTrash2 } from 'react-icons/lu';

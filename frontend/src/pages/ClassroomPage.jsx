@@ -36,8 +36,8 @@ const ClassroomPage = () => {
             <h1 className="page-header">Infrastructure & Classroom Report</h1>
 
             {/* Status Summary */}
-            <div className="stu-kpi-row">
-                <div className="stu-kpi-card blue">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Campus Capacity: 48 Rooms across 4 blocks.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">48</div>
                         <div className="kpi-label">Total Rooms</div>
@@ -45,7 +45,7 @@ const ClassroomPage = () => {
                     <FaBuilding className="kpi-icon" />
                     <div className="kpi-more">Campus Capacity</div>
                 </div>
-                <div className="stu-kpi-card green">
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('36 Rooms are currently occupied by various departments.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">36</div>
                         <div className="kpi-label">Occupied</div>
@@ -53,7 +53,7 @@ const ClassroomPage = () => {
                     <FaCheckCircle className="kpi-icon" />
                     <div className="kpi-more">Live Status</div>
                 </div>
-                <div className="stu-kpi-card yellow">
+                <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('12 Rooms are available for instant booking.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">12</div>
                         <div className="kpi-label">Available</div>
@@ -61,7 +61,7 @@ const ClassroomPage = () => {
                     <FaExclamationTriangle className="kpi-icon" />
                     <div className="kpi-more">Instant Booking</div>
                 </div>
-                <div className="stu-kpi-card teal">
+                <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('24 Rooms are equipped with smart-boards and AR support.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">24</div>
                         <div className="kpi-label">Smart Rooms</div>

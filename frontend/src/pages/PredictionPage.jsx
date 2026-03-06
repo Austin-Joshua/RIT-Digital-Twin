@@ -64,29 +64,29 @@ const PredictionPage = () => {
             </div>
 
             {/* Growth Metrics */}
-            <div className="stu-kpi-row">
-                <div className="stu-kpi-card blue">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => setMetric('STUDENT_ADMISSION')}>
                     <div className="kpi-main">
                         <div className="kpi-value">+{forecast?.predictedGrowthRate}%</div>
                         <div className="kpi-label">Predicted Growth</div>
                     </div>
                     <div className="kpi-more">↑ Above institutional average</div>
                 </div>
-                <div className="stu-kpi-card purple">
+                <div className="stu-kpi-card purple cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Forecast horizon: 6 months analysis based on historical cycles.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">6 Mo</div>
                         <div className="kpi-label">Forecast Horizon</div>
                     </div>
                     <div className="kpi-more">High Confidence Interval</div>
                 </div>
-                <div className="stu-kpi-card teal">
+                <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Model Accuracy: 88% using Random Forest Regression.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">88%</div>
                         <div className="kpi-label">Model Accuracy</div>
                     </div>
                     <div className="kpi-more">Based on Historical Data</div>
                 </div>
-                <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #B8860B 0%, #D4AF37 100%)' }}>
+                <div className="stu-kpi-card gold cursor-pointer hover:scale-[1.05] transition-transform" style={{ background: 'linear-gradient(135deg, #B8860B 0%, #D4AF37 100%)' }} onClick={() => alert('AI Auto-Optimization is active and refining resource allocation.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">AI</div>
                         <div className="kpi-label">Auto-Optimization</div>

@@ -85,11 +85,10 @@ const ChangePassword = () => {
 
                     <button
                         onClick={(e) => { e.preventDefault(); handleSave(); }}
-                        style={{ background: 'var(--color-error)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', transition: 'background 0.2s' }}
-                        onMouseEnter={(e) => e.target.style.background = 'var(--color-error-hover, #c82333)'}
-                        onMouseLeave={(e) => e.target.style.background = 'var(--color-error)'}
+                        className="px-6 py-2 rounded-lg font-bold text-white transition-all hover:scale-105 active:scale-95 w-full md:w-auto"
+                        style={{ background: 'var(--color-primary-navy)', boxShadow: '0 4px 15px rgba(11, 44, 107, 0.3)' }}
                     >
-                        Save
+                        Save Password
                     </button>
                 </form>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
+import { FaFilePdf, FaFileExcel, FaPrint, FaCopy } from 'react-icons/fa';
 import { useToast } from '../../context/ToastContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -18,7 +18,6 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             const doc = new jsPDF();
             doc.text(`${filename.replace(/_/g, ' ')}`, 14, 15);
 
-            // If headers aren't explicitly provided, try to infer from first row keys
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
             const tableRows = data.map(row =>
                 headers.length > 0
@@ -51,7 +50,6 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
 
         try {
             addToast(`Generating CSV for ${filename}...`, 'info');
-
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
             const csvRows = [
                 tableHeaders.join(','),
@@ -72,7 +70,6 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
             addToast(`${filename}.csv downloaded successfully`, 'success');
         } catch (error) {
             console.error("CSV Export Error:", error);
@@ -80,33 +77,59 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
         }
     };
 
+    const handleCopy = () => {
+        if (!data || data.length === 0) {
+            addToast("No data available to copy", "warning");
+            return;
+        }
+
+        try {
+            const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
+            const rows = data.map(row =>
+                (headers.length > 0 ? headers : Object.keys(row))
+                    .map(h => row[h] || '').join('\t')
+            );
+            const textToCopy = [tableHeaders.join('\t'), ...rows].join('\n');
+            navigator.clipboard.writeText(textToCopy);
+            addToast("Data copied to clipboard", 'success');
+        } catch (err) {
+            addToast("Failed to copy data", 'error');
+        }
+    };
+
+    const handlePrint = () => {
+        window.print();
+        addToast("Print dialog opened", 'info');
+    };
+
+    const btnStyle = {
+        background: 'var(--theme-bg-muted)',
+        color: 'var(--theme-text)',
+        border: '1px solid var(--theme-border)',
+        padding: '8px 14px',
+        borderRadius: '8px',
+        fontSize: '13px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        transition: 'all 0.2s ease'
+    };
+
     return (
-        <div className="flex gap-2" style={{ display: 'flex', gap: '8px' }}>
-            <button
-                onClick={handlePdf}
-                className="export-btn pdf"
-                style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 16px', borderRadius: '6px', border: '1px solid #fee2e2',
-                    background: '#fef2f2', color: '#dc2626', fontSize: '13px',
-                    fontWeight: 'bold', cursor: 'pointer', transition: '0.2s'
-                }}
-                title="Download as PDF"
-            >
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button onClick={handleCopy} style={btnStyle} title="Copy to Clipboard">
+                <FaCopy /> Copy
+            </button>
+            <button onClick={handleExcel} style={btnStyle} title="Download CSV">
+                <FaFileExcel /> CSV
+            </button>
+            <button onClick={handlePdf} style={btnStyle} title="Download PDF">
                 <FaFilePdf /> PDF
             </button>
-            <button
-                onClick={handleExcel}
-                className="export-btn csv"
-                style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 16px', borderRadius: '6px', border: '1px solid #dcfce7',
-                    background: '#f0fdf4', color: '#16a34a', fontSize: '13px',
-                    fontWeight: 'bold', cursor: 'pointer', transition: '0.2s'
-                }}
-                title="Download as CSV"
-            >
-                <FaFileExcel /> CSV
+            <button onClick={handlePrint} style={btnStyle} title="Print Page">
+                <FaPrint /> Print
             </button>
         </div>
     );

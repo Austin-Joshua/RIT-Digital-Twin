@@ -35,6 +35,13 @@ const CampusMap = () => {
         { id: 2, route: 'R12 - Adyar', position: [13.0470, 80.0560], status: 'Stopped', speed: '0 km/h' },
         { id: 3, route: 'R05 - Navallur', position: [13.0485, 80.0555], status: 'Approaching', speed: '15 km/h' }
     ]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Simulate real-time bus movement
     useEffect(() => {
@@ -51,13 +58,23 @@ const CampusMap = () => {
     }, []);
 
     return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+                padding: isMobile ? '12px' : '24px',
+                height: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 100px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: isMobile ? '10px' : '20px'
+            }}
+        >
             <div>
-                <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', fontWeight: '700', marginBottom: '8px' }}>Live IoT Campus Map</h1>
-                <p style={{ color: 'var(--text-secondary)' }}>Real-time spatial visualization of campus assets, smart blocks, and active transport routes.</p>
+                <h1 style={{ fontSize: isMobile ? '1.4rem' : '2rem', color: 'var(--theme-text)', fontWeight: '800', marginBottom: '4px' }}>Live IoT Campus Map</h1>
+                <p style={{ color: 'var(--theme-text-muted)', fontSize: isMobile ? '0.8rem' : '1rem' }}>Real-time spatial visualization of campus assets and transport.</p>
             </div>
 
-            <div style={{ flex: 1, minHeight: '600px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-soft)' }}>
+            <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--theme-border)', boxShadow: 'var(--shadow-soft)' }}>
                 <MapContainer center={RIT_CENTER} zoom={16} style={{ height: '100%', width: '100%' }}>
                     {/* Modern Clean Map Tiles */}
                     <TileLayer
