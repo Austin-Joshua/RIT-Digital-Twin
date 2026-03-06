@@ -114,7 +114,7 @@ const StudentLayout = () => {
                     </Link>
                 </div>
 
-                <div className="stu-sidebar-search" style={{ display: 'none' }}>
+                <div className="stu-sidebar-search">
                     <GlobalSearch
                         navItems={navItems.filter(item => !item.isDropdown).concat(
                             navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
@@ -208,30 +208,10 @@ const StudentLayout = () => {
             {/* ── Main ── */}
             <div className="stu-main">
                 {/* Top Bar — exact IMS: white topbar, gray icons */}
-                {/* Top Bar — contents moved to right */}
-                <header className="stu-topbar" style={{ justifyContent: 'flex-end' }}>
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%', justifyContent: 'flex-end', padding: '0 20px' }}>
-
-                        {/* 1. Logo (Always Visible) */}
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
-                            <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT"
-                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
-                            />
-                        </Link>
-
-                        {/* 2. Global Search (Moved from sidebar) */}
-                        <div className="topbar-search-wrapper" style={{ flex: '1', maxWidth: '400px', margin: '0 20px' }}>
-                            <GlobalSearch
-                                navItems={navItems.filter(item => !item.isDropdown).concat(
-                                    navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
-                                )}
-                                placeholder="Search student portal..."
-                            />
-                        </div>
-
-                        {/* 3. Hamburger Toggle */}
+                {/* Top Bar — refined visibility */}
+                <header className="stu-topbar">
+                    <div className="stu-topbar-left lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
+                        {/* 1. Hamburger Toggle (Mobile Only) */}
                         <button
                             className="stu-hamburger"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -244,7 +224,19 @@ const StudentLayout = () => {
                             <LuMenu />
                         </button>
 
-                        {/* 4. Theme Toggle */}
+                        {/* 2. Logo (Mobile Only) */}
+                        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                                alt="RIT"
+                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                            />
+                        </Link>
+                    </div>
+
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
+
+                        {/* 3. Theme Toggle */}
                         <button
                             onClick={toggleTheme}
                             style={{
@@ -257,10 +249,10 @@ const StudentLayout = () => {
                             {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
                         </button>
 
-                        {/* 5. Notifications */}
+                        {/* 4. Notifications */}
                         <NotificationBar />
 
-                        {/* 6. User Profile */}
+                        {/* 5. User Profile */}
                         <div style={{ position: 'relative' }} ref={dropdownRef}>
                             <button
                                 className="stu-user-badge"
