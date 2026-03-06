@@ -19,7 +19,33 @@ const TransportPage = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => { fetchRoutes(); }, []);
+    useEffect(() => {
+        const loadConnectedRoutes = () => {
+            const stored = localStorage.getItem('connectivity_transport_routes');
+            if (stored) {
+                const simulatedRoutes = JSON.parse(stored);
+                const mappedRoutes = simulatedRoutes.map((r, idx) => ({
+                    id: `sim-${idx}`,
+                    routeNumber: r.routeCode,
+                    busNumber: `RIT-${r.routeCode}`,
+                    routeName: r.routeName + (r.isEv ? ' (EV Route)' : ''),
+                    startPoint: r.origin,
+                    endPoint: 'RIT Campus',
+                    currentOccupancy: r.students,
+                    capacity: Math.round(r.students / (r.occupancyPercent / 100)) || 50,
+                    stops: [], // Simulation relies on live rendering, stops omitted for brevity
+                    coordinatorName: 'AI Fleet Management',
+                }));
+                setRoutes(mappedRoutes);
+            } else {
+                fetchRoutes();
+            }
+        };
+
+        loadConnectedRoutes();
+        window.addEventListener('storage', loadConnectedRoutes);
+        return () => window.removeEventListener('storage', loadConnectedRoutes);
+    }, []);
 
     const fetchRoutes = async () => {
         setLoading(true);

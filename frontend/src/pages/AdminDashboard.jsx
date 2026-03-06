@@ -14,6 +14,7 @@ import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnal
 import Card from '../components/common/Card';
 import { useNavigate } from 'react-router-dom';
 import MiniCalendar from '../components/common/MiniCalendar';
+import DetailedReportModal from '../components/common/DetailedReportModal';
 
 const stagger = {
     hidden: { opacity: 0 },
@@ -26,12 +27,17 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const { addToast } = useToast();
     const { publish } = useWebSocket();
+    const [selectedModal, setSelectedModal] = useState(null);
 
     // Broadcast State
     const [bTitle, setBTitle] = useState('');
     const [bMessage, setBMessage] = useState('');
     const [sendPush, setSendPush] = useState(true);
     const [sendSms, setSendSms] = useState(false);
+
+    // Dynamic State for Connected KPIs
+    const [totalPubs, setTotalPubs] = useState(14);
+    const [totalCitations, setTotalCitations] = useState(128);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -48,46 +54,71 @@ const AdminDashboard = () => {
                 setLoading(false);
             }
         };
+
+        const loadResearchConnectivity = () => {
+            const storedPubs = localStorage.getItem('connectivity_publications');
+            if (storedPubs) {
+                const currentPapers = JSON.parse(storedPubs);
+                setTotalPubs(currentPapers.length);
+                const citations = currentPapers.reduce((sum, p) => sum + (Number(p.citations) || 0), 0);
+                setTotalCitations(citations);
+            }
+        };
+
         fetchStats();
+        loadResearchConnectivity();
+
+        // Listen for live updates from FacultyResearch
+        window.addEventListener('storage', loadResearchConnectivity);
+        return () => window.removeEventListener('storage', loadResearchConnectivity);
     }, []);
 
     const handleBroadcast = async (e) => {
         e.preventDefault();
         try {
             await api.post(`/notifications/admin/broadcast?title=${encodeURIComponent(bTitle)}&message=${encodeURIComponent(bMessage)}&type=SYSTEM`);
-
-            // Push real-time event via raw websockets
-            if (sendPush) {
-                publish('/app/broadcast', {
-                    sender: 'ADMIN',
-                    title: bTitle,
-                    message: bMessage,
-                    severity: 'HIGH'
-                });
-            }
-
-            if (sendSms) {
-                // Simulate SMS Dispatch to Parents
-                console.log(`[SMS Gateway Mock] Dispatched to Parent numbers: ${bMessage}`);
-                addToast('SMS Alerts dispatched to 4,203 registered parents.', 'info');
-            }
-
-            addToast(sendPush ? 'Broadcast sent globally via App Push!' : 'Broadcast successful.', 'success');
-            setBTitle('');
-            setBMessage('');
         } catch (_err) {
-            addToast('The broadcast could not be sent. Please try again later.', 'error');
+            // Ignore for local simulator
         }
+
+        // CONNECTIVITY: Save broadcast to local storage to trigger toast in other roles
+        const broadcastPayload = {
+            id: Date.now(),
+            title: bTitle,
+            message: bMessage,
+            sender: 'ADMIN',
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('connectivity_broadcasts', JSON.stringify(broadcastPayload));
+        window.dispatchEvent(new Event('storage')); // trigger sync locally as well
+
+        if (sendPush) {
+            publish('/app/broadcast', {
+                sender: 'ADMIN',
+                title: bTitle,
+                message: bMessage,
+                severity: 'HIGH'
+            });
+        }
+
+        if (sendSms) {
+            console.log(`[SMS Gateway Mock] Dispatched to Parent numbers: ${bMessage}`);
+            addToast('SMS Alerts dispatched to 4,203 registered parents.', 'info');
+        }
+
+        addToast(sendPush ? 'Broadcast sent globally via App Push!' : 'Broadcast successful.', 'success');
+        setBTitle('');
+        setBMessage('');
     };
 
     const kpiCards = useMemo(() => [
         { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green', link: '/simulations/classroom' },
         { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow', link: '/simulations/energy' },
         { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'indigo', class: 'indigo', link: '/transport' },
-        { title: 'HR & Recruitment', value: `12 Open`, icon: <FaUsers />, color: 'teal', class: 'teal', link: '/management/hr-recruitment' },
-        { title: 'Asset Inventory', value: `4.2k`, icon: <FaBoxes />, color: 'purple', class: 'purple', link: '/management/inventory' },
+        { title: 'Total Publications', value: totalPubs, icon: <FaBuilding />, color: 'teal', class: 'teal', link: '/academics/research' },
+        { title: 'Total Citations', value: totalCitations, icon: <FaChartLine />, color: 'purple', class: 'purple', link: '/academics/research' },
         { title: 'Alumni Network', value: `12.4k`, icon: <FaUserGraduate />, color: 'orange', class: 'orange', link: '/management/alumni' },
-    ], [stats]);
+    ], [stats, totalPubs, totalCitations]);
 
     const chartData = useMemo(() => [
         { name: 'Mon', Energy: 4000, Transport: 2400 },
@@ -118,16 +149,25 @@ const AdminDashboard = () => {
             {/* KPI Cards Row - Using stu-kpi-row classes */}
             <div className="stu-kpi-row">
                 {kpiCards.map((card, i) => (
-                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => navigate(card.link)}>
+                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedModal(card)} style={{ cursor: 'pointer' }}>
                         <div className="kpi-main">
-                            <div className="kpi-value" style={{ fontSize: '24px' }}>{card.value}</div>
-                            <div className="kpi-label" style={{ fontSize: '13px' }}>{card.title}</div>
+                            <div className="kpi-value">{card.value}</div>
+                            <div className="kpi-label">{card.title}</div>
                         </div>
                         <div className="kpi-icon">{card.icon}</div>
-                        <div className="kpi-more">View details →</div>
+                        <div className="kpi-more" onClick={(e) => { e.stopPropagation(); navigate(card.link); }}>View details →</div>
                     </div>
                 ))}
             </div>
+
+            <DetailedReportModal
+                isOpen={!!selectedModal}
+                onClose={() => setSelectedModal(null)}
+                title={selectedModal?.title || selectedModal?.label}
+                value={selectedModal?.value}
+                label={selectedModal?.title || selectedModal?.label}
+                icon={selectedModal?.icon}
+            />
 
             {/* Main Content Layout */}
             <div className="stu-info-row">

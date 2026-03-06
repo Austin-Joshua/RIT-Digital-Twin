@@ -31,9 +31,8 @@ const FacultyAttendance = () => {
 
     const handleSave = () => {
         setMarkingMode(false);
-        addToast(`Attendance for ${date} saved successfully.`, 'success');
 
-        // Simulate recalculation
+        // Calculate updated statistics
         const updated = students.map(s => {
             const newTotal = s.total + 1;
             const newAttended = s.currentStatus === 'present' ? s.attended + 1 : s.attended;
@@ -44,7 +43,19 @@ const FacultyAttendance = () => {
                 percentage: ((newAttended / newTotal) * 100).toFixed(1)
             };
         });
+
         setStudents(updated);
+
+        // Store in localStorage for cross-login connectivity
+        const attendanceData = {
+            lastUpdated: new Date().toISOString(),
+            course: selectedCourse,
+            date: date,
+            students: updated
+        };
+        localStorage.setItem('connectivity_attendance', JSON.stringify(attendanceData));
+
+        addToast(`Attendance for ${date} saved successfully. Shared with student portal.`, 'success');
     };
 
     return (
@@ -78,15 +89,24 @@ const FacultyAttendance = () => {
                     {!markingMode ? (
                         <button
                             onClick={() => setMarkingMode(true)}
-                            className="text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors shadow-sm"
-                            style={{ background: 'var(--color-primary-navy)' }}
+                            className="bg-primary-navy text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md hover:scale-105 active:scale-95"
+                            style={{
+                                backgroundColor: 'var(--color-primary-navy)',
+                                color: '#ffffff',
+                                border: '1px solid rgba(255,255,255,0.1)'
+                            }}
                         >
-                            Mark Attendance
+                            <FaUserClock /> Mark Attendance
                         </button>
                     ) : (
                         <button
                             onClick={handleSave}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors shadow-sm animate-pulse"
+                            className="bg-success text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md animate-pulse hover:scale-105 active:scale-95"
+                            style={{
+                                backgroundColor: 'var(--color-success)',
+                                color: '#ffffff',
+                                boxShadow: '0 0 15px rgba(22, 163, 74, 0.4)'
+                            }}
                         >
                             <FaSave /> Save Register
                         </button>

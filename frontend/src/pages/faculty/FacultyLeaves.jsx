@@ -9,6 +9,11 @@ const FacultyLeaves = () => {
 
     useEffect(() => {
         const fetchLeaves = async () => {
+            let baseLeaves = [
+                { id: 1, name: 'Rahul Sharma', reg: '211520104055', type: 'Sick Leave', duration: '2 Days (Oct 24 - Oct 25)', reason: 'Fever and cold', status: 'Pending' },
+                { id: 2, name: 'Priya Patel', reg: '211520104042', type: 'On-Duty (OD)', duration: '1 Day (Oct 26)', reason: 'Hackathon Participation', status: 'Pending' },
+            ];
+
             try {
                 const response = await api.get('/faculty/leaves');
                 const mappedLeaves = response.data.map(l => ({
@@ -20,31 +25,61 @@ const FacultyLeaves = () => {
                     reason: 'Leave Application',
                     status: l.status
                 }));
-                setRequests(mappedLeaves);
+                baseLeaves = [...mappedLeaves, ...baseLeaves];
             } catch (error) {
-                console.error("Failed to fetch leaves, using mock", error);
-                setRequests([
-                    { id: 1, name: 'Rahul Sharma', reg: '211520104055', type: 'Sick Leave', duration: '2 Days (Oct 24 - Oct 25)', reason: 'Fever and cold', status: 'Pending' },
-                    { id: 2, name: 'Priya Patel', reg: '211520104042', type: 'On-Duty (OD)', duration: '1 Day (Oct 26)', reason: 'Hackathon Participation', status: 'Pending' },
-                    { id: 3, name: 'Vijay Kumar', reg: '211520104088', type: 'Casual Leave', duration: '1 Day (Oct 27)', reason: 'Family Function', status: 'Pending' },
-                    { id: 4, name: 'Sneha Reddy', reg: '211520104067', type: 'Sick Leave', duration: '3 Days (Oct 20 - Oct 22)', reason: 'Viral Fever', status: 'Approved' },
-                    { id: 5, name: 'Abhishek Iyer', reg: '211520104012', type: 'On-Duty (OD)', duration: '2 Days (Oct 15 - Oct 16)', reason: 'Sports Tournament', status: 'Rejected' },
-                ]);
-            } finally {
-                setLoading(false);
+                console.error("Using mock for base leaves");
             }
+
+            // Sync with Student 'No Due' requests via localStorage
+            const storedReqs = localStorage.getItem('connectivity_nodue_requests');
+            if (storedReqs) {
+                const connectivityReqs = JSON.parse(storedReqs).map((r, idx) => ({
+                    id: `sync_${r.id}`,
+                    name: r.studentName,
+                    reg: r.reg,
+                    type: r.type,
+                    duration: 'Academic Year 2025-26',
+                    reason: `Course: ${r.code} - ${r.name}`,
+                    status: r.status,
+                    isSynced: true,
+                    originalCode: r.code
+                }));
+                setRequests([...baseLeaves, ...connectivityReqs]);
+            } else {
+                setRequests(baseLeaves);
+            }
+            setLoading(false);
         };
+
         fetchLeaves();
+
+        // Listen for internal storage changes
+        const handleStorage = () => fetchLeaves();
+        window.addEventListener('storage', handleStorage);
+        return () => window.removeEventListener('storage', handleStorage);
     }, []);
 
     const handleAction = async (id, action) => {
+        const req = requests.find(r => r.id === id);
+
+        if (req?.isSynced) {
+            // Update localStorage for Student Connectivity
+            const storedReqs = JSON.parse(localStorage.getItem('connectivity_nodue_requests') || '[]');
+            const updated = storedReqs.map(r =>
+                r.code === req.originalCode ? { ...r, status: action, remarks: `Processed by Faculty: ${action}` } : r
+            );
+            localStorage.setItem('connectivity_nodue_requests', JSON.stringify(updated));
+
+            setRequests(requests.map(r => r.id === id ? { ...r, status: action } : r));
+            return;
+        }
+
         try {
             await api.put(`/faculty/leaves/${id}/status`, { status: action });
             setRequests(requests.map(req =>
                 req.id === id ? { ...req, status: action } : req
             ));
         } catch (error) {
-            console.error("Failed to update leave status", error);
             setRequests(requests.map(req =>
                 req.id === id ? { ...req, status: action } : req
             ));

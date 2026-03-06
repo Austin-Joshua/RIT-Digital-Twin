@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 import Card from '../../components/common/Card';
 import MiniCalendar from '../../components/common/MiniCalendar';
+import DetailedReportModal from '../../components/common/DetailedReportModal';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -44,24 +45,20 @@ const StudentDashboard = () => {
     const [kpiData, setKpiData] = useState({ cgpa: 0, attendance: 0, arrear: 0, leave: 0 });
     const [riskScore, setRiskScore] = useState(null);
     const [ranking, setRanking] = useState(null);
+    const [selectedModal, setSelectedModal] = useState(null);
 
     useEffect(() => {
         const fetchKpis = async () => {
             try {
-                // In a real app we would call these specific metric endpoints
-                // For now, these default to 0 if endpoints don't strictly exist for numbers yet.
-                // Assuming AcademicController has these endpoints.
                 const cgpaRes = await api.get('/academic/student/cgpa').catch(() => ({ data: [] }));
-
-                // Let's just mock with sensible data or sum if we got a list
                 let calculatedCGPA = 0;
                 if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
                     calculatedCGPA = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
                 }
 
                 setKpiData({
-                    cgpa: calculatedCGPA || 8.42, // Fallback for demonstration
-                    attendance: 87.5, // Mocked for now to avoid breaking UI without the proper % endpoint
+                    cgpa: calculatedCGPA || 8.42,
+                    attendance: 87.5,
                     arrear: 0,
                     leave: 2
                 });
@@ -70,43 +67,26 @@ const StudentDashboard = () => {
             }
         };
 
-        const fetchEnterpriseData = async () => {
-            try {
-                const sId = user?.id || 1;
-                const [riskRes, rankRes] = await Promise.all([
-                    academicAiApi.getRiskPrediction(sId).catch(() => ({ data: null })),
-                    academicAiApi.getStudentRanking(sId).catch(() => ({ data: null }))
-                ]);
-                if (riskRes.data) setRiskScore(riskRes.data);
-                if (rankRes.data) setRanking(rankRes.data);
-            } catch (err) {
-                console.error("Enterprise metrics failed", err);
-            }
-        }
-
         fetchKpis();
-        fetchEnterpriseData();
     }, [user]);
 
     const kpis = [
-        { label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
-        { label: 'Arrears In Hand', value: kpiData.arrear, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
-        { label: 'Average Attendance', value: `${kpiData.attendance.toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
-        { label: 'Taken Leave', value: kpiData.leave, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
+        { id: 'cgpa', label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
+        { id: 'arrears', label: 'Arrears In Hand', value: kpiData.arrear, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
+        { id: 'attendance', label: 'Average Attendance', value: `${kpiData.attendance.toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
+        { id: 'leave', label: 'Taken Leave', value: kpiData.leave, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
     ];
 
     return (
         <div className="stu-dashboard">
-
-
-
             {/* Main KPI Cards (Exact IMS Replica) */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
                     <div
                         key={kpi.label}
                         className={`stu-kpi-card ${kpi.color}`}
-                        onClick={() => navigate(kpi.link)}
+                        onClick={() => setSelectedModal(kpi)}
+                        style={{ cursor: 'pointer' }}
                     >
                         <div className="kpi-main">
                             <h3 className="kpi-value">{kpi.value}</h3>
@@ -115,12 +95,21 @@ const StudentDashboard = () => {
                         <div className="kpi-icon">
                             {kpi.icon}
                         </div>
-                        <div className="kpi-more">
+                        <div className="kpi-more" onClick={(e) => { e.stopPropagation(); navigate(kpi.link); }}>
                             More info <FaArrowCircleRight style={{ marginLeft: '5px' }} />
                         </div>
                     </div>
                 ))}
             </div>
+
+            <DetailedReportModal
+                isOpen={!!selectedModal}
+                onClose={() => setSelectedModal(null)}
+                title={selectedModal?.label}
+                value={selectedModal?.value}
+                label={selectedModal?.label}
+                icon={selectedModal?.icon}
+            />
 
             {/* Announcements & Events */}
             <div className="stu-info-row">

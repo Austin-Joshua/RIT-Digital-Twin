@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaFlask, FaPlus, FaExternalLinkAlt, FaBookOpen, FaQuoteRight, FaCalendarAlt } from 'react-icons/fa';
 import DetailModal from '../../components/common/DetailModal';
 import Card from '../../components/common/Card';
+import AddPublicationModal from '../../components/common/AddPublicationModal';
 
 const ResearchTracker = () => {
     const [selectedPaper, setSelectedPaper] = useState(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    const papers = [
+    const defaultPapers = [
         { id: 1, title: 'Optimizing Container Orchestration using Deep Reinforcement Learning', type: 'Journal', publisher: 'IEEE Access', date: 'Feb 2024', status: 'Published', citations: 12, abstract: 'This paper proposes a novel deep reinforcement learning approach to optimize container orchestration in cloud environments, significantly reducing latency and improving resource utilization.', authors: 'Dr. Faculty Name, Dr. Co-Author', doi: '10.1109/ACCESS.2024.1234567' },
         { id: 2, title: 'Serverless Computing Cold Start Mitigation', type: 'Conference', publisher: 'ACM CloudComp', date: 'Pending', status: 'Under Review', citations: 0, abstract: 'We evaluate several strategies for mitigating cold starts in serverless computing, including pre-warming techniques and predictive scaling models, demonstrating a 40% reduction in average invocation delay.', authors: 'Dr. Faculty Name, Student Submitter', doi: 'N/A' },
     ];
+
+    const [allPapers, setAllPapers] = useState(defaultPapers);
+
+    useEffect(() => {
+        const loadPapers = () => {
+            const stored = localStorage.getItem('connectivity_publications');
+            if (stored) {
+                setAllPapers(JSON.parse(stored));
+            } else {
+                localStorage.setItem('connectivity_publications', JSON.stringify(defaultPapers));
+            }
+        };
+        loadPapers();
+        window.addEventListener('storage', loadPapers);
+        return () => window.removeEventListener('storage', loadPapers);
+    }, []);
+
+    const handleSavePublication = (newPub) => {
+        const updatedPapers = [newPub, ...allPapers];
+        setAllPapers(updatedPapers);
+        localStorage.setItem('connectivity_publications', JSON.stringify(updatedPapers));
+        window.dispatchEvent(new Event('storage')); // trigger sync across components
+    };
+
+    const totalCitations = allPapers.reduce((sum, p) => sum + (Number(p.citations) || 0), 0);
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 p-6 overflow-hidden">
@@ -21,8 +48,9 @@ const ResearchTracker = () => {
                     <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Log journal publications, patents, and grants for appraisal metrics.</p>
                 </div>
                 <button
-                    className="font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2"
-                    style={{ background: 'var(--color-primary-navy)', color: 'white' }}
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2 hover:opacity-90 active:scale-95"
+                    style={{ background: 'var(--color-primary-navy)', color: 'white', textShadow: 'none', boxShadow: '0 4px 12px rgba(11,44,107,0.3)', border: 'none' }}
                 >
                     <FaPlus /> Add Publication
                 </button>
@@ -31,11 +59,11 @@ const ResearchTracker = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Publications</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--theme-text)' }}>14</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--theme-text)' }}>{allPapers.length}</div>
                 </div>
                 <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Citations</div>
-                    <div className="text-3xl font-black" style={{ color: 'var(--color-primary-navy)' }}>128</div>
+                    <div className="text-3xl font-black" style={{ color: 'var(--color-primary-navy)' }}>{totalCitations}</div>
                 </div>
                 <div className="p-5 rounded-xl border shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div className="text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>h-index</div>
@@ -59,7 +87,7 @@ const ResearchTracker = () => {
                 </div>
 
                 <div className="flex flex-col gap-4 md:gap-0">
-                    {papers.map((p) => (
+                    {allPapers.map((p) => (
                         <Card
                             key={p.id}
                             className="md:grid md:grid-cols-12 md:gap-4 md:items-center py-4 px-4 md:px-4 md:border-t-0 md:border-x-0 md:rounded-none md:shadow-none cursor-pointer hover:bg-black/5 transition-colors"
@@ -140,7 +168,7 @@ const ResearchTracker = () => {
                             </div>
                             <div className="p-4 rounded-xl border flex flex-col justify-center" style={{ borderColor: 'var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                 <p className="text-xs uppercase font-bold text-gray-500 mb-1">DOI / Link</p>
-                                {selectedPaper.doi !== 'N/A' ? (
+                                {selectedPaper.doi && selectedPaper.doi !== 'N/A' ? (
                                     <a href={`https://doi.org/${selectedPaper.doi}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-bold text-sm truncate block" title={selectedPaper.doi}>
                                         {selectedPaper.doi} <FaExternalLinkAlt className="inline text-[10px]" />
                                     </a>
@@ -152,6 +180,12 @@ const ResearchTracker = () => {
                     </div>
                 )}
             </DetailModal>
+
+            <AddPublicationModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={handleSavePublication}
+            />
         </div>
     );
 };

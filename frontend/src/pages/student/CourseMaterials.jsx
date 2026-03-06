@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaBook, FaDownload, FaFilePdf, FaFileArchive, FaSearch, FaFolderOpen, FaCheckCircle, FaLock } from 'react-icons/fa';
 
 const CourseMaterials = () => {
@@ -13,13 +13,40 @@ const CourseMaterials = () => {
         { id: 4, code: 'CS3401', name: 'Algorithms', progress: 60 },
     ];
 
+    const initialNotes = [
+        { id: 101, subject: 'CS3451', title: 'Unit 1: Process Management', type: 'pdf', size: '2.4 MB', date: '2 days ago', downloaded: true },
+        { id: 102, subject: 'CS3451', title: 'Unit 2: Scheduling Algorithms', type: 'pdf', size: '1.8 MB', date: '1 week ago', downloaded: false },
+        { id: 103, subject: 'CS3491', title: 'Intro to Neural Networks', type: 'pdf', size: '4.1 MB', date: '3 days ago', downloaded: true },
+        { id: 104, subject: 'IT3401', title: 'React Hooks Complete Guide', type: 'zip', size: '12 MB', date: '2 weeks ago', downloaded: false },
+    ];
+
+    const [notes, setNotes] = useState(initialNotes);
+
+    useEffect(() => {
+        const loadMaterials = () => {
+            const stored = localStorage.getItem('connectivity_materials');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                // Format the faculty materials to match student view layout
+                const formatted = parsed.map(mat => ({
+                    id: mat.id,
+                    subject: mat.subject.substring(0, 15) + (mat.subject.length > 15 ? '...' : ''), // truncate long names
+                    title: mat.title,
+                    type: mat.type.toLowerCase(),
+                    size: mat.size,
+                    date: mat.date,
+                    downloaded: mat.downloaded || false
+                }));
+                setNotes([...formatted, ...initialNotes]);
+            }
+        };
+        loadMaterials();
+        window.addEventListener('storage', loadMaterials);
+        return () => window.removeEventListener('storage', loadMaterials);
+    }, []);
+
     const materials = {
-        notes: [
-            { id: 101, subject: 'CS3451', title: 'Unit 1: Process Management', type: 'pdf', size: '2.4 MB', date: '2 days ago', downloaded: true },
-            { id: 102, subject: 'CS3451', title: 'Unit 2: Scheduling Algorithms', type: 'pdf', size: '1.8 MB', date: '1 week ago', downloaded: false },
-            { id: 103, subject: 'CS3491', title: 'Intro to Neural Networks', type: 'pdf', size: '4.1 MB', date: '3 days ago', downloaded: true },
-            { id: 104, subject: 'IT3401', title: 'React Hooks Complete Guide', type: 'zip', size: '12 MB', date: '2 weeks ago', downloaded: false },
-        ],
+        notes: notes,
         papers: [
             { id: 201, subject: 'CS3451', title: 'Nov/Dec 2023 End Semester', type: 'pdf', size: '800 KB', date: '1 month ago', downloaded: false },
             { id: 202, subject: 'CS3451', title: 'Apr/May 2023 End Semester', type: 'pdf', size: '850 KB', date: '2 months ago', downloaded: true },

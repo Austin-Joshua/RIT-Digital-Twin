@@ -4,27 +4,40 @@
  */
 
 :root {
-    /* Colors */
+    /* Colors - Optimized for Accessibility (WCAG AAA) */
     --color-primary-navy: #0B2C6B;
-    --color-secondary-navy: #123C8C;
+    --color-secondary-navy: #081F4B;
     --color-accent-gold: #D4AF37;
-    --color-bg-light: #F4F6F9;
+    --color-bg-light: #F8FAFC;
+    /* Cleaner Light Gray */
     --color-bg-dark: #0F172A;
-    --color-text-primary: #111827;
-    /* Near black for high contrast */
+    /* Slate 900 */
+    --color-text-primary: #0F172A;
+    /* Slate 900 for Light Mode */
     --color-text-secondary: #475569;
-    /* Slate 600 for better readability */
-    --color-text-light: #E5E7EB;
-    --color-border: #E5E7EB;
+    /* Slate 600 */
+    --color-text-light: #F8FAFC;
+    --color-border: #E2E8F0;
+    /* Slate 200 */
     --color-success: #16A34A;
-    --color-warning: #F59E0B;
+    --color-warning: #D97706;
+    /* Darker Amber for contrast */
     --color-danger: #DC2626;
+
+    /* Premium Gradients for KPI Cards */
+    --grad-blue: linear-gradient(135deg, #0B2C6B 0%, #1E40AF 100%);
+    --grad-purple: linear-gradient(135deg, #581C87 0%, #7E22CE 100%);
+    --grad-emerald: linear-gradient(135deg, #065F46 0%, #059669 100%);
+    --grad-gold: linear-gradient(135deg, #B45309 0%, #D4AF37 100%);
+    --grad-red: linear-gradient(135deg, #991B1B 0%, #DC2626 100%);
 
     /* Semantic Mappings - Light (Default) */
     --theme-bg: var(--color-bg-light);
     --theme-text: var(--color-text-primary);
     --theme-text-muted: var(--color-text-secondary);
     --theme-border: var(--color-border);
+    --theme-bg-muted: #F1F5F9;
+    /* Slate 100 */
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --card-bg: #ffffff;
@@ -56,22 +69,25 @@
     --transition-speed: 300ms;
 }
 
-/* Dark Mode Overrides */
+/* Dark Mode Overrides - Optimized AAA Contrast */
 .dark {
-    --theme-bg: var(--color-bg-dark);
+    --theme-bg: #020617;
+    /* Even deeper Navy/Black */
     --theme-text: #F8FAFC;
-    /* Light slate 50 for high contrast */
-    --theme-text-muted: #CBD5E1;
-    /* Optimized for AAA contrast against dark bg */
+    /* Slate 50 */
+    --theme-text-muted: #94A3B8;
+    /* Slate 400 */
     --color-accent-gold: #FFD700;
-    /* Brighter gold for better visibility on dark */
+    /* Pure vibrant gold */
     --color-text-secondary: #94A3B8;
     /* Slate 400 for secondary text in dark mode */
-    --theme-border: #334155;
-    /* More visible against deep navy */
+    --theme-border: #1E293B;
+    /* Slate 800 */
+    --theme-bg-muted: #1E293B;
+    /* Slate 800 */
     --glass-bg: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --card-bg: #1E293B;
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --card-bg: #0F172A;
 }
 
 /* Global Transition Utility */
