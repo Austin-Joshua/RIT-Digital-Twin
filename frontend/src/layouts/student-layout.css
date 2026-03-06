@@ -116,7 +116,8 @@
     color: #94a3b8;
 }
 
-.dark .stu-nav-item:hover, .dark .stu-nav-item.active {
+.dark .stu-nav-item:hover,
+.dark .stu-nav-item.active {
     color: #f8fafc;
 }
 
@@ -461,39 +462,36 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    width: 100%;
+    margin-left: auto;
 }
 
-.topbar-search-wrapper {
-    flex: 1;
-    max-width: 400px;
-}
-
-.topbar-search-wrapper .global-search-container {
-    background: var(--ims-bg-light);
-    border-radius: 8px;
-    padding: 2px 10px;
-    border: 1px solid #d2d6de;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.dark .topbar-search-wrapper .global-search-container {
-    background: rgba(15, 23, 42, 0.6);
-    border-color: #334155;
-}
-
-.topbar-search-wrapper .global-search-container:focus-within {
-    border-color: var(--ims-active-blue);
-    box-shadow: 0 0 0 3px rgba(11, 44, 107, 0.1);
-}
-
-.stu-topbar-right .stu-hamburger {
+.stu-topbar-left .stu-hamburger {
     border-radius: 8px;
     width: 40px;
     height: 40px;
     font-size: 20px;
+    margin-right: 5px;
+}
+
+/* Glassmorphism for user badge */
+.stu-user-badge {
+    background: var(--ims-active-blue);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(11, 44, 107, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stu-user-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(11, 44, 107, 0.3);
 }
 
 .stu-topbar-icons {
@@ -1630,7 +1628,7 @@ html.dark .stu-calendar-grid th {
     }
 
     /* Flexbox items center alignment */
-    .stu-kpi-row > * {
+    .stu-kpi-row>* {
         justify-self: stretch;
     }
 
