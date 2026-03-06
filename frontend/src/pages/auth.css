@@ -169,14 +169,15 @@
 
 .auth-heading h2 {
     font-size: 1.75rem;
-    font-weight: 700;
-    color: #0B2C6B;
+    font-weight: 800;
+    color: #07204F;
     margin: 0 0 0.35rem;
 }
 
 .auth-heading p {
-    font-size: 0.9rem;
-    color: #6B7280;
+    font-size: 1rem;
+    color: #4B5563;
+    font-weight: 500;
     margin: 0;
 }
 
@@ -186,13 +187,13 @@
     align-items: center;
     gap: 0.6rem;
     background: #FEF2F2;
-    border: 1px solid #FECACA;
+    border: 2px solid #FCA5A5;
     border-radius: 10px;
     padding: 0.75rem 1rem;
     margin-bottom: 1.25rem;
-    color: #DC2626;
-    font-size: 0.85rem;
-    font-weight: 500;
+    color: #B91C1C;
+    font-size: 0.9rem;
+    font-weight: 600;
     animation: shakeError 0.4s ease;
 }
 
@@ -238,12 +239,12 @@
 
 .form-group label {
     display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1F2937;
     margin-bottom: 0.4rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
 }
 
 .input-wrapper {

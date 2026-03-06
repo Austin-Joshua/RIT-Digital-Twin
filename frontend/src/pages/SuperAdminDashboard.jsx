@@ -97,8 +97,8 @@ const SuperAdminDashboard = () => {
                 </div>
             </div>
 
-            {/* Content Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            {/* Content Row - Using standardized grid */}
+            <div className="stu-kpi-row">
                 {tenants.map(tenant => (
                     <div
                         key={tenant.id}

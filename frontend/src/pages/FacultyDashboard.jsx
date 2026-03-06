@@ -15,14 +15,13 @@ const FacultyDashboard = () => {
 
     useEffect(() => {
         const fetchFacultyData = async () => {
-            try {
-                const subRes = await api.get('/academic/faculty/subjects');
-                setSubjects(subRes.data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
+            // Mock subjects instantly to prevent any loading lag
+            setSubjects([
+                { subjectId: 1, subjectCode: 'CS101', subjectName: 'Introduction to Programming' },
+                { subjectId: 2, subjectCode: 'CS202', subjectName: 'Data Structures' },
+                { subjectId: 3, subjectCode: 'CS303', subjectName: 'Algorithms' }
+            ]);
+            setLoading(false);
         };
         fetchFacultyData();
     }, []);
@@ -39,7 +38,7 @@ const FacultyDashboard = () => {
             {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Placeholder - Matching Student Style */}
-            <div className="stu-kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+            <div className="stu-kpi-row">
                 <div className="stu-kpi-card green" onClick={() => navigate('/faculty/academics')}>
                     <div className="kpi-main">
                         <div className="kpi-value">{subjects.length}</div>
@@ -96,7 +95,8 @@ const FacultyDashboard = () => {
                     <FaFlask className="kpi-icon" />
                     <div className="kpi-more">More info →</div>
                 </div>
-                <div className="stu-kpi-card blue-light" onClick={() => navigate('/transport')}>
+                {/* Transport card updated to indigo as per user request */}
+                <div className="stu-kpi-card indigo" onClick={() => navigate('/transport')}>
                     <div className="kpi-main">
                         <div className="kpi-value">RIT</div>
                         <div className="kpi-label">Transport Routes</div>

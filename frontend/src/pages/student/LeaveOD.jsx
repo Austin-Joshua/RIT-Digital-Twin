@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuCalendarDays, LuClipboardList, LuCheckCircle2, LuXCircle, LuClock, LuFileText, LuSend } from 'react-icons/lu';
+import { LuCalendarDays, LuClipboardList, LuCircleCheckBig, LuCircleX, LuClock, LuFileText, LuSend } from 'react-icons/lu';
 import api from '../../services/api';
 
 const STATUS_STYLES = {
@@ -101,7 +101,7 @@ const LeaveOD = () => {
                             boxShadow: '0 4px 20px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '10px'
                         }}
                     >
-                        {toast.type === 'success' ? <LuCheckCircle2 /> : <LuXCircle />} {toast.msg}
+                        {toast.type === 'success' ? <LuCircleCheckBig /> : <LuCircleX />} {toast.msg}
                     </motion.div>
                 )}
             </AnimatePresence>

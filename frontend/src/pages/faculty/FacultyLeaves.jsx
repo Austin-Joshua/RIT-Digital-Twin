@@ -86,59 +86,71 @@ const FacultyLeaves = () => {
                 </Card>
             </div>
 
-            <Card style={{ padding: '20px' }}>
+            <div style={{ marginTop: '20px' }}>
                 <h3 style={{ margin: '0 0 20px 0', color: 'var(--theme-text)' }}>Recent Requests</h3>
-                <div style={{ overflowX: 'auto' }}>
-                    <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
-                        <thead>
-                            <tr style={{ background: 'var(--theme-bg-muted)', textAlign: 'left', borderBottom: '2px solid var(--theme-border)' }}>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)' }}>Student Info</th>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)' }}>Leave Type</th>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)' }}>Duration</th>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)' }}>Reason</th>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)' }}>Status</th>
-                                <th style={{ padding: '12px 16px', color: 'var(--theme-text)', textAlign: 'center' }}>Approve / Reject</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {requests.map((req) => (
-                                <tr key={req.id} style={{ borderBottom: '1px solid var(--theme-border)' }}>
-                                    <td style={{ padding: '16px' }}>
-                                        <div style={{ fontWeight: 'bold', color: 'var(--theme-text)' }}>{req.name}</div>
-                                        <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>{req.reg}</div>
-                                    </td>
-                                    <td style={{ padding: '16px' }}>
-                                        <span className={`status-badge ${req.type.includes('OD') ? 'od' : 'approved'}`}>
-                                            {req.type}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '16px', color: 'var(--theme-text)', fontSize: '14px' }}>{req.duration}</td>
-                                    <td style={{ padding: '16px', color: 'var(--theme-text-muted)', fontSize: '14px' }}>{req.reason}</td>
-                                    <td style={{ padding: '16px' }}>
-                                        <span className={`status-badge ${req.status.toLowerCase()}`}>
-                                            {req.status}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '16px', textAlign: 'center' }}>
-                                        {req.status === 'Pending' ? (
-                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                                <button onClick={() => handleAction(req.id, 'Approved')} style={{ background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <FaCheck size={12} /> Approve
-                                                </button>
-                                                <button onClick={() => handleAction(req.id, 'Rejected')} style={{ background: 'var(--color-error)', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <FaTimes size={12} /> Reject
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <span style={{ color: '#9ca3af', fontSize: '13px' }}>Resolved</span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+                {/* Desktop View (Table-like grid) */}
+                <div className="hidden md:grid grid-cols-6 gap-4 p-4 font-bold border-b" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', borderBottomColor: 'var(--theme-border)' }}>
+                    <div className="col-span-1">Student Info</div>
+                    <div className="col-span-1">Leave Type</div>
+                    <div className="col-span-1">Duration</div>
+                    <div className="col-span-1">Reason</div>
+                    <div className="col-span-1">Status</div>
+                    <div className="col-span-1 text-center">Approve / Reject</div>
                 </div>
-            </Card>
+
+                <div className="flex flex-col gap-4 md:gap-0 mt-4 md:mt-0">
+                    {requests.map((req) => (
+                        <Card key={req.id} className="md:grid md:grid-cols-6 md:gap-4 md:items-center p-4 md:border-t-0 md:border-x-0 md:rounded-none md:shadow-none" style={{ borderBottomColor: 'var(--theme-border)', borderBottomStyle: 'solid', borderBottomWidth: '1px' }}>
+                            {/* Mobile Label & Desktop Content */}
+                            <div className="col-span-1 mb-2 md:mb-0">
+                                <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Student Info</span>
+                                <div style={{ fontWeight: 'bold', color: 'var(--theme-text)' }}>{req.name}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>{req.reg}</div>
+                            </div>
+
+                            <div className="col-span-1 mb-2 md:mb-0">
+                                <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Leave Type</span>
+                                <span className={`status-badge ${req.type.includes('OD') ? 'od' : 'approved'}`}>
+                                    {req.type}
+                                </span>
+                            </div>
+
+                            <div className="col-span-1 mb-2 md:mb-0">
+                                <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Duration</span>
+                                <div style={{ color: 'var(--theme-text)', fontSize: '14px' }}>{req.duration}</div>
+                            </div>
+
+                            <div className="col-span-1 mb-2 md:mb-0">
+                                <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Reason</span>
+                                <div style={{ color: 'var(--theme-text-muted)', fontSize: '14px' }}>{req.reason}</div>
+                            </div>
+
+                            <div className="col-span-1 mb-4 md:mb-0">
+                                <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Status</span>
+                                <span className={`status-badge ${req.status.toLowerCase()}`}>
+                                    {req.status}
+                                </span>
+                            </div>
+
+                            <div className="col-span-1 flex md:justify-center">
+                                {req.status === 'Pending' ? (
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <button onClick={() => handleAction(req.id, 'Approved')} className="flex-1 md:flex-none justify-center" style={{ background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <FaCheck size={12} /> Approve
+                                        </button>
+                                        <button onClick={() => handleAction(req.id, 'Rejected')} className="flex-1 md:flex-none justify-center" style={{ background: 'var(--color-error)', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <FaTimes size={12} /> Reject
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <span style={{ color: '#9ca3af', fontSize: '13px' }}>Resolved</span>
+                                )}
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
