@@ -71,29 +71,29 @@ const FacultyAcademics = () => {
                 </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 mb-6">
                 {subjects.map((sub, idx) => (
-                    <Card key={idx} style={{ padding: '20px', borderTop: '4px solid var(--color-primary-navy)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                    <Card key={idx} className="p-3 md:p-5 flex flex-col justify-between" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
+                        <div className="flex justify-between items-start mb-2 md:mb-4">
                             <div>
-                                <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', color: 'var(--theme-text)' }}>{sub.name}</h3>
-                                <div style={{ color: 'var(--theme-text-muted)', fontSize: '14px', fontWeight: 'bold' }}>{sub.code}</div>
+                                <h3 className="m-0 text-sm md:text-lg" style={{ color: 'var(--theme-text)' }}>{sub.name}</h3>
+                                <div className="text-[10px] md:text-sm font-bold" style={{ color: 'var(--theme-text-muted)' }}>{sub.code}</div>
                             </div>
-                            <span className="status-badge od" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-navy)', padding: '4px 8px', borderRadius: '6px', fontSize: '12px' }}>
+                            <span className="status-badge od px-2 py-1 rounded-md text-[9px] md:text-xs whitespace-nowrap ml-2" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-navy)' }}>
                                 Sem {sub.semester}
                             </span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '16px', color: 'var(--theme-text-muted)' }}>
+                        <div className="flex flex-col sm:flex-row justify-between text-[10px] md:text-sm mb-3 md:mb-4 gap-1 sm:gap-0" style={{ color: 'var(--theme-text-muted)' }}>
                             <span>Branch: <strong style={{ color: 'var(--theme-text)' }}>{sub.branch}</strong></span>
                             <span>Students: <strong style={{ color: 'var(--theme-text)' }}>{sub.students}</strong></span>
                         </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', color: 'var(--theme-text-muted)' }}>
+                        <div className="mt-auto">
+                            <div className="flex justify-between text-[9px] md:text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>
                                 <span>Syllabus Covered</span>
                                 <span>{sub.syllabusCovered}%</span>
                             </div>
-                            <div style={{ width: '100%', height: '8px', background: 'var(--theme-bg-muted)', borderRadius: '4px', overflow: 'hidden' }}>
-                                <div style={{ width: `${sub.syllabusCovered}%`, height: '100%', background: sub.syllabusCovered > 80 ? 'var(--color-success)' : 'var(--color-warning)' }}></div>
+                            <div className="w-full h-1.5 md:h-2 rounded-full overflow-hidden" style={{ background: 'var(--theme-bg-muted)' }}>
+                                <div className="h-full rounded-full" style={{ width: `${sub.syllabusCovered}%`, background: sub.syllabusCovered > 80 ? 'var(--color-success)' : 'var(--color-warning)' }}></div>
                             </div>
                         </div>
                     </Card>

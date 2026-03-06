@@ -61,10 +61,10 @@ function TransportPage() {
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="bg-white text-navy-900 dark:bg-navy-800 dark:text-white border border-gray-200 dark:border-navy-600 px-4 py-2 font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors flex items-center gap-2">
+                    <button className="px-4 py-2 font-bold rounded-lg transition-colors flex items-center gap-2 hover:opacity-80 disabled:opacity-50" style={{ background: 'var(--card-bg)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)' }}>
                         Network Map
                     </button>
-                    <button className="bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 px-4 py-2 font-bold rounded-lg hover:bg-navy-800 transition-colors">
+                    <button className="px-4 py-2 font-bold rounded-lg transition-colors hover:opacity-90 active:scale-95 disabled:opacity-50" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>
                         Optimise All
                     </button>
                 </div>
