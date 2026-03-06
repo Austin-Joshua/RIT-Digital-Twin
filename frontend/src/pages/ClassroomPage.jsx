@@ -36,38 +36,38 @@ const ClassroomPage = () => {
             <h1 className="page-header">Infrastructure & Classroom Report</h1>
 
             {/* Status Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Campus Capacity: 48 Rooms across 4 blocks.')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">48</div>
-                        <div className="kpi-label">Total Rooms</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Campus Capacity: 48 Rooms across 4 blocks.')}>
+                    <div className="kpi-main z-10">
+                        <div className="kpi-value text-2xl md:text-4xl font-bold mb-1">48</div>
+                        <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Total Rooms</div>
                     </div>
-                    <FaBuilding className="kpi-icon" />
-                    <div className="kpi-more">Campus Capacity</div>
+                    <FaBuilding className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Campus Capacity</div>
                 </div>
-                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('36 Rooms are currently occupied by various departments.')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">36</div>
-                        <div className="kpi-label">Occupied</div>
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('36 Rooms are currently occupied by various departments.')}>
+                    <div className="kpi-main z-10">
+                        <div className="kpi-value text-2xl md:text-4xl font-bold mb-1">36</div>
+                        <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Occupied</div>
                     </div>
-                    <FaCheckCircle className="kpi-icon" />
-                    <div className="kpi-more">Live Status</div>
+                    <FaCheckCircle className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Live Status</div>
                 </div>
-                <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('12 Rooms are available for instant booking.')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">12</div>
-                        <div className="kpi-label">Available</div>
+                <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('12 Rooms are available for instant booking.')}>
+                    <div className="kpi-main z-10">
+                        <div className="kpi-value text-2xl md:text-4xl font-bold mb-1">12</div>
+                        <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Available</div>
                     </div>
-                    <FaExclamationTriangle className="kpi-icon" />
-                    <div className="kpi-more">Instant Booking</div>
+                    <FaExclamationTriangle className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Instant Booking</div>
                 </div>
-                <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('24 Rooms are equipped with smart-boards and AR support.')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">24</div>
-                        <div className="kpi-label">Smart Rooms</div>
+                <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('24 Rooms are equipped with smart-boards and AR support.')}>
+                    <div className="kpi-main z-10">
+                        <div className="kpi-value text-2xl md:text-4xl font-bold mb-1">24</div>
+                        <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Smart Rooms</div>
                     </div>
-                    <FaChalkboardTeacher className="kpi-icon" />
-                    <div className="kpi-more">High-Tech Facilities</div>
+                    <FaChalkboardTeacher className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">High-Tech Facilities</div>
                 </div>
             </div>
 

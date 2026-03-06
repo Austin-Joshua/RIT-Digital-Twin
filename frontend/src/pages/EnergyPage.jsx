@@ -78,38 +78,38 @@ const EnergyPage = () => {
             <h1 className="page-header">Campus Energy Optimization Report</h1>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Real-Time Load: ' + liveMetrics.currentLoad + ' kW. High efficiency observed.')}>
-                    <div className="kpi-main">
-                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.currentLoad} <span style={{ fontSize: '14px' }}>kW</span></h3>
-                        <p className="kpi-label">Real-Time Load</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Real-Time Load: ' + liveMetrics.currentLoad + ' kW. High efficiency observed.')}>
+                    <div className="kpi-main z-10">
+                        <h3 className="kpi-value text-2xl md:text-3xl font-bold mb-1" style={{ fontSize: '' }}>{liveMetrics.currentLoad} <span className="text-xs md:text-sm">kW</span></h3>
+                        <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Real-Time Load</p>
                     </div>
-                    <FaBolt className="kpi-icon" />
-                    <div className="kpi-more">Live Monitoring</div>
+                    <FaBolt className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Live Monitoring</div>
                 </div>
-                <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Peak Daily Load: 800 kW reached at 12:45 PM today.')}>
-                    <div className="kpi-main">
-                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>800 <span style={{ fontSize: '14px' }}>kW</span></h3>
-                        <p className="kpi-label">Peak Daily</p>
+                <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Peak Daily Load: 800 kW reached at 12:45 PM today.')}>
+                    <div className="kpi-main z-10">
+                        <h3 className="kpi-value text-2xl md:text-3xl font-bold mb-1" style={{ fontSize: '' }}>800 <span className="text-xs md:text-sm">kW</span></h3>
+                        <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Peak Daily</p>
                     </div>
-                    <FaChartLine className="kpi-icon" />
-                    <div className="kpi-more">Consumption Trend</div>
+                    <FaChartLine className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Consumption Trend</div>
                 </div>
-                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Solar Output: ' + liveMetrics.solarYield + ' kW. Renewable energy contributing 22% of total load.')}>
-                    <div className="kpi-main">
-                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.solarYield} <span style={{ fontSize: '14px' }}>kW</span></h3>
-                        <p className="kpi-label">Solar Output</p>
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Solar Output: ' + liveMetrics.solarYield + ' kW. Renewable energy contributing 22% of total load.')}>
+                    <div className="kpi-main z-10">
+                        <h3 className="kpi-value text-2xl md:text-3xl font-bold mb-1" style={{ fontSize: '' }}>{liveMetrics.solarYield} <span className="text-xs md:text-sm">kW</span></h3>
+                        <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Solar Output</p>
                     </div>
-                    <FaSolarPanel className="kpi-icon" />
-                    <div className="kpi-more">Renewable Energy</div>
+                    <FaSolarPanel className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Renewable Energy</div>
                 </div>
-                <div className="stu-kpi-card red cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Grid Import: ' + liveMetrics.gridImport + ' kW. Stable connection.')}>
-                    <div className="kpi-main">
-                        <h3 className="kpi-value" style={{ fontSize: '28px' }}>{liveMetrics.gridImport} <span style={{ fontSize: '14px' }}>kW</span></h3>
-                        <p className="kpi-label">Grid Import</p>
+                <div className="stu-kpi-card red cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Grid Import: ' + liveMetrics.gridImport + ' kW. Stable connection.')}>
+                    <div className="kpi-main z-10">
+                        <h3 className="kpi-value text-2xl md:text-3xl font-bold mb-1" style={{ fontSize: '' }}>{liveMetrics.gridImport} <span className="text-xs md:text-sm">kW</span></h3>
+                        <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Grid Import</p>
                     </div>
-                    <FaBolt className="kpi-icon" />
-                    <div className="kpi-more">External Sourcing</div>
+                    <FaBolt className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
+                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">External Sourcing</div>
                 </div>
             </div>
 
