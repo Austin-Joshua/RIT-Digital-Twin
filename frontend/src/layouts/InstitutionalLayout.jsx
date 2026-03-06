@@ -27,9 +27,10 @@ const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
     const { addToast } = useToast();
     const [sidebarOpen, setSidebarOpen] = useState(() => {
-        // Always open on desktop, always closed on mobile initially
+        if (window.innerWidth <= 768) return false;
         if (window.innerWidth >= 1025) return true;
-        return false;
+        const saved = localStorage.getItem('sidebar-open');
+        return saved !== null ? JSON.parse(saved) : true;
     });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
