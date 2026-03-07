@@ -250,8 +250,51 @@ const WhatIfSimulator = () => {
                     </div>
                 </div>
             </div>
+
+            <AICareerAlignment projected={projected} isMobile={isMobile} />
         </div>
     );
 };
+
+const AICareerAlignment = ({ projected, isMobile }) => (
+    <div style={{
+        background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px',
+        padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '24px'
+    }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+            <div style={{ padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '10px' }}>
+                <LuTrendingUp color="#3b82f6" />
+            </div>
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--theme-text)', textTransform: 'uppercase', tracking: '0.5px' }}>AI Career Alignment</h3>
+        </div>
+
+        {projected ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <p style={{ fontSize: '13px', color: 'var(--theme-text-muted)', lineHeight: '1.5', margin: 0 }}>
+                    With a projected CGPA of <b>{projected.toFixed(2)}</b>, AI evaluates your tier placement:
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '12px' }}>
+                    {[
+                        { label: 'Tier-1 Product Roles', val: projected >= 8.5 ? '95%' : projected >= 8.0 ? '75%' : '40%', color: projected >= 8.5 ? '#16a34a' : '#ca8a04' },
+                        { label: 'Global PG Admissions', val: projected >= 9.0 ? '98%' : projected >= 8.0 ? '80%' : '55%', color: projected >= 9.0 ? '#16a34a' : '#ca8a04' },
+                        { label: 'Core R&D Opportunities', val: projected >= 8.0 ? 'High' : 'Medium', color: projected >= 8.0 ? '#3c8dbc' : '#f97316' }
+                    ].map(item => (
+                        <div key={item.label} style={{ background: 'var(--theme-bg-muted)', padding: '12px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '4px', border: '1px solid var(--theme-border)' }}>
+                            <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--theme-text-muted)', textTransform: 'uppercase' }}>{item.label}</span>
+                            <span style={{ fontSize: '16px', fontWeight: '900', color: item.color }}>{item.val}</span>
+                        </div>
+                    ))}
+                </div>
+                <button style={{ marginTop: '8px', width: 'fit-content', padding: '8px 16px', borderRadius: '8px', border: '1px dashed #3b82f6', background: 'transparent', color: '#3b82f6', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
+                    Download Predictive Career Map
+                </button>
+            </div>
+        ) : (
+            <div style={{ textAlign: 'center', padding: '10px', opacity: 0.5 }}>
+                <p style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>Awaiting simulation data to generate career implications...</p>
+            </div>
+        )}
+    </div>
+);
 
 export default WhatIfSimulator;

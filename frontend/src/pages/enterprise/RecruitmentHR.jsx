@@ -7,9 +7,9 @@ const RecruitmentHR = () => {
     const [activeTab, setActiveTab] = useState('recruitment'); // recruitment, payroll
 
     const applicants = [
-        { id: 201, name: 'Dr. Sarah Jenifer', role: 'Asst. Professor (CSE)', status: 'Interview Scheduled', experience: '5 Yrs', date: 'Mar 15, 2024' },
-        { id: 202, name: 'Mr. Rajesh Kumar', role: 'Lab Assistant (ECE)', status: 'Screening', experience: '2 Yrs', date: 'Mar 12, 2024' },
-        { id: 203, name: 'Dr. John Doe', role: 'Professor (Mech)', status: 'Offer Extended', experience: '12 Yrs', date: 'Feb 28, 2024' },
+        { id: 201, name: 'Dr. Sarah Jenifer', role: 'Asst. Professor (CSE)', status: 'Interview Scheduled', experience: '5 Yrs', date: 'Mar 15, 2024', aiScore: 94 },
+        { id: 202, name: 'Mr. Rajesh Kumar', role: 'Lab Assistant (ECE)', status: 'Screening', experience: '2 Yrs', date: 'Mar 12, 2024', aiScore: 78 },
+        { id: 203, name: 'Dr. John Doe', role: 'Professor (Mech)', status: 'Offer Extended', experience: '12 Yrs', date: 'Feb 28, 2024', aiScore: 89 },
     ];
 
     const payroll = [
@@ -28,42 +28,41 @@ const RecruitmentHR = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 p-5 rounded-xl flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-full flex items-center justify-center text-xl">
-                        <FaBriefcase />
+            <div className="stu-kpi-row">
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform">
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Open Positions</div>
+                        <div className="text-4xl font-black mb-1 text-white">12</div>
+                        <div className="text-sm text-blue-100">Across All Departments</div>
                     </div>
-                    <div>
-                        <div className="text-sm font-bold text-blue-800 dark:text-blue-300">Open Positions</div>
-                        <div className="text-2xl font-black text-navy-900 dark:text-white">12</div>
-                    </div>
+                    <div className="kpi-icon"><FaBriefcase /></div>
                 </div>
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 p-5 rounded-xl flex items-center gap-4">
-                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/50 text-amber-600 rounded-full flex items-center justify-center text-xl">
-                        <FaUsers />
+
+                <div className="stu-kpi-card amber cursor-pointer hover:scale-[1.02] transition-transform">
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-amber-900 uppercase tracking-wider mb-2">Active Candidates</div>
+                        <div className="text-4xl font-black mb-1" style={{ color: 'var(--ims-bg-light)' }}>48</div>
+                        <div className="text-sm text-amber-900">In Interview Pipeline</div>
                     </div>
-                    <div>
-                        <div className="text-sm font-bold text-amber-800 dark:text-amber-300">Active Candidates</div>
-                        <div className="text-2xl font-black text-navy-900 dark:text-white">48</div>
-                    </div>
+                    <div className="kpi-icon"><FaUsers /></div>
                 </div>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 p-5 rounded-xl flex items-center gap-4">
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-full flex items-center justify-center text-xl">
-                        <FaCheck />
+
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.02] transition-transform">
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-green-200 uppercase tracking-wider mb-2">Offers Accepted</div>
+                        <div className="text-4xl font-black mb-1 text-white">5</div>
+                        <div className="text-sm text-green-100">This Quarter</div>
                     </div>
-                    <div>
-                        <div className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Offers Accepted</div>
-                        <div className="text-2xl font-black text-navy-900 dark:text-white">5</div>
-                    </div>
+                    <div className="kpi-icon"><FaCheck /></div>
                 </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/30 p-5 rounded-xl flex items-center gap-4">
-                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 text-purple-600 rounded-full flex items-center justify-center text-xl">
-                        <FaFileInvoice />
+
+                <div className="stu-kpi-card purple cursor-pointer hover:scale-[1.02] transition-transform">
+                    <div className="kpi-main">
+                        <div className="text-sm font-bold text-purple-200 uppercase tracking-wider mb-2">Payroll Status</div>
+                        <div className="text-4xl font-black mb-1 text-white">68%</div>
+                        <div className="text-sm text-purple-100">Processing Pending</div>
                     </div>
-                    <div>
-                        <div className="text-sm font-bold text-purple-800 dark:text-purple-300">Payroll Status</div>
-                        <div className="text-xl font-bold text-navy-900 dark:text-white mt-1">68% Done</div>
-                    </div>
+                    <div className="kpi-icon"><FaFileInvoice /></div>
                 </div>
             </div>
 
@@ -92,6 +91,7 @@ const RecruitmentHR = () => {
                                         <th className="p-4 font-bold">Candidate Name</th>
                                         <th className="p-4 font-bold">Applied Role</th>
                                         <th className="p-4 font-bold">Experience</th>
+                                        <th className="p-4 font-bold">AI Matching Score</th>
                                         <th className="p-4 font-bold">Stage Tracker</th>
                                         <th className="p-4 font-bold text-center">Actions</th>
                                     </tr>
@@ -101,17 +101,25 @@ const RecruitmentHR = () => {
                                         <tr key={app.id} className="border-b border-gray-50 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/30">
                                             <td className="p-4">
                                                 <div className="font-bold text-navy-900 dark:text-white">{app.name}</div>
-                                                <div className="text-xs text-gray-400 mt-0.5">Applied: {app.date}</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Applied: {app.date}</div>
                                             </td>
-                                            <td className="p-4 font-medium text-gray-700 dark:text-gray-300">{app.role}</td>
-                                            <td className="p-4">{app.experience}</td>
+                                            <td className="p-4 font-bold text-navy-800 dark:text-gray-200">{app.role}</td>
+                                            <td className="p-4 font-medium text-gray-700 dark:text-gray-300">{app.experience}</td>
                                             <td className="p-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${app.status.includes('Offer') ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : app.status.includes('Interview') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 bg-gray-100 dark:bg-navy-700 rounded-full overflow-hidden w-20">
+                                                        <div className="h-full bg-green-500" style={{ width: `${app.aiScore}%` }}></div>
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-green-600">{app.aiScore}%</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-black ${app.status.includes('Offer') ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : app.status.includes('Interview') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'}`}>
                                                     {app.status}
                                                 </span>
                                             </td>
                                             <td className="p-4 text-center">
-                                                <button className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors">View Profile</button>
+                                                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-black text-sm transition-colors">View Profile</button>
                                             </td>
                                         </tr>
                                     ))}

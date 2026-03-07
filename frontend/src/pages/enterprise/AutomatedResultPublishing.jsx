@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LuCheckCircle, LuAlertTriangle, LuSend, LuActivity, LuBarChart3 } from 'react-icons/lu';
+import { LuCheckCircle, LuTriangleAlert, LuSend, LuActivity, LuBarChart } from 'react-icons/lu';
 
 const DEPARTMENTS = [
     { name: 'Computer Science', progress: 100, status: 'READY', anomalies: 0 },
@@ -47,9 +47,9 @@ const AutomatedResultPublishing = () => {
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                 {[
-                    { label: 'Overall Progress', val: '82%', sub: '3/4 Depts Uploaded', icon: <LuBarChart3 color="#3c8dbc" /> },
+                    { label: 'Overall Progress', val: '82%', sub: '3/4 Depts Uploaded', icon: <LuBarChart color="#3c8dbc" /> },
                     { label: 'AI Anomaly Check', val: verified ? 'CLEAN' : 'PENDING', sub: verified ? '0 Critical Errors' : 'Requires Audit', icon: <LuCheckCircle color={verified ? '#16a34a' : '#ccc'} /> },
-                    { label: 'Pending Signature', val: 'Principal', sub: 'Final sign-off required', icon: <LuAlertTriangle color="#ca8a04" /> }
+                    { label: 'Pending Signature', val: 'Principal', sub: 'Final sign-off required', icon: <LuTriangleAlert color="#ca8a04" /> }
                 ].map(s => (
                     <div key={s.label} style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{ fontSize: '24px' }}>{s.icon}</div>
@@ -94,7 +94,7 @@ const AutomatedResultPublishing = () => {
                                         }}>{dept.status}</span>
                                     </td>
                                     <td style={{ padding: '16px 20px', color: dept.anomalies > 0 ? '#dc2626' : 'var(--theme-text)', fontWeight: '700' }}>
-                                        {dept.anomalies > 0 ? <><LuAlertTriangle size={12} /> {dept.anomalies} Issues</> : 'No Anomaly'}
+                                        {dept.anomalies > 0 ? <><LuTriangleAlert size={12} /> {dept.anomalies} Issues</> : 'No Anomaly'}
                                     </td>
                                     <td style={{ padding: '16px 20px' }}>
                                         <button style={{ background: 'transparent', border: 'none', color: '#3c8dbc', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Review Data</button>

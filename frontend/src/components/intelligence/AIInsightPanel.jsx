@@ -20,6 +20,11 @@ const MOCK_INSIGHTS = {
     ADMIN: [
         { category: 'INFRA', message: 'Block C energy spike detected (A/C load).', suggestion: 'Optimize schedules for Room 302.' },
         { category: 'SENTIMENT', message: 'Campus vibe is "Excited" (85% positive).', suggestion: 'Broadcast sports event update.' }
+    ],
+    BOSS: [
+        { category: 'STRATEGIC', message: 'Enrollment trends suggest 12% growth in CSE next year.', suggestion: 'Review Faculty hiring plan for Q3.' },
+        { category: 'SECURITY', message: 'Unusual login pattern detected from new IP range.', suggestion: 'Verify Global System Audit logs.' },
+        { category: 'FINANCIAL', message: 'Energy optimization saved ₹1.2L this month.', suggestion: 'Reallocate savings to Research fund.' }
     ]
 };
 

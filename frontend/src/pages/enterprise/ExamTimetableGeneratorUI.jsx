@@ -141,6 +141,32 @@ const ExamTimetableGeneratorUI = () => {
                 </div>
             )}
 
+            {analysis && (
+                <div style={{ background: 'rgba(var(--card-bg-rgb, 255, 255, 255), 0.6)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', padding: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <div style={{ padding: '8px', background: 'rgba(11, 44, 107, 0.1)', borderRadius: '10px' }}>
+                            <LuFileCode color="var(--color-primary-navy)" />
+                        </div>
+                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--theme-text)', textTransform: 'uppercase', tracking: '0.5px' }}>Neural Conflict Resolution Report</h3>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {[
+                            { issue: 'Faculty Overlap: Dr. Senthil', resolution: 'Rescheduled to Morning session, LH-102', status: 'RESOLVED' },
+                            { issue: 'Room Conflict: Block C LH-101', resolution: 'Allocated LH-103 for CSE-B Batch', status: 'RESOLVED' },
+                            { issue: 'Student Back-to-Back: CSE-A', resolution: 'Ensured 1.5 day gap via shift rotation', status: 'OPTIMIZED' }
+                        ].map((log, i) => (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--theme-bg-muted)', borderRadius: '12px', border: '1px solid var(--theme-border)' }}>
+                                <div>
+                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)' }}>{log.issue}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', marginTop: '2px' }}>{log.resolution}</div>
+                                </div>
+                                <span style={{ fontSize: '9px', fontWeight: '900', color: '#16a34a', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>{log.status}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {timetable && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflowX: 'auto' }}>
                     <h3 style={{ marginBottom: '20px', fontSize: '1.2rem', color: 'var(--text-primary)' }}>Generated Schedule</h3>

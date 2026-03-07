@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
@@ -41,12 +42,14 @@ public class DataInitializer implements CommandLineRunner {
         private final FacultyLeaveRequestRepository leaveRepo;
         private final DepartmentRepository departmentRepository;
         private final SubjectRepository subjectRepository;
+        private final JdbcTemplate jdbcTemplate;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
                         BusStopRepository busStopRepository, AlumniProfileRepository alumniRepo,
                         AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo,
-                        DepartmentRepository departmentRepository, SubjectRepository subjectRepository) {
+                        DepartmentRepository departmentRepository, SubjectRepository subjectRepository,
+                        JdbcTemplate jdbcTemplate) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
@@ -57,14 +60,23 @@ public class DataInitializer implements CommandLineRunner {
                 this.leaveRepo = leaveRepo;
                 this.departmentRepository = departmentRepository;
                 this.subjectRepository = subjectRepository;
+                this.jdbcTemplate = jdbcTemplate;
         }
 
         @Override
         @Transactional
         public void run(String... args) throws Exception {
+                // 0. Manual SQL Migration for Role Rename
+                try {
+                        log.info("Executing role migration: SUPER_ADMIN -> BOSS");
+                        jdbcTemplate.execute("UPDATE roles SET role_name = 'BOSS' WHERE role_name = 'SUPER_ADMIN'");
+                } catch (Exception e) {
+                        log.warn("Migration failed or already executed: " + e.getMessage());
+                }
+
                 // 1. Initialize Roles
                 seedRole(Role.UserRole.MANAGEMENT);
-                seedRole(Role.UserRole.SUPER_ADMIN);
+                seedRole(Role.UserRole.BOSS);
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -86,7 +98,7 @@ public class DataInitializer implements CommandLineRunner {
 
                 // Parent and Super Admin Seed
                 seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
-                seedUser("superadmin@ritchennai.edu.in", "admin123", Role.UserRole.SUPER_ADMIN, "Global", "Admin");
+                seedUser("boss@ritchennai.edu.in", "admin123", Role.UserRole.BOSS, "Global", "Admin");
 
                 // 3. Initialize Transport Data
                 seedTransportData();
