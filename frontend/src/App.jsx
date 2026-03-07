@@ -207,8 +207,8 @@ const App = () => {
                     <Route path="simulations/crowd" element={<CrowdPage />} />
                     <Route path="simulations/sustainability" element={<SustainabilityDashboard />} />
                     <Route path="predictions" element={<PredictionPage />} />
+                    <Route path="change-password" element={<ChangePassword />} />
                     <Route path="map" element={<CampusMap />} />
-
 
                     {/* Enterprise ERP Additions (Admin/Faculty) */}
                     <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />

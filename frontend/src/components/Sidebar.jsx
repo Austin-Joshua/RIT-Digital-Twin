@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     FaHome, FaChalkboardTeacher, FaBolt, FaBus,
     FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,
-    FaUniversity, FaShieldAlt, FaTools, FaMapMarkedAlt
+    FaUniversity, FaShieldAlt, FaTools, FaMapMarkedAlt, FaBoxes
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -27,6 +27,7 @@ const Sidebar = () => {
             { path: '/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
             { path: '/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
             { path: '/settings', name: 'Settings', icon: <FaCog /> },
+            { path: '/change-password', name: 'Change Password', icon: <FaCog /> },
         ];
 
         const managementItems = [
@@ -49,8 +50,18 @@ const Sidebar = () => {
 
         const superAdminItems = [
             { path: '/super-admin', name: 'Global View', icon: <FaUniversity /> },
-            { path: '/analytics', name: 'Global Analytics', icon: <FaChartLine /> },
+            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
+            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
+            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
+            { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
+            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
+            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
+            { path: '/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
+            { path: '/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
+            { path: '/hr', name: 'HR & Recruitment', icon: <FaUsers /> },
+            { path: '/inventory', name: 'Global Inventory', icon: <FaBoxes /> },
             { path: '/settings', name: 'System Settings', icon: <FaCog /> },
+            { path: '/change-password', name: 'Change Password', icon: <FaCog /> },
         ];
 
         const role = user?.role || 'FACULTY';
