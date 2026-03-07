@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LuCheckCircle, LuTriangleAlert, LuSend, LuActivity, LuBarChart } from 'react-icons/lu';
+import { LuCheckCircle, LuTriangleAlert, LuSend, LuActivity, LuTrendingUp } from 'react-icons/lu';
 
 const DEPARTMENTS = [
     { name: 'Computer Science', progress: 100, status: 'READY', anomalies: 0 },
@@ -47,7 +47,7 @@ const AutomatedResultPublishing = () => {
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                 {[
-                    { label: 'Overall Progress', val: '82%', sub: '3/4 Depts Uploaded', icon: <LuBarChart color="#3c8dbc" /> },
+                    { label: 'Overall Progress', val: '82%', sub: '3/4 Depts Uploaded', icon: <LuTrendingUp color="#3c8dbc" /> },
                     { label: 'AI Anomaly Check', val: verified ? 'CLEAN' : 'PENDING', sub: verified ? '0 Critical Errors' : 'Requires Audit', icon: <LuCheckCircle color={verified ? '#16a34a' : '#ccc'} /> },
                     { label: 'Pending Signature', val: 'Principal', sub: 'Final sign-off required', icon: <LuTriangleAlert color="#ca8a04" /> }
                 ].map(s => (

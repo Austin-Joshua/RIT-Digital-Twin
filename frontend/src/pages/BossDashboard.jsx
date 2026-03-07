@@ -184,11 +184,11 @@ const BossDashboard = () => {
                         Real-time intelligence feed for campus operations and strategic growth mapping.
                     </p>
                     <div className="space-y-3 relative z-10">
-                        <button className="w-full p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-all flex items-center justify-between group">
+                        <button className="w-full p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-all flex items-center justify-between group text-navy-900 dark:text-white">
                             Verify Global Security Status
                             <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse"></div>
                         </button>
-                        <button className="w-full p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-all flex items-center justify-between group">
+                        <button className="w-full p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-all flex items-center justify-between group text-navy-900 dark:text-white">
                             Run Faculty Load Simulation
                             <span className="text-[9px] text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full dark:bg-blue-900/30">AI READY</span>
                         </button>
