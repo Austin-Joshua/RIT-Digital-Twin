@@ -48,27 +48,11 @@ const Sidebar = () => {
             { path: '/parent', name: 'Ward Progress', icon: <FaHome /> },
         ];
 
-        const superAdminItems = [
-            { path: '/super-admin', name: 'Global View', icon: <FaUniversity /> },
-            { path: '/super-admin/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
-            { path: '/super-admin/energy', name: 'Energy Optimization', icon: <FaBolt /> },
-            { path: '/super-admin/transport', name: 'Transport Manager', icon: <FaBus /> },
-            { path: '/super-admin/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
-            { path: '/super-admin/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
-            { path: '/super-admin/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
-            { path: '/super-admin/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
-            { path: '/super-admin/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
-            { path: '/super-admin/hr', name: 'HR & Recruitment', icon: <FaUsers /> },
-            { path: '/super-admin/inventory', name: 'Global Inventory', icon: <FaBoxes /> },
-            { path: '/super-admin/settings', name: 'System Settings', icon: <FaCog /> },
-            { path: '/super-admin/change-password', name: 'Change Password', icon: <FaCog /> },
-        ];
 
         const role = user?.role || 'FACULTY';
 
         switch (role) {
-            case 'SUPER_ADMIN':
-                return [...baseItems, ...superAdminItems];
+
             case 'PARENT':
                 return [...baseItems, ...parentItems];
             case 'ADMIN':
