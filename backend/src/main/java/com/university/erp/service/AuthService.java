@@ -179,7 +179,7 @@ public class AuthService {
         if (inviteCode != null && !inviteCode.isBlank()) {
             switch (inviteCode) {
                 case "RIT-SUPER":
-                    roleEnumName = "SUPER_ADMIN";
+                    roleEnumName = "BOSS";
                     break;
                 case "RIT-ADMIN":
                     roleEnumName = "ADMIN";

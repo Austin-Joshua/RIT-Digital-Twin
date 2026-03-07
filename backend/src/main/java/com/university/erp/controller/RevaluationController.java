@@ -27,8 +27,8 @@ public class RevaluationController {
     private final StudentProfileService studentProfileService;
 
     public RevaluationController(RevaluationService revaluationService,
-                                 MarksRepository marksRepository,
-                                 StudentProfileService studentProfileService) {
+            MarksRepository marksRepository,
+            StudentProfileService studentProfileService) {
         this.revaluationService = revaluationService;
         this.marksRepository = marksRepository;
         this.studentProfileService = studentProfileService;
@@ -50,7 +50,8 @@ public class RevaluationController {
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Marks record not found"));
 
         if (!marks.getStudent().getId().equals(student.getId())) {
-            throw new org.springframework.security.access.AccessDeniedException("Cannot request revaluation for another student.");
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Cannot request revaluation for another student.");
         }
 
         RevaluationRequest request = RevaluationRequest.builder()
@@ -62,12 +63,14 @@ public class RevaluationController {
                 .build();
 
         revaluationService.applyForRevaluation(request);
-        return ResponseEntity.ok(Map.of("message", "Revaluation request submitted successfully.", "requestId", request.getId()));
+        return ResponseEntity
+                .ok(Map.of("message", "Revaluation request submitted successfully.", "requestId", request.getId()));
     }
 
     @PostMapping("/requests/{id}/admin-approve")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    public ResponseEntity<?> adminApprove(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+    @PreAuthorize("hasAnyRole('ADMIN','BOSS')")
+    public ResponseEntity<?> adminApprove(@PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         revaluationService.approveByAdmin(id, remarks);
         return ResponseEntity.ok(Map.of("message", "Revaluation request admin-approved."));
@@ -75,7 +78,8 @@ public class RevaluationController {
 
     @PostMapping("/requests/{id}/hod-approve")
     @PreAuthorize("hasRole('HOD')")
-    public ResponseEntity<?> hodApprove(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+    public ResponseEntity<?> hodApprove(@PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         revaluationService.approveByHod(id, remarks);
         return ResponseEntity.ok(Map.of("message", "Revaluation request approved by HOD."));
@@ -91,18 +95,19 @@ public class RevaluationController {
 
     @PostMapping("/requests/{id}/hod-finalize")
     @PreAuthorize("hasRole('HOD')")
-    public ResponseEntity<?> hodFinalize(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+    public ResponseEntity<?> hodFinalize(@PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         revaluationService.finalizeByHod(id, remarks);
         return ResponseEntity.ok(Map.of("message", "Revaluation review finalized by HOD."));
     }
 
     @PostMapping("/requests/{id}/admin-close")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    public ResponseEntity<?> adminClose(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+    @PreAuthorize("hasAnyRole('ADMIN','BOSS')")
+    public ResponseEntity<?> adminClose(@PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
         revaluationService.finalizeByAdmin(id, remarks);
         return ResponseEntity.ok(Map.of("message", "Revaluation workflow closed by Admin."));
     }
 }
-

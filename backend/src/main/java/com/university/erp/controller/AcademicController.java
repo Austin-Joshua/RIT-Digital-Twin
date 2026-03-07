@@ -38,7 +38,7 @@ public class AcademicController {
     }
 
     @GetMapping("/marks/student/{studentId}")
-    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','MANAGEMENT','ADMIN','SUPER_ADMIN','PARENT')")
+    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','MANAGEMENT','ADMIN','BOSS','PARENT')")
     public ResponseEntity<List<Marks>> getStudentMarks(
             @PathVariable @org.springframework.lang.NonNull Long studentId,
             @RequestParam(name = "page", required = false) Integer page,
@@ -73,7 +73,7 @@ public class AcademicController {
             }
         }
 
-        // ADMIN / SUPER_ADMIN / MANAGEMENT are allowed by role guard alone
+        // ADMIN / BOSS / MANAGEMENT are allowed by role guard alone
 
         List<Marks> marks;
         if (page != null && size != null) {

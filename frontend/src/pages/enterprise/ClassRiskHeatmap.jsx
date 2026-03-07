@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ResponsiveContainer, Treemap, Tooltip } from 'recharts';
-import { LuInfo, LuAlertTriangle, LuZap, LuTrendingDown } from 'react-icons/lu';
+import { LuInfo, LuTriangleAlert, LuZap, LuTrendingDown } from 'react-icons/lu';
 
 const DATA = [
     {
@@ -39,7 +39,13 @@ const ClassRiskHeatmap = () => {
                     <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Class Risk AI Heatmap</h1>
                     <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>Predictive performance clusters across the current batch</p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--card-bg)', padding: '6px 12px', borderRadius: '12px', border: '1.5px solid var(--theme-border)' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-muted)', textTransform: 'uppercase' }}>AI Analysis</span>
+                        <div style={{ width: '32px', height: '18px', background: '#16a34a', borderRadius: '10px', position: 'relative', cursor: 'pointer' }}>
+                            <div style={{ position: 'absolute', right: '2px', top: '2px', width: '14px', height: '14px', background: 'white', borderRadius: '50%' }}></div>
+                        </div>
+                    </div>
                     <span style={{ fontSize: '12px', fontWeight: '700', color: '#16a34a', background: 'rgba(22,163,74,0.1)', padding: '4px 12px', borderRadius: '20px' }}>92% Accuracy</span>
                 </div>
             </div>
@@ -83,7 +89,7 @@ const ClassRiskHeatmap = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {[
                                 { label: 'Attendance Drop', val: '22%', icon: <LuTrendingDown color="#dc2626" /> },
-                                { label: 'Assignment Delay', val: '15%', icon: <LuAlertTriangle color="#ca8a04" /> }
+                                { label: 'Assignment Delay', val: '15%', icon: <LuTriangleAlert color="#ca8a04" /> }
                             ].map(f => (
                                 <div key={f.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--theme-text-muted)' }}>

@@ -69,7 +69,7 @@ const InstitutionalLayout = () => {
 
     const displayName = user?.firstName && user?.lastName
         ? `${user.firstName} ${user.lastName}`.toUpperCase()
-        : (user?.username || user?.role || 'ADMIN').toUpperCase();
+        : (user?.username || user?.role || 'BOSS').toUpperCase();
 
     const adminNavItems = [
         { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },
@@ -89,11 +89,23 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
-    const superAdminNavItems = [
-        { path: '/super-admin', label: 'Campus Manager', icon: <LuLayoutGrid />, exact: true },
-        ...adminNavItems,
-        { path: '/management/hr-recruitment', label: 'HR & Recruitment', icon: <LuBriefcase /> },
-        { path: '/management/inventory', label: 'Global Inventory', icon: <LuSettings /> },
+    const bossNavItems = [
+        { path: '/boss', label: 'Campus Manager', icon: <LuLayoutGrid />, exact: true },
+        { path: '/boss/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
+        { path: '/boss/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
+        { path: '/boss/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
+        { path: '/boss/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
+        { path: '/boss/management/results', label: 'Results', icon: <LuBook /> },
+        { path: '/boss/management/substitutions', label: 'Class Substitutions', icon: <LuRefreshCcw /> },
+        { path: '/boss/management/certificates', label: 'Certificate', icon: <LuAward /> },
+        { path: '/boss/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
+        { path: '/boss/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
+        { path: '/boss/simulations/transport', label: 'Transport Analytics', icon: <LuBus /> },
+        { path: '/boss/transport', label: 'Transport Directory', icon: <LuBus /> },
+        { path: '/boss/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
+        { path: '/boss/management/hr-recruitment', label: 'HR & Recruitment', icon: <LuBriefcase /> },
+        { path: '/boss/management/audit', label: 'Global Audit', icon: <LuFileCode /> },
+        { path: '/boss/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
     const facultyNavItems = [
@@ -109,8 +121,8 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
-    const navItems = user?.role === 'SUPER_ADMIN'
-        ? superAdminNavItems
+    const navItems = user?.role === 'BOSS'
+        ? bossNavItems
         : user?.role === 'FACULTY'
             ? facultyNavItems
             : adminNavItems;
@@ -216,6 +228,16 @@ const InstitutionalLayout = () => {
                     </div>
 
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
+
+                        {/* AI Status Pulse */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 10px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '30px', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+                            <div style={{ position: 'relative', width: '8px', height: '8px' }}>
+                                <div style={{ position: 'absolute', width: '100%', height: '100%', background: '#3b82f6', borderRadius: '50%', animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }}></div>
+                                <div style={{ position: 'relative', width: '100%', height: '100%', background: '#3b82f6', borderRadius: '50%' }}></div>
+                            </div>
+                            <span style={{ fontSize: '9px', fontWeight: '900', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Global AI Sync</span>
+                            <style>{`@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }`}</style>
+                        </div>
 
                         {/* 3. Theme Toggle */}
                         <button

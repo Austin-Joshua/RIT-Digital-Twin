@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuFileSignature, LuCheckCircle2, LuXCircle, LuShieldCheck, LuSearch, LuFilter } from 'react-icons/lu';
+import { LuFileSignature, LuCheckCircle, LuXCircle, LuShieldCheck, LuSearch, LuFilter } from 'react-icons/lu';
 
 const REQUESTS = [
     { id: '101', student: 'Aakash S', type: 'Bonafide', date: '2026-03-05', attendance: 88, feeClear: true, risk: 'LOW' },
@@ -82,10 +82,10 @@ const CertificateApprovalQueue = () => {
                                     <td style={{ padding: '16px 20px' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '600', color: req.attendance >= 75 ? '#16a34a' : '#dc2626' }}>
-                                                {req.attendance >= 75 ? <LuCheckCircle2 size={12} /> : <LuXCircle size={12} />} Att: {req.attendance}%
+                                                {req.attendance >= 75 ? <LuCheckCircle size={12} /> : <LuXCircle size={12} />} Att: {req.attendance}%
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '600', color: req.feeClear ? '#16a34a' : '#dc2626' }}>
-                                                {req.feeClear ? <LuCheckCircle2 size={12} /> : <LuXCircle size={12} />} Fees Clear
+                                                {req.feeClear ? <LuCheckCircle size={12} /> : <LuXCircle size={12} />} Fees Clear
                                             </div>
                                         </div>
                                     </td>

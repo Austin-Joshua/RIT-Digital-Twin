@@ -23,8 +23,10 @@ const ChatbotWidget = ({ studentId }) => {
         if (role === 'PARENT') {
             return ["Academic Forecast", "Fee Dues", "Schedule Meeting", "Attendance Pulse"];
         }
-        if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
-            return ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
+        if (role === 'ADMIN' || role === 'BOSS') {
+            const adminSugs = ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
+            if (role === 'BOSS') adminSugs.push("Strategic Growth Forecast", "Budget Risk Analysis", "Global Security Audit");
+            return adminSugs;
         }
         return ["Attendance Report", "CGPA Simulator", "Exam Hall Info", "Digital Outpass"];
     };
@@ -46,8 +48,10 @@ const ChatbotWidget = ({ studentId }) => {
             // Check for potential action triggers (mock logic for demo)
             if (textToSend.toLowerCase().includes('energy') || textToSend.toLowerCase().includes('audit')) {
                 botMsg.action = { label: "Run Energy Audit", color: "#f39c12" };
-            } else if (textToSend.toLowerCase().includes('forecast') || textToSend.toLowerCase().includes('cgpa')) {
-                botMsg.action = { label: "Project Scores", color: "#3c8dbc" };
+            } else if (textToSend.toLowerCase().includes('forecast') || textToSend.toLowerCase().includes('budget') || textToSend.toLowerCase().includes('growth')) {
+                botMsg.action = { label: "Generate Strategic Report", color: "#3c8dbc" };
+            } else if (textToSend.toLowerCase().includes('security') || textToSend.toLowerCase().includes('risk')) {
+                botMsg.action = { label: "Initiate System Scan", color: "#e74c3c" };
             }
 
             setTimeout(() => {
