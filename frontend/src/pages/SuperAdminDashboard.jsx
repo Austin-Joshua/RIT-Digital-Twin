@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
-import { FaGlobe, FaCity, FaPlus, FaCheckCircle, FaLaptopCode, FaCogs, FaTimes, FaBrain, FaSignal } from 'react-icons/fa';
+import { FaGlobe, FaCity, FaPlus, FaCheckCircle, FaLaptopCode, FaCogs, FaTimes, FaBrain, FaSignal, FaShieldAlt, FaBolt, FaBus, FaUsers, FaBullhorn } from 'react-icons/fa';
 import AIInsightPanel from '../components/intelligence/AIInsightPanel';
+import { useToast } from '../context/ToastContext';
 
 const DetailModal = ({ detail, onClose }) => {
     if (!detail) return null;

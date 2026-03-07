@@ -15,7 +15,6 @@ import lombok.*;
 public class Subject extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "subject_id")
     private Long id;
 
     public Long getSubjectId() {
