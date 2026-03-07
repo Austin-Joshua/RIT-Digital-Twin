@@ -213,7 +213,7 @@ const BossDashboard = () => {
                     <AIInsightPanel role="ADMIN" />
 
                     {/* Live Sentiment & Infrastructure Forecast */}
-                    <div className="stu-info-card" style={{ borderTopColor: '#f39c12' }}>
+                    <div className="stu-info-card cursor-pointer hover:shadow-lg transition-all" style={{ borderTopColor: '#f39c12' }} onClick={() => setSelectedModal({ title: 'AI Campus Sentiment', value: '85% Positive', icon: <FaHeart /> })}>
                         <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <FaHeart color="#e84393" /> <span style={{ color: 'var(--theme-text)' }}>AI Campus Sentiment</span>
                         </div>
@@ -231,7 +231,7 @@ const BossDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="bg-navy-900 text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group">
+                    <div className="bg-navy-900 text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all" onClick={() => setSelectedModal({ title: 'Infrastructure Forecast', value: 'Peak load expected in Block D', icon: <FaBolt /> })}>
                         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
                             <FaBolt className="text-4xl text-yellow-400" />
                         </div>
