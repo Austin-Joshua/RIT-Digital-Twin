@@ -66,17 +66,17 @@ const RecruitmentHR = () => {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-100 dark:border-navy-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-navy-900 rounded-xl border border-gray-100 dark:border-navy-700 shadow-sm overflow-hidden">
                 <div className="flex border-b border-gray-100 dark:border-navy-700 bg-gray-50 dark:bg-navy-900/50">
                     <button
                         onClick={() => setActiveTab('recruitment')}
-                        className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'recruitment' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-navy-800' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-800'}`}
+                        className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'recruitment' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-[#123C8C]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-900/50'}`}
                     >
                         <FaBriefcase /> Applicant Tracking
                     </button>
                     <button
                         onClick={() => setActiveTab('payroll')}
-                        className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'payroll' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-navy-800' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-800'}`}
+                        className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'payroll' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-[#123C8C]' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-900/50'}`}
                     >
                         <FaFileInvoice /> Faculty Payroll
                     </button>
@@ -87,7 +87,7 @@ const RecruitmentHR = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-navy-700">
+                                    <tr className="bg-white dark:bg-navy-900 text-gray-500 dark:text-gray-200 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-navy-700">
                                         <th className="p-4 font-bold">Candidate Name</th>
                                         <th className="p-4 font-bold">Applied Role</th>
                                         <th className="p-4 font-bold">Experience</th>
@@ -101,10 +101,10 @@ const RecruitmentHR = () => {
                                         <tr key={app.id} className="border-b border-gray-50 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/30">
                                             <td className="p-4">
                                                 <div className="font-bold text-navy-900 dark:text-white">{app.name}</div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Applied: {app.date}</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-300 mt-0.5 font-medium">Applied: {app.date}</div>
                                             </td>
-                                            <td className="p-4 font-bold text-navy-800 dark:text-gray-200">{app.role}</td>
-                                            <td className="p-4 font-medium text-gray-700 dark:text-gray-300">{app.experience}</td>
+                                            <td className="p-4 font-bold text-navy-800 dark:text-gold-500">{app.role}</td>
+                                            <td className="p-4 font-medium text-gray-700 dark:text-gray-200">{app.experience}</td>
                                             <td className="p-4">
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex-1 h-1.5 bg-gray-100 dark:bg-navy-700 rounded-full overflow-hidden w-20">
@@ -132,7 +132,7 @@ const RecruitmentHR = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-navy-700">
+                                    <tr className="bg-white dark:bg-navy-900 text-gray-500 dark:text-gray-200 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-navy-700">
                                         <th className="p-4 font-bold">Employee Name</th>
                                         <th className="p-4 font-bold">Department</th>
                                         <th className="p-4 font-bold">Gross Earnings</th>
@@ -146,10 +146,10 @@ const RecruitmentHR = () => {
                                         <tr key={p.id} className="border-b border-gray-50 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/30">
                                             <td className="p-4">
                                                 <div className="font-bold text-navy-900 dark:text-white">{p.name}</div>
-                                                <div className="text-xs text-gray-400 mt-0.5">{p.id}</div>
+                                                <div className="text-xs text-gray-400 mt-0.5 dark:text-gray-300">{p.id}</div>
                                             </td>
-                                            <td className="p-4 font-bold text-gray-600 dark:text-gray-400">{p.dept}</td>
-                                            <td className="p-4 text-navy-900 dark:text-gray-200">₹{(p.basic + p.hra).toLocaleString()}</td>
+                                            <td className="p-4 font-bold text-gray-600 dark:text-gray-200">{p.dept}</td>
+                                            <td className="p-4 text-navy-900 dark:text-white">₹{(p.basic + p.hra).toLocaleString()}</td>
                                             <td className="p-4 text-red-500">₹{p.ded.toLocaleString()}</td>
                                             <td className="p-4 font-black text-green-600 dark:text-green-400 text-base">₹{p.net.toLocaleString()}</td>
                                             <td className="p-4 text-center">

@@ -72,19 +72,17 @@ const ChatbotWidget = ({ studentId }) => {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        className="bg-white/95 dark:bg-navy-800/95 border border-white/20 dark:border-navy-700/50"
                         style={{
                             width: '380px',
                             height: '550px',
-                            background: 'rgba(var(--card-bg-rgb, 255, 255, 255), 0.85)',
                             borderRadius: '24px',
                             boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
                             marginBottom: '16px',
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            backdropFilter: 'blur(15px)',
-                            color: 'var(--theme-text)'
+                            backdropFilter: 'blur(15px)'
                         }}
                     >
                         {/* Premium Header */}
@@ -117,15 +115,12 @@ const ChatbotWidget = ({ studentId }) => {
                         <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {messages.map((msg, i) => (
                                 <div key={i} style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
-                                    <div style={{
-                                        background: msg.isBot ? 'var(--theme-bg-muted)' : '#0B2C6B',
-                                        color: msg.isBot ? 'var(--theme-text)' : 'white',
+                                    <div className={msg.isBot ? "bg-gray-100 dark:bg-navy-700 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-navy-600" : "bg-navy-900 text-white"} style={{
                                         padding: '12px 16px',
                                         borderRadius: msg.isBot ? '2px 16px 16px 16px' : '16px 16px 2px 16px',
                                         fontSize: '0.9rem',
                                         fontWeight: '500',
                                         boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-                                        border: msg.isBot ? '1px solid var(--theme-border)' : 'none',
                                         lineHeight: '1.5'
                                     }}>
                                         {msg.text}
@@ -165,13 +160,12 @@ const ChatbotWidget = ({ studentId }) => {
                                     key={sug}
                                     onClick={() => handleSend(sug)}
                                     style={{
-                                        padding: '6px 14px', borderRadius: '30px', border: '1px solid var(--theme-border)',
-                                        background: 'rgba(255,255,255,0.05)', color: 'var(--theme-text)', fontSize: '11px',
+                                        padding: '6px 14px', borderRadius: '30px',
+                                        fontSize: '11px',
                                         fontWeight: '700', cursor: 'pointer', transition: '0.2s',
                                         display: 'flex', alignItems: 'center', gap: '6px'
                                     }}
-                                    onMouseEnter={e => { e.currentTarget.style.background = '#fbbf24'; e.currentTarget.style.color = '#0B2C6B'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--theme-text)'; }}
+                                    className="bg-gray-100 dark:bg-navy-700 text-gray-800 dark:text-white border border-gray-200 dark:border-navy-600 hover:bg-gold-500 hover:text-navy-900 dark:hover:bg-gold-500 dark:hover:text-navy-900"
                                 >
                                     <FaBolt size={10} /> {sug}
                                 </button>
@@ -186,7 +180,8 @@ const ChatbotWidget = ({ studentId }) => {
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                                     placeholder="Execute neural query..."
-                                    style={{ width: '100%', border: '1.5px solid var(--theme-border)', borderRadius: '12px', padding: '12px 15px', outline: 'none', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', fontWeight: '600' }}
+                                    className="bg-gray-50 dark:bg-navy-900 border border-gray-200 dark:border-navy-600 text-gray-800 dark:text-white"
+                                    style={{ width: '100%', borderRadius: '12px', padding: '12px 15px', outline: 'none', fontSize: '14px', fontWeight: '600' }}
                                 />
                                 <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
                                     <FaChartBar size={14} color="#0B2C6B" opacity={0.3} />
