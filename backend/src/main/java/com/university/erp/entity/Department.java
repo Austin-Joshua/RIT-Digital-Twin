@@ -16,7 +16,6 @@ public class Department extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dept_id")
     private Long id;
 
     public Long getDeptId() {
