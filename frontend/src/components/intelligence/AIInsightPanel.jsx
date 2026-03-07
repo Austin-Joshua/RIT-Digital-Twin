@@ -48,13 +48,13 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
     }, [category, role]);
 
     if (loading) return (
-        <div className="animate-pulse bg-navy-900/10 h-64 rounded-2xl border border-dashed border-gray-300 dark:border-navy-700 flex items-center justify-center">
-            <FaMagic className="text-navy-900/20 dark:text-white/20 text-4xl animate-bounce" />
+        <div className="animate-pulse bg-slate-900/10 h-64 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700 flex items-center justify-center">
+            <FaMagic className="text-slate-900/20 dark:text-white/20 text-4xl animate-bounce" />
         </div>
     );
 
     return (
-        <div className="card bg-gradient-to-br from-navy-900 via-navy-800 to-indigo-900 text-white border-none shadow-2xl relative overflow-hidden p-6 rounded-2xl">
+        <div className="card bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white border-none shadow-2xl relative overflow-hidden p-6 rounded-2xl">
             {/* Ambient Background Elements */}
             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full -mr-24 -mt-24 blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-gold-500/5 rounded-full -ml-16 -mb-16 blur-2xl"></div>
