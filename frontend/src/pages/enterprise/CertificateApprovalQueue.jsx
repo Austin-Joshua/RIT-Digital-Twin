@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuFileSignature, LuCheck, LuX, LuShieldCheck, LuSearch, LuFilter } from 'react-icons/lu';
+import { LuPenTool, LuCheck, LuX, LuShieldCheck, LuSearch, LuFilter } from 'react-icons/lu';
 
 const REQUESTS = [
     { id: '101', student: 'Aakash S', type: 'Bonafide', date: '2026-03-05', attendance: 88, feeClear: true, risk: 'LOW' },
@@ -36,7 +36,7 @@ const CertificateApprovalQueue = () => {
                         )}
                     </AnimatePresence>
                     <button style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid var(--theme-border)', background: 'var(--card-bg)', color: 'var(--theme-text)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <LuFileSignature color="var(--color-primary-navy)" /> Manual Override
+                        <LuPenTool color="var(--color-primary-navy)" /> Manual Override
                     </button>
                 </div>
             </div>
