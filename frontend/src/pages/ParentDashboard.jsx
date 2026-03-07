@@ -256,13 +256,13 @@ const ParentDashboard = () => {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-navy-900 dark:text-white flex items-center gap-3">
-                        <FaHandshake className="text-gold-500" /> Parent Portal
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                        <FaHandshake className="text-blue-600 dark:text-gold-500" /> Parent Portal
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Celebrating and monitoring your child's academic journey at RIT.</p>
+                    <p className="text-slate-600 dark:text-gray-400 mt-1 font-medium">Celebrating and monitoring your child's academic journey at RIT.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-green-200 dark:border-green-800">
+                    <div className="bg-emerald-50 dark:bg-green-900/30 text-emerald-700 dark:text-green-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200 dark:border-green-800 shadow-sm">
                         Institutional Access Verified
                     </div>
                 </div>
@@ -277,18 +277,18 @@ const ParentDashboard = () => {
                                 <FaChild />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-black text-navy-900 dark:text-white m-0">{student.user.firstName} {student.user.lastName}</h3>
-                                <p className="text-sm font-bold text-gray-400 m-0 uppercase tracking-widest">{student.studentIdNumber} • CSE-A • Year 3</p>
+                                <h3 className="text-2xl font-black text-slate-900 dark:text-white m-0">{student.user.firstName} {student.user.lastName}</h3>
+                                <p className="text-sm font-bold text-slate-500 dark:text-gray-400 m-0 uppercase tracking-widest">{student.studentIdNumber} • CSE-A • Year 3</p>
                             </div>
                         </div>
-                        <div className="flex gap-4">
-                            <div className="text-center bg-gray-50 dark:bg-navy-900 px-6 py-3 rounded-2xl border border-gray-200 dark:border-navy-700">
-                                <div className="text-[10px] font-black text-gray-400 uppercase mb-1">Current CGPA</div>
-                                <div className="text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
+                        <div className="grid grid-cols-2 gap-3 md:gap-4 w-full md:w-auto">
+                            <div className="text-center bg-slate-50 dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-200 dark:border-navy-700 shadow-sm">
+                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Current CGPA</div>
+                                <div className="text-xl md:text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
                             </div>
-                            <div className="text-center bg-gray-50 dark:bg-navy-900 px-6 py-3 rounded-2xl border border-gray-200 dark:border-navy-700">
-                                <div className="text-[10px] font-black text-gray-400 uppercase mb-1">Attendance</div>
-                                <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
+                            <div className="text-center bg-slate-50 dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-200 dark:border-navy-700 shadow-sm">
+                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Attendance</div>
+                                <div className="text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
                             </div>
                         </div>
                     </div>

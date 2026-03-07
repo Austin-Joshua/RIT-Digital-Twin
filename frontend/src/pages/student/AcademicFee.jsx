@@ -35,7 +35,7 @@ const AcademicFee = () => {
                     <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
                         <FaFileInvoiceDollar style={{ color: 'var(--color-accent-gold)' }} /> Academic Fee Management
                     </h1>
-                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Review dues and make payments securely via internal gateway</p>
+                    <p className="mt-1 font-medium text-slate-600 dark:text-gray-400">Review dues and make payments securely via internal gateway</p>
                 </div>
             </div>
 
@@ -110,21 +110,21 @@ const AcademicFee = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="text-xs uppercase tracking-wider" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text-muted)' }}>
-                                        <th className="p-3 font-bold rounded-tl-lg">Description</th>
-                                        <th className="p-3 font-bold">Category</th>
-                                        <th className="p-3 font-bold text-right rounded-tr-lg">Amount (₹)</th>
+                                    <tr className="text-[10px] uppercase tracking-widest border-b border-slate-200 dark:border-navy-700" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
+                                        <th className="p-3 font-black rounded-tl-lg">Description</th>
+                                        <th className="p-3 font-black">Category</th>
+                                        <th className="p-3 font-black text-right rounded-tr-lg">Amount (₹)</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm">
                                     {feeDetails.map((fee, idx) => (
                                         <tr key={idx} className="border-b border-gray-50 dark:border-navy-800 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-colors">
-                                            <td className="p-4 font-bold text-navy-900 dark:text-white">
+                                            <td className="p-4 font-bold text-slate-900 dark:text-white">
                                                 {fee.label}
-                                                {!fee.required && <span className="ml-2 text-[10px] bg-gray-100 dark:bg-navy-700 text-gray-500 px-2 py-0.5 rounded-full font-normal">Optional</span>}
+                                                {!fee.required && <span className="ml-2 text-[9px] bg-slate-100 dark:bg-navy-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Optional</span>}
                                             </td>
-                                            <td className="p-4 text-gray-500 dark:text-gray-400">Recurring</td>
-                                            <td className="p-4 font-mono text-right text-gray-800 dark:text-gray-300">
+                                            <td className="p-4 text-slate-600 dark:text-gray-400 font-medium">Recurring</td>
+                                            <td className="p-4 font-mono text-right text-slate-900 dark:text-gray-100 font-black">
                                                 {fee.amount.toLocaleString('en-IN')}
                                             </td>
                                         </tr>
