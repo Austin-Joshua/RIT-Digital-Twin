@@ -1,236 +1,304 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import {
+    ResponsiveContainer, BarChart, Bar, LineChart, Line,
+    CartesianGrid, XAxis, YAxis, Tooltip, Legend
+} from 'recharts';
+import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt, FaCloudSun, FaHeart, FaMagic } from 'react-icons/fa';
 import api from '../services/api';
-import { FaGlobe, FaCity, FaPlus, FaCheckCircle, FaLaptopCode, FaCogs, FaTimes, FaBrain, FaSignal, FaShieldAlt, FaBolt, FaBus, FaUsers, FaBullhorn } from 'react-icons/fa';
-import AIInsightPanel from '../components/intelligence/AIInsightPanel';
+import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
+import { useWebSocket } from '../context/WebSocketContext';
+import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
+import AIInsightPanel from '../components/intelligence/AIInsightPanel';
+import Card from '../components/common/Card';
+import { useNavigate } from 'react-router-dom';
+import MiniCalendar from '../components/common/MiniCalendar';
+import DetailedReportModal from '../components/common/DetailedReportModal';
 
-const DetailModal = ({ detail, onClose }) => {
-    if (!detail) return null;
-
-    return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{
-                    position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}
-                onClick={onClose}
-            >
-                <motion.div
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 50, opacity: 0 }}
-                    style={{
-                        background: 'var(--theme-card-bg, #fff)',
-                        color: 'var(--theme-text, #333)',
-                        padding: '32px',
-                        borderRadius: '16px',
-                        maxWidth: '500px',
-                        width: '90%',
-                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'
-                    }}
-                    onClick={e => e.stopPropagation()}
-                >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem' }}>{detail.title}</h2>
-                        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                            <FaTimes size={20} color="var(--theme-text-muted, #64748b)" />
-                        </button>
-                    </div>
-                    <div style={{ lineHeight: '1.6', color: 'var(--theme-text-muted, #666)' }}>
-                        <p>{detail.content}</p>
-                        {detail.data && (
-                            <div style={{ marginTop: '20px', padding: '16px', background: 'var(--theme-bg, #f8fafc)', borderRadius: '8px' }}>
-                                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
-                                    {JSON.stringify(detail.data, null, 2)}
-                                </pre>
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
-    );
+const stagger = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
 const SuperAdminDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedDetail, setSelectedDetail] = useState(null);
     const { addToast } = useToast();
+    const { publish } = useWebSocket();
+    const [selectedModal, setSelectedModal] = useState(null);
 
-    const chartData = [
-        { name: 'Mon', Energy: 4000, Transport: 2400, AI: 2400 },
-        { name: 'Tue', Energy: 3000, Transport: 1398, AI: 2210 },
-        { name: 'Wed', Energy: 2000, Transport: 9800, AI: 2290 },
-        { name: 'Thu', Energy: 2780, Transport: 3908, AI: 2000 },
-        { name: 'Fri', Energy: 1890, Transport: 4800, AI: 2181 },
-    ];
+    // Broadcast State
+    const [bTitle, setBTitle] = useState('');
+    const [bMessage, setBMessage] = useState('');
+    const [sendPush, setSendPush] = useState(true);
+    const [sendSms, setSendSms] = useState(false);
+
+    // Dynamic State for Connected KPIs
+    const [totalPubs, setTotalPubs] = useState(14);
+    const [totalCitations, setTotalCitations] = useState(128);
 
     useEffect(() => {
-        // Force loading for transition feel
-        setTimeout(() => {
-            setStats({
-                infrastructureUtil: 84.2,
-                energyEfficiency: 91.5,
-                transportPunctuality: 98.7,
-                securityStatus: 'CRITICAL_OVERSIGHT_ACTIVE',
-                totalNodes: 12,
-                activeUsers: 4203
-            });
-            setLoading(false);
-        }, 1200);
+        const fetchStats = async () => {
+            try {
+                const response = await api.get('/dashboard/stats');
+                setStats(response.data);
+            } catch (error) {
+                console.error("Failed to fetch admin stats. Using defaults.", error);
+                setStats({
+                    infrastructureUtil: 78.5, energyOptimization: 85.2, transportEfficiency: 92.0,
+                    sustainabilityIndex: 88.7, totalBuildings: 12, totalClassrooms: 48,
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const loadResearchConnectivity = () => {
+            const storedPubs = localStorage.getItem('connectivity_publications');
+            if (storedPubs) {
+                const currentPapers = JSON.parse(storedPubs);
+                setTotalPubs(currentPapers.length);
+                const citations = currentPapers.reduce((sum, p) => sum + (Number(p.citations) || 0), 0);
+                setTotalCitations(citations);
+            }
+        };
+
+        fetchStats();
+        loadResearchConnectivity();
+
+        // Listen for live updates from FacultyResearch
+        window.addEventListener('storage', loadResearchConnectivity);
+        return () => window.removeEventListener('storage', loadResearchConnectivity);
     }, []);
 
-    const handleAction = (title, content) => {
-        setSelectedDetail({ title, content });
+    const handleBroadcast = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post(`/notifications/admin/broadcast?title=${encodeURIComponent(bTitle)}&message=${encodeURIComponent(bMessage)}&type=SYSTEM`);
+        } catch (_err) {
+            // Ignore for local simulator
+        }
+
+        // CONNECTIVITY: Save broadcast to local storage to trigger toast in other roles
+        const broadcastPayload = {
+            id: Date.now(),
+            title: bTitle,
+            message: bMessage,
+            sender: 'ADMIN',
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('connectivity_broadcasts', JSON.stringify(broadcastPayload));
+        window.dispatchEvent(new Event('storage')); // trigger sync locally as well
+
+        if (sendPush) {
+            publish('/app/broadcast', {
+                sender: 'ADMIN',
+                title: bTitle,
+                message: bMessage,
+                severity: 'HIGH'
+            });
+        }
+
+        if (sendSms) {
+            console.log(`[SMS Gateway Mock] Dispatched to Parent numbers: ${bMessage}`);
+            addToast('SMS Alerts dispatched to 4,203 registered parents.', 'info');
+        }
+
+        addToast(sendPush ? 'Broadcast sent globally via App Push!' : 'Broadcast successful.', 'success');
+        setBTitle('');
+        setBMessage('');
     };
 
+    const kpiCards = useMemo(() => [
+        { title: 'Infrastructure Utilization', value: `${stats?.infrastructureUtil ?? 0}%`, icon: <FaBuilding />, color: 'green', class: 'green', link: '/simulations/classroom' },
+        { title: 'Energy Optimization', value: `${stats?.energyOptimization ?? 0}`, icon: <FaBolt />, color: 'yellow', class: 'yellow', link: '/simulations/energy' },
+        { title: 'Transport Efficiency', value: `${stats?.transportEfficiency ?? 0}%`, icon: <FaBus />, color: 'indigo', class: 'indigo', link: '/transport' },
+        { title: 'Total Publications', value: totalPubs, icon: <FaBuilding />, color: 'teal', class: 'teal', link: '/academics/research' },
+        { title: 'Total Citations', value: totalCitations, icon: <FaChartLine />, color: 'purple', class: 'purple', link: '/academics/research' },
+        { title: 'Alumni Network', value: `12.4k`, icon: <FaUserGraduate />, color: 'orange', class: 'orange', link: '/management/alumni' },
+    ], [stats, totalPubs, totalCitations]);
+
+    const chartData = useMemo(() => [
+        { name: 'Mon', Energy: 4000, Transport: 2400 },
+        { name: 'Tue', Energy: 3000, Transport: 1398 },
+        { name: 'Wed', Energy: 2000, Transport: 9800 },
+        { name: 'Thu', Energy: 2780, Transport: 3908 },
+        { name: 'Fri', Energy: 1890, Transport: 4800 },
+        { name: 'Sat', Energy: 2390, Transport: 3800 },
+        { name: 'Sun', Energy: 3490, Transport: 4300 },
+    ], []);
+
     if (loading) return (
-        <div className="flex flex-col items-center justify-center h-screen bg-navy-950">
-            <div className="w-16 h-16 border-4 border-gold-500 border-t-transparent rounded-full animate-spin mb-4" />
-            <div className="text-gold-500 font-black uppercase tracking-widest text-sm animate-pulse">Initializing God Mode Protocol...</div>
+        <div style={{ padding: '24px' }}>
+            <Skeleton height="40px" width="300px" style={{ marginBottom: '20px' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                <Skeleton height="120px" /><Skeleton height="120px" /><Skeleton height="120px" /><Skeleton height="120px" />
+            </div>
+            <Skeleton height="400px" />
         </div>
     );
 
     return (
-        <div className="p-6 space-y-6 animate-in fade-in zoom-in-95 duration-700 bg-gray-50 dark:bg-navy-950 min-h-screen">
-            {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
+        <motion.div initial="hidden" animate="visible" variants={stagger} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-            {/* Header / Command Center */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-navy-900 text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-10 opacity-5">
-                    <FaShieldAlt size={200} />
-                </div>
-                <div className="relative z-10">
-                    <h1 className="text-4xl font-black flex items-center gap-3">
-                        <FaGlobe className="text-gold-500 animate-spin-slow" /> RIT Command Center
-                    </h1>
-                    <p className="text-blue-200 mt-2 font-medium opacity-80 uppercase tracking-widest text-xs">Global Digital Twin Oversight • Root Authority</p>
-                </div>
-                <div className="flex items-center gap-6 relative z-10">
-                    <div className="text-right">
-                        <div className="text-xs font-black text-gold-500 uppercase">Security Protocol</div>
-                        <div className="text-sm font-bold text-white flex items-center justify-end gap-2">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" /> ENCRYPTED_LEVEL_7
-                        </div>
-                    </div>
-                    <button className="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all border border-white/10">
-                        <FaCogs className="text-xl" />
-                    </button>
-                </div>
-            </div>
+            {/* Header / Breadcrumb Mirror from Student */}
+            {/* Dashboard header removed as per user request */}
 
-            {/* Global Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[
-                    { label: 'Active Campus Nodes', value: stats.totalNodes, icon: <FaCity />, color: 'blue' },
-                    { label: 'Energy Optimization', value: `${stats.energyEfficiency}%`, icon: <FaBolt />, color: 'yellow' },
-                    { label: 'Transport Punctuality', value: `${stats.transportPunctuality}%`, icon: <FaBus />, color: 'indigo' },
-                    { label: 'Global Security Status', value: 'SECURE', icon: <FaShieldAlt />, color: 'green' }
-                ].map((kpi, idx) => (
-                    <div key={idx} className="bg-white dark:bg-navy-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-navy-700 hover:shadow-xl transition-all group cursor-pointer" onClick={() => handleAction(kpi.label, `Detailed historical analytics for ${kpi.label} indicate an optimal performance trend.`)}>
-                        <div className={`p-3 rounded-2xl bg-${kpi.color}-50 dark:bg-${kpi.color}-900/20 text-${kpi.color}-600 dark:text-${kpi.color}-400 w-fit mb-4 group-hover:scale-110 transition-transform`}>
-                            {kpi.icon}
+            {/* KPI Cards Row - Using stu-kpi-row classes */}
+            <div className="stu-kpi-row">
+                {kpiCards.map((card, i) => (
+                    <div key={i} className={`stu-kpi-card ${card.class}`} onClick={() => setSelectedModal(card)} style={{ cursor: 'pointer' }}>
+                        <div className="kpi-main">
+                            <div className="kpi-value">{card.value}</div>
+                            <div className="kpi-label">{card.title}</div>
                         </div>
-                        <div className="text-[10px] font-black text-gray-400 uppercase mb-1">{kpi.label}</div>
-                        <div className="text-2xl font-black text-navy-900 dark:text-white">{kpi.value}</div>
+                        <div className="kpi-icon">{card.icon}</div>
+                        <div className="kpi-more" onClick={(e) => { e.stopPropagation(); navigate(card.link); }}>View details →</div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* AI & Infrastructure Wisdom */}
+            <DetailedReportModal
+                isOpen={!!selectedModal}
+                onClose={() => setSelectedModal(null)}
+                title={selectedModal?.title || selectedModal?.label}
+                value={selectedModal?.value}
+                label={selectedModal?.title || selectedModal?.label}
+                icon={selectedModal?.icon}
+            />
+
+            {/* Main Content Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+                {/* AI Institutional Wisdom */}
                 <div className="lg:col-span-1 space-y-6">
                     <AIInsightPanel role="SUPER_ADMIN" />
 
-                    <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-navy-700">
-                        <h4 className="font-black text-navy-900 dark:text-white flex items-center gap-2 mb-6">
-                            <FaSignal className="text-blue-500" /> System Load Pulse
-                        </h4>
-                        <div className="h-40 w-full flex items-end gap-2">
-                            {[40, 70, 45, 90, 65, 80, 50, 60].map((h, i) => (
-                                <div key={i} className="flex-1 bg-navy-900 dark:bg-gold-500/20 rounded-t-lg transition-all hover:bg-gold-500 cursor-help" style={{ height: `${h}%` }} title={`Load: ${h}%`} />
-                            ))}
+                    {/* Live Sentiment & Infrastructure Forecast */}
+                    <div className="stu-info-card" style={{ borderTopColor: '#f39c12' }}>
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaHeart color="#e84393" /> <span style={{ color: 'var(--theme-text)' }}>AI Campus Sentiment</span>
                         </div>
-                        <div className="mt-4 p-4 bg-gray-50 dark:bg-navy-900/50 rounded-2xl border border-dashed border-gray-200 dark:border-navy-700">
-                            <div className="text-[10px] font-bold text-gray-400 uppercase mb-1">Infrastructure Load</div>
-                            <div className="text-sm font-bold text-navy-900 dark:text-white">All 12 Campus Nodes Operational</div>
+                        <div className="info-body p-4">
+                            <div className="flex justify-between items-end mb-3">
+                                <span className="text-3xl font-black text-navy-900 dark:text-white">85%</span>
+                                <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Excited / Stable</span>
+                            </div>
+                            <div className="w-full bg-gray-100 dark:bg-navy-700 h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-green-500 h-full" style={{ width: '85%' }}></div>
+                            </div>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3 leading-tight italic">
+                                "Pulse is high due to upcoming Sports Meet. Student satisfaction trending +4%."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-navy-900 text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
+                            <FaBolt className="text-4xl text-yellow-400" />
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-bold text-yellow-400 uppercase mb-3">
+                            <FaMagic /> Infra Forecast
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed mb-4">
+                            Peak load expected in <b>Block D</b> at 3 PM. Suggest pre-cooling Labs 401-408 for 12% energy saving.
+                        </p>
+                        <button className="w-full py-2 bg-yellow-400 text-navy-900 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors">
+                            Apply Automation
+                        </button>
+                    </div>
+                </div>
+
+                {/* Central Analytics Column */}
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                    {/* Analytics Chart */}
+                    <div className="stu-info-card">
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaChartLine color="#0B2C6B" />
+                            <span>Weekly Simulation Analytics</span>
+                        </div>
+                        <div className="info-body">
+                            <div style={{ height: '300px', padding: '10px' }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4 }} />
+                                        <Line type="monotone" dataKey="Transport" stroke="#f39c12" strokeWidth={2} dot={{ r: 4 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Central Management Hub */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white dark:bg-navy-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-navy-700">
-                        <div className="flex justify-between items-center mb-8">
-                            <h4 className="text-xl font-black text-navy-900 dark:text-white flex items-center gap-3">
-                                <FaLaptopCode className="text-blue-500" /> Global Governance Analytics
-                            </h4>
-                            <div className="flex gap-2">
-                                <span className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 text-xs font-black">7D</span>
-                                <span className="p-2 text-gray-400 text-xs font-black">30D</span>
-                            </div>
+                {/* Right Broadcast Panel */}
+                <div className="lg:col-span-1">
+                    {/* Broadcast Panel */}
+                    <div className="stu-info-card" style={{ borderTopColor: 'var(--ims-teal)' }}>
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaBullhorn color="var(--ims-teal)" />
+                            <span style={{ color: 'var(--theme-text)' }}>Global Broadcast</span>
                         </div>
-                        <div className="h-64 w-full">
-                            <div className="h-full w-full bg-gray-50 dark:bg-navy-900/30 rounded-3xl flex items-center justify-center text-gray-400 text-xs italic border border-dashed border-gray-200 dark:border-navy-700">
-                                [ Interactive Performance Area - Real-time Data Streaming ]
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-3 gap-6 mt-8">
-                            <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl">
-                                <div className="text-[10px] font-black text-blue-600 uppercase mb-1">Uptime</div>
-                                <div className="text-lg font-black text-navy-900 dark:text-white">99.99%</div>
-                            </div>
-                            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl">
-                                <div className="text-[10px] font-black text-emerald-600 uppercase mb-1">Safety</div>
-                                <div className="text-lg font-black text-navy-900 dark:text-white">100%</div>
-                            </div>
-                            <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl">
-                                <div className="text-[10px] font-black text-amber-600 uppercase mb-1">Complaints</div>
-                                <div className="text-lg font-black text-navy-900 dark:text-white">0</div>
-                            </div>
+                        <div className="info-body">
+                            <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Broadcast Title"
+                                    value={bTitle}
+                                    onChange={e => setBTitle(e.target.value)}
+                                    required
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px' }}
+                                />
+                                <textarea
+                                    placeholder="Type your global message here..."
+                                    value={bMessage}
+                                    onChange={e => setBMessage(e.target.value)}
+                                    required
+                                    rows="3"
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', resize: 'none' }}
+                                />
+
+                                <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '5px' }}>
+                                    <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={sendPush} onChange={e => setSendPush(e.target.checked)} />
+                                        <FaMobileAlt color="#3c8dbc" /> App Push Notification
+                                    </label>
+                                    <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={sendSms} onChange={e => setSendSms(e.target.checked)} />
+                                        <FaSms color="#f39c12" /> SMS Alert (Twilio/AWS route)
+                                    </label>
+                                </div>
+
+                                <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc', marginTop: '5px' }}>
+                                    Dispatch Communication
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Advanced Control Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-navy-800 p-8 rounded-3xl border border-gray-100 dark:border-navy-700 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-                        <FaUsers size={80} />
-                    </div>
-                    <h4 className="text-xl font-black text-navy-900 dark:text-white mb-6">User Governance</h4>
-                    <p className="text-gray-500 text-sm mb-8 leading-relaxed">Manage access controls for 4,203 registered entities including Students, Faculty, and External Partners.</p>
-                    <div className="flex gap-4">
-                        <button className="flex-1 bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 py-3 rounded-2xl font-black uppercase text-xs tracking-widest hover:shadow-xl transition-all">Audit Users</button>
-                        <button className="flex-1 bg-gray-100 dark:bg-navy-900 text-gray-600 dark:text-white py-3 rounded-2xl font-black uppercase text-xs tracking-widest border border-gray-200 dark:border-navy-700">Role Protocols</button>
-                    </div>
+            {/* Institutional Analytics Section */}
+            <div className="stu-info-card" style={{ borderTopColor: '#00a65a' }}>
+                <div className="info-header">
+                    Institutional Intelligence Dashboard
                 </div>
-
-                <div className="bg-white dark:bg-navy-800 p-8 rounded-3xl border border-gray-100 dark:border-navy-700 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-                        <FaBullhorn size={80} />
-                    </div>
-                    <h4 className="text-xl font-black text-navy-900 dark:text-white mb-6">Omni-Broadcast</h4>
-                    <p className="text-gray-500 text-sm mb-8 leading-relaxed">Dispatch critical alerts via App Push, SMS, and Email gateways to the entire institution instantly.</p>
-                    <div className="flex gap-4">
-                        <button className="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-black uppercase text-xs tracking-widest hover:shadow-xl transition-all" onClick={() => navigate('/analytics')}>Open Dispatcher</button>
-                        <button className="flex-1 bg-gray-100 dark:bg-navy-900 text-gray-600 dark:text-white py-3 rounded-2xl font-black uppercase text-xs tracking-widest border border-gray-200 dark:border-navy-700">View Logs</button>
-                    </div>
+                <div className="info-body">
+                    <InstitutionalAnalytics />
                 </div>
             </div>
-        </div>
+
+            {/* Academic Calendar */}
+            <MiniCalendar />
+
+        </motion.div>
     );
 };
 
