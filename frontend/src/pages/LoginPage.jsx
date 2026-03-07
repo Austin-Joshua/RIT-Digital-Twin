@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../context/ThemeContext';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import api from '../services/api';
 
 const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Temporary placeholder
 
@@ -15,9 +16,38 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [backendStatus, setBackendStatus] = useState('checking');
     const { login, googleLogin } = useAuth();
     const navigate = useNavigate();
     const { isDarkMode } = useContext(ThemeContext);
+
+    useEffect(() => {
+        let timeoutId;
+        const checkConnection = async () => {
+            const controller = new AbortController();
+            timeoutId = setTimeout(() => controller.abort(), 4000);
+
+            try {
+                const response = await fetch('http://localhost:8080/actuator/health', {
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
+                if (response.ok) setBackendStatus('online');
+                else setBackendStatus('offline');
+            } catch (err) {
+                setBackendStatus('offline');
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        };
+
+        checkConnection();
+        const interval = setInterval(checkConnection, 10000);
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            clearInterval(interval);
+        };
+    }, []);
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -31,11 +61,13 @@ const LoginPage = () => {
             const result = await login(credentials.username.trim(), credentials.password);
             if (result.success) {
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                if (storedUser?.role === 'STUDENT') {
-                    navigate('/student');
-                } else {
-                    navigate('/');
-                }
+                const role = storedUser?.role;
+                const normalizedRole = role?.replace('ROLE_', '').replace(/_/g, '').toUpperCase();
+
+                if (normalizedRole === 'STUDENT') window.location.href = '/student';
+                else if (normalizedRole === 'PARENT') window.location.href = '/parent';
+                else if (normalizedRole === 'SUPERADMIN') window.location.href = '/super-admin';
+                else window.location.href = '/';
             } else {
                 setError(result.message || 'Invalid username or password.');
             }
@@ -53,11 +85,13 @@ const LoginPage = () => {
             const result = await googleLogin(credentialResponse.credential);
             if (result.success) {
                 const storedUser = JSON.parse(localStorage.getItem('user'));
-                if (storedUser?.role === 'STUDENT') {
-                    navigate('/student');
-                } else {
-                    navigate('/');
-                }
+                const role = storedUser?.role;
+                const normalizedRole = role?.replace('ROLE_', '').replace(/_/g, '').toUpperCase();
+
+                if (normalizedRole === 'STUDENT') window.location.href = '/student';
+                else if (normalizedRole === 'PARENT') window.location.href = '/parent';
+                else if (normalizedRole === 'SUPERADMIN') window.location.href = '/super-admin';
+                else window.location.href = '/';
             } else {
                 setError(result.message);
             }
@@ -89,9 +123,33 @@ const LoginPage = () => {
                         zIndex: 2
                     }}
                 >
-                    <div style={{ marginBottom: '12px', textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--color-accent-gold)', marginBottom: '4px' }}>Institutional Access</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
+                    <div style={{ marginBottom: '16px', textAlign: 'center', position: 'relative' }}>
+                        <div style={{
+                            position: 'absolute', top: '-10px', right: '-10px',
+                            display: 'flex', alignItems: 'center', gap: '4px',
+                            padding: '4px 8px', borderRadius: '12px',
+                            background: backendStatus === 'online' ? 'rgba(22, 163, 74, 0.1)' :
+                                backendStatus === 'checking' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+                            border: `1px solid ${backendStatus === 'online' ? 'var(--color-success)' :
+                                backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'}`,
+                            fontSize: '10px', fontWeight: 'bold', color: backendStatus === 'online' ? 'var(--color-success)' :
+                                backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'
+                        }}>
+                            <div style={{
+                                width: '6px', height: '6px', borderRadius: '50%',
+                                background: 'currentColor',
+                                animation: backendStatus === 'checking' ? 'pulse 1.5s infinite' : 'none'
+                            }} />
+                            {backendStatus.toUpperCase()}
+                        </div>
+                        <h2 style={{
+                            fontSize: '1.6rem', fontWeight: '900',
+                            color: isDarkMode ? '#FFD700' : '#B8860B', // Darker gold for better contrast
+                            marginBottom: '4px',
+                            textShadow: isDarkMode ? '0 0 10px rgba(255, 215, 0, 0.2)' : 'none',
+                            letterSpacing: '0.02em'
+                        }}>Institutional Access</h2>
+                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 
                     {error && (
@@ -193,6 +251,7 @@ const LoginPage = () => {
                             Request Access
                         </Link>
                     </div>
+
                 </motion.div>
             </div>
         </GoogleOAuthProvider>

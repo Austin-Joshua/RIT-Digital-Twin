@@ -1,9 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { motion } from 'framer-motion';
-import { FaBrain, FaLightbulb, FaArrowRight } from 'react-icons/fa';
+import { FaBrain, FaLightbulb, FaArrowRight, FaRobot, FaMagic } from 'react-icons/fa';
 
-const AIInsightPanel = ({ category }) => {
+const MOCK_INSIGHTS = {
+    STUDENT: [
+        { category: 'ACADEMIC', message: 'Your performance in Labs is 15% higher than theory.', suggestion: 'Review theory notes before Friday.' },
+        { category: 'CAREER', message: 'Your skills align 92% with Full Stack roles.', suggestion: 'Check new React internships.' }
+    ],
+    FACULTY: [
+        { category: 'CLASS_PULSE', message: 'CSE-A participation dropped by 10% today.', suggestion: 'Try interactive quiz in next hour.' },
+        { category: 'RESEARCH', message: 'Your paper on ML matches 3 current grants.', suggestion: 'Draft proposal by EOW.' }
+    ],
+    PARENT: [
+        { category: 'CELEBRATION', message: 'Ram ranked in the top 5% for Coding velocity this week!', suggestion: 'Celebrate this milestone at dinner.' },
+        { category: 'MILESTONE', message: 'Project "Eco-Track" was selected for the Campus Showcase.', suggestion: 'View project details and feedback.' },
+        { category: 'FORECAST', message: 'Ram is on track for 8.7 CGPA. Excellent trajectory.', suggestion: 'Keep up the positive encouragement!' }
+    ],
+    ADMIN: [
+        { category: 'INFRA', message: 'Block C energy spike detected (A/C load).', suggestion: 'Optimize schedules for Room 302.' },
+        { category: 'SENTIMENT', message: 'Campus vibe is "Excited" (85% positive).', suggestion: 'Broadcast sports event update.' }
+    ]
+};
+
+const AIInsightPanel = ({ role = 'STUDENT', category }) => {
     const [insights, setInsights] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -11,57 +31,73 @@ const AIInsightPanel = ({ category }) => {
         const fetchInsights = async () => {
             try {
                 const response = await api.get('/intelligence/insights');
-                // Filter by category if provided, otherwise show global
-                setInsights(category ? response.data.filter(i => i.category === category) : response.data);
-                setLoading(false);
+                const data = category ? response.data.filter(i => i.category === category) : response.data;
+                setInsights(data.length > 0 ? data : (MOCK_INSIGHTS[role] || MOCK_INSIGHTS.STUDENT));
             } catch (error) {
-                console.error("Insights fetch failed", error);
+                setInsights(MOCK_INSIGHTS[role] || MOCK_INSIGHTS.STUDENT);
+            } finally {
+                setLoading(false);
             }
         };
         fetchInsights();
-    }, [category]);
+    }, [category, role]);
 
-    if (loading) return null;
+    if (loading) return (
+        <div className="animate-pulse bg-navy-900/10 h-64 rounded-2xl border border-dashed border-gray-300 dark:border-navy-700 flex items-center justify-center">
+            <FaMagic className="text-navy-900/20 dark:text-white/20 text-4xl animate-bounce" />
+        </div>
+    );
 
     return (
-        <div className="card bg-gradient-to-br from-indigo-900 to-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+        <div className="card bg-gradient-to-br from-navy-900 via-navy-800 to-indigo-900 text-white border-none shadow-2xl relative overflow-hidden p-6 rounded-2xl">
+            {/* Ambient Background Elements */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gold-500/5 rounded-full -ml-16 -mb-16 blur-2xl"></div>
 
-            <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="p-2 bg-indigo-500 rounded-lg">
-                    <FaBrain className="text-white" />
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-inner">
+                        <FaBrain className="text-blue-300" />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black tracking-tight leading-none">RIT AI Wisdom</h3>
+                        <p className="text-[10px] font-bold text-blue-300 uppercase mt-1 tracking-widest">{role} Interface</p>
+                    </div>
                 </div>
-                <h3 className="text-lg font-black tracking-tight">Digital Twin AI Insights</h3>
+                <FaRobot className="text-white/20 text-2xl" />
             </div>
 
             <div className="space-y-4 relative z-10">
                 {insights.map((insight, idx) => (
                     <motion.div
                         key={idx}
-                        whileHover={{ x: 5 }}
-                        className="p-4 bg-white/10 rounded-2xl border border-white/5 hover:bg-white/15 transition-all"
+                        whileHover={{ x: 6, backgroundColor: 'rgba(255,255,255,0.12)' }}
+                        className="p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition-all cursor-default"
                     >
                         <div className="flex items-start gap-3">
-                            <FaLightbulb className="text-yellow-400 mt-1 flex-shrink-0" />
-                            <div>
-                                <p className="text-xs font-bold text-indigo-300 uppercase mb-1">{insight.category}</p>
-                                <p className="text-sm font-medium text-gray-100 leading-relaxed">{insight.message}</p>
-                                <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-teal-400 uppercase tracking-wider">
-                                    <FaArrowRight className="text-[8px]" />
+                            <div className="p-2 bg-gold-500/20 rounded-lg">
+                                <FaLightbulb className="text-gold-400 text-xs" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-center mb-1">
+                                    <p className="text-[9px] font-black text-blue-300 uppercase tracking-widest">{insight.category}</p>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                                </div>
+                                <p className="text-sm font-semibold text-gray-100 leading-snug">{insight.message}</p>
+                                <div className="mt-3 flex items-center gap-2 text-[10px] font-black text-teal-400 uppercase tracking-wider group">
+                                    <FaArrowRight className="text-[8px] group-hover:translate-x-1 transition-transform" />
                                     {insight.suggestion}
                                 </div>
                             </div>
                         </div>
                     </motion.div>
                 ))}
-                {insights.length === 0 && (
-                    <p className="text-center text-gray-400 text-xs py-10 italic">Intelligence engine is processing campus data...</p>
-                )}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-white/10 text-center">
-                <button className="text-[10px] font-black uppercase text-indigo-400 tracking-widest hover:text-white transition-colors">
-                    View Comprehensive Analysis
+            <div className="mt-6 pt-5 border-t border-white/10 text-center relative z-10">
+                <button className="group text-[10px] font-black uppercase text-blue-300 tracking-widest hover:text-white transition-colors flex items-center gap-2 mx-auto">
+                    Global Predictive Analysis
+                    <FaArrowRight className="text-[8px] group-hover:translate-x-1 transition-transform" />
                 </button>
             </div>
         </div>

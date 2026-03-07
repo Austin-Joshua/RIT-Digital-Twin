@@ -12,11 +12,12 @@ const Timetable = () => {
     useEffect(() => {
         const fetchTimetable = async () => {
             try {
-                // Adjust to the existing student timetable endpoint if available
-                const res = await api.get('/academic/student/timetable').catch(() => ({ data: [] }));
+                const res = await api.get('/academic/student/timetable');
                 setTimetable(res.data || []);
             } catch (err) {
-                console.error(err);
+                console.error("Timetable Fetch Error:", err);
+                // Fallback to empty if not assigned yet
+                setTimetable([]);
             } finally {
                 setLoading(false);
             }

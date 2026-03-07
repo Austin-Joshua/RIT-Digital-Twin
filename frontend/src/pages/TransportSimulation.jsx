@@ -6,6 +6,8 @@ import {
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import KPIDetailsModal from '../components/common/KPIDetailsModal';
+import { FaBus, FaUsers, FaChartLine } from 'react-icons/fa';
 import './modules/Transport.css';
 
 const COLORS = ['var(--color-primary-navy)', 'var(--color-accent-gold)', 'var(--color-primary-600)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-error)', 'var(--color-primary-400)'];
@@ -26,6 +28,12 @@ function TransportPage() {
         optimizationTarget: 20,
         includeEvScenario: true
     });
+    const [modal, setModal] = useState({ isOpen: false, title: '', value: '', label: '', description: '', icon: null, colorClass: 'blue' });
+
+    const openModal = (title, value, label, description, icon, colorClass, view) => {
+        setModal({ isOpen: true, title, value, label, description, icon, colorClass });
+        if (view) setActiveView(view);
+    };
 
     const runSimulation = async () => {
         setLoading(true);
@@ -55,10 +63,10 @@ function TransportPage() {
             {/* Redesigned Header - Matching Alumni Portal */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
+                    <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-accent-gold)' }}>
                         <span className="p-2 bg-navy-900 text-white rounded-lg">🚌</span> Institutional Fleet Intelligence
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
                 </div>
                 <div className="flex gap-3">
                     <button className="px-4 py-2 font-bold rounded-lg transition-colors flex items-center gap-2 hover:opacity-80 disabled:opacity-50" style={{ background: 'var(--card-bg)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)' }}>
@@ -72,7 +80,8 @@ function TransportPage() {
 
             {/* Redesigned KPI Row - Matching Alumni Portal Style */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6">
-                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('routes')}>
+                <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform"
+                    onClick={() => openModal('Network Coverage', '12', 'Active Routes', 'Our institutional fleet operates across 12 strategic routes, ensuring comprehensive coverage for students residing in various parts of the city.', FaBus, 'blue', 'routes')}>
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Active Routes</div>
                         <div className="text-4xl font-black mb-1 text-white">12</div>
@@ -80,7 +89,8 @@ function TransportPage() {
                     </div>
                     <div className="kpi-icon">🚌</div>
                 </div>
-                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('clusters')}>
+                <div className="stu-kpi-card green cursor-pointer hover:scale-[1.02] transition-transform"
+                    onClick={() => openModal('Commuter Analytics', '2,800', 'Total Students', 'Over 2,800 students rely on our institutional transport daily, making it one of the largest private transit networks in the region.', FaUsers, 'green', 'clusters')}>
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-green-200 uppercase tracking-wider mb-2">Total Students</div>
                         <div className="text-4xl font-black mb-1 text-white">2,800</div>
@@ -88,7 +98,8 @@ function TransportPage() {
                     </div>
                     <div className="kpi-icon">👥</div>
                 </div>
-                <div className="stu-kpi-card amber cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveView('optimization')}>
+                <div className="stu-kpi-card amber cursor-pointer hover:scale-[1.02] transition-transform"
+                    onClick={() => openModal('Sustainability Goals', '20%', 'Target Efficiency', 'We are targeting a 20% reduction in fuel consumption through AI-driven route optimization and strategic fleet deployment.', FaChartLine, 'amber', 'optimization')}>
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-amber-900 uppercase tracking-wider mb-2">Target Efficiency</div>
                         <div className="text-4xl font-black mb-1" style={{ color: 'var(--ims-bg-light)' }}>20%</div>
@@ -393,6 +404,11 @@ function TransportPage() {
                     <p>Configure institutional parameters and run the analysis to generate optimized route maps and sustainability projections.</p>
                 </div>
             )}
+
+            <KPIDetailsModal
+                {...modal}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+            />
         </div>
     );
 }

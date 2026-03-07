@@ -155,10 +155,10 @@ const FacultyDashboard = () => {
                             </div>
                             <div
                                 onClick={() => navigate('/faculty/leaves')}
-                                style={{ padding: '12px', borderLeft: '4px solid var(--color-primary-navy)', background: 'var(--theme-bg-muted)', fontSize: '13px', cursor: 'pointer', transition: '0.2s', color: 'var(--theme-text)', borderRadius: '0 8px 8px 0' }}
+                                style={{ padding: '12px', borderLeft: '4px solid var(--color-primary-600)', background: 'var(--theme-bg-muted)', fontSize: '13px', cursor: 'pointer', transition: '0.2s', color: 'var(--theme-text)', borderRadius: '0 8px 8px 0' }}
                                 className="hover:opacity-80"
                             >
-                                <strong style={{ color: 'var(--color-primary-navy)' }}>1 OD request</strong> pending for Sports quota
+                                <strong style={{ color: 'var(--color-primary-600)' }}>1 OD request</strong> pending for Sports quota
                             </div>
                         </div>
                     </div>

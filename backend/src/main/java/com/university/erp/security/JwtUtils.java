@@ -24,11 +24,17 @@ public class JwtUtils {
     }
 
     public String generateToken(User user) {
+        String roleName = (user.getRole() != null && user.getRole().getRoleName() != null)
+                ? user.getRole().getRoleName().name()
+                : "STUDENT";
+
         return Jwts.builder()
                 .subject(user.getUsername())
-                .claim("role", user.getRole().getRoleName().name())
+                .claim("role", roleName)
                 .claim("email", user.getEmail())
-                .claim("name", user.getFirstName() + " " + user.getLastName())
+                .claim("name",
+                        (user.getFirstName() != null ? user.getFirstName() : "") + " "
+                                + (user.getLastName() != null ? user.getLastName() : ""))
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey())

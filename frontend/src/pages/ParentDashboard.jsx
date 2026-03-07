@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 import api from '../services/api';
-import { FaChild, FaCalendarAlt, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt } from 'react-icons/fa';
+import { FaChild, FaCalendarAlt, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt, FaMagic, FaMedal, FaTrophy, FaStar, FaHandshake, FaChartLine as FaChartIcon } from 'react-icons/fa';
 import { useToast } from '../context/ToastContext';
+import AIInsightPanel from '../components/intelligence/AIInsightPanel';
 
 // Simple Modal reused for standard details
 const DetailModal = ({ detail, onClose }) => {
@@ -195,18 +196,25 @@ const ParentDashboard = () => {
     const [students, setStudents] = useState([]);
     const [_loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
-    const [schedulingFor, setSchedulingFor] = useState(null);
-    const [paymentFor, setPaymentFor] = useState(null);
     const { addToast } = useToast();
 
-    // Mock data for in-depth analytics
-    const perfData = [
-        { month: 'Aug', marks: 65, avg: 60 },
-        { month: 'Sep', marks: 78, avg: 62 },
-        { month: 'Oct', marks: 72, avg: 65 },
-        { month: 'Nov', marks: 84, avg: 68 },
-        { month: 'Dec', marks: 89, avg: 70 },
-    ];
+    // Mock data for marks - strictly as requested
+    const mockMarks = {
+        cat: [
+            { subject: 'Discrete Mathematics', score: 45, max: 50 },
+            { subject: 'Economics', score: 42, max: 50 },
+            { subject: 'Object Oriented Programming', score: 48, max: 50 }
+        ],
+        assignments: [
+            { subject: 'Discrete Mathematics', score: 18, max: 20 },
+            { subject: 'Business Analytics', score: 19, max: 20 },
+            { subject: 'English', score: 20, max: 20 }
+        ],
+        semester: [
+            { subject: 'Matrices and Calculus', grade: 'A+', gpa: 9.5 },
+            { subject: 'Engineering Chemistry', grade: 'A', gpa: 9.0 }
+        ]
+    };
 
     const generateMockStudents = () => {
         return [
@@ -215,18 +223,8 @@ const ParentDashboard = () => {
                 user: { firstName: 'Ram', lastName: 'Kumar' },
                 studentIdNumber: 'RIT2021001',
                 currentCgpa: 8.5,
-                feeTotal: 150000,
-                feePaid: 150000,
-                feeDue: 0
-            },
-            {
-                id: 2,
-                user: { firstName: 'Sita', lastName: 'Kumar' },
-                studentIdNumber: 'RIT2022045',
-                currentCgpa: 8.9,
-                feeTotal: 120000,
-                feePaid: 80000,
-                feeDue: 40000
+                attendance: 92,
+                marks: mockMarks
             }
         ];
     };
@@ -234,22 +232,13 @@ const ParentDashboard = () => {
     useEffect(() => {
         const fetchLinkedStudents = async () => {
             try {
-                // Try to fetch, if it fails or returns empty, use mock
                 const res = await api.get('/api/parent/students');
                 if (res.data && res.data.length > 0) {
-                    // Add mock fee data to existing students since backend doesn't have it yet
-                    const enriched = res.data.map(s => ({
-                        ...s,
-                        feeTotal: 120000,
-                        feePaid: 80000,
-                        feeDue: 40000
-                    }));
-                    setStudents(enriched);
+                    setStudents(res.data.map(s => ({ ...s, attendance: 88, marks: mockMarks })));
                 } else {
                     setStudents(generateMockStudents());
                 }
             } catch (err) {
-                console.warn("Failed to fetch parent students, using mocks", err);
                 setStudents(generateMockStudents());
             }
             setLoading(false);
@@ -257,189 +246,140 @@ const ParentDashboard = () => {
         fetchLinkedStudents();
     }, []);
 
-    const handleCardClick = (title, content, data = null) => {
-        setSelectedDetail({ title, content, data });
-    };
-
-    const handlePaymentSuccess = () => {
-        addToast(`Payment of ₹${paymentFor.feeDue.toLocaleString()} was successful! Receipt #TXN${Math.floor(Math.random() * 100000)} generated.`, 'success');
-
-        // Update local state to show paid
-        setStudents(prev => prev.map(s => {
-            if (s.id === paymentFor.id) {
-                return { ...s, feePaid: s.feeTotal, feeDue: 0 };
-            }
-            return s;
-        }));
-        setPaymentFor(null);
+    const handleCardClick = (title, content) => {
+        setSelectedDetail({ title, content });
     };
 
     return (
-        <div className="p-6 space-y-6 animate-in fade-in duration-500 max-w-7xl mx-auto">
+        <div className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
-            {schedulingFor && <AppointmentModal student={schedulingFor} onClose={() => setSchedulingFor(null)} />}
-            {paymentFor && <PaymentModal pendingAmount={paymentFor.feeDue} onClose={() => setPaymentFor(null)} onSuccess={handlePaymentSuccess} />}
 
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        Parent & Guardian Portal
+                    <h1 className="text-3xl font-black text-navy-900 dark:text-white flex items-center gap-3">
+                        <FaHandshake className="text-gold-500" /> Parent Portal
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Monitor academic trajectory, behavioral analytics, and campus involvement.</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Celebrating and monitoring your child's academic journey at RIT.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-green-200 dark:border-green-800">
+                        Institutional Access Verified
+                    </div>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-6">
-                {students.map(student => (
-                    <div key={student.id} className="bg-white dark:bg-navy-800 rounded-2xl shadow-sm border border-gray-100 dark:border-navy-700 overflow-hidden">
-
-                        {/* Student Header */}
-                        <div className="p-6 border-b border-gray-100 dark:border-navy-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-navy-900/50">
-                            <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 rounded-full flex items-center justify-center text-xl shadow-inner">
-                                    <FaChild />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-black text-navy-900 dark:text-white m-0">{student.user.firstName} {student.user.lastName}</h3>
-                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 m-0">
-                                        Roll No: {student.studentIdNumber} • Section: CSE-A • Year 3
-                                    </p>
-                                </div>
+            {students.map(student => (
+                <div key={student.id} className="space-y-6">
+                    {/* Compact Header */}
+                    <div className="bg-white dark:bg-navy-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-navy-700 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 rounded-2xl flex items-center justify-center text-2xl shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform">
+                                <FaChild />
                             </div>
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="bg-white dark:bg-navy-900 px-4 py-2 rounded-xl shadow-sm border border-gray-200 dark:border-navy-700 text-center">
-                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Current CGPA</div>
-                                    <div className="text-lg font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
-                                </div>
-                                <button
-                                    onClick={() => setSchedulingFor(student)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold transition-colors flex items-center gap-2"
-                                >
-                                    <FaClock /> Schedule Meet
-                                </button>
+                            <div>
+                                <h3 className="text-2xl font-black text-navy-900 dark:text-white m-0">{student.user.firstName} {student.user.lastName}</h3>
+                                <p className="text-sm font-bold text-gray-400 m-0 uppercase tracking-widest">{student.studentIdNumber} • CSE-A • Year 3</p>
                             </div>
                         </div>
-
-                        <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                            {/* KPI Metrics */}
-                            <div className="lg:col-span-1 space-y-4">
-                                <div
-                                    className="bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30 cursor-pointer hover:shadow-md transition-all group"
-                                    onClick={() => handleCardClick(`${student.user.firstName}'s Attendance`, `Current attendance is 88%. This student has attended 44 out of 50 classes this semester.`)}
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h4 className="font-bold text-emerald-800 dark:text-emerald-400 text-sm uppercase flex items-center gap-2"><FaCalendarAlt /> Attendance</h4>
-                                    </div>
-                                    <div className="flex items-end gap-2">
-                                        <p className="text-4xl font-black text-emerald-600">88<span className="text-xl">%</span></p>
-                                        <span className="text-xs font-bold text-emerald-600/70 mb-1">Excellent</span>
-                                    </div>
-                                    <div className="w-full bg-emerald-200/50 dark:bg-emerald-900/50 h-2 rounded-full mt-3 overflow-hidden">
-                                        <div className="bg-emerald-500 h-full" style={{ width: '88%' }}></div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30 cursor-pointer hover:shadow-md transition-all group"
-                                    onClick={() => handleCardClick(`Risk Factor: ${student.user.firstName}`, `Student is currently at a LOW risk level. Behavior score is 95/100.`)}
-                                >
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h4 className="font-bold text-amber-800 dark:text-amber-400 text-sm uppercase flex items-center gap-2"><FaExclamationTriangle /> Overall Risk</h4>
-                                    </div>
-                                    <div className="flex items-end gap-2">
-                                        <p className="text-4xl font-black text-amber-600">LOW</p>
-                                    </div>
-                                    <p className="text-xs text-amber-700 dark:text-amber-500 mt-2 font-medium">Safe academic trajectory detected.</p>
-                                </div>
+                        <div className="flex gap-4">
+                            <div className="text-center bg-gray-50 dark:bg-navy-900 px-6 py-3 rounded-2xl border border-gray-200 dark:border-navy-700">
+                                <div className="text-[10px] font-black text-gray-400 uppercase mb-1">Current CGPA</div>
+                                <div className="text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
                             </div>
-
-                            {/* In-depth Analytics Chart */}
-                            <div className="lg:col-span-2 border border-gray-100 dark:border-navy-700 rounded-xl p-5 bg-white dark:bg-navy-900/20">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h4 className="font-bold text-navy-900 dark:text-white flex items-center gap-2"><FaFileAlt className="text-blue-500" /> Academic Performance Trend</h4>
-                                    <span className="text-xs bg-gray-100 dark:bg-navy-800 px-2 py-1 rounded text-gray-500 dark:text-gray-400 font-bold">Internal Marks</span>
-                                </div>
-                                <div className="h-48 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={perfData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorMarks" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                                            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                                            <Area type="monotone" dataKey="marks" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorMarks)" name="Student's Avg" />
-                                            <Line type="monotone" dataKey="avg" stroke="#cbd5e1" strokeWidth={2} strokeDasharray="5 5" name="Class Avg" dot={false} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div className="flex items-center justify-center gap-6 mt-4 text-xs font-bold text-gray-500 dark:text-gray-400">
-                                    <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Student Score</span>
-                                    <span className="flex items-center gap-2"><span className="w-3 h-3 border-2 border-dashed border-gray-400"></span> Class Average</span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* Financials / Fees Section */}
-                        <div className="p-6 border-t border-gray-100 dark:border-navy-700 bg-gray-50/50 dark:bg-navy-900/10 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                            <div className="md:col-span-2">
-                                <h4 className="font-bold text-navy-900 dark:text-white flex items-center gap-2 mb-4">
-                                    <FaRupeeSign className="text-gold-500" /> Financial Dues & Receipts
-                                </h4>
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                                    <div>
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold mb-1">Total Fee</p>
-                                        <p className="font-black text-navy-900 dark:text-white">₹{student.feeTotal.toLocaleString()}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold mb-1">Paid</p>
-                                        <p className="font-black text-green-600 dark:text-green-500">₹{student.feePaid.toLocaleString()}</p>
-                                    </div>
-                                    <div className="lg:col-span-2">
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold mb-1">Due Amount</p>
-                                        <p className={`font-black ${student.feeDue > 0 ? 'text-red-500' : 'text-gray-500'}`}>
-                                            ₹{student.feeDue.toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="w-full bg-gray-200 dark:bg-navy-700 h-2 rounded-full mt-4 overflow-hidden">
-                                    <div
-                                        className="bg-green-500 h-full transition-all duration-1000"
-                                        style={{ width: `${(student.feePaid / student.feeTotal) * 100}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-3 justify-center">
-                                {student.feeDue > 0 ? (
-                                    <button
-                                        onClick={() => setPaymentFor(student)}
-                                        className="w-full bg-navy-900 hover:bg-navy-800 text-white dark:bg-gold-500 dark:text-navy-900 dark:hover:bg-gold-400 py-3 rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2"
-                                    >
-                                        <FaRupeeSign /> Pay ₹{student.feeDue.toLocaleString()}
-                                    </button>
-                                ) : (
-                                    <button
-                                        disabled
-                                        className="w-full bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-500 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed border border-green-200 dark:border-green-800"
-                                    >
-                                        <FaShieldAlt /> Fully Paid
-                                    </button>
-                                )}
-                                <button className="w-full bg-white dark:bg-navy-800 border-2 border-gray-200 dark:border-navy-600 hover:border-blue-500 dark:hover:border-gold-500 text-navy-900 dark:text-white py-2 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-sm">
-                                    <FaFileInvoice /> Download Statement
-                                </button>
+                            <div className="text-center bg-gray-50 dark:bg-navy-900 px-6 py-3 rounded-2xl border border-gray-200 dark:border-navy-700">
+                                <div className="text-[10px] font-black text-gray-400 uppercase mb-1">Attendance</div>
+                                <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
                             </div>
                         </div>
                     </div>
-                ))}
-            </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Marks Summary Column */}
+                        <div className="lg:col-span-2 space-y-6">
+                            {/* CAT Marks Card */}
+                            <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-navy-700">
+                                <h4 className="text-lg font-black text-navy-900 dark:text-white flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600"><FaFileAlt /></div>
+                                    CAT Performance
+                                </h4>
+                                <div className="space-y-4">
+                                    {student.marks.cat.map((m, i) => (
+                                        <div key={i} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-navy-900 rounded-2xl border border-gray-100 dark:border-navy-700">
+                                            <span className="font-bold text-gray-700 dark:text-blue-200">{m.subject}</span>
+                                            <span className="font-black text-navy-900 dark:text-white">{m.score} / {m.max}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Assignment Marks */}
+                                <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-navy-700">
+                                    <h4 className="text-base font-black text-navy-900 dark:text-white flex items-center gap-2 mb-4 text-emerald-600">
+                                        <FaMedal /> Assignments
+                                    </h4>
+                                    <div className="space-y-3">
+                                        {student.marks.assignments.map((m, i) => (
+                                            <div key={i} className="flex justify-between items-center text-sm">
+                                                <span className="text-gray-500 font-medium">{m.subject}</span>
+                                                <span className="font-bold text-navy-900 dark:text-white">{m.score}/20</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Semester Results */}
+                                <div className="bg-navy-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                                    <div className="absolute -right-4 -bottom-4 opacity-10 rotate-12">
+                                        <FaTrophy size={100} />
+                                    </div>
+                                    <h4 className="text-base font-black flex items-center gap-2 mb-4 text-gold-400">
+                                        <FaStar /> Semester Highlights
+                                    </h4>
+                                    <div className="space-y-3">
+                                        {student.marks.semester.map((m, i) => (
+                                            <div key={i} className="flex justify-between items-center text-sm">
+                                                <span className="opacity-80 font-medium">{m.subject}</span>
+                                                <span className="font-black text-gold-400">{m.grade}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Insights & Positive Trajectory Column */}
+                        <div className="lg:col-span-1 space-y-6">
+                            <AIInsightPanel role="PARENT" />
+
+                            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
+                                <h4 className="font-black flex items-center gap-2 mb-4 text-blue-200 uppercase text-xs tracking-widest">
+                                    <FaMagic className="animate-pulse" /> Growth Perspective
+                                </h4>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                                        <div className="text-xs opacity-70 mb-1">Success Index</div>
+                                        <div className="text-2xl font-black">95.4%</div>
+                                        <div className="w-full bg-white/20 h-1 rounded-full mt-2">
+                                            <div className="bg-gold-400 h-full w-[95%]" />
+                                        </div>
+                                    </div>
+                                    <p className="text-xs leading-relaxed italic opacity-90">
+                                        "Excellent consistency in lab performance. Ram's focus on practical application is a key strength this semester."
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => handleCardClick("Detailed Analytics", "Extended performance tracking and historical trends are currently being aggregated for the mid-term review.")}
+                                className="w-full bg-white dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-navy-600 text-gray-500 font-bold hover:border-gold-500 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <FaChartIcon /> Detailed performance stats
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

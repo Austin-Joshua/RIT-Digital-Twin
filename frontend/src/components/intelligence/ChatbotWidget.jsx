@@ -1,28 +1,62 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRobot, FaPaperPlane, FaTimes, FaMinus } from 'react-icons/fa';
+import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaLightbulb, FaBolt, FaChartBar, FaSearch } from 'react-icons/fa';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const ChatbotWidget = ({ studentId }) => {
+    const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState([
-        { text: "Hello! I'm your AI Academic Assistant. How can I help you today?", isBot: true }
+        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${user?.role || 'STUDENT'} role today?`, isBot: true }
     ]);
     const [input, setInput] = useState('');
 
-    const handleSend = async () => {
-        if (!input.trim()) return;
+    const getSuggestions = () => {
+        const role = user?.role || 'STUDENT';
+        if (role === 'FACULTY' || role === 'HOD') {
+            const facultySugs = ["Check Attendance Trends", "Pending Leave OD", "Research Citation Audit"];
+            if (role === 'HOD') facultySugs.push("Dept Risk Heatmap");
+            return facultySugs;
+        }
+        if (role === 'PARENT') {
+            return ["Academic Forecast", "Fee Dues", "Schedule Meeting", "Attendance Pulse"];
+        }
+        if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+            return ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
+        }
+        return ["Attendance Report", "CGPA Simulator", "Exam Hall Info", "Digital Outpass"];
+    };
 
-        const userMsg = { text: input, isBot: false };
+    const handleSend = async (queryText = input) => {
+        const textToSend = queryText || input;
+        if (!textToSend.trim()) return;
+
+        const userMsg = { text: textToSend, isBot: false };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
+        setIsTyping(true);
 
         try {
-            const res = await api.post(`/api/ai/chatbot/query?studentId=${studentId}`, { query: input });
+            // Context-aware AI query
+            const res = await api.post(`/ai/chatbot/query?studentId=${studentId || user?.id || 1}&role=${user?.role || 'STUDENT'}`, { query: textToSend });
             const botMsg = { text: res.data.response, isBot: true };
-            setMessages(prev => [...prev, botMsg]);
+
+            // Check for potential action triggers (mock logic for demo)
+            if (textToSend.toLowerCase().includes('energy') || textToSend.toLowerCase().includes('audit')) {
+                botMsg.action = { label: "Run Energy Audit", color: "#f39c12" };
+            } else if (textToSend.toLowerCase().includes('forecast') || textToSend.toLowerCase().includes('cgpa')) {
+                botMsg.action = { label: "Project Scores", color: "#3c8dbc" };
+            }
+
+            setTimeout(() => {
+                setMessages(prev => [...prev, botMsg]);
+                setIsTyping(false);
+            }, 600);
         } catch (_err) {
-            setMessages(prev => [...prev, { text: "Sorry, I'm having trouble connecting right now.", isBot: true }]);
+            setIsTyping(false);
+            setMessages(prev => [...prev, { text: "I'm optimizing my processing engines. Please try again in a moment.", isBot: true }]);
         }
     };
 
@@ -35,56 +69,126 @@ const ChatbotWidget = ({ studentId }) => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
                         style={{
-                            width: '350px',
-                            height: '450px',
-                            background: 'white',
-                            borderRadius: '16px',
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                            width: '380px',
+                            height: '550px',
+                            background: 'rgba(var(--card-bg-rgb, 255, 255, 255), 0.85)',
+                            borderRadius: '24px',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
                             marginBottom: '16px',
-                            border: '1px solid #e2e8f0'
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            backdropFilter: 'blur(15px)',
+                            color: 'var(--theme-text)'
                         }}
                     >
-                        {/* Header */}
-                        <div style={{ background: '#0B2C6B', color: 'white', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <FaRobot /> <span>Academic AI</span>
+                        {/* Premium Header */}
+                        <div style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: 'white', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.15)', padding: '8px', borderRadius: '12px' }}>
+                                    <FaRobot color="#fbbf24" size={20} />
+                                </div>
+                                <div>
+                                    <span style={{ fontWeight: '800', fontSize: '15px', display: 'block' }}>RIT Command Center</span>
+                                    <span style={{ fontSize: '10px', opacity: 0.7, fontWeight: '700', textTransform: 'uppercase', tracking: '1px' }}>AI Neural Network Active</span>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '12px', cursor: 'pointer' }}>
+                            <div style={{ display: 'flex', gap: '15px', cursor: 'pointer', opacity: 0.8 }}>
                                 <FaMinus onClick={() => setIsOpen(false)} />
                                 <FaTimes onClick={() => setIsOpen(false)} />
                             </div>
                         </div>
 
+                        {/* Search/Command Bar */}
+                        <div style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.03)', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaSearch size={12} color="var(--theme-text-muted)" />
+                            <input
+                                placeholder="Search commands or ask AI..."
+                                style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '12px', flex: 1, color: 'var(--theme-text)' }}
+                            />
+                        </div>
+
                         {/* Messages */}
-                        <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {messages.map((msg, i) => (
-                                <div key={i} style={{
-                                    alignSelf: msg.isBot ? 'flex-start' : 'flex-end',
-                                    background: msg.isBot ? '#f1f5f9' : '#0B2C6B',
-                                    color: msg.isBot ? '#1e293b' : 'white',
-                                    padding: '10px 14px',
-                                    borderRadius: '12px',
-                                    maxWidth: '80%',
-                                    fontSize: '0.9rem'
-                                }}>
-                                    {msg.text}
+                                <div key={i} style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
+                                    <div style={{
+                                        background: msg.isBot ? 'var(--theme-bg-muted)' : '#0B2C6B',
+                                        color: msg.isBot ? 'var(--theme-text)' : 'white',
+                                        padding: '12px 16px',
+                                        borderRadius: msg.isBot ? '2px 16px 16px 16px' : '16px 16px 2px 16px',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '500',
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+                                        border: msg.isBot ? '1px solid var(--theme-border)' : 'none',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        {msg.text}
+                                    </div>
+                                    {msg.action && (
+                                        <button style={{
+                                            marginTop: '8px', width: '100%', padding: '8px', borderRadius: '10px',
+                                            background: msg.action.color, color: 'white', border: 'none',
+                                            fontWeight: '800', fontSize: '11px', textTransform: 'uppercase',
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                                        }}>
+                                            <FaBolt size={10} /> {msg.action.label}
+                                        </button>
+                                    )}
                                 </div>
+                            ))}
+                            {isTyping && (
+                                <div style={{ alignSelf: 'flex-start', background: 'var(--theme-bg-muted)', padding: '12px 16px', borderRadius: '2px 16px 16px 16px', border: '1px solid var(--theme-border)' }}>
+                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                        {[0, 1, 2].map(i => (
+                                            <motion.div
+                                                key={i}
+                                                animate={{ y: [0, -5, 0] }}
+                                                transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
+                                                style={{ width: '5px', height: '5px', background: 'var(--theme-text-muted)', borderRadius: '50%' }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Quick Action Suggestions */}
+                        <div style={{ padding: '0 20px 15px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {getSuggestions().map(sug => (
+                                <button
+                                    key={sug}
+                                    onClick={() => handleSend(sug)}
+                                    style={{
+                                        padding: '6px 14px', borderRadius: '30px', border: '1px solid var(--theme-border)',
+                                        background: 'rgba(255,255,255,0.05)', color: 'var(--theme-text)', fontSize: '11px',
+                                        fontWeight: '700', cursor: 'pointer', transition: '0.2s',
+                                        display: 'flex', alignItems: 'center', gap: '6px'
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = '#fbbf24'; e.currentTarget.style.color = '#0B2C6B'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--theme-text)'; }}
+                                >
+                                    <FaBolt size={10} /> {sug}
+                                </button>
                             ))}
                         </div>
 
-                        {/* Input */}
-                        <div style={{ padding: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '8px' }}>
-                            <input
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Ask me something..."
-                                style={{ flex: 1, border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px 12px', outline: 'none' }}
-                            />
-                            <button onClick={handleSend} style={{ background: '#0B2C6B', color: 'white', border: 'none', borderRadius: '8px', width: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        {/* Footer Input */}
+                        <div style={{ padding: '16px 20px', background: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--theme-border)', display: 'flex', gap: '10px' }}>
+                            <div style={{ flex: 1, position: 'relative' }}>
+                                <input
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    placeholder="Execute neural query..."
+                                    style={{ width: '100%', border: '1.5px solid var(--theme-border)', borderRadius: '12px', padding: '12px 15px', outline: 'none', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', fontWeight: '600' }}
+                                />
+                                <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
+                                    <FaChartBar size={14} color="#0B2C6B" opacity={0.3} />
+                                </div>
+                            </div>
+                            <button onClick={() => handleSend()} style={{ background: '#0B2C6B', color: 'white', border: 'none', borderRadius: '12px', width: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 15px rgba(11,44,107,0.3)' }}>
                                 <FaPaperPlane />
                             </button>
                         </div>
@@ -92,25 +196,32 @@ const ChatbotWidget = ({ studentId }) => {
                 )}
             </AnimatePresence>
 
+            {/* Float Button */}
             <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    background: '#0B2C6B',
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '20px',
+                    background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)',
                     color: 'white',
-                    border: 'none',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    border: '2px solid #fbbf24',
+                    boxShadow: '0 10px 30px rgba(11, 44, 107, 0.5)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    position: 'relative'
                 }}
             >
-                {isOpen ? <FaTimes size={24} /> : <FaRobot size={28} />}
+                {isOpen ? <FaTimes size={24} /> : (
+                    <>
+                        <FaRobot size={30} />
+                        <div style={{ position: 'absolute', top: '-5px', right: '-5px', width: '14px', height: '14px', background: '#22c55e', borderRadius: '50%', border: '2px solid white' }}></div>
+                    </>
+                )}
             </motion.button>
         </div>
     );

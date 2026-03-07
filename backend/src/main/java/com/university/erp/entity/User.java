@@ -58,6 +58,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null || role.getRoleName() == null) {
+            return List.of(new SimpleGrantedAuthority("ROLE_STUDENT"));
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.getRoleName().name()));
     }
 

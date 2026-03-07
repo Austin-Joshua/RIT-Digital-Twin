@@ -10,6 +10,7 @@ import BroadcastListener from './components/BroadcastListener';
 /* Layouts */
 import InstitutionalLayout from './layouts/InstitutionalLayout';
 import StudentLayout from './layouts/StudentLayout';
+import ParentLayout from './layouts/ParentLayout';
 import AuthLayout from './layouts/AuthLayout';
 
 /* Lazy Loaded Auth Pages */
@@ -110,12 +111,19 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to={user.role === 'STUDENT' ? '/student' : '/'} replace />;
+  const userRole = user.role?.replace('ROLE_', '').toUpperCase();
+
+  if (requiredRole && userRole !== requiredRole.toUpperCase()) {
+    if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
+    if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
+    if (userRole === 'SUPER_ADMIN') return <Navigate to="/super-admin" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  if (!requiredRole && user.role === 'STUDENT') {
-    return <Navigate to="/student" replace />;
+  if (!requiredRole) {
+    if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
+    if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
+    if (userRole === 'SUPER_ADMIN') return <Navigate to="/super-admin" replace />;
   }
 
   return children;
@@ -171,9 +179,13 @@ const App = () => {
 
                   {/* Parent Mode */}
                   <Route path="/parent" element={
-                    <ProtectedRoute requiredRole="PARENT"><StudentLayout /></ProtectedRoute>
+                    <ProtectedRoute requiredRole="PARENT"><ParentLayout /></ProtectedRoute>
                   }>
                     <Route index element={<ParentDashboard />} />
+                    <Route path="grades" element={<GradeBook />} />
+                    <Route path="attendance" element={<Attendance />} />
+                    <Route path="fees" element={<AcademicFee />} />
+                    <Route path="change-password" element={<ChangePassword />} />
                   </Route>
 
                   {/* Super Admin Mode */}

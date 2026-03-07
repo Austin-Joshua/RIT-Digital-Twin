@@ -1,23 +1,76 @@
 package com.university.erp.service;
 
+import com.university.erp.entity.*;
+import com.university.erp.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
 public class TimetableService {
 
-    public Map<String, List<String>> generateWeeklyTimetable(Long deptId, String section) {
-        Map<String, List<String>> timetable = new LinkedHashMap<>();
-        String[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
-        String[] periods = { "9:00-10:00", "10:00-11:00", "11:15-12:15", "1:15-2:15", "2:15-3:15" };
+    private final TimetableSlotRepository timetableSlotRepository;
+    private final StudentRepository studentRepository;
+    private final SubjectRepository subjectRepository;
+    private final DepartmentRepository departmentRepository;
+
+    public TimetableService(TimetableSlotRepository timetableSlotRepository, StudentRepository studentRepository,
+            SubjectRepository subjectRepository, DepartmentRepository departmentRepository) {
+        this.timetableSlotRepository = timetableSlotRepository;
+        this.studentRepository = studentRepository;
+        this.subjectRepository = subjectRepository;
+        this.departmentRepository = departmentRepository;
+    }
+
+    public List<TimetableSlot> getStudentTimetable(Long userId) {
+        Student student = studentRepository.findAll().stream()
+                .filter(s -> s.getUser() != null && s.getUser().getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Student profile not found"));
+
+        if (student.getDepartment() == null) {
+            return Collections.emptyList();
+        }
+
+        return timetableSlotRepository.findByDepartmentIdAndSection(student.getDepartment().getId(),
+                student.getSection());
+    }
+
+    @Transactional
+    public List<TimetableSlot> generateWeeklyTimetable(Long deptId, String section) {
+        Department dept = departmentRepository.findById(deptId)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
+        List<Subject> subjects = subjectRepository.findByDepartmentId(deptId);
+        if (subjects.isEmpty()) {
+            throw new RuntimeException("No subjects found for this department to generate timetable.");
+        }
+
+        // Clear existing for this dept/section
+        timetableSlotRepository.deleteAll(timetableSlotRepository.findByDepartmentIdAndSection(deptId, section));
+
+        String[] days = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY" };
+        String[] startTimes = { "09:00:00", "10:00:00", "11:00:00", "13:00:00", "14:00:00", "15:00:00" };
+        String[] endTimes = { "10:00:00", "11:00:00", "12:00:00", "14:00:00", "15:00:00", "16:00:00" };
+
+        List<TimetableSlot> generated = new ArrayList<>();
+        int subjectIndex = 0;
 
         for (String day : days) {
-            List<String> daySchedule = new ArrayList<>();
-            for (String period : periods) {
-                daySchedule.add("Subject [Randomly Generated for " + period + "]");
+            for (int i = 0; i < startTimes.length; i++) {
+                Subject sub = subjects.get(subjectIndex % subjects.size());
+                TimetableSlot slot = TimetableSlot.builder()
+                        .dayOfWeek(day)
+                        .startTime(startTimes[i])
+                        .endTime(endTimes[i])
+                        .subject(sub)
+                        .section(section)
+                        .department(dept)
+                        .build();
+                generated.add(timetableSlotRepository.save(slot));
+                subjectIndex++;
             }
-            timetable.put(day, daySchedule);
         }
-        return timetable;
+        return generated;
     }
 }

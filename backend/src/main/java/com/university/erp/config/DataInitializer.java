@@ -20,6 +20,10 @@ import com.university.erp.entity.FacultyLeaveRequest;
 import com.university.erp.repository.AlumniProfileRepository;
 import com.university.erp.repository.AssetInventoryRepository;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
+import com.university.erp.repository.DepartmentRepository;
+import com.university.erp.repository.SubjectRepository;
+import com.university.erp.entity.Department;
+import com.university.erp.entity.Subject;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -35,11 +39,14 @@ public class DataInitializer implements CommandLineRunner {
         private final AlumniProfileRepository alumniRepo;
         private final AssetInventoryRepository assetRepo;
         private final FacultyLeaveRequestRepository leaveRepo;
+        private final DepartmentRepository departmentRepository;
+        private final SubjectRepository subjectRepository;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
                         BusStopRepository busStopRepository, AlumniProfileRepository alumniRepo,
-                        AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo) {
+                        AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo,
+                        DepartmentRepository departmentRepository, SubjectRepository subjectRepository) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
@@ -48,14 +55,16 @@ public class DataInitializer implements CommandLineRunner {
                 this.alumniRepo = alumniRepo;
                 this.assetRepo = assetRepo;
                 this.leaveRepo = leaveRepo;
+                this.departmentRepository = departmentRepository;
+                this.subjectRepository = subjectRepository;
         }
 
         @Override
         @Transactional
         public void run(String... args) throws Exception {
                 // 1. Initialize Roles
-                seedRole(Role.UserRole.M);
-                seedRole(Role.UserRole.SA);
+                seedRole(Role.UserRole.MANAGEMENT);
+                seedRole(Role.UserRole.SUPER_ADMIN);
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -75,19 +84,32 @@ public class DataInitializer implements CommandLineRunner {
                 seedUser("student2@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Michael", "Lee");
                 seedUser("student3@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Emily", "Chen");
 
+                // Parent and Super Admin Seed
+                seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
+                seedUser("superadmin@ritchennai.edu.in", "admin123", Role.UserRole.SUPER_ADMIN, "Global", "Admin");
+
                 // 3. Initialize Transport Data
                 seedTransportData();
 
                 // 4. Initialize ERP Data
                 seedErpData();
+
+                // 5. Initialize CSBS Curriculum
+                seedCsbsData();
         }
 
         private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
                         String lastName) {
                 userRepository.findByEmail(email).ifPresentOrElse(
                                 user -> {
-                                        log.info("Resetting password for demo user: {}", email);
+                                        log.info("Updating existing demo user: {}", email);
                                         user.setPassword(passwordEncoder.encode(password));
+
+                                        Role role = roleRepository.findByRoleName(roleEnum)
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "Role " + roleEnum + " not found"));
+                                        user.setRole(role);
+
                                         userRepository.save(user);
                                 },
                                 () -> {
@@ -280,6 +302,44 @@ public class DataInitializer implements CommandLineRunner {
                         busStopRepository.save(BusStop.builder()
                                         .route(route).stopName(start).pickupTime(time).stopOrder(1)
                                         .landmark("Starting Point").build());
+                }
+        }
+
+        private void seedCsbsData() {
+                Department csbs = departmentRepository.findByCode("CSBS").orElseGet(() -> {
+                        log.info("Seeding CSBS Department");
+                        return departmentRepository.save(Department.builder()
+                                        .deptName("Computer Science and Business Systems")
+                                        .code("CSBS")
+                                        .build());
+                });
+
+                seedSubject(csbs, "Communicative English", "HS23111", 3, "R2023");
+                seedSubject(csbs, "Engineering Chemistry", "CY23111", 3, "R2023");
+                seedSubject(csbs, "Matrices and Calculus", "MA23111", 4, "R2023");
+                seedSubject(csbs, "Problem Solving and C Programming", "GE23111", 3, "R2023");
+                seedSubject(csbs, "Engineering Graphics", "GE23131", 4, "R2023");
+                seedSubject(csbs, "Statistics and Numerical Methods", "MA23211", 4, "R2023");
+                seedSubject(csbs, "Physics for Information Science", "PH23211", 3, "R2023");
+                seedSubject(csbs, "Discrete Mathematics", "MA23311", 4, "R2023");
+                seedSubject(csbs, "Fundamentals of Economics and Financial Accounting", "CB23311", 4, "R2023");
+                seedSubject(csbs, "Object Oriented Programming", "CS23312", 3, "R2023");
+                seedSubject(csbs, "Data Structures and Algorithms", "CS23314", 3, "R2023");
+                seedSubject(csbs, "Data and Information Security", "CB23511", 3, "R2023");
+                seedSubject(csbs, "Fundamentals of Management", "CB23512", 3, "R2023");
+                seedSubject(csbs, "Business Analytics", "CB23531", 4, "R2023");
+        }
+
+        private void seedSubject(Department dept, String name, String code, int credits, String regulation) {
+                if (subjectRepository.findBySubjectCode(code).isEmpty()) {
+                        log.info("Seeding Subject: {} ({})", name, code);
+                        subjectRepository.save(Subject.builder()
+                                        .subjectName(name)
+                                        .subjectCode(code)
+                                        .credits(credits)
+                                        .regulation(regulation)
+                                        .department(dept)
+                                        .build());
                 }
         }
 

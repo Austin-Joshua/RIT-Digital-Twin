@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuCalendarDays, LuClipboardList, LuCircleCheckBig, LuCircleX, LuClock, LuFileText, LuSend } from 'react-icons/lu';
+import { LuCalendarDays, LuClipboardList, LuCircleCheckBig, LuCircleX, LuClock, LuFileText, LuSend, LuUpload, LuTicket } from 'react-icons/lu';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const STATUS_STYLES = {
     APPROVED: { bg: 'rgba(22,163,74,0.12)', color: '#166534', border: '#16a34a' },
@@ -30,12 +31,14 @@ const inputStyle = {
 };
 
 const LeaveOD = () => {
+    const { user } = useAuth();
     const [applications, setApplications] = useState([]);
-    const [formData, setFormData] = useState({ startDate: '', endDate: '', reason: '', type: 'LEAVE' });
+    const [formData, setFormData] = useState({ startDate: '', endDate: '', reason: '', type: 'LEAVE', wardenLetter: null });
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [activeTab, setActiveTab] = useState('apply');
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const isHosteller = user?.studentType === 'HOSTELLER' || user?.role === 'STUDENT'; // Defaulting to true for demo if role is student
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -189,6 +192,33 @@ const LeaveOD = () => {
                                     </div>
                                 </FieldGroup>
 
+                                <FieldGroup label={`Supporting Document (${isHosteller ? 'Warden Signed Letter' : 'Medical/OD Letter'})`}>
+                                    <div style={{
+                                        position: 'relative',
+                                        border: '1.5px dashed var(--theme-border)',
+                                        borderRadius: '8px',
+                                        padding: '12px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        background: formData.wardenLetter ? 'rgba(22,163,74,0.05)' : 'transparent',
+                                        transition: 'all 0.2s'
+                                    }} className="hover:border-primary">
+                                        <input
+                                            type="file"
+                                            onChange={e => setFormData({ ...formData, wardenLetter: e.target.files[0] })}
+                                            style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
+                                        />
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: formData.wardenLetter ? '#16a34a' : 'var(--theme-text-muted)', fontSize: '13px', fontWeight: '600' }}>
+                                            <LuUpload /> {formData.wardenLetter ? formData.wardenLetter.name : 'Click to Upload Document'}
+                                        </div>
+                                    </div>
+                                    <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--theme-text-muted)', fontStyle: 'italic' }}>
+                                        {isHosteller
+                                            ? 'Hostellers: Upload warden-signed letter for outpass approval.'
+                                            : 'Day Scholars: Upload Medical Certificate or OD Request letter.'}
+                                    </p>
+                                </FieldGroup>
+
                                 <div style={{ gridColumn: '1 / -1' }}>
                                     <button type="submit" disabled={loading} style={{
                                         width: '100%', padding: '13px', borderRadius: '10px', border: 'none',
@@ -238,9 +268,16 @@ const LeaveOD = () => {
                                                     </span>
                                                 </div>
                                                 <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--theme-text)' }}>{app.reason}</div>
-                                                <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: 'var(--theme-text-muted)' }}>
+                                                <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: 'var(--theme-text-muted)', alignItems: 'center' }}>
                                                     <div>From: <span style={{ color: 'var(--theme-text)' }}>{app.startDate}</span></div>
                                                     <div>To: <span style={{ color: 'var(--theme-text)' }}>{app.endDate}</span></div>
+                                                    {app.status === 'APPROVED' && isHosteller && (
+                                                        <button
+                                                            onClick={() => alert("Digital Outpass Generated. Show this at the Gate.")}
+                                                            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', border: 'none', padding: '4px 10px', borderRadius: '6px', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
+                                                            <LuTicket /> OUTPASS
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -272,9 +309,20 @@ const LeaveOD = () => {
                                                         <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--theme-text)', whiteSpace: 'nowrap' }}>{app.endDate}</td>
                                                         <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--theme-text-muted)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.reason}</td>
                                                         <td style={{ padding: '14px 16px' }}>
-                                                            <span style={{ padding: '4px 12px', borderRadius: '30px', fontSize: '12px', fontWeight: '700', background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
-                                                                {app.status}
-                                                            </span>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                                <span style={{ padding: '4px 12px', borderRadius: '30px', fontSize: '12px', fontWeight: '700', background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
+                                                                    {app.status}
+                                                                </span>
+                                                                {app.status === 'APPROVED' && isHosteller && (
+                                                                    <button
+                                                                        onClick={() => alert("Digital Outpass Generated. Show this at the Gate.")}
+                                                                        style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', border: 'none', padding: '5px 12px', borderRadius: '8px', fontWeight: '800', fontSize: '11px', cursor: 'pointer', transition: '0.2s' }}
+                                                                        className="hover:scale-105 active:scale-95"
+                                                                    >
+                                                                        <LuTicket /> DIGITAL OUTPASS
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 );
