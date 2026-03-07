@@ -99,7 +99,7 @@ const ParentLayout = () => {
 
             <div className="stu-main">
                 <header className="stu-topbar">
-                    <div className="stu-topbar-left lg:hidden desktop-hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
+                    <div className="stu-topbar-left lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
                         <button
                             className="stu-hamburger"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -107,6 +107,14 @@ const ParentLayout = () => {
                         >
                             <LuMenu />
                         </button>
+                        {/* Logo for mobile */}
+                        <Link to="/parent" style={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                                alt="RIT"
+                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                            />
+                        </Link>
                     </div>
 
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
@@ -136,9 +144,24 @@ const ParentLayout = () => {
                                         }}
                                     >
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
-                                            <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Signed in as</div>
-                                            <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800' }}>{user?.email}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold' }}>Signed in as</div>
+                                            <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800' }}>{user?.email || 'parent@ritchennai.edu.in'}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role}</div>
                                         </div>
+                                        <NavLink
+                                            to="/parent/profile"
+                                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuUser /> <span>My Profile</span>
+                                        </NavLink>
+                                        <NavLink
+                                            to="/parent/change-password"
+                                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }}
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <LuKey /> <span>Change Password</span>
+                                        </NavLink>
                                         <button
                                             onClick={handleLogout}
                                             style={{ width: '100%', textAlign: 'left', padding: '12px 16px', border: 'none', background: 'none', color: '#ef4444', fontSize: '14px', cursor: 'pointer', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}

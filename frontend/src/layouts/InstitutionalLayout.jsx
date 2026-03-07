@@ -201,7 +201,7 @@ const InstitutionalLayout = () => {
                 {/* Top Bar — exact IMS mirror */}
                 {/* Top Bar — refined visibility */}
                 <header className="stu-topbar">
-                    <div className="stu-topbar-left lg:hidden desktop-hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
+                    <div className="stu-topbar-left lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
                         {/* 1. Hamburger Toggle (Mobile Only) */}
                         <button
                             className="stu-hamburger"
@@ -229,15 +229,7 @@ const InstitutionalLayout = () => {
 
                     <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
 
-                        {/* AI Status Pulse */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 10px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '30px', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
-                            <div style={{ position: 'relative', width: '8px', height: '8px' }}>
-                                <div style={{ position: 'absolute', width: '100%', height: '100%', background: '#3b82f6', borderRadius: '50%', animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }}></div>
-                                <div style={{ position: 'relative', width: '100%', height: '100%', background: '#3b82f6', borderRadius: '50%' }}></div>
-                            </div>
-                            <span style={{ fontSize: '9px', fontWeight: '900', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Global AI Sync</span>
-                            <style>{`@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }`}</style>
-                        </div>
+                        {/* AI Status Pulse removed as requested */}
 
                         {/* 3. Theme Toggle */}
                         <button

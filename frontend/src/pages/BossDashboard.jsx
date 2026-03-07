@@ -172,25 +172,25 @@ const BossDashboard = () => {
                 <div className="xl:col-span-2">
                     <AIInsightPanel role="BOSS" />
                 </div>
-                <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl relative overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl relative overflow-hidden transition-all">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full -mr-12 -mt-12 blur-2xl"></div>
                     <div className="flex items-center gap-3 mb-4 relative z-10">
-                        <div className="p-2 bg-blue-900/40 rounded-lg">
-                            <FaRobot className="text-blue-400" size={20} />
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/40 rounded-lg">
+                            <FaRobot className="text-blue-600 dark:text-blue-400" size={20} />
                         </div>
-                        <h3 className="font-black text-white uppercase tracking-tighter">AI Strategic Advisor</h3>
+                        <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-tighter">AI Strategic Advisor</h3>
                     </div>
-                    <p className="text-[11px] font-bold text-gray-400 mb-4 leading-relaxed relative z-10">
+                    <p className="text-[11px] font-bold text-slate-500 dark:text-gray-400 mb-4 leading-relaxed relative z-10">
                         Real-time intelligence feed for campus operations and strategic growth mapping.
                     </p>
                     <div className="space-y-3 relative z-10">
-                        <button className="w-full bg-slate-800 p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-700 hover:bg-slate-800/50 shadow-sm transition-all flex items-center justify-between group text-white">
+                        <button className="w-full bg-white dark:bg-slate-800 p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm transition-all flex items-center justify-between group text-slate-700 dark:text-white">
                             Verify Global Security Status
                             <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse"></div>
                         </button>
-                        <button className="w-full bg-slate-800 p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-700 hover:bg-slate-800/50 shadow-sm transition-all flex items-center justify-between group text-white">
+                        <button className="w-full bg-white dark:bg-slate-800 p-3 text-left text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm transition-all flex items-center justify-between group text-slate-700 dark:text-white">
                             Run Faculty Load Simulation
-                            <span className="text-[9px] text-blue-500 bg-blue-900/30 px-2 py-0.5 rounded-full">AI READY</span>
+                            <span className="text-[9px] text-blue-600 dark:text-blue-500 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">AI READY</span>
                         </button>
                     </div>
                 </div>
@@ -213,35 +213,38 @@ const BossDashboard = () => {
                     <AIInsightPanel role="ADMIN" />
 
                     {/* Live Sentiment & Infrastructure Forecast */}
-                    <div className="stu-info-card cursor-pointer hover:shadow-lg transition-all" style={{ borderTopColor: '#f39c12' }} onClick={() => setSelectedModal({ title: 'AI Campus Sentiment', value: '85% Positive', icon: <FaHeart /> })}>
-                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FaHeart color="#e84393" /> <span style={{ color: 'var(--theme-text)' }}>AI Campus Sentiment</span>
+                    {/* AI Campus Sentiment Card - Theme Aware */}
+                    <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all border border-slate-200 dark:border-slate-800" onClick={() => setSelectedModal({ title: 'AI Campus Sentiment', value: '85% Positive', icon: <FaHeart /> })}>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-pink-500/5 rounded-full -mr-12 -mt-12 blur-2xl"></div>
+                        <div className="info-header mb-4 relative z-10" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none' }}>
+                            <FaHeart className="text-pink-600 dark:text-pink-500" /> <span className="font-black uppercase tracking-widest text-[11px] text-blue-600 dark:text-blue-300">AI Campus Sentiment</span>
                         </div>
-                        <div className="info-body p-4">
+                        <div className="info-body relative z-10">
                             <div className="flex justify-between items-end mb-3">
-                                <span className="text-3xl font-black text-navy-900 dark:text-white">85%</span>
-                                <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Excited / Stable</span>
+                                <span className="text-3xl font-black text-slate-900 dark:text-white">85%</span>
+                                <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Excited / Stable</span>
                             </div>
-                            <div className="w-full bg-gray-100 dark:bg-navy-700 h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-green-500 h-full" style={{ width: '85%' }}></div>
+                            <div className="w-full bg-slate-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden shadow-inner">
+                                <div className="bg-green-500 h-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" style={{ width: '85%' }}></div>
                             </div>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3 leading-tight italic">
+                            <p className="text-[11px] text-slate-500 dark:text-blue-200/70 mt-3 leading-tight italic font-medium">
                                 "Pulse is high due to upcoming Sports Meet. Student satisfaction trending +4%."
                             </p>
                         </div>
                     </div>
 
-                    <div className="bg-navy-900 text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all" onClick={() => setSelectedModal({ title: 'Infrastructure Forecast', value: 'Peak load expected in Block D', icon: <FaBolt /> })}>
-                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
-                            <FaBolt className="text-4xl text-yellow-400" />
+                    {/* Infra Forecast Card - Theme Aware */}
+                    <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all border border-slate-200 dark:border-slate-800" onClick={() => setSelectedModal({ title: 'Infrastructure Forecast', value: 'Peak load expected in Block D', icon: <FaBolt /> })}>
+                        <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:scale-110 transition-transform">
+                            <FaBolt className="text-4xl text-yellow-600 dark:text-yellow-400" />
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-yellow-400 uppercase mb-3">
-                            <FaMagic /> Infra Forecast
+                        <div className="flex items-center gap-2 text-[11px] font-black text-blue-600 dark:text-blue-300 uppercase tracking-widest mb-3">
+                            <FaMagic className="text-blue-600 dark:text-blue-400" /> Infra Forecast
                         </div>
-                        <p className="text-sm font-medium leading-relaxed mb-4">
+                        <p className="text-sm font-medium leading-relaxed mb-4 text-slate-600 dark:text-gray-200">
                             Peak load expected in <b>Block D</b> at 3 PM. Suggest pre-cooling Labs 401-408 for 12% energy saving.
                         </p>
-                        <button className="w-full py-2 bg-yellow-400 text-navy-900 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors">
+                        <button className="w-full py-2 bg-yellow-400 text-slate-900 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors shadow-[0_4px_10px_rgba(250,204,21,0.3)]">
                             Apply Automation
                         </button>
                     </div>
