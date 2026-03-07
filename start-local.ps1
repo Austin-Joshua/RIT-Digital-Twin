@@ -19,7 +19,7 @@ if ($backendProcess) {
     Write-Host ""
     
     # Start backend in new window
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", "Set-Location backend; .\run_backend.ps1" -WindowStyle Normal
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", ".\run_backend.ps1" -WindowStyle Normal
     
     Write-Host "⏳ Backend starting... Wait 20-30 seconds for startup message" -ForegroundColor Yellow
     Write-Host ""

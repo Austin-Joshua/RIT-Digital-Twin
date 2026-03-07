@@ -28,8 +28,8 @@ const AssignmentGrading = () => {
         <div className="space-y-6 animate-in fade-in duration-500 p-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-primary-navy)' }}>
-                        <FaFileAlt style={{ color: 'var(--color-accent-gold)' }} /> Assignment Assessment Portal
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-accent-gold)' }}>
+                        <FaFileAlt /> Assignment Assessment Portal
                     </h1>
                     <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Review student submissions, provide feedback, and assign grades</p>
                 </div>
@@ -60,7 +60,7 @@ const AssignmentGrading = () => {
                                     </td>
                                     <td className="p-4" style={{ color: 'var(--theme-text-muted)' }}>{item.submittedAt}</td>
                                     <td className="p-4">
-                                        <button className="flex items-center gap-2 hover:underline transition-colors" style={{ color: 'var(--color-primary-navy)' }}>
+                                        <button className="flex items-center gap-2 hover:underline transition-colors font-bold" style={{ color: 'var(--color-primary-600)' }}>
                                             <FaDownload /> {item.file}
                                         </button>
                                     </td>

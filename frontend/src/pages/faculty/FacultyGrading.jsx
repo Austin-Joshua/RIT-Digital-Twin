@@ -102,8 +102,8 @@ const FacultyGrading = () => {
                 </div>
             </div>
 
-            <div className="rounded-xl border overflow-hidden shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                <table className="w-full border-collapse">
+            <div className="rounded-xl border overflow-x-auto shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                <table className="w-full border-collapse min-w-[700px]">
                     <thead>
                         <tr style={{ background: 'var(--theme-bg-muted)', borderBottom: '2px solid var(--theme-border)' }}>
                             <th className="p-4 text-left text-xs font-bold uppercase" style={{ color: 'var(--theme-text-muted)' }}>Register No</th>
@@ -140,9 +140,9 @@ const FacultyGrading = () => {
                                 </td>
                                 <td className="p-4 text-center">
                                     <span className={`px-4 py-1.5 rounded-lg font-bold ${student.currentGrade === 'O' ? 'bg-green-600 text-white' :
-                                            student.currentGrade === 'A+' ? 'bg-green-500 text-white' :
-                                                student.currentGrade === 'A' ? 'bg-blue-500 text-white' :
-                                                    'bg-amber-500 text-white'
+                                        student.currentGrade === 'A+' ? 'bg-green-500 text-white' :
+                                            student.currentGrade === 'A' ? 'bg-blue-500 text-white' :
+                                                'bg-amber-500 text-white'
                                         }`}>
                                         {student.currentGrade}
                                     </span>

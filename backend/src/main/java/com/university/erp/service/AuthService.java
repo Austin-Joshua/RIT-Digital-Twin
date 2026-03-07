@@ -59,26 +59,46 @@ public class AuthService {
             throw new RuntimeException("Account is temporarily blocked. Please try again later.");
         }
         try {
+            log.info("Authenticating credentials for username: {}", request.getUsername());
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
+            if (authentication == null) {
+                log.error("Authentication object is null for user: {}", request.getUsername());
+                throw new RuntimeException("Authentication failed: Internal error");
+            }
+
             User user = (User) authentication.getPrincipal();
+            if (user == null) {
+                log.error("User principal is null for authenticated user: {}", request.getUsername());
+                throw new RuntimeException("Authentication failed: Principal not found");
+            }
+
+            log.info("Authentication successful. Building session for user ID: {}", user.getUserId());
             bruteForceProtectionService.loginSucceeded(request.getUsername());
+
             String jwt = jwtUtils.generateToken(user);
+            log.info("JWT generated successfully");
+
             com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
                     .createRefreshToken(user.getUserId());
+            log.info("Refresh token created successfully");
 
-            log.info("Login successful for user: {}", user.getUsername());
-            return (AuthResponse) AuthResponse.builder()
+            String roleName = user.getRole() != null && user.getRole().getRoleName() != null
+                    ? user.getRole().getRoleName().name()
+                    : "STUDENT";
+
+            log.info("Building response for user: {} with role: {}", user.getUsername(), roleName);
+            return AuthResponse.builder()
                     .token(jwt)
                     .refreshToken(refreshToken.getToken())
                     .id(user.getUserId())
                     .username(user.getUsername())
-                    .role(user.getRole().getRoleName().name())
+                    .role(roleName)
                     .build();
         } catch (Exception e) {
+            log.error("CRITICAL: Login process failed for user {}: {}", request.getUsername(), e.getMessage(), e);
             bruteForceProtectionService.loginFailed(request.getUsername());
-            log.error("Login failed for user: {}. Error: {}", request.getUsername(), e.getMessage());
             throw e;
         }
     }
@@ -159,7 +179,7 @@ public class AuthService {
         if (inviteCode != null && !inviteCode.isBlank()) {
             switch (inviteCode) {
                 case "RIT-SUPER":
-                    roleEnumName = "SA";
+                    roleEnumName = "SUPER_ADMIN";
                     break;
                 case "RIT-ADMIN":
                     roleEnumName = "ADMIN";
@@ -168,7 +188,7 @@ public class AuthService {
                     roleEnumName = "FACULTY";
                     break;
                 case "RIT-M":
-                    roleEnumName = "M";
+                    roleEnumName = "MANAGEMENT";
                     break;
                 case "RIT-PARENT":
                     roleEnumName = "PARENT";

@@ -29,7 +29,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .or(() -> userRepository.findByEmail(searchEmail))
                 .or(() -> userRepository.findByEmail(searchUsername))
                 .map(user -> {
-                    log.info("Found user: {} with role: {}", user.getUsername(), user.getRole().getRoleName());
+                    String roleName = user.getRole() != null && user.getRole().getRoleName() != null
+                            ? user.getRole().getRoleName().name()
+                            : "NONE";
+                    log.info("Found user: {} with role: {}", user.getUsername(), roleName);
                     return user;
                 })
                 .orElseThrow(() -> {

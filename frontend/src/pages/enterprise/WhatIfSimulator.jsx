@@ -137,11 +137,12 @@ const WhatIfSimulator = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
                             <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)' }}>Upcoming Subjects</h3>
                             <button onClick={addSubject} style={{
-                                background: 'rgba(11,44,107,0.1)', border: 'none', borderRadius: '8px',
+                                background: 'var(--color-accent-gold)', border: 'none', borderRadius: '8px',
                                 padding: '7px 14px', cursor: 'pointer', color: 'var(--color-primary-navy)', fontWeight: '700',
-                                fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px'
-                            }}>
-                                <LuPlus /> Add Subject
+                                fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px',
+                                boxShadow: '0 2px 8px rgba(255, 193, 7, 0.2)'
+                            }} className="hover:opacity-90">
+                                <LuPlus strokeWidth={3} /> Add Subject
                             </button>
                         </div>
 

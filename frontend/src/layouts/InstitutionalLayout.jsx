@@ -30,7 +30,7 @@ const InstitutionalLayout = () => {
         if (window.innerWidth <= 768) return false;
         if (window.innerWidth >= 1025) return true;
         const saved = localStorage.getItem('sidebar-open');
-        return saved !== null ? JSON.parse(saved) : true;
+        return saved !== null ? JSON.parse(saved) : false;
     });
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -89,6 +89,13 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
+    const superAdminNavItems = [
+        { path: '/super-admin', label: 'Campus Manager', icon: <LuLayoutGrid />, exact: true },
+        ...adminNavItems,
+        { path: '/management/hr-recruitment', label: 'HR & Recruitment', icon: <LuBriefcase /> },
+        { path: '/management/inventory', label: 'Global Inventory', icon: <LuSettings /> },
+    ];
+
     const facultyNavItems = [
         { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
@@ -102,7 +109,11 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
-    const navItems = user?.role === 'FACULTY' ? facultyNavItems : adminNavItems;
+    const navItems = user?.role === 'SUPER_ADMIN'
+        ? superAdminNavItems
+        : user?.role === 'FACULTY'
+            ? facultyNavItems
+            : adminNavItems;
 
     return (
         <div className="stu-layout">
@@ -183,10 +194,12 @@ const InstitutionalLayout = () => {
                         <button
                             className="stu-hamburger"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
+                            aria-label="Toggle Sidebar"
                             style={{
                                 background: 'none', border: 'none', fontSize: '24px',
-                                cursor: 'pointer', color: 'var(--ims-icon-color)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                cursor: 'pointer', color: 'var(--ims-active-blue)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s'
                             }}
                         >
                             <LuMenu />

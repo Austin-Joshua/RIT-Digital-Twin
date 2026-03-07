@@ -52,6 +52,22 @@ const api = axios.create({
 // Request interceptor: Add JWT token
 api.interceptors.request.use(
   (config) => {
+    // Allow skipping the interceptor for health checks or other public pings
+    if (config.headers['X-Skip-Interceptor']) {
+      delete config.headers['X-Skip-Interceptor']; // Clean up
+
+      // If hitting actuator, we need to bypass the /api prefix from baseURL
+      if (config.url && config.url.startsWith('/actuator')) {
+        config.url = config.url.replace('/actuator', '/actuator'); // Keep as is, but ensure no /api/actuator
+        // Axios uses baseURL + url. If baseURL has /api, we might need a different approach.
+        // For simplicity, let's just make it an absolute URL if it starts with /actuator
+        const baseURLRoot = config.baseURL.replace('/api', '');
+        config.url = baseURLRoot + config.url;
+        config.baseURL = ''; // Wipe baseURL for this request to use absolute URL
+      }
+      return config;
+    }
+
     const token = localStorage.getItem('token') || localStorage.getItem('rit_dt_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;

@@ -5,12 +5,13 @@ import {
     ResponsiveContainer, BarChart, Bar, LineChart, Line,
     CartesianGrid, XAxis, YAxis, Tooltip, Legend
 } from 'recharts';
-import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt } from 'react-icons/fa';
+import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt, FaCloudSun, FaHeart, FaMagic } from 'react-icons/fa';
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
 import { useWebSocket } from '../context/WebSocketContext';
 import InstitutionalAnalytics from '../components/intelligence/InstitutionalAnalytics';
+import AIInsightPanel from '../components/intelligence/AIInsightPanel';
 import Card from '../components/common/Card';
 import { useNavigate } from 'react-router-dom';
 import MiniCalendar from '../components/common/MiniCalendar';
@@ -170,70 +171,116 @@ const AdminDashboard = () => {
             />
 
             {/* Main Content Layout */}
-            <div className="stu-info-row">
-                {/* Analytics Chart */}
-                <div className="stu-info-card">
-                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaChartLine color="#0B2C6B" />
-                        <span>Weekly Simulation Analytics</span>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+                {/* AI Institutional Wisdom */}
+                <div className="lg:col-span-1 space-y-6">
+                    <AIInsightPanel role="ADMIN" />
+
+                    {/* Live Sentiment & Infrastructure Forecast */}
+                    <div className="stu-info-card" style={{ borderTopColor: '#f39c12' }}>
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaHeart color="#e84393" /> <span style={{ color: 'var(--theme-text)' }}>AI Campus Sentiment</span>
+                        </div>
+                        <div className="info-body p-4">
+                            <div className="flex justify-between items-end mb-3">
+                                <span className="text-3xl font-black text-navy-900 dark:text-white">85%</span>
+                                <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Excited / Stable</span>
+                            </div>
+                            <div className="w-full bg-gray-100 dark:bg-navy-700 h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-green-500 h-full" style={{ width: '85%' }}></div>
+                            </div>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3 leading-tight italic">
+                                "Pulse is high due to upcoming Sports Meet. Student satisfaction trending +4%."
+                            </p>
+                        </div>
                     </div>
-                    <div className="info-body">
-                        <div style={{ height: '300px', padding: '10px' }}>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4 }} />
-                                    <Line type="monotone" dataKey="Transport" stroke="#f39c12" strokeWidth={2} dot={{ r: 4 }} />
-                                </LineChart>
-                            </ResponsiveContainer>
+
+                    <div className="bg-navy-900 text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
+                            <FaBolt className="text-4xl text-yellow-400" />
+                        </div>
+                        <div className="flex items-center gap-2 text-xs font-bold text-yellow-400 uppercase mb-3">
+                            <FaMagic /> Infra Forecast
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed mb-4">
+                            Peak load expected in <b>Block D</b> at 3 PM. Suggest pre-cooling Labs 401-408 for 12% energy saving.
+                        </p>
+                        <button className="w-full py-2 bg-yellow-400 text-navy-900 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors">
+                            Apply Automation
+                        </button>
+                    </div>
+                </div>
+
+                {/* Central Analytics Column */}
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                    {/* Analytics Chart */}
+                    <div className="stu-info-card">
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaChartLine color="#0B2C6B" />
+                            <span>Weekly Simulation Analytics</span>
+                        </div>
+                        <div className="info-body">
+                            <div style={{ height: '300px', padding: '10px' }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4 }} />
+                                        <Line type="monotone" dataKey="Transport" stroke="#f39c12" strokeWidth={2} dot={{ r: 4 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Broadcast Panel */}
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--ims-teal)' }}>
-                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaBullhorn color="var(--ims-teal)" />
-                        <span style={{ color: 'var(--theme-text)' }}>Global Broadcast</span>
-                    </div>
-                    <div className="info-body">
-                        <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <input
-                                type="text"
-                                placeholder="Broadcast Title"
-                                value={bTitle}
-                                onChange={e => setBTitle(e.target.value)}
-                                required
-                                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px' }}
-                            />
-                            <textarea
-                                placeholder="Type your global message here..."
-                                value={bMessage}
-                                onChange={e => setBMessage(e.target.value)}
-                                required
-                                rows="3"
-                                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', resize: 'none' }}
-                            />
+                {/* Right Broadcast Panel */}
+                <div className="lg:col-span-1">
+                    {/* Broadcast Panel */}
+                    <div className="stu-info-card" style={{ borderTopColor: 'var(--ims-teal)' }}>
+                        <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FaBullhorn color="var(--ims-teal)" />
+                            <span style={{ color: 'var(--theme-text)' }}>Global Broadcast</span>
+                        </div>
+                        <div className="info-body">
+                            <form onSubmit={handleBroadcast} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Broadcast Title"
+                                    value={bTitle}
+                                    onChange={e => setBTitle(e.target.value)}
+                                    required
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px' }}
+                                />
+                                <textarea
+                                    placeholder="Type your global message here..."
+                                    value={bMessage}
+                                    onChange={e => setBMessage(e.target.value)}
+                                    required
+                                    rows="3"
+                                    style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', fontSize: '14px', resize: 'none' }}
+                                />
 
-                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '5px' }}>
-                                <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={sendPush} onChange={e => setSendPush(e.target.checked)} />
-                                    <FaMobileAlt color="#3c8dbc" /> App Push Notification
-                                </label>
-                                <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={sendSms} onChange={e => setSendSms(e.target.checked)} />
-                                    <FaSms color="#f39c12" /> SMS Alert (Twilio/AWS route)
-                                </label>
-                            </div>
+                                <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginTop: '5px' }}>
+                                    <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={sendPush} onChange={e => setSendPush(e.target.checked)} />
+                                        <FaMobileAlt color="#3c8dbc" /> App Push Notification
+                                    </label>
+                                    <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={sendSms} onChange={e => setSendSms(e.target.checked)} />
+                                        <FaSms color="#f39c12" /> SMS Alert (Twilio/AWS route)
+                                    </label>
+                                </div>
 
-                            <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc', marginTop: '5px' }}>
-                                Dispatch Communication
-                            </button>
-                        </form>
+                                <button className="table-btn primary" type="submit" style={{ width: '100%', padding: '10px', background: '#3c8dbc', borderColor: '#3c8dbc', marginTop: '5px' }}>
+                                    Dispatch Communication
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

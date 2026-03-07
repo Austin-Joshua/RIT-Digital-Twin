@@ -25,6 +25,7 @@ public class Subject extends BaseEntity {
     private String subjectName;
     private String subjectCode;
     private Integer credits;
+    private String regulation; // e.g., "R2023"
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id")

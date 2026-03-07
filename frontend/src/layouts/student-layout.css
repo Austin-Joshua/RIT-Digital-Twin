@@ -407,15 +407,19 @@
 .stu-hamburger {
     background-color: transparent;
     border: none;
-    font-size: 18px;
+    font-size: 24px;
     cursor: pointer;
-    color: var(--color-primary-navy) !important;
+    color: var(--ims-active-blue) !important;
     height: 50px;
     width: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+}
+
+.dark .stu-hamburger {
+    color: var(--color-accent-gold) !important;
 }
 
 .stu-hamburger:hover {
@@ -472,10 +476,10 @@
 
 .stu-topbar-left .stu-hamburger {
     border-radius: 8px;
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    margin-right: 5px;
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    margin-right: 8px;
 }
 
 /* Glassmorphism for user badge */

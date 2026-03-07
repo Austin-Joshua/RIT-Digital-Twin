@@ -204,10 +204,12 @@ const StudentLayout = () => {
                         <button
                             className="stu-hamburger"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
+                            aria-label="Toggle Sidebar"
                             style={{
                                 background: 'none', border: 'none', fontSize: '24px',
-                                cursor: 'pointer', color: 'var(--ims-icon-color)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                cursor: 'pointer', color: 'var(--ims-active-blue)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s'
                             }}
                         >
                             <LuMenu />
