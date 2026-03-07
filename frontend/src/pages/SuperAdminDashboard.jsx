@@ -5,7 +5,7 @@ import {
     ResponsiveContainer, BarChart, Bar, LineChart, Line,
     CartesianGrid, XAxis, YAxis, Tooltip, Legend
 } from 'recharts';
-import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt, FaCloudSun, FaHeart, FaMagic } from 'react-icons/fa';
+import { FaBuilding, FaBolt, FaBus, FaLeaf, FaBullhorn, FaUsers, FaChartLine, FaBoxes, FaUserGraduate, FaSms, FaMobileAlt, FaCloudSun, FaHeart, FaMagic, FaServer, FaShieldAlt, FaDatabase } from 'react-icons/fa';
 import api from '../services/api';
 import Skeleton from '../components/common/Skeleton';
 import { useToast } from '../context/ToastContext';
@@ -292,6 +292,41 @@ const SuperAdminDashboard = () => {
                 </div>
                 <div className="info-body">
                     <InstitutionalAnalytics />
+                </div>
+            </div>
+
+            {/* Super Admin / Root Authority Extra Controls */}
+            <div className="stu-info-card" style={{ borderTopColor: '#e74c3c' }}>
+                <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <FaShieldAlt color="#e74c3c" />
+                    <span>Root Authority Control Center</span>
+                </div>
+                <div className="info-body p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-red-100 dark:border-red-900 shadow-sm hover:shadow-md transition-all group flex flex-col items-center text-center cursor-pointer" onClick={() => navigate('/management/audit')}>
+                            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                                <FaServer size={24} />
+                            </div>
+                            <h4 className="font-black text-navy-900 dark:text-white mb-2">Global System Audit</h4>
+                            <p className="text-xs text-gray-500">Review complete immutable logs of all network and user interactions.</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-blue-100 dark:border-blue-900 shadow-sm hover:shadow-md transition-all group flex flex-col items-center text-center cursor-pointer" onClick={() => addToast('Manual Database Sync Triggered.', 'info')}>
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                                <FaDatabase size={24} />
+                            </div>
+                            <h4 className="font-black text-navy-900 dark:text-white mb-2">Force Replica Sync</h4>
+                            <p className="text-xs text-gray-500">Manually trigger synchronization across all 12 distributed campus nodes.</p>
+                        </div>
+
+                        <div className="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-amber-100 dark:border-amber-900 shadow-sm hover:shadow-md transition-all group flex flex-col items-center text-center cursor-pointer" onClick={() => addToast('Security Protocol overriding is locked.', 'error')}>
+                            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                                <FaShieldAlt size={24} />
+                            </div>
+                            <h4 className="font-black text-navy-900 dark:text-white mb-2">Override Protocols</h4>
+                            <p className="text-xs text-gray-500">Bypass standard security checks for critical emergency state maintenance.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
