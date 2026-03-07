@@ -50,18 +50,18 @@ const Sidebar = () => {
 
         const superAdminItems = [
             { path: '/super-admin', name: 'Global View', icon: <FaUniversity /> },
-            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
-            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
-            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
-            { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
-            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
-            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
-            { path: '/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
-            { path: '/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
-            { path: '/hr', name: 'HR & Recruitment', icon: <FaUsers /> },
-            { path: '/inventory', name: 'Global Inventory', icon: <FaBoxes /> },
-            { path: '/settings', name: 'System Settings', icon: <FaCog /> },
-            { path: '/change-password', name: 'Change Password', icon: <FaCog /> },
+            { path: '/super-admin/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
+            { path: '/super-admin/energy', name: 'Energy Optimization', icon: <FaBolt /> },
+            { path: '/super-admin/transport', name: 'Transport Manager', icon: <FaBus /> },
+            { path: '/super-admin/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
+            { path: '/super-admin/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
+            { path: '/super-admin/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
+            { path: '/super-admin/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
+            { path: '/super-admin/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
+            { path: '/super-admin/hr', name: 'HR & Recruitment', icon: <FaUsers /> },
+            { path: '/super-admin/inventory', name: 'Global Inventory', icon: <FaBoxes /> },
+            { path: '/super-admin/settings', name: 'System Settings', icon: <FaCog /> },
+            { path: '/super-admin/change-password', name: 'Change Password', icon: <FaCog /> },
         ];
 
         const role = user?.role || 'FACULTY';
