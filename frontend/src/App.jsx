@@ -194,6 +194,35 @@ const App = () => {
                   }>
                     <Route index element={<SuperAdminDashboard />} />
                     <Route path="change-password" element={<ChangePassword />} />
+
+                    {/* Cloned Admin Routes for Super Admin Access */}
+                    <Route path="simulations/classroom" element={<ClassroomPage />} />
+                    <Route path="simulations/energy" element={<EnergyPage />} />
+                    <Route path="simulations/transport" element={<TransportSimulation />} />
+                    <Route path="transport" element={<TransportDirectory />} />
+                    <Route path="simulations/crowd" element={<CrowdPage />} />
+                    <Route path="simulations/sustainability" element={<SustainabilityDashboard />} />
+                    <Route path="predictions" element={<PredictionPage />} />
+                    <Route path="map" element={<CampusMap />} />
+
+                    {/* Enterprise ERP Additions */}
+                    <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
+                    <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
+                    <Route path="management/audit" element={<AuditLogViewer />} />
+                    <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
+                    <Route path="management/certificates" element={<CertificateApprovalQueue />} />
+                    <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
+                    <Route path="management/results" element={<AutomatedResultPublishing />} />
+                    <Route path="management/safety" element={<EmergencyDashboard />} />
+                    <Route path="management/assets" element={<MaintenanceModule />} />
+
+                    {/* Super Admin Exclusive Additions */}
+                    <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
+                    <Route path="management/inventory" element={<InventoryAssets />} />
+                    <Route path="management/alumni" element={<AlumniPortal />} />
+
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
 
                   {/* Institutional / Admin / Management / Faculty Mode */}
