@@ -193,6 +193,7 @@ const App = () => {
                     <ProtectedRoute requiredRole="SUPER_ADMIN"><InstitutionalLayout /></ProtectedRoute>
                   }>
                     <Route index element={<SuperAdminDashboard />} />
+                    <Route path="change-password" element={<ChangePassword />} />
                   </Route>
 
                   {/* Institutional / Admin / Management / Faculty Mode */}
