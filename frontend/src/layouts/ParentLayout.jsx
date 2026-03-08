@@ -174,9 +174,16 @@ const ParentLayout = () => {
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
-                                            style={{ width: '100%', textAlign: 'left', padding: '12px 16px', border: 'none', background: 'none', color: '#ef4444', fontSize: '14px', cursor: 'pointer', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                            className="app-logout"
+                                            style={{
+                                                width: '100%', textAlign: 'left', padding: '12px 16px',
+                                                border: 'none', borderTop: '1px solid var(--theme-border)',
+                                                background: 'transparent', color: '#ef4444',
+                                                fontSize: '14px', cursor: 'pointer', fontWeight: '800',
+                                                display: 'flex', alignItems: 'center', gap: '8px'
+                                            }}
                                         >
-                                            <LuLogOut /> <span>Logout</span>
+                                            <LuLogOut size={18} style={{ color: 'inherit', flexShrink: 0 }} /> <span>Logout</span>
                                         </button>
                                     </motion.div>
                                 )}

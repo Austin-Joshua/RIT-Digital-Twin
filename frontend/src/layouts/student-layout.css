@@ -527,8 +527,8 @@
     margin-right: 6px;
 }
 
-/* Topbar icon buttons (theme, notifications) - visible icons, consistent hit area */
-.stu-topbar-right button:not(.stu-user-badge) {
+/* Topbar icon buttons (theme, notifications) - visible icons, consistent hit area. Exclude logout so it stays red. */
+.stu-topbar-right button:not(.stu-user-badge):not(.app-logout) {
     width: 38px;
     height: 38px;
     min-width: 38px;
@@ -539,19 +539,33 @@
     transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
-.stu-topbar-right button:not(.stu-user-badge) svg {
+.stu-topbar-right button:not(.stu-user-badge):not(.app-logout) svg {
     width: 22px;
     height: 22px;
     flex-shrink: 0;
 }
 
-.stu-topbar-right button:not(.stu-user-badge):hover {
+.stu-topbar-right button:not(.stu-user-badge):not(.app-logout):hover {
     transform: scale(1.08);
     background-color: rgba(11, 44, 107, 0.06);
 }
 
-.dark .stu-topbar-right button:not(.stu-user-badge):hover {
+.dark .stu-topbar-right button:not(.stu-user-badge):not(.app-logout):hover {
     background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Logout in topbar dropdown must stay red in light and dark */
+.stu-topbar-right button.app-logout,
+.stu-topbar-right .app-logout {
+    color: #ef4444 !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+.stu-topbar-right button.app-logout svg,
+.stu-topbar-right button.app-logout span,
+.stu-topbar-right .app-logout svg,
+.stu-topbar-right .app-logout span {
+    color: inherit !important;
 }
 
 .stu-topbar-icons {
@@ -1870,4 +1884,20 @@ html.dark .stu-calendar-grid th {
     .exam-gen-controls button {
         width: 100% !important;
     }
+}
+
+/* Logout - always red in all themes (overrides layout/theme text color) */
+button.app-logout,
+div.app-logout,
+.app-logout,
+.logout-link {
+    color: #ef4444 !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+.app-logout svg,
+.app-logout span,
+.logout-link svg,
+.logout-link span {
+    color: inherit !important;
 }

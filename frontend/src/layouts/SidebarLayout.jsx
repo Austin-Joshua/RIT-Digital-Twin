@@ -75,9 +75,10 @@ const SidebarLayout = () => {
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center px-4 py-2 bg-navy-800 hover:bg-[#1e4b8f] text-white rounded text-sm transition-colors"
+                        className="app-logout w-full flex items-center justify-start px-4 py-3 border-t border-navy-700 rounded-none transition-colors"
+                        style={{ color: '#ef4444', fontWeight: 800, fontSize: '14px', background: 'transparent' }}
                     >
-                        <FaSignOutAlt className="mr-2" /> Logout
+                        <FaSignOutAlt size={18} className="mr-2 flex-shrink-0" style={{ color: 'inherit' }} /> Logout
                     </button>
                 </div>
             </aside>

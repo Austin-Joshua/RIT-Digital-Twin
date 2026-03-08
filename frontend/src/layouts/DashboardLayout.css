@@ -172,18 +172,18 @@
     align-items: center;
     gap: 8px;
     width: 100%;
-    padding: 8px 12px;
+    padding: 12px 16px;
     border-radius: var(--radius-sm);
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.78rem;
-    font-weight: 500;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 800;
     cursor: pointer;
     transition: all var(--transition-fast);
     margin-top: 4px;
 }
 
 .logout-btn:hover {
-    color: #ef4444;
+    color: #dc2626;
     background: rgba(239, 68, 68, 0.08);
 }
 

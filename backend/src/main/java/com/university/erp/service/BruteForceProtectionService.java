@@ -9,11 +9,12 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class BruteForceProtectionService {
     private static final int MAX_ATTEMPT = 5;
+    private static final int BLOCK_DURATION_MINUTES = 15;
     private final Cache<String, Integer> attemptsCache;
 
     public BruteForceProtectionService() {
         attemptsCache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.DAYS)
+                .expireAfterWrite(BLOCK_DURATION_MINUTES, TimeUnit.MINUTES)
                 .build();
     }
 
@@ -29,6 +30,16 @@ public class BruteForceProtectionService {
 
     public boolean isBlocked(String key) {
         return getAttempts(key) >= MAX_ATTEMPT;
+    }
+
+    /** Unblock a specific username/email (e.g. after fixing credentials). */
+    public void unblock(String key) {
+        attemptsCache.invalidate(key);
+    }
+
+    /** Clear all login attempt counters (e.g. admin use or after seeding users). */
+    public void clearAll() {
+        attemptsCache.invalidateAll();
     }
 
     private int getAttempts(String key) {

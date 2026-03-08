@@ -92,7 +92,7 @@ public class AcademicService {
             }
 
             // Find existing marks or create new
-            Marks mark = marksRepository.findByStudentId(student.getStudentId()).stream()
+            Marks mark = marksRepository.findByStudent_Id(student.getStudentId()).stream()
                     .filter(m -> m.getSubject().getSubjectId().equals(subject.getSubjectId()))
                     .findFirst()
                     .orElse(new Marks());
@@ -158,17 +158,17 @@ public class AcademicService {
     }
 
     public List<Marks> getStudentMarks(Long studentId) {
-        return marksRepository.findByStudentId(studentId);
+        return marksRepository.findByStudent_Id(studentId);
     }
 
     public java.util.List<Marks> getStudentMarksPaged(Long studentId, int page, int size) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-        return marksRepository.findByStudentId(studentId, pageable).getContent();
+        return marksRepository.findByStudent_Id(studentId, pageable).getContent();
     }
 
     @Transactional
     public void recalculateCgpa(Long studentId) {
-        List<Marks> allMarks = marksRepository.findByStudentId(studentId);
+        List<Marks> allMarks = marksRepository.findByStudent_Id(studentId);
         if (allMarks.isEmpty())
             return;
 
