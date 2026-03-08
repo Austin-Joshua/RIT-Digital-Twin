@@ -40,6 +40,9 @@ const AdminDashboard = () => {
     const [totalPubs, setTotalPubs] = useState(14);
     const [totalCitations, setTotalCitations] = useState(128);
 
+    // Weekly Simulation Analytics — drill-down (click a day to see detail)
+    const [simulationDetail, setSimulationDetail] = useState(null);
+
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -130,6 +133,41 @@ const AdminDashboard = () => {
         { name: 'Sat', Energy: 2390, Transport: 3800 },
         { name: 'Sun', Energy: 3490, Transport: 4300 },
     ], []);
+
+    // Build a detailed breakdown for the selected day (for drill-down modal)
+    const simulationDetailBreakdown = useMemo(() => {
+        if (!simulationDetail) return null;
+        const { name, Energy, Transport } = simulationDetail;
+        const e = Energy ?? 0;
+        const t = Transport ?? 0;
+        const dayIndex = chartData.findIndex((d) => d.name === name);
+        const isMidWeek = dayIndex >= 2 && dayIndex <= 4;
+        return {
+            day: name,
+            energy: e,
+            transport: t,
+            energyBreakdown: [
+                { label: 'Block A (Admin & Labs)', value: Math.round(e * 0.28), pct: 28 },
+                { label: 'Block B (Classrooms)', value: Math.round(e * 0.35), pct: 35 },
+                { label: 'Block C (Library & Canteen)', value: Math.round(e * 0.22), pct: 22 },
+                { label: 'Block D (Hostel & Common)', value: Math.round(e * 0.15), pct: 15 },
+            ],
+            transportBreakdown: isMidWeek && t > 5000
+                ? [
+                    { label: 'Peak window 2–4 PM', value: Math.round(t * 0.42), note: 'Mid-week events / lab sessions' },
+                    { label: 'Morning 7–9 AM', value: Math.round(t * 0.32), note: 'Commute inflow' },
+                    { label: 'Evening 5–7 PM', value: Math.round(t * 0.26), note: 'Commute outflow' },
+                ]
+                : [
+                    { label: 'Morning 7–9 AM', value: Math.round(t * 0.38), note: 'Commute inflow' },
+                    { label: 'Afternoon 12–2 PM', value: Math.round(t * 0.25), note: 'Lunch / short trips' },
+                    { label: 'Evening 5–7 PM', value: Math.round(t * 0.37), note: 'Commute outflow' },
+                ],
+            insight: isMidWeek && t > 5000
+                ? `Wednesday shows a sharp Transport peak (${t.toLocaleString()} trips), likely due to mid-week events, lab rotations, or extra shuttle runs. Energy is lower (${e.toLocaleString()} units) with efficient HVAC in main blocks.`
+                : `Energy consumption at ${e.toLocaleString()} units; Transport at ${t.toLocaleString()} trips. Click any day on the chart to see this breakdown.`,
+        };
+    }, [simulationDetail, chartData]);
 
     if (loading) return (
         <div style={{ padding: '24px' }}>
@@ -251,11 +289,12 @@ const AdminDashboard = () => {
 
                 {/* Central Analytics Column */}
                 <div className="lg:col-span-2 flex flex-col gap-6">
-                    {/* Analytics Chart */}
+                    {/* Analytics Chart — click a day to see detail */}
                     <div className="stu-info-card">
                         <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <FaChartLine color="#0B2C6B" />
                             <span>Weekly Simulation Analytics</span>
+                            <span style={{ fontSize: '11px', fontWeight: 'normal', opacity: 0.9 }}>— Click any point for detail</span>
                         </div>
                         <div className="info-body">
                             <div style={{ height: '300px', padding: '10px' }}>
@@ -264,15 +303,179 @@ const AdminDashboard = () => {
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                         <XAxis dataKey="name" />
                                         <YAxis />
-                                        <Tooltip />
+                                        <Tooltip
+                                            cursor={{ stroke: 'var(--theme-border)', strokeWidth: 1 }}
+                                            contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', borderRadius: '8px' }}
+                                            labelStyle={{ color: 'var(--theme-text)' }}
+                                            content={({ active, payload }) => (
+                                                payload?.[0]?.payload ? (
+                                                    <div
+                                                        style={{
+                                                            padding: '10px 14px',
+                                                            background: 'var(--card-bg)',
+                                                            border: '1px solid var(--theme-border)',
+                                                            borderRadius: '8px',
+                                                            fontSize: '13px',
+                                                        }}
+                                                    >
+                                                        <div style={{ fontWeight: 600, marginBottom: '6px' }}>{payload[0].payload.name}</div>
+                                                        <div>Energy: {Number(payload[0].payload.Energy).toLocaleString()}</div>
+                                                        <div>Transport: {Number(payload[0].payload.Transport).toLocaleString()}</div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => { e.stopPropagation(); setSimulationDetail(payload[0].payload); }}
+                                                            style={{
+                                                                marginTop: '8px',
+                                                                padding: '4px 10px',
+                                                                fontSize: '11px',
+                                                                background: 'var(--color-primary-navy)',
+                                                                color: '#fff',
+                                                                border: 'none',
+                                                                borderRadius: '6px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                        >
+                                                            See what&apos;s happening in detail →
+                                                        </button>
+                                                    </div>
+                                                ) : null
+                                            )}
+                                        />
                                         <Legend />
-                                        <Line type="monotone" dataKey="Energy" stroke="#0B2C6B" strokeWidth={2} dot={{ r: 4 }} />
-                                        <Line type="monotone" dataKey="Transport" stroke="#f39c12" strokeWidth={2} dot={{ r: 4 }} />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="Energy"
+                                            stroke="#0B2C6B"
+                                            strokeWidth={2}
+                                            dot={({ cx, cy, payload, ...rest }) => (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={6}
+                                                    fill="var(--card-bg)"
+                                                    stroke="#0B2C6B"
+                                                    strokeWidth={2}
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => setSimulationDetail(payload)}
+                                                />
+                                            )}
+                                            activeDot={{ r: 7, cursor: 'pointer' }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="Transport"
+                                            stroke="#f39c12"
+                                            strokeWidth={2}
+                                            dot={({ cx, cy, payload }) => (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={6}
+                                                    fill="var(--card-bg)"
+                                                    stroke="#f39c12"
+                                                    strokeWidth={2}
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => setSimulationDetail(payload)}
+                                                />
+                                            )}
+                                            activeDot={{ r: 7, cursor: 'pointer' }}
+                                        />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
                     </div>
+
+                    {/* Drill-down modal: what's happening in detail for the clicked day */}
+                    <AnimatePresence>
+                        {simulationDetailBreakdown && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                style={{
+                                    position: 'fixed',
+                                    inset: 0,
+                                    zIndex: 9999,
+                                    background: 'rgba(0,0,0,0.5)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '24px',
+                                }}
+                                onClick={() => setSimulationDetail(null)}
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.95, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0.95, opacity: 0 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                        background: 'var(--card-bg)',
+                                        color: 'var(--theme-text)',
+                                        borderRadius: '16px',
+                                        boxShadow: 'var(--shadow-medium)',
+                                        border: '1px solid var(--theme-border)',
+                                        maxWidth: '520px',
+                                        width: '100%',
+                                        maxHeight: '90vh',
+                                        overflow: 'auto',
+                                        padding: '24px',
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--theme-border)', paddingBottom: '12px' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <FaChartLine color="#0B2C6B" />
+                                            {simulationDetailBreakdown.day} — What&apos;s happening in detail
+                                        </h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSimulationDetail(null)}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                fontSize: '1.5rem',
+                                                cursor: 'pointer',
+                                                color: 'var(--theme-text-muted)',
+                                                padding: '0 8px',
+                                                lineHeight: 1,
+                                            }}
+                                            aria-label="Close"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                    <p style={{ fontSize: '0.9rem', color: 'var(--theme-text-muted)', marginBottom: '20px' }}>
+                                        {simulationDetailBreakdown.insight}
+                                    </p>
+                                    <section style={{ marginBottom: '20px' }}>
+                                        <h4 style={{ fontSize: '0.85rem', color: 'var(--color-primary-navy)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <FaBolt /> Energy — {simulationDetailBreakdown.energy.toLocaleString()} units total
+                                        </h4>
+                                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.9rem' }}>
+                                            {simulationDetailBreakdown.energyBreakdown.map((row, i) => (
+                                                <li key={i} style={{ marginBottom: '4px' }}>
+                                                    {row.label}: <strong>{row.value.toLocaleString()}</strong> ({row.pct}%)
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                    <section>
+                                        <h4 style={{ fontSize: '0.85rem', color: '#f39c12', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <FaBus /> Transport — {simulationDetailBreakdown.transport.toLocaleString()} trips total
+                                        </h4>
+                                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.9rem' }}>
+                                            {simulationDetailBreakdown.transportBreakdown.map((row, i) => (
+                                                <li key={i} style={{ marginBottom: '4px' }}>
+                                                    {row.label}: <strong>{row.value.toLocaleString()}</strong> {row.note && `— ${row.note}`}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Right Broadcast Panel */}

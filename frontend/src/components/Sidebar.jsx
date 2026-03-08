@@ -187,19 +187,20 @@ const Sidebar = () => {
                 background: '#f8fafc'
             }}>
                 <div
-                    className="sidebar-link logout-link"
+                    className="sidebar-link logout-link app-logout"
                     onClick={logout}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '14px',
+                        gap: '8px',
                         padding: '12px 16px',
                         cursor: 'pointer',
-                        color: '#dc2626',
+                        color: '#ef4444',
                         borderRadius: '6px',
+                        borderTop: '1px solid var(--theme-border, #e2e8f0)',
                         transition: 'all 0.2s ease',
-                        fontWeight: '600',
-                        fontSize: '0.95rem'
+                        fontWeight: '800',
+                        fontSize: '14px'
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = '#fee2e2';
@@ -208,9 +209,7 @@ const Sidebar = () => {
                         e.currentTarget.style.background = 'transparent';
                     }}
                 >
-                    <span className="sidebar-icon" style={{ fontSize: '1.2rem' }}>
-                        <FaSignOutAlt />
-                    </span>
+                    <FaSignOutAlt size={18} style={{ color: 'inherit', flexShrink: 0 }} />
                     <span>Logout</span>
                 </div>
 

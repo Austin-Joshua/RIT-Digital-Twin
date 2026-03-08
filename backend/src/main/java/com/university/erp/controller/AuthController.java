@@ -7,19 +7,25 @@ import com.university.erp.dto.ChangePasswordRequest;
 import com.university.erp.dto.RegisterRequest;
 import com.university.erp.entity.User;
 import com.university.erp.service.AuthService;
+import com.university.erp.service.BruteForceProtectionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final BruteForceProtectionService bruteForceProtectionService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, BruteForceProtectionService bruteForceProtectionService) {
         this.authService = authService;
+        this.bruteForceProtectionService = bruteForceProtectionService;
     }
 
     @PostMapping("/login")
@@ -68,5 +74,17 @@ public class AuthController {
         java.util.Objects.requireNonNull(request.getNewPassword(), "new password must not be null");
         authService.changePassword(user, request.getNewPassword());
         return ResponseEntity.ok("Password updated successfully!");
+    }
+
+    /** Unblock a username/email that was locked due to too many failed login attempts. Admin only. */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/unblock")
+    public ResponseEntity<String> unblockUser(@RequestBody Map<String, String> body) {
+        String username = body != null ? body.get("username") : null;
+        if (username == null || username.isBlank()) {
+            return ResponseEntity.badRequest().body("Missing 'username' in request body.");
+        }
+        bruteForceProtectionService.unblock(username.trim());
+        return ResponseEntity.ok("Account unblocked: " + username);
     }
 }

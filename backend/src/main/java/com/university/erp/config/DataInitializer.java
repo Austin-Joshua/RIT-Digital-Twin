@@ -25,9 +25,12 @@ import com.university.erp.repository.DepartmentRepository;
 import com.university.erp.repository.SubjectRepository;
 import com.university.erp.entity.Department;
 import com.university.erp.entity.Subject;
+import com.university.erp.service.BruteForceProtectionService;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -44,13 +47,14 @@ public class DataInitializer implements CommandLineRunner {
         private final DepartmentRepository departmentRepository;
         private final SubjectRepository subjectRepository;
         private final JdbcTemplate jdbcTemplate;
+        private final BruteForceProtectionService bruteForceProtectionService;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
                         BusStopRepository busStopRepository, AlumniProfileRepository alumniRepo,
                         AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo,
                         DepartmentRepository departmentRepository, SubjectRepository subjectRepository,
-                        JdbcTemplate jdbcTemplate) {
+                        JdbcTemplate jdbcTemplate, BruteForceProtectionService bruteForceProtectionService) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
@@ -62,6 +66,7 @@ public class DataInitializer implements CommandLineRunner {
                 this.departmentRepository = departmentRepository;
                 this.subjectRepository = subjectRepository;
                 this.jdbcTemplate = jdbcTemplate;
+                this.bruteForceProtectionService = bruteForceProtectionService;
         }
 
         @Override
@@ -93,17 +98,106 @@ public class DataInitializer implements CommandLineRunner {
                 // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
-                // HOD Seed (Head of Department - intermediate between Admin and Faculty)
-                seedUser("hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+                // 4. Initialize RIT Chennai departments (from ritchennai.org courses offered)
+                seedRitDepartments();
 
-                // 4. Initialize Transport Data
+                // 5. Initialize Transport Data
                 seedTransportData();
 
-                // 5. Initialize ERP Data
+                // 6. Initialize ERP Data
                 seedErpData();
 
-                // 6. Initialize CSBS Curriculum
+                // 7. Initialize CSBS Curriculum (and other dept subjects if needed)
                 seedCsbsData();
+
+                // 8. Seed one HOD per department and assign to their department
+                seedHodsForAllDepartments();
+
+                // 9. Assign demo faculty to a department so HOD can see them
+                assignFacultyToDepartment();
+
+                // 10. Clear login attempt blocks so seeded accounts (e.g. HOD) can log in after restart
+                bruteForceProtectionService.clearAll();
+                log.info("Cleared login attempt blocks for all accounts.");
+        }
+
+        /** UG and PG programmes as per RIT Chennai (ritchennai.org) */
+        private void seedRitDepartments() {
+                Map<String, String> depts = new LinkedHashMap<>();
+                // UG Programmes
+                depts.put("CSE", "B.E. Computer Science and Engineering");
+                depts.put("AIML", "B.E. Computer Science and Engineering (AI&ML)");
+                depts.put("CCE", "B.E. Computer and Communication Engineering");
+                depts.put("ECE", "B.E. Electronics and Communication Engineering");
+                depts.put("MECH", "B.E. Mechanical Engineering");
+                depts.put("VLSI", "B.E. Electronic Engineering (VLSI)");
+                depts.put("AIDS", "B.Tech. Artificial Intelligence and Data Science");
+                depts.put("CSBS", "B.Tech. Computer Science and Business Systems");
+                depts.put("BT", "B.Tech Bio Technology");
+                // PG Programmes
+                depts.put("MEVLSI", "M.E. Electronics and Communication Engineering (VLSI Design)");
+                depts.put("SANDH", "Science and Humanities (First year / H&S)");
+                for (Map.Entry<String, String> e : depts.entrySet()) {
+                        if (departmentRepository.findByCode(e.getKey()).isEmpty()) {
+                                log.info("Seeding RIT department: {} - {}", e.getKey(), e.getValue());
+                                departmentRepository.save(Department.builder()
+                                                .code(e.getKey())
+                                                .deptName(e.getValue())
+                                                .build());
+                        }
+                }
+        }
+
+        /** One HOD per department: credentials per HOD_CREDENTIALS.md (hod_<code>@ritchennai.edu.in / hod<code>123) */
+        private void seedHodsForAllDepartments() {
+                try {
+                        List<String> codes = List.of("CSE", "AIML", "CCE", "ECE", "MECH", "VLSI", "AIDS", "CSBS", "BT", "MEVLSI", "SANDH");
+                        for (String code : codes) {
+                                String email = "hod_" + code.toLowerCase() + "@ritchennai.edu.in";
+                                String password = "hod" + code.toLowerCase() + "123";
+                                String firstName = "HOD";
+                                String lastName = code;
+                                seedUser(email, password, Role.UserRole.HOD, firstName, lastName);
+                                departmentRepository.findByCode(code).ifPresent(dept ->
+                                        userRepository.findByEmail(email).ifPresent(user -> {
+                                                if (user.getDepartment() == null) {
+                                                        user.setDepartment(dept);
+                                                        userRepository.save(user);
+                                                        log.info("Assigned HOD {} to department: {}", email, code);
+                                                }
+                                        }));
+                        }
+                        // Legacy single HOD (redirect to CSBS if still used)
+                        seedUser("hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+                        departmentRepository.findByCode("CSBS").ifPresent(dept ->
+                                userRepository.findByEmail("hod@ritchennai.edu.in").ifPresent(user -> {
+                                        if (user.getDepartment() == null) {
+                                                user.setDepartment(dept);
+                                                userRepository.save(user);
+                                                log.info("Assigned HOD hod@ritchennai.edu.in to department: CSBS");
+                                        }
+                                }));
+                } catch (Exception e) {
+                        log.warn("HOD seeding failed (check roles/departments exist): {}", e.getMessage());
+                }
+        }
+
+        private void assignFacultyToDepartment() {
+                try {
+                        Department dept = departmentRepository.findByCode("CSBS").orElse(null);
+                        if (dept == null) return;
+                        for (String email : List.of("faculty@ritchennai.edu.in", "faculty2@ritchennai.edu.in")) {
+                                userRepository.findByEmail(email).ifPresent(user -> {
+                                        if (user.getDepartment() == null) {
+                                                user.setDepartment(dept);
+                                                userRepository.save(user);
+                                                log.info("Assigned faculty {} to department: {}", email, dept.getCode());
+                                        }
+                                });
+                        }
+                } catch (Exception e) {
+                        log.debug("Faculty department assignment skipped: {}", e.getMessage());
+                }
         }
 
         /** Migrates any users with BOSS/MANAGEMENT/SUPER_ADMIN to ADMIN and removes those role rows. */
@@ -144,6 +238,7 @@ public class DataInitializer implements CommandLineRunner {
                 userRepository.findByEmail(email).ifPresentOrElse(
                                 user -> {
                                         log.info("Updating existing demo user: {}", email);
+                                        user.setUsername(email);
                                         user.setPassword(passwordEncoder.encode(password));
 
                                         Role role = roleRepository.findByRoleName(roleEnum)

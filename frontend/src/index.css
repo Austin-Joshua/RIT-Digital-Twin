@@ -163,6 +163,34 @@ button:focus-visible {
     text-decoration: underline;
 }
 
+/* Logout option - red text and icon in ALL themes (overrides theme/layout inheritance) */
+button.app-logout,
+div.app-logout,
+.app-logout,
+.logout-link {
+    color: #ef4444 !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+button.app-logout:hover,
+div.app-logout:hover,
+.app-logout:hover,
+.logout-link:hover {
+    color: #dc2626 !important;
+}
+button.app-logout svg,
+button.app-logout span,
+div.app-logout svg,
+div.app-logout span,
+.app-logout svg,
+.app-logout span,
+.app-logout .sidebar-icon,
+.logout-link svg,
+.logout-link span,
+.logout-link .sidebar-icon {
+    color: inherit !important;
+}
+
 /* High contrast borders for dark cards */
 .dark .card {
     border-color: #334155;

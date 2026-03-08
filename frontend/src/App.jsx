@@ -32,6 +32,7 @@ const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
 
 /* HOD (Head of Department) */
 const HODDashboard = lazy(() => import('./pages/hod/HODDashboard'));
+const HODStudentPerformance = lazy(() => import('./pages/hod/HODStudentPerformance'));
 
 /* Lazy Loaded Enterprise ERP Pages (Admin/Faculty) */
 const InstitutionalAnalyticsDashboard = lazy(() => import('./pages/enterprise/InstitutionalAnalyticsDashboard'));
@@ -196,6 +197,7 @@ const App = () => {
                     <ProtectedRoute requiredRole="HOD"><HODLayout /></ProtectedRoute>
                   }>
                     <Route index element={<HODDashboard />} />
+                    <Route path="student/:studentId" element={<HODStudentPerformance />} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
