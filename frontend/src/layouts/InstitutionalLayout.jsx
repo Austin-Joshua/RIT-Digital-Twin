@@ -69,7 +69,7 @@ const InstitutionalLayout = () => {
 
     const displayName = user?.firstName && user?.lastName
         ? `${user.firstName} ${user.lastName}`.toUpperCase()
-        : (user?.username || user?.role || 'BOSS').toUpperCase();
+        : (user?.username || user?.role || 'User').toUpperCase();
 
     const adminNavItems = [
         { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },
@@ -89,25 +89,6 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
-    const bossNavItems = [
-        { path: '/boss', label: 'Campus Manager', icon: <LuLayoutGrid />, exact: true },
-        { path: '/boss/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
-        { path: '/boss/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
-        { path: '/boss/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
-        { path: '/boss/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
-        { path: '/boss/management/results', label: 'Results', icon: <LuBook /> },
-        { path: '/boss/management/substitutions', label: 'Class Substitutions', icon: <LuRefreshCcw /> },
-        { path: '/boss/management/certificates', label: 'Certificate', icon: <LuAward /> },
-        { path: '/boss/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
-        { path: '/boss/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
-        { path: '/boss/simulations/transport', label: 'Transport Analytics', icon: <LuBus /> },
-        { path: '/boss/transport', label: 'Transport Directory', icon: <LuBus /> },
-        { path: '/boss/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
-        { path: '/boss/management/hr-recruitment', label: 'HR & Recruitment', icon: <LuBriefcase /> },
-        { path: '/boss/management/audit', label: 'Global Audit', icon: <LuFileCode /> },
-        { path: '/boss/change-password', label: 'Change Password', icon: <LuKey /> },
-    ];
-
     const facultyNavItems = [
         { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
@@ -121,11 +102,7 @@ const InstitutionalLayout = () => {
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
-    const navItems = user?.role === 'BOSS'
-        ? bossNavItems
-        : user?.role === 'FACULTY'
-            ? facultyNavItems
-            : adminNavItems;
+    const navItems = (user?.role === 'FACULTY') ? facultyNavItems : adminNavItems;
 
     return (
         <div className="stu-layout">
@@ -281,7 +258,7 @@ const InstitutionalLayout = () => {
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Signed in as</div>
                                             <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'BOSS' ? 'Admin' : user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/change-password"

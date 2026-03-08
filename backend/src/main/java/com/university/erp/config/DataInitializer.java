@@ -76,7 +76,6 @@ public class DataInitializer implements CommandLineRunner {
 
                 // 1. Initialize Roles
                 seedRole(Role.UserRole.MANAGEMENT);
-                seedRole(Role.UserRole.BOSS);
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -96,9 +95,8 @@ public class DataInitializer implements CommandLineRunner {
                 seedUser("student2@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Michael", "Lee");
                 seedUser("student3@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Emily", "Chen");
 
-                // Parent and Super Admin Seed
+                // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
-                seedUser("boss@ritchennai.edu.in", "admin123", Role.UserRole.BOSS, "Global", "Admin");
 
                 // 3. Initialize Transport Data
                 seedTransportData();

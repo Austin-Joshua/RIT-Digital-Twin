@@ -26,16 +26,19 @@ public class AcademicService {
     private final InternalMarkCalculationService calculationService;
     private final MarkHistoryRepository historyRepository;
     private final SubjectRepository subjectRepository;
+    private final NotificationService notificationService;
 
     public AcademicService(MarksRepository marksRepository, StudentRepository studentRepository,
             AuditService auditService, InternalMarkCalculationService calculationService,
-            MarkHistoryRepository historyRepository, SubjectRepository subjectRepository) {
+            MarkHistoryRepository historyRepository, SubjectRepository subjectRepository,
+            NotificationService notificationService) {
         this.marksRepository = marksRepository;
         this.studentRepository = studentRepository;
         this.auditService = auditService;
         this.calculationService = calculationService;
         this.historyRepository = historyRepository;
         this.subjectRepository = subjectRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -121,6 +124,10 @@ public class AcademicService {
 
         auditService.log("BULK_MARKS_UPLOAD",
                 "Faculty successfully processed " + count + " academic records via bulk Excel upload.");
+        if (count > 0) {
+            notificationService.sendBroadcast("Marks Updated",
+                    "New marks have been published (" + count + " record(s)). Students: check your gradebook.");
+        }
     }
 
     private void logHistory(Marks oldMarks, Marks newMarks) {

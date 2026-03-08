@@ -1597,6 +1597,11 @@ html.dark .stu-calendar-grid th {
     .stu-content {
         overflow-x: hidden !important;
         padding: 12px 10px !important;
+        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .stu-topbar {
+        padding-top: max(0px, env(safe-area-inset-top));
     }
 
     /* Charts & visualizations responsive */

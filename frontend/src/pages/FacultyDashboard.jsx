@@ -6,6 +6,8 @@ import Skeleton from '../components/common/Skeleton';
 import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask, FaBus } from 'react-icons/fa';
 import ClassRiskHeatmap from '../components/intelligence/ClassRiskHeatmap';
 import MiniCalendar from '../components/common/MiniCalendar';
+import AIInsightPanel from '../components/intelligence/AIInsightPanel';
+import ChatbotWidget from '../components/intelligence/ChatbotWidget';
 
 const FacultyDashboard = () => {
     const { user: _user } = useAuth();
@@ -183,8 +185,19 @@ const FacultyDashboard = () => {
                 </div>
             </div>
 
+            {/* AI Insights for Faculty */}
+            <div className="stu-info-row">
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-accent-gold)' }}>
+                    <div className="info-header">AI Insights</div>
+                    <div className="info-body">
+                        <AIInsightPanel role="FACULTY" />
+                    </div>
+                </div>
+            </div>
+
             {/* Academic Calendar */}
             <MiniCalendar />
+            <ChatbotWidget />
         </div>
     );
 };

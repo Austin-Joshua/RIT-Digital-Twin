@@ -46,7 +46,6 @@ const ClassRiskHeatmap = () => {
                             <div style={{ position: 'absolute', right: '2px', top: '2px', width: '14px', height: '14px', background: 'white', borderRadius: '50%' }}></div>
                         </div>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: '#16a34a', background: 'rgba(22,163,74,0.1)', padding: '4px 12px', borderRadius: '20px' }}>92% Accuracy</span>
                 </div>
             </div>
 

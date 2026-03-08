@@ -13,6 +13,7 @@ import {
 import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
+import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
 import Card from '../../components/common/Card';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import DetailedReportModal from '../../components/common/DetailedReportModal';
@@ -112,6 +113,16 @@ const StudentDashboard = () => {
             />
 
             {/* Announcements & Events */}
+            {/* AI Insights for Student */}
+            <div className="stu-info-row">
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-accent-gold)' }}>
+                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>AI Insights</div>
+                    <div className="info-body" style={{ padding: '15px', minHeight: '80px' }}>
+                        <AIInsightPanel role="STUDENT" />
+                    </div>
+                </div>
+            </div>
+
             <div className="stu-info-row">
                 <div className="stu-info-card">
                     <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Announcements</div>

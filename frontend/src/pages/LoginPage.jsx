@@ -66,7 +66,6 @@ const LoginPage = () => {
 
                 if (normalizedRole === 'STUDENT') window.location.href = '/student';
                 else if (normalizedRole === 'PARENT') window.location.href = '/parent';
-                else if (normalizedRole === 'BOSS') window.location.href = '/boss';
                 else window.location.href = '/';
             } else {
                 setError(result.message || 'Invalid username or password.');
@@ -90,7 +89,6 @@ const LoginPage = () => {
 
                 if (normalizedRole === 'STUDENT') window.location.href = '/student';
                 else if (normalizedRole === 'PARENT') window.location.href = '/parent';
-                else if (normalizedRole === 'BOSS') window.location.href = '/boss';
                 else window.location.href = '/';
             } else {
                 setError(result.message);

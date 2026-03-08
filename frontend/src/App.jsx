@@ -27,7 +27,6 @@ const CrowdPage = lazy(() => import('./pages/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/PredictionPage'));
 const CampusMap = lazy(() => import('./pages/CampusMap'));
 
-const BossDashboard = lazy(() => import('./pages/BossDashboard'));
 const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
 
 /* Lazy Loaded Enterprise ERP Pages (Admin/Faculty) */
@@ -116,14 +115,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   if (requiredRole && userRole !== requiredRole.toUpperCase()) {
     if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
     if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
-    if (userRole === 'BOSS') return <Navigate to="/boss" replace />;
     return <Navigate to="/" replace />;
   }
 
   if (!requiredRole) {
     if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
     if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
-    if (userRole === 'BOSS') return <Navigate to="/boss" replace />;
   }
 
   return children;
@@ -186,30 +183,6 @@ const App = () => {
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="fees" element={<AcademicFee />} />
                     <Route path="change-password" element={<ChangePassword />} />
-                  </Route>
-
-                  {/* Boss Mode */}
-                  <Route path="/boss" element={
-                    <ProtectedRoute requiredRole="BOSS"><InstitutionalLayout /></ProtectedRoute>
-                  }>
-                    <Route index element={<BossDashboard />} />
-                    <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
-                    <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
-                    <Route path="management/audit" element={<AuditLogViewer />} />
-                    <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
-                    <Route path="management/results" element={<AutomatedResultPublishing />} />
-                    <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
-                    <Route path="management/certificates" element={<CertificateApprovalQueue />} />
-                    <Route path="simulations/classroom" element={<ClassroomPage />} />
-                    <Route path="simulations/energy" element={<EnergyPage />} />
-                    <Route path="simulations/transport" element={<TransportSimulation />} />
-                    <Route path="transport" element={<TransportDirectory />} />
-                    <Route path="simulations/crowd" element={<CrowdPage />} />
-                    <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
-                    <Route path="management/inventory" element={<InventoryAssets />} />
-                    <Route path="change-password" element={<ChangePassword />} />
-                    <Route path="profile" element={<ProfilePage />} />
-                    <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
 
                   {/* Institutional / Admin / Management / Faculty Mode */}

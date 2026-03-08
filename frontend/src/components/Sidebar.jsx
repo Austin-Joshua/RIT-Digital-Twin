@@ -49,7 +49,7 @@ const Sidebar = () => {
         ];
 
 
-        const role = user?.role || 'FACULTY';
+        const role = (user?.role === 'BOSS' ? 'ADMIN' : user?.role) || 'FACULTY';
 
         switch (role) {
 

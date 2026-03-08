@@ -2,6 +2,7 @@ package com.university.erp.controller;
 
 import com.university.erp.entity.FacultyLeaveRequest;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
+import com.university.erp.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,9 @@ public class FacultyLeaveRequestController {
 
     @Autowired
     private FacultyLeaveRequestRepository repository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping
     @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','BOSS','HOD')")
@@ -35,7 +39,11 @@ public class FacultyLeaveRequestController {
         java.util.Objects.requireNonNull(id, "id must not be null");
         java.util.Objects.requireNonNull(body, "request body must not be null");
         FacultyLeaveRequest request = repository.findById(id).orElseThrow();
-        request.setStatus(body.get("status"));
-        return repository.save(request);
+        String status = body.get("status");
+        request.setStatus(status);
+        FacultyLeaveRequest saved = repository.save(request);
+        notificationService.sendBroadcast("Leave Request Update",
+                "Leave request #" + id + " has been " + (status != null ? status : "updated") + ". Check your dashboard.");
+        return saved;
     }
 }

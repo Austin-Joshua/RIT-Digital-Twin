@@ -74,22 +74,27 @@
 /* Dark Mode Overrides - Optimized AAA Contrast */
 .dark {
     --theme-bg: #020617;
-    /* Even deeper Navy/Black */
     --theme-text: #F8FAFC;
-    /* Slate 50 */
     --theme-text-muted: #94A3B8;
-    /* Slate 400 */
     --color-accent-gold: #FFD700;
-    /* Pure vibrant gold */
     --color-text-secondary: #94A3B8;
-    /* Slate 400 for secondary text in dark mode */
     --theme-border: #1E293B;
-    /* Slate 800 */
     --theme-bg-muted: #1E293B;
-    /* Slate 800 */
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(255, 255, 255, 0.05);
     --card-bg: #0F172A;
+    --input-bg: #1E293B;
+    --input-text: #F8FAFC;
+    --input-placeholder: #64748B;
+    --input-border: #334155;
+}
+
+/* Light mode input semantics */
+:root {
+    --input-bg: #ffffff;
+    --input-text: #0F172A;
+    --input-placeholder: #64748B;
+    --input-border: #E2E8F0;
 }
 
 /* Global Transition Utility */
