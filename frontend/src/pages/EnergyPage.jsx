@@ -85,7 +85,6 @@ const EnergyPage = () => {
                         <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Real-Time Load</p>
                     </div>
                     <FaBolt className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Live Monitoring</div>
                 </div>
                 <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Peak Daily Load: 800 kW reached at 12:45 PM today.')}>
                     <div className="kpi-main z-10">
@@ -93,7 +92,6 @@ const EnergyPage = () => {
                         <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Peak Daily</p>
                     </div>
                     <FaChartLine className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Consumption Trend</div>
                 </div>
                 <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Solar Output: ' + liveMetrics.solarYield + ' kW. Renewable energy contributing 22% of total load.')}>
                     <div className="kpi-main z-10">
@@ -101,7 +99,6 @@ const EnergyPage = () => {
                         <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Solar Output</p>
                     </div>
                     <FaSolarPanel className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Renewable Energy</div>
                 </div>
                 <div className="stu-kpi-card red cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5" onClick={() => alert('Grid Import: ' + liveMetrics.gridImport + ' kW. Stable connection.')}>
                     <div className="kpi-main z-10">
@@ -109,7 +106,6 @@ const EnergyPage = () => {
                         <p className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Grid Import</p>
                     </div>
                     <FaBolt className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">External Sourcing</div>
                 </div>
             </div>
 

@@ -88,15 +88,15 @@ const MiniCalendar = () => {
                 }}>›</button>
             </div>
 
-            {/* Legend */}
+            {/* Legend - high contrast in dark mode */}
             <div className="stu-calendar-legend" style={{
                 display: 'flex', gap: '16px', padding: '8px 16px',
                 borderBottom: '1px solid var(--theme-border)'
             }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '600', color: 'var(--theme-text)' }}>
                     <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#3c8dbc', display: 'inline-block' }} />Today
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '600', color: 'var(--theme-text)' }}>
                     <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'rgba(239,68,68,0.35)', display: 'inline-block' }} />Weekend
                 </span>
             </div>
@@ -108,8 +108,8 @@ const MiniCalendar = () => {
                         <tr>
                             {DAYS.map(d => (
                                 <th key={d} style={{
-                                    padding: '8px 4px', fontSize: '11px', fontWeight: '700', textAlign: 'center',
-                                    color: 'var(--color-primary-navy)', background: 'rgba(11,44,107,0.07)',
+                                    padding: '8px 4px', fontSize: '12px', fontWeight: '700', textAlign: 'center',
+                                    color: 'var(--theme-accent)', background: 'var(--theme-bg-muted)',
                                     textTransform: 'uppercase', letterSpacing: '0.5px'
                                 }}>{d}</th>
                             ))}
@@ -128,8 +128,8 @@ const MiniCalendar = () => {
                                         verticalAlign: 'middle',
                                         fontSize: '13px',
                                         fontWeight: isToday(day) ? '700' : '400',
-                                        color: isToday(day) ? '#fff' : day === 0 ? 'transparent' : isWeekend(di) ? '#e53e3e' : 'var(--theme-text)',
-                                        background: isToday(day) ? '#3c8dbc' : day === 0 ? 'transparent' : isWeekend(di) ? 'rgba(239,68,68,0.05)' : 'var(--card-bg)',
+                                        color: isToday(day) ? '#fff' : day === 0 ? 'transparent' : isWeekend(di) ? 'var(--color-danger)' : 'var(--theme-text)',
+                                        background: isToday(day) ? '#3c8dbc' : day === 0 ? 'transparent' : isWeekend(di) ? 'rgba(239,68,68,0.12)' : 'var(--card-bg)',
                                         borderRadius: isToday(day) ? '6px' : '0',
                                         cursor: day > 0 ? 'default' : 'default',
                                     }}>

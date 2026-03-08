@@ -38,7 +38,7 @@ public class AcademicController {
     }
 
     @GetMapping("/marks/student/{studentId}")
-    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','MANAGEMENT','ADMIN','BOSS','PARENT')")
+    @PreAuthorize("hasAnyRole('STUDENT','FACULTY','ADMIN','HOD','PARENT')")
     public ResponseEntity<List<Marks>> getStudentMarks(
             @PathVariable @org.springframework.lang.NonNull Long studentId,
             @RequestParam(name = "page", required = false) Integer page,
@@ -66,14 +66,14 @@ public class AcademicController {
         // via an explicit parent-student mapping if introduced later.
 
         // Faculty and HOD are limited to their department where available
-        if (role == Role.UserRole.FACULTY || role == Role.UserRole.MANAGEMENT) {
+        if (role == Role.UserRole.FACULTY || role == Role.UserRole.HOD) {
             if (currentUser.getDepartment() != null && targetStudent.getDepartment() != null
                     && !currentUser.getDepartment().getId().equals(targetStudent.getDepartment().getId())) {
-                throw new AccessDeniedException("Faculty/Management can only view students within their department.");
+                throw new AccessDeniedException("Faculty/HOD can only view students within their department.");
             }
         }
 
-        // ADMIN / BOSS / MANAGEMENT are allowed by role guard alone
+        // ADMIN is allowed by role guard alone
 
         List<Marks> marks;
         if (page != null && size != null) {

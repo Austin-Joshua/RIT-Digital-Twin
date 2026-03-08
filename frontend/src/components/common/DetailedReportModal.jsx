@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaChartBar, FaCalendarAlt, FaInfoCircle, FaArrowRight } from 'react-icons/fa';
 
-const DetailedReportModal = ({ isOpen, onClose, title, value, label, icon, data }) => {
+const DetailedReportModal = ({ isOpen, onClose, title, value, label, icon, data, description }) => {
     if (!isOpen) return null;
 
     return (
@@ -63,12 +63,12 @@ const DetailedReportModal = ({ isOpen, onClose, title, value, label, icon, data 
                             </div>
                         </div>
 
-                        <div className="bg-blue-50/50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                            <h4 className="flex items-center gap-2 text-sm font-black text-blue-700 dark:text-blue-400 mb-2 uppercase">
-                                <FaInfoCircle /> Smart Recommendation
+                        <div className="p-6 rounded-2xl border" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
+                            <h4 className="flex items-center gap-2 text-sm font-black mb-2 uppercase" style={{ color: 'var(--color-primary-navy)' }}>
+                                <FaInfoCircle /> {description ? 'Result' : 'Smart Recommendation'}
                             </h4>
                             <p className="text-sm" style={{ color: 'var(--theme-text)' }}>
-                                Based on the current <b>{title.toLowerCase()}</b> and previous 3-month trends, we predict a 4.2% improvement in the upcoming assessment cycle. Maintain current activity levels.
+                                {description || `Based on the current ${(title || '').toLowerCase()} and previous 3-month trends, we predict a 4.2% improvement in the upcoming assessment cycle. Maintain current activity levels.`}
                             </p>
                         </div>
                     </div>

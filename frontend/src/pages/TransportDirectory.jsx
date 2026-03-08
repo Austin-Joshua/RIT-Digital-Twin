@@ -120,18 +120,20 @@ const TransportPage = () => {
                 </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="p-4 sm:p-5 md:p-6" style={{ background: 'var(--color-primary-navy)', borderRadius: '14px', position: 'relative', overflow: 'hidden' }}>
+            {/* Search Bar - outer box only, no inner rectangle */}
+            <div className="p-4 sm:p-5 md:p-6 focus-within:ring-2 focus-within:ring-[#D4AF37] focus-within:ring-offset-0 rounded-[14px] transition-[box-shadow] duration-200" style={{ background: 'var(--color-primary-navy)', borderRadius: '14px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
                 <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 sm:gap-4 relative z-10 items-stretch sm:items-center">
-                    <div className="flex items-center border border-white/20 rounded-lg px-3 sm:px-4 py-2 sm:py-3 bg-white/10 flex-1 focus-within:border-[#D4AF37] transition-colors">
+                    <div className="flex items-center px-3 sm:px-4 py-2 sm:py-3 flex-1" style={{ background: 'transparent' }}>
                         <LuSearch color="#D4AF37" className="text-xl flex-shrink-0 mr-3" />
                         <input
                             type="text"
                             placeholder="Search Route No (R01) or Area (Ennore)..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="bg-transparent border-none outline-none text-white text-sm w-full placeholder-gray-300"
+                            className="border-none outline-none text-white text-sm w-full min-w-0 placeholder-white/70 ring-0 focus:ring-0 focus:outline-none"
+                            style={{ background: 'transparent', boxShadow: 'none' }}
+                            autoComplete="off"
                         />
                     </div>
                     <button type="submit" disabled={searching} className="w-full sm:w-auto px-6 py-3 sm:py-[13px] rounded-lg border-none cursor-pointer text-[var(--color-primary-navy)] font-bold text-sm shadow-md transition-all hover:opacity-90 active:scale-95 flex-shrink-0 whitespace-nowrap" style={{ background: '#D4AF37' }}>

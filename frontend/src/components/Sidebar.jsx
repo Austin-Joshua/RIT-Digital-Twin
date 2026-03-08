@@ -30,14 +30,6 @@ const Sidebar = () => {
             { path: '/change-password', name: 'Change Password', icon: <FaCog /> },
         ];
 
-        const managementItems = [
-            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
-            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
-            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
-            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
-            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
-        ];
-
         const facultyItems = [
             { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
             { path: '/crowd', name: 'Crowd Monitor', icon: <FaUsers /> },
@@ -49,7 +41,7 @@ const Sidebar = () => {
         ];
 
 
-        const role = (user?.role === 'BOSS' ? 'ADMIN' : user?.role) || 'FACULTY';
+        const role = user?.role || 'FACULTY';
 
         switch (role) {
 
@@ -57,8 +49,6 @@ const Sidebar = () => {
                 return [...baseItems, ...parentItems];
             case 'ADMIN':
                 return [...baseItems, ...adminItems];
-            case 'MANAGEMENT':
-                return [...baseItems, ...managementItems];
             case 'FACULTY':
             default:
                 return [...baseItems, ...facultyItems];

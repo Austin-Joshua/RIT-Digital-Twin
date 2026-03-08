@@ -25,53 +25,53 @@ const InstitutionalAnalytics = () => {
         fetchAnalytics();
     }, []);
 
-    if (loading) return <div>Loading Institutional Insights...</div>;
+    if (loading) return <div style={{ padding: '24px', color: 'var(--theme-text-muted)' }}>Loading Institutional Insights...</div>;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '0 4px' }}>
+            <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '24px' }}>
 
                 {/* Departmental CGPA & Pass % */}
-                <div style={{ background: 'white', padding: '24px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><FaUserGraduate color="#0B2C6B" /> Department Performance</h3>
-                    <div style={{ height: '300px' }}>
+                <div style={{ background: 'var(--card-bg)', padding: '16px 20px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', border: '1px solid var(--theme-border)' }}>
+                    <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', fontSize: '1rem' }}><FaUserGraduate color="var(--color-primary-navy, #0B2C6B)" /> Department Performance</h3>
+                    <div style={{ height: '280px', minHeight: '240px' }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="departmentName" />
-                                <YAxis yAxisId="left" orientation="left" stroke="#0B2C6B" />
-                                <YAxis yAxisId="right" orientation="right" stroke="#10B981" domain={[0, 100]} />
-                                <Tooltip />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--theme-border)" />
+                                <XAxis dataKey="departmentName" tick={{ fontSize: 11 }} />
+                                <YAxis yAxisId="left" orientation="left" stroke="var(--color-primary-navy, #0B2C6B)" tick={{ fontSize: 11 }} />
+                                <YAxis yAxisId="right" orientation="right" stroke="#10B981" domain={[0, 100]} tick={{ fontSize: 11 }} />
+                                <Tooltip contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)' }} />
                                 <Legend />
-                                <Bar yAxisId="left" dataKey="averageCgpa" fill="#0B2C6B" name="Avg CGPA" radius={[4, 4, 0, 0]} />
+                                <Bar yAxisId="left" dataKey="averageCgpa" fill="var(--color-primary-navy, #0B2C6B)" name="Avg CGPA" radius={[4, 4, 0, 0]} />
                                 <Bar yAxisId="right" dataKey="passPercentage" fill="#10B981" name="Pass %" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Risk Distribution Heatmap Placeholder */}
-                <div style={{ background: 'white', padding: '24px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><FaExclamationTriangle color="#EF4444" /> Institutional Risk Profile</h3>
-                    <div style={{ height: '300px', overflowY: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                {/* Risk Distribution */}
+                <div style={{ background: 'var(--card-bg)', padding: '16px 20px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', border: '1px solid var(--theme-border)' }}>
+                    <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', fontSize: '1rem' }}><FaExclamationTriangle color="#EF4444" /> Institutional Risk Profile</h3>
+                    <div style={{ minHeight: '200px', maxHeight: '300px', overflowY: 'auto', overflowX: 'auto' }}>
+                        <table style={{ width: '100%', minWidth: '260px', borderCollapse: 'collapse' }}>
                             <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '1px solid #eee' }}>
-                                    <th style={{ padding: '12px 0' }}>Department</th>
-                                    <th>Low Risk</th>
-                                    <th>Med Risk</th>
-                                    <th>High Risk</th>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--theme-border)' }}>
+                                    <th style={{ padding: '12px 8px 12px 0', color: 'var(--theme-text-muted)', fontSize: '12px' }}>Department</th>
+                                    <th style={{ padding: '12px 8px', color: 'var(--theme-text-muted)', fontSize: '12px' }}>Low Risk</th>
+                                    <th style={{ padding: '12px 8px', color: 'var(--theme-text-muted)', fontSize: '12px' }}>Med Risk</th>
+                                    <th style={{ padding: '12px 8px', color: 'var(--theme-text-muted)', fontSize: '12px' }}>High Risk</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.map(dept => {
                                     const total = Object.values(dept.riskDistribution).reduce((a, b) => a + b, 0);
                                     return (
-                                        <tr key={dept.departmentName} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                                            <td style={{ padding: '12px 0', fontWeight: 'bold' }}>{dept.departmentName}</td>
-                                            <td style={{ background: `rgba(16, 185, 129, ${dept.riskDistribution.LOW / total || 0})`, textAlign: 'center' }}>{dept.riskDistribution.LOW}</td>
-                                            <td style={{ background: `rgba(245, 158, 11, ${dept.riskDistribution.MEDIUM / total || 0})`, textAlign: 'center' }}>{dept.riskDistribution.MEDIUM}</td>
-                                            <td style={{ background: `rgba(239, 68, 68, ${dept.riskDistribution.HIGH / total || 0})`, textAlign: 'center' }}>{dept.riskDistribution.HIGH}</td>
+                                        <tr key={dept.departmentName} style={{ borderBottom: '1px solid var(--theme-border)' }}>
+                                            <td style={{ padding: '12px 8px 12px 0', fontWeight: 'bold', color: 'var(--theme-text)', fontSize: '13px' }}>{dept.departmentName}</td>
+                                            <td style={{ background: `rgba(16, 185, 129, ${dept.riskDistribution.LOW / total || 0})`, textAlign: 'center', padding: '12px 8px', color: 'var(--theme-text)' }}>{dept.riskDistribution.LOW}</td>
+                                            <td style={{ background: `rgba(245, 158, 11, ${dept.riskDistribution.MEDIUM / total || 0})`, textAlign: 'center', padding: '12px 8px', color: 'var(--theme-text)' }}>{dept.riskDistribution.MEDIUM}</td>
+                                            <td style={{ background: `rgba(239, 68, 68, ${dept.riskDistribution.HIGH / total || 0})`, textAlign: 'center', padding: '12px 8px', color: 'var(--theme-text)' }}>{dept.riskDistribution.HIGH}</td>
                                         </tr>
                                     );
                                 })}
@@ -83,15 +83,15 @@ const InstitutionalAnalytics = () => {
             </div>
 
             {/* Placement Readiness vs Attendance */}
-            <div style={{ background: 'white', padding: '24px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
-                <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><FaChartBar color="#14b8a6" /> Readiness Index vs Attendance</h3>
-                <div style={{ height: '350px' }}>
+            <div style={{ background: 'var(--card-bg)', padding: '16px 20px', borderRadius: '14px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', border: '1px solid var(--theme-border)' }}>
+                <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', fontSize: '1rem' }}><FaChartBar color="#14b8a6" /> Readiness Index vs Attendance</h3>
+                <div style={{ height: '300px', minHeight: '260px' }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                            <XAxis type="number" domain={[0, 100]} />
-                            <YAxis dataKey="departmentName" type="category" width={100} />
-                            <Tooltip />
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--theme-border)" />
+                            <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} />
+                            <YAxis dataKey="departmentName" type="category" width={90} tick={{ fontSize: 11 }} />
+                            <Tooltip contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)' }} />
                             <Legend />
                             <Bar dataKey="avgAttendance" fill="#14b8a6" name="Avg Attendance %" radius={[0, 4, 4, 0]} />
                             <Bar dataKey="placementReadinessIndex" fill="#3b82f6" name="Placement Readiness Index" radius={[0, 4, 4, 0]} />

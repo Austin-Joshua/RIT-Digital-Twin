@@ -34,22 +34,25 @@ const studentNav = [
     { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];
 
+const LG_BREAKPOINT = 1024;
 const StudentLayout = () => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
-    const [sidebarOpen, setSidebarOpen] = useState(() => {
-        // Always open on desktop, always closed on mobile initially
-        if (window.innerWidth >= 1025) return true;
-        return false;
-    });
+    const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
+    const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [committeeOpen, setCommitteeOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Persist sidebar state
     useEffect(() => {
-        localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
-    }, [sidebarOpen]);
+        const onResize = () => {
+            const d = window.innerWidth >= LG_BREAKPOINT;
+            setIsDesktop(d);
+            setSidebarOpen(d);
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     // Close dropdown on click outside
     useEffect(() => {
@@ -149,7 +152,7 @@ const StudentLayout = () => {
                                                     to={sub.path}
                                                     className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
                                                     onClick={() => {
-                                                        if (window.innerWidth <= 768) setSidebarOpen(false);
+                                                        if (!isDesktop) setSidebarOpen(false);
                                                     }}
                                                 >
                                                     <span className="nav-icon">{sub.icon}</span>
@@ -165,7 +168,7 @@ const StudentLayout = () => {
                                     end={item.end || false}
                                     className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
                                     onClick={() => {
-                                        if (window.innerWidth <= 768) setSidebarOpen(false);
+                                        if (!isDesktop) setSidebarOpen(false);
                                     }}
                                 >
                                     <span className="nav-icon">{item.icon}</span>
@@ -179,7 +182,7 @@ const StudentLayout = () => {
             </aside>
 
             {/* Mobile Sidebar Backdrop */}
-            {sidebarOpen && window.innerWidth <= 768 && (
+            {sidebarOpen && !isDesktop && (
                 <div
                     onClick={() => setSidebarOpen(false)}
                     style={{
@@ -216,28 +219,29 @@ const StudentLayout = () => {
                         </button>
 
                         {/* 2. Logo (Mobile Only) */}
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+                        <Link to="/" className="stu-topbar-logo-link" style={{ display: 'flex', alignItems: 'center' }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
-                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                                style={{ height: '34px', width: 'auto', objectFit: 'contain', maxWidth: '140px' }}
                             />
                         </Link>
                     </div>
 
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', padding: '0 8px' }}>
 
                         {/* 3. Theme Toggle */}
                         <button
                             onClick={toggleTheme}
+                            className="stu-topbar-icon-btn"
                             style={{
-                                background: 'none', border: 'none', fontSize: '20px',
+                                background: 'none', border: 'none', fontSize: '22px',
                                 cursor: 'pointer', color: 'var(--ims-icon-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
+                            {themePreference === 'system' ? <LuMonitor size={22} /> : isDarkMode ? <LuMoon size={22} /> : <LuSun size={22} />}
                         </button>
 
                         {/* 4. Notifications */}
@@ -276,7 +280,7 @@ const StudentLayout = () => {
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: isDarkMode ? 'var(--ims-bg-dark)' : '#f8fafc' }}>
                                             <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
                                             <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'student@ritchennai.edu.in'}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'BOSS' ? 'Admin' : user?.role}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Admin' : user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/student/profile"

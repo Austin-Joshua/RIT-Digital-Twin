@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class ChatbotController {
 
     @PostMapping("/query")
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','BOSS','HOD','FACULTY','STUDENT','PARENT')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD','FACULTY','STUDENT','PARENT')")
     public ResponseEntity<Map<String, String>> chatQuery(
             @RequestParam(required = false, defaultValue = "1") Long studentId,
             @RequestParam(required = false, defaultValue = "STUDENT") String role,

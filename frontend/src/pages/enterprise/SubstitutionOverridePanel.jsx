@@ -37,7 +37,7 @@ const SubstitutionOverridePanel = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(350px, 1.2fr) 1fr', gap: '24px' }}>
                 {/* Absent Faculty List */}
                 <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden' }}>
-                    <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', fontWeight: '800', color: 'var(--color-primary-navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <LuUserMinus color="#dc2626" /> Today's Absent Faculty
                     </div>
                     <div style={{ padding: '12px' }}>
@@ -62,7 +62,7 @@ const SubstitutionOverridePanel = () => {
                 {/* AI Suggestions */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden' }}>
-                        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', fontWeight: '800', color: 'var(--color-primary-navy)', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(11,44,107,0.03)' }}>
+                        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--theme-bg-muted)' }}>
                             <LuZap color="var(--color-accent-gold)" /> AI Top Matches for P1 (CS)
                         </div>
                         <div style={{ padding: '12px' }}>

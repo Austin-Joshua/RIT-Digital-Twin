@@ -9,7 +9,7 @@ const ChatbotWidget = ({ studentId }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState([
-        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${(user?.role === 'BOSS' ? 'Admin' : user?.role) || 'STUDENT'} role today?`, isBot: true }
+        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${(user?.role === 'ADMIN' ? 'Admin' : user?.role) || 'STUDENT'} role today?`, isBot: true }
     ]);
     const [input, setInput] = useState('');
 

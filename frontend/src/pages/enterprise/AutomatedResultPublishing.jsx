@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { LuCheck, LuTriangleAlert, LuSend, LuActivity, LuTrendingUp } from 'react-icons/lu';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LuCheck, LuTriangleAlert, LuSend, LuActivity, LuTrendingUp, LuX } from 'react-icons/lu';
 
 const DEPARTMENTS = [
     { name: 'Computer Science', progress: 100, status: 'READY', anomalies: 0 },
@@ -12,6 +12,7 @@ const DEPARTMENTS = [
 const AutomatedResultPublishing = () => {
     const [verifying, setVerifying] = useState(false);
     const [verified, setVerified] = useState(false);
+    const [reviewDept, setReviewDept] = useState(null);
 
     const handleVerify = () => {
         setVerifying(true);
@@ -22,14 +23,14 @@ const AutomatedResultPublishing = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '16px 12px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--theme-text)', margin: 0 }}>Result Publication Portal</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>Monitor faculty uploads and trigger global AI verification</p>
+                    <h1 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.8rem)', fontWeight: '700', color: 'var(--theme-text)', margin: 0 }}>Result Publication Portal</h1>
+                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0', fontSize: '0.875rem' }}>Monitor faculty uploads and trigger global AI verification</p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                     <button
                         onClick={handleVerify}
                         disabled={verifying}
@@ -38,7 +39,12 @@ const AutomatedResultPublishing = () => {
                     </button>
                     <button
                         disabled={!verified}
-                        style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', background: verified ? 'var(--color-primary-navy)' : '#ccc', color: 'white', fontWeight: '800', cursor: verified ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        style={{
+                            padding: '10px 24px', borderRadius: '8px', border: 'none',
+                            background: verified ? 'var(--publish-btn-bg)' : 'var(--publish-btn-bg-disabled)',
+                            color: verified ? 'var(--publish-btn-text)' : 'var(--publish-btn-text-disabled)',
+                            fontWeight: '800', cursor: verified ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '8px'
+                        }}>
                         <LuSend /> Publish Globally
                     </button>
                 </div>
@@ -63,17 +69,17 @@ const AutomatedResultPublishing = () => {
             </div>
 
             {/* Department List */}
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', margin: '0 -4px' }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <LuActivity color="var(--color-primary-navy)" />
                     <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>Departmental Upload Status</span>
                 </div>
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                    <table style={{ width: '100%', minWidth: '520px', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ background: 'rgba(11,44,107,0.05)', textAlign: 'left' }}>
                                 {['Department', 'Progress', 'Status', 'AI Anomalies', 'Action'].map(h => (
-                                    <th key={h} style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-primary-navy)' }}>{h}</th>
+                                    <th key={h} style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--theme-accent)' }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -97,7 +103,13 @@ const AutomatedResultPublishing = () => {
                                         {dept.anomalies > 0 ? <><LuTriangleAlert size={12} /> {dept.anomalies} Issues</> : 'No Anomaly'}
                                     </td>
                                     <td style={{ padding: '16px 20px' }}>
-                                        <button style={{ background: 'transparent', border: 'none', color: '#3c8dbc', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Review Data</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setReviewDept(dept)}
+                                            style={{ background: 'transparent', border: 'none', color: '#3c8dbc', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}
+                                        >
+                                            Review Data
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -105,6 +117,38 @@ const AutomatedResultPublishing = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Review Data Modal */}
+            <AnimatePresence>
+                {reviewDept && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}
+                        onClick={() => setReviewDept(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            style={{ background: 'var(--card-bg)', borderRadius: '16px', border: '1px solid var(--theme-border)', padding: '24px', maxWidth: '420px', width: '100%' }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: 'var(--theme-text)' }}>Review Data — {reviewDept.name}</h3>
+                                <button type="button" onClick={() => setReviewDept(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--theme-text-muted)' }}><LuX size={20} /></button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Department</span><span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{reviewDept.name}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Progress</span><span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{reviewDept.progress}%</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Status</span><span style={{ fontWeight: '700', color: reviewDept.status === 'READY' ? '#16a34a' : '#ca8a04' }}>{reviewDept.status}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>AI Anomalies</span><span style={{ fontWeight: '700', color: reviewDept.anomalies > 0 ? '#dc2626' : 'var(--theme-text)' }}>{reviewDept.anomalies > 0 ? `${reviewDept.anomalies} Issues` : 'No Anomaly'}</span></div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

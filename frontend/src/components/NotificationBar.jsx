@@ -51,16 +51,17 @@ const NotificationBar = () => {
     return (
         <div style={{ position: 'relative' }} ref={dropdownRef}>
             <button
+                className="stu-topbar-icon-btn"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    background: 'none', border: 'none', fontSize: '20px',
+                    background: 'none', border: 'none', fontSize: '22px',
                     cursor: 'pointer', color: 'var(--ims-icon-color)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    position: 'relative'
+                    position: 'relative', width: '38px', height: '38px', minWidth: '38px', minHeight: '38px', borderRadius: '8px'
                 }}
                 title="Notifications"
             >
-                <FaBell />
+                <FaBell style={{ fontSize: '22px', width: '22px', height: '22px' }} />
                 {notifications.length > 0 && (
                     <span style={{
                         position: 'absolute', top: '-8px', right: '-8px',
