@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LuPenTool, LuCheck, LuX, LuShieldCheck, LuSearch, LuFilter } from 'react-icons/lu';
+import { LuPenTool, LuCheck, LuX, LuShieldCheck, LuSearch, LuFilter, LuFileText } from 'react-icons/lu';
 
 const REQUESTS = [
     { id: '101', student: 'Aakash S', type: 'Bonafide', date: '2026-03-05', attendance: 88, feeClear: true, risk: 'LOW' },
@@ -12,20 +12,21 @@ const REQUESTS = [
 const CertificateApprovalQueue = () => {
     const [selected, setSelected] = useState([]);
     const [search, setSearch] = useState('');
+    const [detailsRequest, setDetailsRequest] = useState(null);
 
     const toggleSelect = (id) => {
         setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '16px 12px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Certificate Queue</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>Batch process document requests with automated compliance checks</p>
+                    <h1 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.8rem)', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Certificate Queue</h1>
+                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0', fontSize: '0.875rem' }}>Batch process document requests with automated compliance checks</p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                     <AnimatePresence>
                         {selected.length > 0 && (
                             <motion.button
@@ -56,14 +57,14 @@ const CertificateApprovalQueue = () => {
             </div>
 
             {/* Table */}
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden' }}>
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', margin: '0 -4px' }}>
+                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                    <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ background: 'rgba(11,44,107,0.06)', textAlign: 'left' }}>
+                            <tr style={{ background: 'var(--theme-bg-muted)', textAlign: 'left' }}>
                                 <th style={{ padding: '14px 20px', width: '40px' }}><input type="checkbox" /></th>
                                 {['Student', 'Request Type', 'Applied On', 'Compliance (AI)', 'Risk', 'Action'].map(h => (
-                                    <th key={h} style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--color-primary-navy)' }}>{h}</th>
+                                    <th key={h} style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--theme-accent)' }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -97,7 +98,13 @@ const CertificateApprovalQueue = () => {
                                         }}>{req.risk}</span>
                                     </td>
                                     <td style={{ padding: '16px 20px' }}>
-                                        <button style={{ color: 'var(--color-primary-navy)', background: 'transparent', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}>Details</button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setDetailsRequest(req)}
+                                            style={{ color: 'var(--theme-accent)', background: 'transparent', border: 'none', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}
+                                        >
+                                            Details
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -105,6 +112,53 @@ const CertificateApprovalQueue = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Details Modal */}
+            <AnimatePresence>
+                {detailsRequest && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}
+                        onClick={() => setDetailsRequest(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            style={{ background: 'var(--card-bg)', borderRadius: '16px', border: '1px solid var(--theme-border)', padding: '24px', maxWidth: '420px', width: '100%' }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <LuFileText /> Certificate Request Details
+                                </h3>
+                                <button type="button" onClick={() => setDetailsRequest(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--theme-text-muted)' }}><LuX size={20} /></button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Student</span><span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{detailsRequest.student}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>ID</span><span style={{ fontWeight: '600', color: 'var(--theme-text)' }}>{detailsRequest.id}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Request Type</span><span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{detailsRequest.type}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Applied On</span><span style={{ color: 'var(--theme-text)' }}>{detailsRequest.date}</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ color: 'var(--theme-text-muted)' }}>Attendance</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', color: detailsRequest.attendance >= 75 ? '#16a34a' : '#dc2626' }}>
+                                        {detailsRequest.attendance >= 75 ? <LuCheck size={14} /> : <LuX size={14} />} {detailsRequest.attendance}%
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ color: 'var(--theme-text-muted)' }}>Fees</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600', color: detailsRequest.feeClear ? '#16a34a' : '#dc2626' }}>
+                                        {detailsRequest.feeClear ? <LuCheck size={14} /> : <LuX size={14} />} {detailsRequest.feeClear ? 'Clear' : 'Pending'}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--theme-text-muted)' }}>Risk</span><span style={{ padding: '4px 10px', borderRadius: '30px', fontSize: '10px', fontWeight: '800', background: detailsRequest.risk === 'LOW' ? 'rgba(22,163,74,0.12)' : (detailsRequest.risk === 'MEDIUM' ? 'rgba(202,138,4,0.12)' : 'rgba(220,38,38,0.12)'), color: detailsRequest.risk === 'LOW' ? '#16a34a' : (detailsRequest.risk === 'MEDIUM' ? '#ca8a04' : '#dc2626') }}>{detailsRequest.risk}</span></div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

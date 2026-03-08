@@ -23,22 +23,26 @@ const LayoutLoader = () => (
     </div>
 );
 
+const LG_BREAKPOINT = 1024; // desktop = lg and above
+
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
     const { addToast } = useToast();
-    const [sidebarOpen, setSidebarOpen] = useState(() => {
-        if (window.innerWidth <= 768) return false;
-        if (window.innerWidth >= 1025) return true;
-        const saved = localStorage.getItem('sidebar-open');
-        return saved !== null ? JSON.parse(saved) : false;
-    });
+    const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
+    const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
 
     useEffect(() => {
-        localStorage.setItem('sidebar-open', JSON.stringify(sidebarOpen));
-    }, [sidebarOpen]);
+        const onResize = () => {
+            const d = window.innerWidth >= LG_BREAKPOINT;
+            setIsDesktop(d);
+            setSidebarOpen(d);
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -139,7 +143,7 @@ const InstitutionalLayout = () => {
                                 end={item.exact || false}
                                 className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
                                 onClick={() => {
-                                    if (window.innerWidth <= 768) setSidebarOpen(false);
+                                    if (!isDesktop) setSidebarOpen(false);
                                 }}
                             >
                                 <span className="nav-icon" style={{ fontSize: '18px' }}>{item.icon}</span>
@@ -153,7 +157,7 @@ const InstitutionalLayout = () => {
 
             {/* Mobile Sidebar Backdrop */}
             <AnimatePresence>
-                {sidebarOpen && window.innerWidth <= 768 && (
+                {sidebarOpen && !isDesktop && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -195,30 +199,31 @@ const InstitutionalLayout = () => {
                         </button>
 
                         {/* 2. Logo (Mobile Only) */}
-                        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+                        <Link to="/" className="stu-topbar-logo-link" style={{ display: 'flex', alignItems: 'center' }}>
                             <img
                                 src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                                 alt="RIT"
-                                style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                                style={{ height: '34px', width: 'auto', objectFit: 'contain', maxWidth: '140px' }}
                             />
                         </Link>
                     </div>
 
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto', padding: '0 20px' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', padding: '0 8px' }}>
 
                         {/* AI Status Pulse removed as requested */}
 
                         {/* 3. Theme Toggle */}
                         <button
                             onClick={toggleTheme}
+                            className="stu-topbar-icon-btn"
                             style={{
-                                background: 'none', border: 'none', fontSize: '20px',
+                                background: 'none', border: 'none', fontSize: '22px',
                                 cursor: 'pointer', color: 'var(--ims-icon-color)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? <LuMonitor /> : isDarkMode ? <LuMoon /> : <LuSun />}
+                            {themePreference === 'system' ? <LuMonitor size={22} /> : isDarkMode ? <LuMoon size={22} /> : <LuSun size={22} />}
                         </button>
 
                         {/* 4. Notifications */}
@@ -258,7 +263,7 @@ const InstitutionalLayout = () => {
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Signed in as</div>
                                             <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'BOSS' ? 'Admin' : user?.role}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Admin' : user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/change-password"

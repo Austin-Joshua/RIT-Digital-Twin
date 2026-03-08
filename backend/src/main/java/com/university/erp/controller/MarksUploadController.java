@@ -20,7 +20,7 @@ public class MarksUploadController {
     }
 
     @PostMapping("/bulk-upload")
-    @PreAuthorize("hasAnyRole('FACULTY', 'ADMIN', 'BOSS')")
+    @PreAuthorize("hasAnyRole('FACULTY', 'ADMIN')")
     public ResponseEntity<?> bulkUploadMarks(@RequestBody List<MarksUploadRequestDto> payload) {
         academicService.bulkUploadMarks(payload);
         return ResponseEntity.ok(Map.of("message", "Marks successfully processed and saved."));

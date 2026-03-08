@@ -43,6 +43,13 @@
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --card-bg: #ffffff;
+    /* Labels/section headers - high contrast in both modes */
+    --theme-accent: var(--color-primary-navy);
+    /* Publish Globally button */
+    --publish-btn-bg: #0B2C6B;
+    --publish-btn-text: #ffffff;
+    --publish-btn-bg-disabled: #cbd5e1;
+    --publish-btn-text-disabled: #64748b;
 
     /* Typography */
     --font-primary: 'Inter', 'Segoe UI', -apple-system, sans-serif;
@@ -75,9 +82,10 @@
 .dark {
     --theme-bg: #020617;
     --theme-text: #F8FAFC;
-    --theme-text-muted: #94A3B8;
+    --theme-text-muted: #CBD5E1;
+    --theme-accent: #93C5FD;
     --color-accent-gold: #FFD700;
-    --color-text-secondary: #94A3B8;
+    --color-text-secondary: #CBD5E1;
     --theme-border: #1E293B;
     --theme-bg-muted: #1E293B;
     --glass-bg: rgba(15, 23, 42, 0.7);
@@ -87,6 +95,11 @@
     --input-text: #F8FAFC;
     --input-placeholder: #64748B;
     --input-border: #334155;
+    /* Publish Globally: high-contrast in dark mode */
+    --publish-btn-bg: #D4AF37;
+    --publish-btn-text: #0F172A;
+    --publish-btn-bg-disabled: #475569;
+    --publish-btn-text-disabled: #94A3B8;
 }
 
 /* Light mode input semantics */

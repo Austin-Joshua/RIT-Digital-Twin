@@ -12,7 +12,7 @@ const ManagementPage = () => {
 
     const _users = [
         { id: 1, username: 'admin', role: 'ADMIN', status: 'ACTIVE' },
-        { id: 2, username: 'registrar', role: 'MANAGEMENT', status: 'ACTIVE' },
+        { id: 2, username: 'registrar', role: 'ADMIN', status: 'ACTIVE' },
         { id: 3, username: 'faculty01', role: 'FACULTY', status: 'PENDING' },
     ];
 

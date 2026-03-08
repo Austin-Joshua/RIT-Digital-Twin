@@ -26,6 +26,7 @@ import com.university.erp.repository.SubjectRepository;
 import com.university.erp.entity.Department;
 import com.university.erp.entity.Subject;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -66,16 +67,7 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         @Transactional
         public void run(String... args) throws Exception {
-                // 0. Manual SQL Migration for Role Rename
-                try {
-                        log.info("Executing role migration: SUPER_ADMIN -> BOSS");
-                        jdbcTemplate.execute("UPDATE roles SET role_name = 'BOSS' WHERE role_name = 'SUPER_ADMIN'");
-                } catch (Exception e) {
-                        log.warn("Migration failed or already executed: " + e.getMessage());
-                }
-
-                // 1. Initialize Roles
-                seedRole(Role.UserRole.MANAGEMENT);
+                // 1. Initialize Roles (must run first so ADMIN exists for migration)
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -85,7 +77,10 @@ public class DataInitializer implements CommandLineRunner {
                         }
                 }
 
-                // 2. Initialize Default Users
+                // 2. Migrate BOSS/MANAGEMENT/SUPER_ADMIN users to ADMIN and drop those roles
+                migrateLegacyRolesToAdmin();
+
+                // 3. Initialize Default Users
                 seedUser("admin@ritchennai.edu.in", "admin123", Role.UserRole.ADMIN, "System", "Admin");
                 seedUser("faculty@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "John", "Faculty");
                 seedUser("student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
@@ -98,14 +93,50 @@ public class DataInitializer implements CommandLineRunner {
                 // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
-                // 3. Initialize Transport Data
+                // HOD Seed (Head of Department - intermediate between Admin and Faculty)
+                seedUser("hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+
+                // 4. Initialize Transport Data
                 seedTransportData();
 
-                // 4. Initialize ERP Data
+                // 5. Initialize ERP Data
                 seedErpData();
 
-                // 5. Initialize CSBS Curriculum
+                // 6. Initialize CSBS Curriculum
                 seedCsbsData();
+        }
+
+        /** Migrates any users with BOSS/MANAGEMENT/SUPER_ADMIN to ADMIN and removes those role rows. */
+        private void migrateLegacyRolesToAdmin() {
+                try {
+                        Long adminId = roleRepository.findByRoleName(Role.UserRole.ADMIN)
+                                        .map(Role::getRoleId)
+                                        .orElse(null);
+                        if (adminId == null) return;
+
+                        List<Long> legacyRoleIds = jdbcTemplate.queryForList(
+                                        "SELECT role_id FROM roles WHERE role_name IN ('BOSS','MANAGEMENT','SUPER_ADMIN')",
+                                        Long.class);
+                        if (legacyRoleIds.isEmpty()) return;
+
+                        String placeholders = String.join(",", Collections.nCopies(legacyRoleIds.size(), "?"));
+                        Object[] args = new Object[legacyRoleIds.size() + 1];
+                        args[0] = adminId;
+                        for (int i = 0; i < legacyRoleIds.size(); i++) {
+                                args[i + 1] = legacyRoleIds.get(i);
+                        }
+                        int updated = jdbcTemplate.update(
+                                        "UPDATE users SET role_id = ? WHERE role_id IN (" + placeholders + ")",
+                                        args);
+                        if (updated > 0) log.info("Migrated {} users from BOSS/MANAGEMENT/SUPER_ADMIN to ADMIN", updated);
+
+                        for (Long id : legacyRoleIds) {
+                                jdbcTemplate.update("DELETE FROM roles WHERE role_id = ?", id);
+                        }
+                        log.info("Removed BOSS, MANAGEMENT, SUPER_ADMIN roles");
+                } catch (Exception e) {
+                        log.debug("Role migration skipped or already applied: {}", e.getMessage());
+                }
         }
 
         private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
@@ -139,15 +170,6 @@ public class DataInitializer implements CommandLineRunner {
 
                                         userRepository.save(user);
                                 });
-        }
-
-        private void seedRole(Role.UserRole roleEnum) {
-                if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
-                        log.info("Seeding role: {}", roleEnum);
-                        roleRepository.save(Role.builder()
-                                        .roleName(roleEnum)
-                                        .build());
-                }
         }
 
         private void seedErpData() {

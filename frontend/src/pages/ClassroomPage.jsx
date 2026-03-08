@@ -50,7 +50,6 @@ const ClassroomPage = () => {
                         <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Total Rooms</div>
                     </div>
                     <FaBuilding className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Campus Capacity</div>
                 </div>
                 <div className="stu-kpi-card green cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5"
                     onClick={() => openModal('Real-time Occupancy', '36', 'Occupied', 'A total of 36 rooms are currently being utilized for active classroom sessions and laboratory work by various departments.', FaCheckCircle, 'green')}>
@@ -59,7 +58,6 @@ const ClassroomPage = () => {
                         <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Occupied</div>
                     </div>
                     <FaCheckCircle className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Live Status</div>
                 </div>
                 <div className="stu-kpi-card yellow cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5"
                     onClick={() => openModal('Instant Booking Status', '12', 'Available', 'There are 12 vacant rooms available for immediate booking, faculty meetings, or specialized student study sessions.', FaExclamationTriangle, 'yellow')}>
@@ -68,7 +66,6 @@ const ClassroomPage = () => {
                         <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Available</div>
                     </div>
                     <FaExclamationTriangle className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">Instant Booking</div>
                 </div>
                 <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform flex flex-col p-3 md:p-5"
                     onClick={() => openModal('Smart Campus Technology', '24', 'Smart Rooms', '24 rooms are fully integrated with interactive smart-boards, high-speed Wi-Fi, and Augmented Reality (AR) support for immersive learning.', FaChalkboardTeacher, 'teal')}>
@@ -77,7 +74,6 @@ const ClassroomPage = () => {
                         <div className="kpi-label text-[10px] md:text-sm font-semibold uppercase tracking-wider">Smart Rooms</div>
                     </div>
                     <FaChalkboardTeacher className="kpi-icon absolute top-3 right-3 text-2xl md:text-4xl opacity-20" />
-                    <div className="kpi-more text-[9px] md:text-xs mt-3 bg-black/10 py-1.5 px-2 rounded w-full text-center">High-Tech Facilities</div>
                 </div>
             </div>
 

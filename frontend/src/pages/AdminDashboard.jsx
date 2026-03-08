@@ -168,6 +168,7 @@ const AdminDashboard = () => {
                 value={selectedModal?.value}
                 label={selectedModal?.title || selectedModal?.label}
                 icon={selectedModal?.icon}
+                description={selectedModal?.description}
             />
 
             {/* Main Content Layout */}
@@ -178,38 +179,71 @@ const AdminDashboard = () => {
                     <AIInsightPanel role="ADMIN" />
 
                     {/* Live Sentiment & Infrastructure Forecast */}
-                    {/* AI Campus Sentiment Card - Theme Aware */}
-                    <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all border border-slate-200 dark:border-slate-800" onClick={() => setSelectedModal({ title: 'AI Campus Sentiment', value: '85% Positive', icon: <FaHeart /> })}>
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-pink-500/5 rounded-full -mr-12 -mt-12 blur-2xl"></div>
-                        <div className="info-header mb-4 relative z-10" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none' }}>
-                            <FaHeart className="text-pink-600 dark:text-pink-500" /> <span className="font-black uppercase tracking-widest text-[11px] text-blue-600 dark:text-blue-300">AI Campus Sentiment</span>
+                    {/* AI Campus Sentiment Card - Light in light mode, dark in dark mode */}
+                    <div
+                        className="p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all border"
+                        style={{ background: 'var(--card-bg)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)' }}
+                        onClick={() => setSelectedModal({
+                            title: 'AI Campus Sentiment',
+                            value: '85% Positive',
+                            icon: <FaHeart />,
+                            description: 'Campus vibe is "Excited" (85% positive). Pulse is high due to upcoming Sports Meet. Student satisfaction trending +4%. Recommendation: Broadcast sports event update to sustain engagement.'
+                        })}
+                    >
+                        <div className="absolute top-0 right-0 w-24 h-24 rounded-full -mr-12 -mt-12 blur-2xl opacity-30" style={{ background: 'var(--color-primary-navy)' }} />
+                        <div className="info-header mb-4 relative z-10 flex items-center gap-2" style={{ border: 'none' }}>
+                            <FaHeart style={{ color: '#db2777' }} />
+                            <span className="font-black uppercase tracking-widest text-[11px]" style={{ color: 'var(--theme-accent)' }}>AI Campus Sentiment</span>
                         </div>
                         <div className="info-body relative z-10">
                             <div className="flex justify-between items-end mb-3">
-                                <span className="text-3xl font-black text-slate-900 dark:text-white">85%</span>
-                                <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Excited / Stable</span>
+                                <span className="text-3xl font-black" style={{ color: 'var(--theme-text)' }}>85%</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-success)' }}>Excited / Stable</span>
                             </div>
-                            <div className="w-full bg-slate-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden shadow-inner">
-                                <div className="bg-green-500 h-full shadow-[0_0_8px_rgba(34,197,94,0.6)]" style={{ width: '85%' }}></div>
+                            <div className="w-full h-1.5 rounded-full overflow-hidden shadow-inner" style={{ background: 'var(--theme-bg-muted)' }}>
+                                <div className="h-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" style={{ width: '85%' }} />
                             </div>
-                            <p className="text-[11px] text-slate-500 dark:text-blue-200/70 mt-3 leading-tight italic font-medium">
+                            <p className="text-[11px] mt-3 leading-tight italic font-medium" style={{ color: 'var(--theme-text-muted)' }}>
                                 "Pulse is high due to upcoming Sports Meet. Student satisfaction trending +4%."
                             </p>
                         </div>
                     </div>
 
-                    {/* Infra Forecast Card - Theme Aware */}
-                    <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 rounded-2xl shadow-xl relative overflow-hidden group cursor-pointer hover:shadow-2xl transition-all border border-slate-200 dark:border-slate-800" onClick={() => setSelectedModal({ title: 'Infrastructure Forecast', value: 'Peak load expected in Block D', icon: <FaBolt /> })}>
+                    {/* Infra Forecast Card - Light in light mode, dark in dark mode */}
+                    <div
+                        className="p-5 rounded-2xl shadow-xl relative overflow-hidden group border transition-all cursor-pointer hover:shadow-2xl"
+                        style={{ background: 'var(--card-bg)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)' }}
+                        onClick={() => setSelectedModal({
+                            title: 'Infrastructure Forecast',
+                            value: 'Peak load Block D',
+                            icon: <FaBolt />,
+                            description: 'Peak load expected in Block D at 3 PM. Suggest pre-cooling Labs 401-408 for 12% energy saving. Click "Apply Automation" to schedule pre-cooling.'
+                        })}
+                    >
                         <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:scale-110 transition-transform">
-                            <FaBolt className="text-4xl text-yellow-600 dark:text-yellow-400" />
+                            <FaBolt style={{ color: 'var(--color-warning)' }} className="text-4xl" />
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] font-black text-blue-600 dark:text-blue-300 uppercase tracking-widest mb-3">
-                            <FaMagic className="text-blue-600 dark:text-blue-400" /> Infra Forecast
+                        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest mb-3" style={{ color: 'var(--theme-accent)' }}>
+                            <FaMagic /> Infra Forecast
                         </div>
-                        <p className="text-sm font-medium leading-relaxed mb-4 text-slate-600 dark:text-gray-200">
+                        <p className="text-sm font-medium leading-relaxed mb-4" style={{ color: 'var(--theme-text)' }}>
                             Peak load expected in <b>Block D</b> at 3 PM. Suggest pre-cooling Labs 401-408 for 12% energy saving.
                         </p>
-                        <button className="w-full py-2 bg-yellow-400 text-slate-900 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors shadow-[0_4px_10px_rgba(250,204,21,0.3)]">
+                        <button
+                            type="button"
+                            className="w-full py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors shadow-md"
+                            style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                addToast('Automation applied. Pre-cooling scheduled for Labs 401-408. Estimated 12% energy saving.', 'success');
+                                setSelectedModal({
+                                    title: 'Infrastructure Forecast',
+                                    value: 'Automation applied',
+                                    icon: <FaBolt />,
+                                    description: 'Pre-cooling has been scheduled for Labs 401-408. Peak load in Block D at 3 PM will be mitigated. Estimated 12% energy saving.'
+                                });
+                            }}
+                        >
                             Apply Automation
                         </button>
                     </div>

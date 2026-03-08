@@ -19,13 +19,13 @@ public class FacultyLeaveRequestController {
     private NotificationService notificationService;
 
     @GetMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','BOSS','HOD')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public List<FacultyLeaveRequest> getAllLeaves() {
         return repository.findAll();
     }
 
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('FACULTY','HOD','ADMIN','BOSS')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('FACULTY','HOD','ADMIN')")
     public FacultyLeaveRequest createLeaveRequest(
             @org.springframework.lang.NonNull @RequestBody FacultyLeaveRequest request) {
         java.util.Objects.requireNonNull(request, "request body must not be null");
@@ -33,7 +33,7 @@ public class FacultyLeaveRequestController {
     }
 
     @PutMapping("/{id}/status")
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('HOD','ADMIN','BOSS')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('HOD','ADMIN')")
     public FacultyLeaveRequest updateStatus(@org.springframework.lang.NonNull @PathVariable Long id,
             @org.springframework.lang.NonNull @RequestBody java.util.Map<String, String> body) {
         java.util.Objects.requireNonNull(id, "id must not be null");

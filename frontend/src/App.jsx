@@ -11,6 +11,7 @@ import BroadcastListener from './components/BroadcastListener';
 import InstitutionalLayout from './layouts/InstitutionalLayout';
 import StudentLayout from './layouts/StudentLayout';
 import ParentLayout from './layouts/ParentLayout';
+import HODLayout from './layouts/HODLayout';
 import AuthLayout from './layouts/AuthLayout';
 
 /* Lazy Loaded Auth Pages */
@@ -28,6 +29,9 @@ const PredictionPage = lazy(() => import('./pages/PredictionPage'));
 const CampusMap = lazy(() => import('./pages/CampusMap'));
 
 const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
+
+/* HOD (Head of Department) */
+const HODDashboard = lazy(() => import('./pages/hod/HODDashboard'));
 
 /* Lazy Loaded Enterprise ERP Pages (Admin/Faculty) */
 const InstitutionalAnalyticsDashboard = lazy(() => import('./pages/enterprise/InstitutionalAnalyticsDashboard'));
@@ -115,12 +119,14 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   if (requiredRole && userRole !== requiredRole.toUpperCase()) {
     if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
     if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
+    if (userRole === 'HOD') return <Navigate to="/hod" replace />;
     return <Navigate to="/" replace />;
   }
 
   if (!requiredRole) {
     if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
     if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
+    if (userRole === 'HOD') return <Navigate to="/hod" replace />;
   }
 
   return children;
@@ -183,6 +189,15 @@ const App = () => {
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="fees" element={<AcademicFee />} />
                     <Route path="change-password" element={<ChangePassword />} />
+                  </Route>
+
+                  {/* HOD (Head of Department) Mode – intermediate between Admin and Faculty */}
+                  <Route path="/hod" element={
+                    <ProtectedRoute requiredRole="HOD"><HODLayout /></ProtectedRoute>
+                  }>
+                    <Route index element={<HODDashboard />} />
+                    <Route path="change-password" element={<ChangePassword />} />
+                    <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
 
                   {/* Institutional / Admin / Management / Faculty Mode */}

@@ -28,7 +28,7 @@ public class TimetableController {
     }
 
     @PostMapping("/timetable/generate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BOSS', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
     public ResponseEntity<List<TimetableSlot>> generateTimetable(
             @RequestParam Long deptId,
             @RequestParam String section) {

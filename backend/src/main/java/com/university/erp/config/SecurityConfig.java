@@ -61,8 +61,7 @@ public class SecurityConfig {
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
         hierarchy.setHierarchy(
-                "ROLE_BOSS > ROLE_ADMIN\n" +
-                        "ROLE_ADMIN > ROLE_HOD\n" +
+                "ROLE_ADMIN > ROLE_HOD\n" +
                         "ROLE_HOD > ROLE_FACULTY\n" +
                         "ROLE_FACULTY > ROLE_STUDENT\n" +
                         "ROLE_STUDENT > ROLE_PARENT");

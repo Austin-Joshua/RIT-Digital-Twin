@@ -68,7 +68,7 @@ public class RevaluationController {
     }
 
     @PostMapping("/requests/{id}/admin-approve")
-    @PreAuthorize("hasAnyRole('ADMIN','BOSS')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> adminApprove(@PathVariable Long id,
             @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
@@ -103,7 +103,7 @@ public class RevaluationController {
     }
 
     @PostMapping("/requests/{id}/admin-close")
-    @PreAuthorize("hasAnyRole('ADMIN','BOSS')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> adminClose(@PathVariable Long id,
             @RequestBody(required = false) Map<String, String> body) {
         String remarks = body != null ? body.getOrDefault("remarks", "") : "";
