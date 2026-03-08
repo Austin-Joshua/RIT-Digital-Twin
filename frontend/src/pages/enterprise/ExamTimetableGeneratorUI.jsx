@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { academicAiApi } from '../../services/enterpriseApi';
 import { useToast } from '../../context/ToastContext';
-
 const ExamTimetableGeneratorUI = () => {
     const [mode, setMode] = useState('EXAM'); // 'EXAM' or 'WEEKLY'
     const [startDate, setStartDate] = useState('');
@@ -128,7 +127,6 @@ const ExamTimetableGeneratorUI = () => {
             {analysis && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px' }}>
                     {[
-                        { label: 'AI Efficiency', val: analysis.efficiency, color: '#16a34a' },
                         { label: 'Conflicts Resolved', val: analysis.clashesResolved, color: 'var(--color-primary-navy)' },
                         { label: 'Room Utilization', val: analysis.roomUtilization, color: '#ca8a04' },
                         { label: 'Faculty Balance', val: analysis.facultyBalance, color: '#3c8dbc' }

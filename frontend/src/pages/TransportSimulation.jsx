@@ -14,7 +14,7 @@ const COLORS = ['var(--color-primary-navy)', 'var(--color-accent-gold)', 'var(--
 
 function TransportPage() {
     const { user } = useAuth();
-    if (user?.role !== 'ADMIN' && user?.role !== 'BOSS' && user?.role !== 'MANAGEMENT') {
+    if (user?.role !== 'ADMIN' && user?.role !== 'MANAGEMENT') {
         return <Navigate to="/transport" replace />;
     }
     const [loading, setLoading] = useState(false);

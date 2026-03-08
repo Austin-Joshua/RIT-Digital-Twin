@@ -81,9 +81,9 @@ const NotificationBar = () => {
                         transition={{ duration: 0.2 }}
                         style={{
                             position: 'absolute', top: '45px', right: '-10px', width: '320px',
-                            background: '#ffffff', borderRadius: '16px',
+                            background: 'var(--card-bg)', borderRadius: '16px',
                             boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-                            border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden'
+                            border: '1px solid var(--theme-border)', zIndex: 9999, overflow: 'hidden'
                         }}
                     >
                         <div style={{
@@ -101,7 +101,7 @@ const NotificationBar = () => {
                         </div>
                         <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
                             {notifications.length === 0 ? (
-                                <div style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '14px' }}>
+                                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--theme-text-muted)', fontSize: '14px' }}>
                                     No new notifications
                                 </div>
                             ) : (
@@ -109,17 +109,17 @@ const NotificationBar = () => {
                                     <div
                                         key={idx}
                                         style={{
-                                            padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)',
-                                            color: '#333', cursor: 'pointer',
+                                            padding: '16px', borderBottom: '1px solid var(--theme-border)',
+                                            color: 'var(--theme-text)', cursor: 'pointer',
                                             transition: 'background 0.2s',
-                                            background: '#ffffff'
+                                            background: 'var(--card-bg)'
                                         }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--theme-bg-muted)'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--card-bg)'; }}
                                         onClick={() => dismissNotif(idx)}
                                     >
-                                        <strong style={{ display: 'block', fontSize: '14px', marginBottom: '4px', color: '#0f172a' }}>{notif.title}</strong>
-                                        <span style={{ fontSize: '12px', color: '#64748b' }}>{notif.message}</span>
+                                        <strong style={{ display: 'block', fontSize: '14px', marginBottom: '4px', color: 'var(--theme-text)' }}>{notif.title}</strong>
+                                        <span style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>{notif.message}</span>
                                     </div>
                                 ))
                             )}

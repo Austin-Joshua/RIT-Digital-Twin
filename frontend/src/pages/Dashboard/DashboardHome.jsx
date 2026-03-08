@@ -11,18 +11,18 @@ import {
 import './DashboardHome.css';
 import Card from '../../components/common/Card';
 import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
+import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
 
 const DashboardHome = () => {
-    const { user: _user } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const stats = [
-        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', color: '#3B82F6', icon: <FiGrid />, link: '/simulations/classroom' }, // Blue
-        { label: 'Energy Conserved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', color: '#10B981', icon: <FiZap />, link: '/simulations/energy' }, // Green
-        { label: 'Active Transport Routes', value: '12', trend: 'Live', trendDir: 'up', color: '#8B5CF6', icon: <FiTruck />, link: '/transport' }, // Purple
-        { label: 'Current Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', color: '#F59E0B', icon: <FiUsers />, link: '/simulations/crowd' }, // Orange
-        { label: 'Sustainability Rating', value: 'A+', trend: 'Excellent', trendDir: 'up', color: '#14B8A6', icon: <FiBarChart2 />, link: '/simulations/sustainability' }, // Teal
-        { label: 'Forecast Accuracy', value: '97%', trend: 'R²=0.99', trendDir: 'up', color: '#6366F1', icon: <FiActivity />, link: '/predictions' }, // Indigo
+        { label: 'Total Classrooms', value: '156', trend: '+12%', trendDir: 'up', color: '#3B82F6', icon: <FiGrid />, link: '/simulations/classroom' },
+        { label: 'Energy Conserved (kWh)', value: '8,420', trend: '+23%', trendDir: 'up', color: '#10B981', icon: <FiZap />, link: '/simulations/energy' },
+        { label: 'Active Transport Routes', value: '12', trend: 'Live', trendDir: 'up', color: '#8B5CF6', icon: <FiTruck />, link: '/transport' },
+        { label: 'Current Campus Population', value: '5,000', trend: 'Live', trendDir: 'up', color: '#F59E0B', icon: <FiUsers />, link: '/simulations/crowd' },
+        { label: 'Sustainability Rating', value: 'A+', trend: 'Excellent', trendDir: 'up', color: '#14B8A6', icon: <FiBarChart2 />, link: '/simulations/sustainability' },
     ];
 
     const modules = [
@@ -119,9 +119,10 @@ const DashboardHome = () => {
                     </div>
                 </div>
                 <div className="mt-8">
-                    <AIInsightPanel />
+                    <AIInsightPanel role={user?.role?.replace?.('ROLE_', '') || 'ADMIN'} />
                 </div>
             </div>
+            <ChatbotWidget />
         </div>
     );
 };

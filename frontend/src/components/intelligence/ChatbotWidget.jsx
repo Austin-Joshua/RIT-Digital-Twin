@@ -9,7 +9,7 @@ const ChatbotWidget = ({ studentId }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState([
-        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${user?.role || 'STUDENT'} role today?`, isBot: true }
+        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${(user?.role === 'BOSS' ? 'Admin' : user?.role) || 'STUDENT'} role today?`, isBot: true }
     ]);
     const [input, setInput] = useState('');
 
@@ -23,10 +23,8 @@ const ChatbotWidget = ({ studentId }) => {
         if (role === 'PARENT') {
             return ["Academic Forecast", "Fee Dues", "Schedule Meeting", "Attendance Pulse"];
         }
-        if (role === 'ADMIN' || role === 'BOSS') {
-            const adminSugs = ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
-            if (role === 'BOSS') adminSugs.push("Strategic Growth Forecast", "Budget Risk Analysis", "Global Security Audit");
-            return adminSugs;
+        if (role === 'ADMIN') {
+            return ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
         }
         return ["Attendance Report", "CGPA Simulator", "Exam Hall Info", "Digital Outpass"];
     };

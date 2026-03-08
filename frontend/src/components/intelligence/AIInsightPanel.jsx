@@ -20,15 +20,11 @@ const MOCK_INSIGHTS = {
     ADMIN: [
         { category: 'INFRA', message: 'Block C energy spike detected (A/C load).', suggestion: 'Optimize schedules for Room 302.' },
         { category: 'SENTIMENT', message: 'Campus vibe is "Excited" (85% positive).', suggestion: 'Broadcast sports event update.' }
-    ],
-    BOSS: [
-        { category: 'STRATEGIC', message: 'Enrollment trends suggest 12% growth in CSE next year.', suggestion: 'Review Faculty hiring plan for Q3.' },
-        { category: 'SECURITY', message: 'Unusual login pattern detected from new IP range.', suggestion: 'Verify Global System Audit logs.' },
-        { category: 'FINANCIAL', message: 'Energy optimization saved ₹1.2L this month.', suggestion: 'Reallocate savings to Research fund.' }
     ]
 };
 
 const AIInsightPanel = ({ role = 'STUDENT', category }) => {
+    const effectiveRole = role === 'BOSS' ? 'ADMIN' : role;
     const [insights, setInsights] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -37,15 +33,15 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
             try {
                 const response = await api.get('/intelligence/insights');
                 const data = category ? response.data.filter(i => i.category === category) : response.data;
-                setInsights(data.length > 0 ? data : (MOCK_INSIGHTS[role] || MOCK_INSIGHTS.STUDENT));
+                setInsights(data.length > 0 ? data : (MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT));
             } catch (error) {
-                setInsights(MOCK_INSIGHTS[role] || MOCK_INSIGHTS.STUDENT);
+                setInsights(MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT);
             } finally {
                 setLoading(false);
             }
         };
         fetchInsights();
-    }, [category, role]);
+    }, [category, effectiveRole]);
 
     if (loading) return (
         <div className="animate-pulse bg-slate-900/10 h-64 rounded-2xl border border-dashed border-slate-700 flex items-center justify-center">

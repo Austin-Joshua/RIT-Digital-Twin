@@ -79,13 +79,6 @@ const PredictionPage = () => {
                     </div>
                     <div className="kpi-more">High Confidence Interval</div>
                 </div>
-                <div className="stu-kpi-card teal cursor-pointer hover:scale-[1.05] transition-transform" onClick={() => alert('Model Accuracy: 88% using Random Forest Regression.')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">88%</div>
-                        <div className="kpi-label">Model Accuracy</div>
-                    </div>
-                    <div className="kpi-more">Based on Historical Data</div>
-                </div>
                 <div className="stu-kpi-card gold cursor-pointer hover:scale-[1.05] transition-transform" style={{ background: 'linear-gradient(135deg, #B8860B 0%, #D4AF37 100%)' }} onClick={() => alert('AI Auto-Optimization is active and refining resource allocation.')}>
                     <div className="kpi-main">
                         <div className="kpi-value">AI</div>

@@ -118,7 +118,7 @@ const DashboardLayout = () => {
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px'
                                 }}>
-                                    {user?.role || 'ADMIN'}
+                                    {(user?.role === 'BOSS' ? 'Admin' : user?.role) || 'ADMIN'}
                                 </div>
                             </div>
                         </div>

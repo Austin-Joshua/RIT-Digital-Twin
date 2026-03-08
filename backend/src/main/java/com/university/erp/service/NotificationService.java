@@ -6,6 +6,8 @@ import com.university.erp.repository.NotificationRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class NotificationService {
 
@@ -15,6 +17,15 @@ public class NotificationService {
     public NotificationService(SimpMessagingTemplate messagingTemplate, NotificationRepository notificationRepository) {
         this.messagingTemplate = messagingTemplate;
         this.notificationRepository = notificationRepository;
+    }
+
+    /** Push to all connected clients (all logins) - shown as toast in UI */
+    public void sendBroadcast(String title, String message) {
+        messagingTemplate.convertAndSend("/topic/broadcasts", Map.of(
+            "title", title != null ? title : "Update",
+            "message", message != null ? message : "",
+            "timestamp", String.valueOf(System.currentTimeMillis())
+        ));
     }
 
     public void sendGlobalNotification(String message) {
