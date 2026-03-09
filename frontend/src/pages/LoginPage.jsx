@@ -179,7 +179,7 @@ const LoginPage = () => {
                             name="username"
                             value={credentials.username}
                             onChange={handleChange}
-                            placeholder="e.g. admin@ritchennai.edu.in"
+                            placeholder="Enter your username or email"
                             required
                         />
 
