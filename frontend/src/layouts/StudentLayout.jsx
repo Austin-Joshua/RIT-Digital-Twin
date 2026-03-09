@@ -37,6 +37,7 @@ const studentNav = [
 const LG_BREAKPOINT = 1024;
 const StudentLayout = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
@@ -67,7 +68,7 @@ const StudentLayout = () => {
 
     const handleLogout = () => {
         logout();
-        window.location.href = '/login';
+        navigate('/login', { replace: true });
     };
 
     const displayName = user?.firstName && user?.lastName

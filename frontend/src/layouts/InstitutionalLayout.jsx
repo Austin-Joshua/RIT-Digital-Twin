@@ -68,7 +68,9 @@ const InstitutionalLayout = () => {
 
     const handleLogout = () => {
         logout();
-        window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+            window.location.assign('/login');
+        }
     };
 
     const displayName = user?.firstName && user?.lastName
