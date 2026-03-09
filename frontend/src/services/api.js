@@ -10,30 +10,36 @@ import axios from 'axios';
  * 3. Default localhost for development
  */
 const getAPIBaseURL = () => {
-  // Check environment variable first (most reliable)
+  // Explicit API URL (Vercel env or .env.production)
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL;
+  }
+  // Single backend base URL: derive /api and /ws (e.g. VITE_BACKEND_URL for ngrok)
+  const base = import.meta.env.VITE_BACKEND_URL;
+  if (base) {
+    const url = base.replace(/\/$/, '');
+    return `${url}/api`;
   }
 
   // Detect if running on Vercel or localhost
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
-
-    // Development: use localhost
     if (host.includes('localhost') || host.includes('127.0.0.1')) {
       return 'http://localhost:8080/api';
     }
-
-    // Production on Vercel: use /api prefix (will be proxied or use absolute URL)
     if (host.includes('vercel.app')) {
-      // This will be resolved by Vercel's rewrite rules or backend CORS
-      // Backend should be configured with Vercel domain in CORS origins
-      return 'http://localhost:8080/api'; // Fallback - update when backend deployed
+      console.warn('[API] Set VITE_API_BASE_URL or VITE_BACKEND_URL in Vercel → Settings → Environment Variables');
+      return 'http://localhost:8080/api';
     }
   }
 
-  // Default fallback
   return 'http://localhost:8080/api';
+};
+
+/** Backend root URL (no /api) for health checks etc. */
+const getBackendRootURL = () => {
+  const base = getAPIBaseURL();
+  return base.replace(/\/api\/?$/, '') || 'http://localhost:8080';
 };
 
 const API_URL = getAPIBaseURL();
@@ -104,4 +110,4 @@ api.interceptors.response.use(
 );
 
 export default api;
-export { getAPIBaseURL };
+export { getAPIBaseURL, getBackendRootURL };

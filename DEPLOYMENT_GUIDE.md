@@ -131,17 +131,85 @@ http://localhost:5173
 
 ---
 
-## 🌐 PART 2: VERCEL DEPLOYMENT (ONLINE)
+## 🌐 PART 2: VERCEL FRONTEND + LOCAL BACKEND (TUNNEL)
 
-### PreRequisite: Backend Must Be Publicly Accessible
+Use this when your **frontend is deployed on Vercel** and your **backend runs on your machine** (localhost). The browser must reach your backend via a public URL, so we expose localhost with a tunnel.
 
-Your Spring Boot backend must be deployed somewhere accessible online:
-- ✅ AWS EC2, Azure VM, DigitalOcean, Heroku, Railway, etc.
-- ❌ Not on localhost (Vercel can't reach local machine)
+### Prerequisites
+- Backend running locally on port 8080
+- MySQL running
+- [ngrok](https://ngrok.com/download) (or [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/) / [localtunnel](https://github.com/localtunnel/localtunnel))
+
+### Step 1: Expose local backend with ngrok
+
+```powershell
+# Terminal 1: Start backend (if not already running)
+cd backend
+.\mvnw.cmd spring-boot:run
+
+# Terminal 2: Expose port 8080 (install ngrok first: choco install ngrok / scoop install ngrok)
+ngrok http 8080
+```
+
+Copy the **HTTPS** URL ngrok shows (e.g. `https://abc123.ngrok-free.app`). You will use:
+- **API base:** `https://abc123.ngrok-free.app/api`
+- **WebSocket:** `https://abc123.ngrok-free.app/ws`
+
+### Step 2: Allow Vercel in backend CORS
+
+Backend already allows `https://*.vercel.app`. To be explicit, when starting the backend you can set:
+
+```powershell
+# Windows PowerShell (before starting backend)
+$env:APP_CORS_ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://your-project.vercel.app"
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Replace `your-project.vercel.app` with your actual Vercel URL.
+
+### Step 3: Set Vercel environment variables
+
+In **Vercel Dashboard → Your Project → Settings → Environment Variables**, add (use your ngrok URL):
+
+| Name | Value | Environments |
+|------|--------|----------------|
+| `VITE_API_BASE_URL` | `https://YOUR_NGROK_URL/api` | Production, Preview |
+| `VITE_WEBSOCKET_URL` | `https://YOUR_NGROK_URL/ws` | Production, Preview |
+| `VITE_ENABLE_WEBSOCKET` | `true` | Production, Preview |
+
+Example (replace with your ngrok host):
+- `VITE_API_BASE_URL` = `https://abc123.ngrok-free.app/api`
+- `VITE_WEBSOCKET_URL` = `https://abc123.ngrok-free.app/ws`
+
+### Step 4: Redeploy Vercel
+
+After saving env vars, trigger a **Redeploy** (Deployments → ⋮ → Redeploy) so the new API URL is baked into the build.
+
+### Step 5: Use the app
+
+1. Keep **backend** and **ngrok** running on your machine.
+2. Open your **Vercel app URL** in the browser.
+3. Login with e.g. `admin@ritchennai.edu.in` / `admin123`.
+
+**Note:** Free ngrok URLs change each time you restart ngrok. When the URL changes, update the two Vercel env vars and redeploy.
 
 ---
 
-### Step 1️⃣: Create `.env.production` in Frontend Root
+## 🌐 PART 3: VERCEL DEPLOYMENT (FRONTEND + CLOUD BACKEND)
+
+### Prerequisite: Backend Must Be Publicly Accessible
+
+Your Spring Boot backend must be deployed somewhere accessible online:
+- ✅ AWS EC2, Azure VM, DigitalOcean, Heroku, Railway, Render, etc.
+- ✅ Or local backend exposed via tunnel (see Part 2 above)
+- ❌ Plain localhost only (browsers cannot reach your machine’s localhost from the Vercel site)
+
+---
+
+### Step 1️⃣: Set backend URL (or use Part 2 for local backend + tunnel)
+
+Create `.env.production` in frontend root **only if** you build locally for production. For Vercel, set the variables in the **Vercel Dashboard** (Step 3️⃣ below) instead.
 
 ```env
 # .env.production - VERCEL DEPLOYMENT
@@ -166,12 +234,8 @@ VITE_API_BASE_URL=https://your-app-name.up.railway.app/api
 VITE_WEBSOCKET_URL=https://your-app-name.up.railway.app/ws
 ```
 
-**If backend on localhost for testing (NOT PRODUCTION):**
-```env
-# ⚠️ FOR LOCAL TESTING ONLY - WILL NOT WORK ON VERCEL
-VITE_API_BASE_URL=http://localhost:8080/api
-VITE_WEBSOCKET_URL=http://localhost:8080/ws
-```
+**If backend is local (use a tunnel):**  
+See **Part 2: Vercel frontend + local backend** above. Use the ngrok (or tunnel) HTTPS URL, not `localhost`.
 
 ---
 
@@ -201,10 +265,12 @@ APP_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://you
 
 | Name | Value | Scope |
 |------|-------|-------|
-| `VITE_API_BASE_URL` | `https://your-backend.com/api` | Preview, Production |
-| `VITE_WEBSOCKET_URL` | `https://your-backend.com/ws` | Preview, Production |
-| `VITE_ENABLE_ANALYTICS` | `true` | Preview, Production |
-| `VITE_ENABLE_WEBSOCKET` | `true` | Preview, Production |
+| `VITE_API_BASE_URL` | `https://roguish-christee-cnemial.ngrok-free.dev/api` | Production, Preview |
+| `VITE_WEBSOCKET_URL` | `https://roguish-christee-cnemial.ngrok-free.dev/ws` | Production, Preview |
+| `VITE_ENABLE_WEBSOCKET` | `true` | Production, Preview |
+| `VITE_ENABLE_ANALYTICS` | `true` | Production, Preview |
+
+**Alternative:** set only `VITE_BACKEND_URL=https://roguish-christee-cnemial.ngrok-free.dev` and the app derives `/api` and `/ws`. **Redeploy** after changing env vars.
 
 ---
 

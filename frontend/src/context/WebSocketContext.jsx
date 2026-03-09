@@ -17,15 +17,18 @@ export const useWebSocket = () => {
  * Supports both local development and Vercel deployment
  */
 const getWebSocketURL = () => {
-    // Check environment variable first
     if (import.meta.env.VITE_WEBSOCKET_URL) {
         return import.meta.env.VITE_WEBSOCKET_URL;
     }
-
-    // Fallback: derive from API URL
+    // Single backend base (e.g. ngrok): derive /ws
+    const base = import.meta.env.VITE_BACKEND_URL;
+    if (base) {
+        const url = base.replace(/\/$/, '');
+        return `${url}/ws`;
+    }
     const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-    const baseUrl = apiUrl.replace('/api', '');
-    return baseUrl + '/ws';
+    const baseUrl = (apiUrl || '').replace(/\/api\/?$/, '') || 'http://localhost:8080';
+    return `${baseUrl}/ws`;
 };
 
 export const WebSocketProvider = ({ children }) => {

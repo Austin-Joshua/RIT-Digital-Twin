@@ -23,6 +23,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
@@ -69,15 +71,22 @@ public class SecurityConfig {
     }
 
     @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    private String allowedOriginsConfig;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Add localhost for local development support
-        java.util.List<String> combinedOrigins = new java.util.ArrayList<>(allowedOrigins);
-        combinedOrigins.add("http://localhost:5173");
-        combinedOrigins.add("http://127.0.0.1:5173");
+        // Parse comma-separated origins and add localhost for local development
+        List<String> combinedOrigins = Stream.of(allowedOriginsConfig.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+        if (!combinedOrigins.contains("http://localhost:5173")) {
+            combinedOrigins.add("http://localhost:5173");
+        }
+        if (!combinedOrigins.contains("http://127.0.0.1:5173")) {
+            combinedOrigins.add("http://127.0.0.1:5173");
+        }
 
         configuration.setAllowedOriginPatterns(combinedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

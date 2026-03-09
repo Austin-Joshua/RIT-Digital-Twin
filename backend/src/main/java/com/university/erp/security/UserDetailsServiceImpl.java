@@ -20,14 +20,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Loading user by identifier: {}", username);
-
-        // Handle shorthand notation
-        final String searchEmail = username.contains("@") ? username : username + "@ritchennai.edu.in";
-        final String searchUsername = username;
+        if (username == null || username.isBlank()) {
+            throw new UsernameNotFoundException("Username must not be empty");
+        }
+        String normalized = username.trim();
+        String lower = normalized.toLowerCase();
+        // Case-insensitive email lookup (DB stores lowercase)
+        final String searchEmail = normalized.contains("@") ? lower : lower + "@ritchennai.edu.in";
+        final String searchUsername = normalized;
 
         return userRepository.findByUsername(searchUsername)
+                .or(() -> userRepository.findByUsername(lower))
                 .or(() -> userRepository.findByEmail(searchEmail))
-                .or(() -> userRepository.findByEmail(searchUsername))
+                .or(() -> userRepository.findByEmail(normalized))
                 .map(user -> {
                     String roleName = user.getRole() != null && user.getRole().getRoleName() != null
                             ? user.getRole().getRoleName().name()
