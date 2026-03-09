@@ -7,7 +7,7 @@ import Button from '../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../context/ThemeContext';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import api from '../services/api';
+import api, { getBackendRootURL, getAPIBaseURL } from '../services/api';
 
 const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Temporary placeholder
 
@@ -28,9 +28,11 @@ const LoginPage = () => {
             timeoutId = setTimeout(() => controller.abort(), 4000);
 
             try {
-                const response = await fetch('http://localhost:8080/actuator/health', {
+                const healthUrl = `${getBackendRootURL()}/actuator/health`;
+                const response = await fetch(healthUrl, {
                     signal: controller.signal,
-                    mode: 'cors'
+                    mode: 'cors',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 if (response.ok) setBackendStatus('online');
                 else setBackendStatus('offline');
@@ -58,7 +60,7 @@ const LoginPage = () => {
         setError('');
         setLoading(true);
         try {
-            const result = await login(credentials.username.trim(), credentials.password);
+            const result = await login(credentials.username.trim(), (credentials.password || '').trim());
             if (result.success) {
                 const storedUser = JSON.parse(localStorage.getItem('user'));
                 const role = storedUser?.role;
@@ -152,6 +154,11 @@ const LoginPage = () => {
                         <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 
+                    {typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') && getAPIBaseURL().includes('localhost') && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ backgroundColor: 'rgba(234, 179, 8, 0.15)', color: 'var(--color-warning, #b45309)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', marginBottom: '12px', borderLeft: '4px solid #eab308' }}>
+                            Backend not connected. Set VITE_API_BASE_URL (and VITE_WEBSOCKET_URL) in Vercel → Settings → Environment Variables, then redeploy.
+                        </motion.div>
+                    )}
                     {error && (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}
@@ -172,12 +179,12 @@ const LoginPage = () => {
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <Input
-                            label="Username"
+                            label="Email or username"
                             type="text"
                             name="username"
                             value={credentials.username}
                             onChange={handleChange}
-                            placeholder="Enter your username"
+                            placeholder="e.g. admin@ritchennai.edu.in"
                             required
                         />
 

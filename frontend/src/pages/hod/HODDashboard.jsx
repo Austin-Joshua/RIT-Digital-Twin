@@ -10,7 +10,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import api from '../../services/api';
-import { FaChalkboardTeacher, FaUserGraduate, FaChartLine, FaExclamationTriangle, FaRankingStar } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaUserGraduate, FaChartLine, FaExclamationTriangle, FaStar } from 'react-icons/fa';
 
 const HODDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -521,7 +521,7 @@ const HODDashboard = () => {
       {/* Class rankings */}
       <section>
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FaRankingStar /> Class Ranking
+          <FaStar /> Class Ranking
         </h2>
         <div className="card" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>

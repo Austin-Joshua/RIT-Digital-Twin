@@ -23,8 +23,13 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (username, password) => {
+        const u = (username || '').trim();
+        const p = (password || '').trim();
+        if (!u || !p) {
+            return { success: false, message: 'Please enter both email/username and password.' };
+        }
         try {
-            const response = await api.post('/auth/login', { username, password });
+            const response = await api.post('/auth/login', { username: u, password: p });
             const { token, ...userData } = response.data;
 
             localStorage.setItem('token', token);
@@ -37,9 +42,15 @@ export const AuthProvider = ({ children }) => {
                 console.error("Error data:", error.response.data);
                 console.error("Error status:", error.response.status);
             }
-            const errorMessage = typeof error.response?.data === 'string'
-                ? error.response.data
-                : (error.response?.data?.message || 'Invalid username or password.');
+            let errorMessage = 'Invalid username or password.';
+            if (error.response?.data) {
+                const data = error.response.data;
+                if (typeof data === 'string') errorMessage = data;
+                else if (data.message) errorMessage = data.message;
+                else if (data.error) errorMessage = data.error;
+            } else if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+                errorMessage = 'Cannot reach server. Ensure the backend is running on port 8080.';
+            }
             return { success: false, message: errorMessage };
         }
     };

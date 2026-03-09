@@ -24,10 +24,14 @@ const LoginPage = () => {
 
         setLoading(true);
         try {
-            await login({ username, password });
-            navigate('/dashboard');
+            const result = await login(username.trim(), password);
+            if (result?.success) {
+                navigate('/dashboard');
+            } else {
+                setError(result?.message || 'Invalid credentials. Please try again.');
+            }
         } catch (err) {
-            setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+            setError(err.response?.data?.message || err.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }

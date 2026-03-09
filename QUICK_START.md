@@ -68,27 +68,30 @@ cd frontend
 
 ---
 
-## 🌐 VERCEL DEPLOYMENT
+## 🌐 VERCEL FRONTEND + LOCAL BACKEND
 
-### Step 1: Add Environment Variables
-In Vercel Dashboard → Settings → Environment Variables:
+To use your **deployed Vercel frontend** with your **local backend**:
 
-```
-VITE_API_BASE_URL=http://localhost:8080/api
-VITE_ENABLE_WEBSOCKET=true
-```
+1. **Expose local backend** with a tunnel (e.g. [ngrok](https://ngrok.com/download)):
+   ```powershell
+   # Start backend, then in another terminal:
+   ngrok http 8080
+   ```
+   Copy the **HTTPS** URL (e.g. `https://abc123.ngrok-free.app`).
 
-### Step 2: Deploy
-```bash
-git push origin main  # Auto-deploys to Vercel
-```
+2. **Vercel env vars** (Dashboard → Project → Settings → Environment Variables):
+   - `VITE_API_BASE_URL` = `https://YOUR_NGROK_URL/api`
+   - `VITE_WEBSOCKET_URL` = `https://YOUR_NGROK_URL/ws`
+   - `VITE_ENABLE_WEBSOCKET` = `true`
 
-### Step 3: Update Backend Endpoints
-Update your backend domain in environment:
-```powershell
-# In Docker or server
-$env:APP_CORS_ALLOWED_ORIGINS = "https://digital-twin-lemon.vercel.app"
-```
+3. **Redeploy** the Vercel project so the new URL is used.
+
+4. **Backend CORS** already allows `https://*.vercel.app`. To allow your exact Vercel URL as well, when starting the backend:
+   ```powershell
+   $env:APP_CORS_ALLOWED_ORIGINS = "http://localhost:5173,https://*.vercel.app,https://YOUR_VERCEL_APP.vercel.app"
+   ```
+
+Full steps and troubleshooting: see **DEPLOYMENT_GUIDE.md** (Part 2: Vercel + local backend).
 
 ---
 
