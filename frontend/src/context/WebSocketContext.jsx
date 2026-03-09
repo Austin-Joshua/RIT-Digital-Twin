@@ -20,11 +20,13 @@ const getWebSocketURL = () => {
     if (import.meta.env.VITE_WEBSOCKET_URL) {
         return import.meta.env.VITE_WEBSOCKET_URL;
     }
-    // Single backend base (e.g. ngrok): derive /ws
     const base = import.meta.env.VITE_BACKEND_URL;
     if (base) {
-        const url = base.replace(/\/$/, '');
-        return `${url}/ws`;
+        return base.replace(/\/$/, '') + '/ws';
+    }
+    // When on Vercel, use production backend so WebSocket connects
+    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+        return 'https://roguish-christee-cnemial.ngrok-free.dev/ws';
     }
     const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
     const baseUrl = (apiUrl || '').replace(/\/api\/?$/, '') || 'http://localhost:8080';

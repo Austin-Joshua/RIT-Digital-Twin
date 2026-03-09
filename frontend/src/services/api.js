@@ -21,16 +21,13 @@ const getAPIBaseURL = () => {
     return `${url}/api`;
   }
 
-  // Detect if running on Vercel or localhost
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host.includes('localhost') || host.includes('127.0.0.1')) {
-      return 'http://localhost:8080/api';
-    }
-    if (host.includes('vercel.app')) {
-      console.warn('[API] Set VITE_API_BASE_URL or VITE_BACKEND_URL in Vercel → Settings → Environment Variables');
-      return 'http://localhost:8080/api';
-    }
+  // When on Vercel, use production backend (so we don't depend on build env)
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://roguish-christee-cnemial.ngrok-free.dev/api';
+  }
+  // Local dev
+  if (typeof window !== 'undefined' && (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))) {
+    return 'http://localhost:8080/api';
   }
 
   return 'http://localhost:8080/api';
