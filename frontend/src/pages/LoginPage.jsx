@@ -154,16 +154,6 @@ const LoginPage = () => {
                         <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
                     </div>
 
-                    {typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') && getAPIBaseURL().includes('localhost') && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ backgroundColor: 'rgba(234, 179, 8, 0.15)', color: 'var(--color-warning, #b45309)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', marginBottom: '12px', borderLeft: '4px solid #eab308' }}>
-                            Backend not connected. Set VITE_API_BASE_URL (and VITE_WEBSOCKET_URL) in Vercel → Settings → Environment Variables, then redeploy.
-                        </motion.div>
-                    )}
-                    {typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') && backendStatus === 'offline' && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ backgroundColor: 'rgba(59, 130, 246, 0.12)', color: 'var(--theme-text)', padding: '12px 14px', borderRadius: '12px', fontSize: '0.8rem', marginBottom: '12px', borderLeft: '4px solid #3b82f6' }}>
-                            <strong>Backend OFFLINE.</strong> To connect: (1) In Vercel → Project → Settings → Environment Variables add <code style={{ fontSize: '0.75rem' }}>VITE_API_BASE_URL</code> = your backend URL + <code>/api</code> and <code>VITE_WEBSOCKET_URL</code> = backend URL + <code>/ws</code>. (2) Redeploy. (3) Keep your backend (and ngrok if used) running.
-                        </motion.div>
-                    )}
                     {error && (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}

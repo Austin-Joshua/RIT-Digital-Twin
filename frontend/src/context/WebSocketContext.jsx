@@ -13,20 +13,17 @@ export const useWebSocket = () => {
 };
 
 /**
- * Get WebSocket URL based on environment
- * Supports both local development and Vercel deployment
+ * Get WebSocket URL from env (Vercel → Environment Variables) or derive from API URL.
  */
 const getWebSocketURL = () => {
-    if (import.meta.env.VITE_WEBSOCKET_URL) {
-        return import.meta.env.VITE_WEBSOCKET_URL;
+    const wsEnv = import.meta.env.VITE_WEBSOCKET_URL;
+    if (wsEnv && typeof wsEnv === 'string' && wsEnv.trim()) {
+        const u = wsEnv.trim().replace(/\/+$/, '');
+        return u.endsWith('/ws') ? u : u + '/ws';
     }
     const base = import.meta.env.VITE_BACKEND_URL;
-    if (base) {
-        return base.replace(/\/$/, '') + '/ws';
-    }
-    // When on Vercel, use production backend so WebSocket connects
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-        return 'https://roguish-christee-cnemial.ngrok-free.dev/ws';
+    if (base && typeof base === 'string' && base.trim()) {
+        return base.trim().replace(/\/$/, '') + '/ws';
     }
     const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
     const baseUrl = (apiUrl || '').replace(/\/api\/?$/, '') || 'http://localhost:8080';

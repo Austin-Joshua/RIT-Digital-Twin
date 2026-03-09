@@ -2,34 +2,26 @@ import axios from 'axios';
 
 /**
  * API Service Configuration
- * Handles both local development and Vercel production environments
- * 
+ * Uses Vercel/env vars first so your backend URL is always from Environment Variables.
+ *
  * Priority:
- * 1. VITE_API_BASE_URL environment variable (set in .env.local or .env.production)
- * 2. Window location detection for Vercel (*.vercel.app)
- * 3. Default localhost for development
+ * 1. VITE_API_BASE_URL (set in Vercel → Settings → Environment Variables)
+ * 2. VITE_BACKEND_URL + /api
+ * 3. Local dev: localhost:8080
  */
 const getAPIBaseURL = () => {
-  // Explicit API URL (Vercel env or .env.production)
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const fromEnv = import.meta.env.VITE_API_BASE_URL;
+  if (fromEnv && typeof fromEnv === 'string' && fromEnv.trim()) {
+    const u = fromEnv.trim().replace(/\/+$/, '');
+    return u.endsWith('/api') ? u : u + '/api';
   }
-  // Single backend base URL: derive /api and /ws (e.g. VITE_BACKEND_URL for ngrok)
   const base = import.meta.env.VITE_BACKEND_URL;
-  if (base) {
-    const url = base.replace(/\/$/, '');
-    return `${url}/api`;
+  if (base && typeof base === 'string' && base.trim()) {
+    return base.trim().replace(/\/$/, '') + '/api';
   }
-
-  // When on Vercel, use production backend (so we don't depend on build env)
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return 'https://roguish-christee-cnemial.ngrok-free.dev/api';
-  }
-  // Local dev
   if (typeof window !== 'undefined' && (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))) {
     return 'http://localhost:8080/api';
   }
-
   return 'http://localhost:8080/api';
 };
 

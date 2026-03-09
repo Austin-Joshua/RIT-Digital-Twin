@@ -1,32 +1,49 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaLightbulb, FaBolt, FaChartBar, FaSearch } from 'react-icons/fa';
+import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaBolt, FaChartBar, FaSearch } from 'react-icons/fa';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+
+// Render bot text with newlines so answers are readable and high-contrast
+const MessageContent = ({ text }) => {
+    const s = (text || '').trim();
+    if (!s) return null;
+    const parts = s.split(/\n/).filter(Boolean);
+    if (parts.length <= 1) return <span>{s}</span>;
+    return (
+        <span>
+            {parts.map((line, i) => (
+                <span key={i} style={{ display: 'block', marginTop: i > 0 ? 6 : 0 }}>
+                    {line}
+                </span>
+            ))}
+        </span>
+    );
+};
 
 const ChatbotWidget = ({ studentId }) => {
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState([
-        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT Global AI Assistant. How can I help you in your ${(user?.role === 'ADMIN' ? 'Admin' : user?.role) || 'STUDENT'} role today?`, isBot: true }
+        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT AI Assistant. Ask about attendance, grades, exams, transport, library, or outpass — or use the quick actions below.`, isBot: true }
     ]);
     const [input, setInput] = useState('');
 
     const getSuggestions = () => {
         const role = user?.role || 'STUDENT';
         if (role === 'FACULTY' || role === 'HOD') {
-            const facultySugs = ["Check Attendance Trends", "Pending Leave OD", "Research Citation Audit"];
-            if (role === 'HOD') facultySugs.push("Dept Risk Heatmap");
+            const facultySugs = ["Pending grading", "Leave approvals", "Proctor wards", "Department performance"];
+            if (role === 'HOD') facultySugs.push("Faculty load allocation");
             return facultySugs;
         }
         if (role === 'PARENT') {
-            return ["Academic Forecast", "Fee Dues", "Schedule Meeting", "Attendance Pulse"];
+            return ["Ward attendance", "Fee dues", "Schedule meeting", "Academic forecast"];
         }
         if (role === 'ADMIN') {
-            return ["Energy Audit", "Campus Sentiment", "System Health", "Broadcast Alert"];
+            return ["Energy audit", "Broadcast alert", "System health", "Campus overview"];
         }
-        return ["Attendance Report", "CGPA Simulator", "Exam Hall Info", "Digital Outpass"];
+        return ["My attendance", "CGPA / grades", "Exam schedule", "Transport routes", "Library / Outpass"];
     };
 
     const handleSend = async (queryText = input) => {
@@ -70,17 +87,17 @@ const ChatbotWidget = ({ studentId }) => {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="bg-white/95 dark:bg-navy-800/95 border border-white/20 dark:border-navy-700/50"
                         style={{
                             width: '380px',
                             height: '550px',
                             borderRadius: '24px',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
                             marginBottom: '16px',
-                            backdropFilter: 'blur(15px)'
+                            background: '#f8fafc',
+                            border: '1px solid #94a3b8'
                         }}
                     >
                         {/* Premium Header */}
@@ -100,34 +117,43 @@ const ChatbotWidget = ({ studentId }) => {
                             </div>
                         </div>
 
-                        {/* Search/Command Bar */}
-                        <div style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.03)', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FaSearch size={12} color="var(--theme-text-muted)" />
+                        {/* Search/Command Bar - same as main input for quick commands */}
+                        <div style={{ padding: '8px 16px', background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaSearch size={12} style={{ color: '#475569' }} />
                             <input
-                                placeholder="Search commands or ask AI..."
-                                style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '12px', flex: 1, color: 'var(--theme-text)' }}
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                placeholder="Search or ask (e.g. my attendance, exam schedule)..."
+                                style={{ background: '#fff', border: '1px solid #94a3b8', borderRadius: 8, outline: 'none', fontSize: 13, flex: 1, color: '#1e293b', padding: '8px 12px' }}
                             />
                         </div>
 
-                        {/* Messages */}
-                        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {/* Messages - high contrast: bot = light bg + dark text, user = dark bg + white */}
+                        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', background: '#f8fafc' }}>
                             {messages.map((msg, i) => (
                                 <div key={i} style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
-                                    <div className={msg.isBot ? "bg-gray-100 dark:bg-navy-700 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-navy-600" : "bg-navy-900 text-white"} style={{
-                                        padding: '12px 16px',
-                                        borderRadius: msg.isBot ? '2px 16px 16px 16px' : '16px 16px 2px 16px',
-                                        fontSize: '0.9rem',
-                                        fontWeight: '500',
-                                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-                                        lineHeight: '1.5'
-                                    }}>
-                                        {msg.text}
+                                    <div
+                                        style={{
+                                            padding: '12px 16px',
+                                            borderRadius: msg.isBot ? '2px 16px 16px 16px' : '16px 16px 2px 16px',
+                                            fontSize: '0.9rem',
+                                            fontWeight: '500',
+                                            lineHeight: 1.55,
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                            ...(msg.isBot
+                                                ? { background: '#ffffff', color: '#1a1a1a', border: '1px solid #cbd5e1' }
+                                                : { background: '#0B2C6B', color: '#ffffff', border: '1px solid #0B2C6B' }
+                                            )
+                                        }}
+                                    >
+                                        {msg.isBot ? <MessageContent text={msg.text} /> : msg.text}
                                     </div>
                                     {msg.action && (
                                         <button style={{
                                             marginTop: '8px', width: '100%', padding: '8px', borderRadius: '10px',
                                             background: msg.action.color, color: 'white', border: 'none',
-                                            fontWeight: '800', fontSize: '11px', textTransform: 'uppercase',
+                                            fontWeight: '700', fontSize: '11px', textTransform: 'uppercase',
                                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                                         }}>
                                             <FaBolt size={10} /> {msg.action.label}
@@ -136,14 +162,14 @@ const ChatbotWidget = ({ studentId }) => {
                                 </div>
                             ))}
                             {isTyping && (
-                                <div style={{ alignSelf: 'flex-start', background: 'var(--theme-bg-muted)', padding: '12px 16px', borderRadius: '2px 16px 16px 16px', border: '1px solid var(--theme-border)' }}>
-                                    <div style={{ display: 'flex', gap: '5px' }}>
-                                        {[0, 1, 2].map(i => (
+                                <div style={{ alignSelf: 'flex-start', background: '#ffffff', color: '#1a1a1a', padding: '12px 16px', borderRadius: '2px 16px 16px 16px', border: '1px solid #cbd5e1' }}>
+                                    <div style={{ display: 'flex', gap: 5 }}>
+                                        {[0, 1, 2].map(j => (
                                             <motion.div
-                                                key={i}
+                                                key={j}
                                                 animate={{ y: [0, -5, 0] }}
-                                                transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
-                                                style={{ width: '5px', height: '5px', background: 'var(--theme-text-muted)', borderRadius: '50%' }}
+                                                transition={{ repeat: Infinity, duration: 0.6, delay: j * 0.1 }}
+                                                style={{ width: 6, height: 6, background: '#64748b', borderRadius: '50%' }}
                                             />
                                         ))}
                                     </div>
@@ -151,41 +177,43 @@ const ChatbotWidget = ({ studentId }) => {
                             )}
                         </div>
 
-                        {/* Quick Action Suggestions */}
-                        <div style={{ padding: '0 20px 15px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {/* Quick Action Suggestions - high contrast */}
+                        <div style={{ padding: '0 20px 15px', display: 'flex', flexWrap: 'wrap', gap: '8px', background: '#f1f5f9', borderTop: '1px solid #cbd5e1' }}>
                             {getSuggestions().map(sug => (
                                 <button
                                     key={sug}
                                     onClick={() => handleSend(sug)}
                                     style={{
-                                        padding: '6px 14px', borderRadius: '30px',
-                                        fontSize: '11px',
-                                        fontWeight: '700', cursor: 'pointer', transition: '0.2s',
-                                        display: 'flex', alignItems: 'center', gap: '6px'
+                                        padding: '8px 14px', borderRadius: '20px',
+                                        fontSize: '12px',
+                                        fontWeight: '600', cursor: 'pointer', transition: '0.2s',
+                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                        background: '#ffffff', color: '#0B2C6B', border: '1px solid #0B2C6B'
                                     }}
-                                    className="bg-gray-100 dark:bg-navy-700 text-gray-800 dark:text-white border border-gray-200 dark:border-navy-600 hover:bg-gold-500 hover:text-navy-900 dark:hover:bg-gold-500 dark:hover:text-navy-900"
                                 >
                                     <FaBolt size={10} /> {sug}
                                 </button>
                             ))}
                         </div>
 
-                        {/* Footer Input */}
-                        <div style={{ padding: '16px 20px', background: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--theme-border)', display: 'flex', gap: '10px' }}>
+                        {/* Footer Input - high contrast */}
+                        <div style={{ padding: '16px 20px', background: '#e2e8f0', borderTop: '1px solid #94a3b8', display: 'flex', gap: '10px' }}>
                             <div style={{ flex: 1, position: 'relative' }}>
                                 <input
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Execute neural query..."
-                                    className="bg-gray-50 dark:bg-navy-900 border border-gray-200 dark:border-navy-600 text-gray-800 dark:text-white"
-                                    style={{ width: '100%', borderRadius: '12px', padding: '12px 15px', outline: 'none', fontSize: '14px', fontWeight: '600' }}
+                                    placeholder="Ask: attendance, grades, exam, transport..."
+                                    style={{
+                                        width: '100%', borderRadius: 12, padding: '12px 15px', outline: 'none', fontSize: 14, fontWeight: 500,
+                                        background: '#ffffff', color: '#1a1a1a', border: '1px solid #64748b'
+                                    }}
                                 />
-                                <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-                                    <FaChartBar size={14} color="#0B2C6B" opacity={0.3} />
+                                <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)' }}>
+                                    <FaChartBar size={14} style={{ color: '#64748b' }} />
                                 </div>
                             </div>
-                            <button onClick={() => handleSend()} style={{ background: '#0B2C6B', color: 'white', border: 'none', borderRadius: '12px', width: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 15px rgba(11,44,107,0.3)' }}>
+                            <button onClick={() => handleSend()} style={{ background: '#0B2C6B', color: '#fff', border: 'none', borderRadius: 12, width: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(11,44,107,0.35)' }}>
                                 <FaPaperPlane />
                             </button>
                         </div>
