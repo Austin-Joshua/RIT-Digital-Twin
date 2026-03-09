@@ -22,6 +22,7 @@ const parentNav = [
 const LG_BREAKPOINT = 1024;
 const ParentLayout = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
@@ -50,7 +51,7 @@ const ParentLayout = () => {
 
     const handleLogout = () => {
         logout();
-        window.location.href = '/login';
+        navigate('/login', { replace: true });
     };
 
     const displayName = `PARENT: ${user?.firstName || 'GUARDIAN'}`.toUpperCase();

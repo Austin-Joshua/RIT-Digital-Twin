@@ -50,7 +50,16 @@ const HODLayout = () => {
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/login';
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', '/login');
+    }
+    // use client-side navigation when possible to avoid full reload 404 on Vercel
+    try {
+      // lazy import to avoid adding useNavigate here; <ProtectedRoute> will also redirect unauthenticated users
+      window.location.assign('/login');
+    } catch {
+      window.location.href = '/login';
+    }
   };
 
   const displayName = user?.firstName && user?.lastName
