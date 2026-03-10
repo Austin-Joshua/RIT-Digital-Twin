@@ -84,16 +84,16 @@ const AcademicFee = () => {
                         </h3>
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between border-b border-gray-100 dark:border-navy-800 pb-2">
-                                <span className="text-slate-700 dark:text-slate-300">Degree</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-100">B.Tech IT</span>
+                                <span className="text-slate-800 dark:text-slate-200 font-semibold">Degree</span>
+                                <span className="font-bold text-slate-900 dark:text-white">B.Tech IT</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-100 dark:border-navy-800 pb-2">
-                                <span className="text-slate-700 dark:text-slate-300">Admission Yr</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-100">2022</span>
+                                <span className="text-slate-800 dark:text-slate-200 font-semibold">Admission Yr</span>
+                                <span className="font-bold text-slate-900 dark:text-white">2022</span>
                             </div>
                             <div className="flex justify-between pb-2">
-                                <span className="text-slate-700 dark:text-slate-300">Quota</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-100">Management</span>
+                                <span className="text-slate-800 dark:text-slate-200 font-semibold">Quota</span>
+                                <span className="font-bold text-slate-900 dark:text-white">Management</span>
                             </div>
                         </div>
                     </div>
@@ -118,16 +118,19 @@ const AcademicFee = () => {
                                 </thead>
                                 <tbody className="text-sm">
                                     {feeDetails.map((fee, idx) => (
-                                        <tr key={idx} className="border-b border-gray-100 dark:border-navy-800 even:bg-slate-50 dark:even:bg-navy-900/40 hover:bg-slate-100 dark:hover:bg-navy-900 transition-colors">
+                                        <tr
+                                            key={idx}
+                                            className="border-b border-slate-200 dark:border-navy-800 bg-white dark:bg-navy-900 hover:bg-slate-50 dark:hover:bg-navy-900/70 transition-colors"
+                                        >
                                             <td className="p-4 font-semibold text-slate-900 dark:text-slate-50">
                                                 {fee.label}
                                                 {!fee.required && (
-                                                    <span className="ml-2 text-[9px] bg-slate-200 dark:bg-navy-700 text-slate-700 dark:text-slate-100 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                                    <span className="ml-2 text-[9px] bg-slate-200 dark:bg-navy-700 text-slate-800 dark:text-slate-100 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
                                                         Optional
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="p-4 text-slate-700 dark:text-slate-300 font-medium">Recurring</td>
+                                            <td className="p-4 text-slate-800 dark:text-slate-300 font-medium">Recurring</td>
                                             <td className="p-4 font-mono text-right text-slate-900 dark:text-slate-50 font-black">
                                                 {fee.amount.toLocaleString('en-IN')}
                                             </td>
