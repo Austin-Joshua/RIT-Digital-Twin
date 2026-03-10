@@ -298,16 +298,16 @@ const ParentDashboard = () => {
                         {/* Marks Summary Column */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* CAT Marks Card */}
-                            <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-navy-700">
+                            <div className="bg-slate-50 dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-navy-700">
                                 <h4 className="text-lg font-black text-navy-900 dark:text-white flex items-center gap-3 mb-6">
                                     <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600"><FaFileAlt /></div>
                                     CAT Performance
                                 </h4>
                                 <div className="space-y-4">
                                     {student.marks.cat.map((m, i) => (
-                                        <div key={i} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-navy-900 rounded-2xl border border-gray-100 dark:border-navy-700">
-                                            <span className="font-bold text-gray-700 dark:text-blue-200">{m.subject}</span>
-                                            <span className="font-black text-navy-900 dark:text-white">{m.score} / {m.max}</span>
+                                        <div key={i} className="flex justify-between items-center p-4 bg-white dark:bg-navy-900 rounded-2xl border border-slate-200 dark:border-navy-700">
+                                            <span className="font-semibold text-slate-800 dark:text-blue-100">{m.subject}</span>
+                                            <span className="font-extrabold text-navy-900 dark:text-white">{m.score} / {m.max}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -315,7 +315,7 @@ const ParentDashboard = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Assignment Marks */}
-                                <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-navy-700">
+                                <div className="bg-slate-50 dark:bg-navy-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-navy-700">
                                     <h4 className="text-base font-black text-navy-900 dark:text-white flex items-center gap-2 mb-4 text-emerald-600">
                                         <FaMedal /> Assignments
                                     </h4>
@@ -373,7 +373,7 @@ const ParentDashboard = () => {
 
                             <button
                                 onClick={() => handleCardClick("Detailed Analytics", "Extended performance tracking and historical trends are currently being aggregated for the mid-term review.")}
-                                className="w-full bg-white dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-navy-600 text-slate-700 dark:text-slate-200 font-bold hover:border-gold-500 transition-colors flex items-center justify-center gap-2"
+                                className="w-full bg-slate-50 dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-navy-600 text-slate-800 dark:text-slate-100 font-bold hover:border-gold-500 transition-colors flex items-center justify-center gap-2"
                             >
                                 <FaChartIcon /> Detailed performance stats
                             </button>
