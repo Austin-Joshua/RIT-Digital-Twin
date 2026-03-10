@@ -251,174 +251,118 @@ const ParentDashboard = () => {
         setSelectedDetail({ title, content });
     };
 
+    const primary = students[0] || generateMockStudents()[0];
+
+    const kpis = [
+        { id: 'cgpa', label: 'Current CGPA', value: primary.currentCgpa.toFixed(2), color: 'green', icon: <FaChartIcon /> },
+        { id: 'attendance', label: 'Overall Attendance', value: `${primary.attendance}%`, color: 'teal', icon: <FaCalendarAlt /> },
+        { id: 'cat', label: 'CAT Avg (Mock)', value: '45 / 50', color: 'blue', icon: <FaFileAlt /> },
+        { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild /> },
+    ];
+
     return (
-        <div
-            className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto"
-            style={{
-                color: 'var(--theme-text)',
-                background: 'var(--page-bg, var(--theme-bg-muted))'
-            }}
-        >
+        <div className="stu-dashboard">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1
-                        className="text-3xl font-black flex items-center gap-3"
-                        style={{ color: 'var(--theme-text)' }}
-                    >
-                        <FaHandshake className="text-blue-600 dark:text-gold-500" /> Parent Portal
-                    </h1>
-                    <p className="mt-1 font-medium" style={{ color: 'var(--theme-text-muted)' }}>
-                        Celebrating and monitoring your child's academic journey at RIT.
-                    </p>
-                </div>
-                <div className="flex items-center gap-3">
+            {/* Parent header */}
+            <div className="stu-welcome" style={{ marginBottom: 20 }}>
+                <h2 style={{ margin: 0 }}>Parent Guardian Overview</h2>
+                <p style={{ marginTop: 6, color: 'var(--theme-text-muted)' }}>
+                    Linked student: <strong>{primary.user.firstName} {primary.user.lastName}</strong> ({primary.studentIdNumber})
+                </p>
+            </div>
+
+            {/* KPI strip – mirror student mode styling */}
+            <div className="stu-kpi-row">
+                {kpis.map((kpi) => (
                     <div
-                        className="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm"
-                        style={{
-                            background: 'var(--color-success-soft, rgba(16,185,129,0.12))',
-                            color: 'var(--color-success, #047857)',
-                            border: '1px solid rgba(16,185,129,0.25)'
-                        }}
+                        key={kpi.id}
+                        className={`stu-kpi-card ${kpi.color}`}
+                        style={{ cursor: 'default' }}
                     >
-                        Institutional Access Verified
+                        <div className="kpi-main">
+                            <h3 className="kpi-value">{kpi.value}</h3>
+                            <p className="kpi-label">{kpi.label}</p>
+                        </div>
+                        <div className="kpi-icon">
+                            {kpi.icon}
+                        </div>
+                        <div className="kpi-more">
+                            Snapshot for this semester
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Academic + AI insights row */}
+            <div className="stu-info-row">
+                <div className="stu-info-card">
+                    <div className="info-header">
+                        Academic Snapshot – CAT & Assignments
+                    </div>
+                    <div className="info-body">
+                        <div className="stu-data-table-wrapper">
+                            <table className="stu-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Component</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {primary.marks.cat.map((m, idx) => (
+                                        <tr key={`cat-${idx}`}>
+                                            <td>{m.subject}</td>
+                                            <td>CAT</td>
+                                            <td className="text-right font-bold">{m.score} / {m.max}</td>
+                                        </tr>
+                                    ))}
+                                    {primary.marks.assignments.map((m, idx) => (
+                                        <tr key={`assg-${idx}`}>
+                                            <td>{m.subject}</td>
+                                            <td>Assignments</td>
+                                            <td className="text-right font-bold">{m.score} / {m.max}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="stu-info-card">
+                    <div className="info-header">
+                        RIT AI Wisdom – Parent
+                    </div>
+                    <div className="info-body">
+                        <AIInsightPanel role="PARENT" />
                     </div>
                 </div>
             </div>
 
-            {students.map(student => (
-                <div key={student.id} className="space-y-6">
-                    {/* Compact Header */}
-                    <div className="card p-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 rounded-2xl flex items-center justify-center text-2xl shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform">
-                                <FaChild />
-                            </div>
-                            <div>
-                                <h3
-                                    className="text-2xl font-black m-0"
-                                    style={{ color: 'var(--theme-text)' }}
-                                >
-                                    {student.user.firstName} {student.user.lastName}
-                                </h3>
-                                <p
-                                    className="text-sm font-bold m-0 uppercase tracking-widest"
-                                    style={{ color: 'var(--theme-text-muted)' }}
-                                >
-                                    {student.studentIdNumber} • CSE-A • Year 3
-                                </p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 md:gap-4 w-full md:w-auto">
-                            <div className="text-center px-4 md:px-6 py-3 rounded-2xl border shadow-md" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                                <div className="text-[10px] font-black uppercase mb-1" style={{ color: 'var(--theme-text-muted)' }}>Current CGPA</div>
-                                <div className="text-xl md:text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
-                            </div>
-                            <div className="text-center px-4 md:px-6 py-3 rounded-2xl border shadow-md" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
-                                <div className="text-[10px] font-black uppercase mb-1" style={{ color: 'var(--theme-text-muted)' }}>Attendance</div>
-                                <div className="text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
-                            </div>
-                        </div>
+            {/* Semester highlights reused but slimmer */}
+            <div className="stu-info-row">
+                <div className="stu-info-card" style={{ borderTopColor: '#0B2C6B' }}>
+                    <div className="info-header flex items-center gap-2">
+                        <FaStar style={{ color: '#D4AF37' }} /> Semester Highlights
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Marks Summary Column */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* CAT Marks Card */}
-                            <div className="card rounded-3xl p-6 shadow-md">
-                                <h4
-                                    className="text-lg font-black flex items-center gap-3 mb-6"
-                                    style={{ color: 'var(--theme-text)' }}
+                    <div className="info-body">
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                            {primary.marks.semester.map((m, idx) => (
+                                <li
+                                    key={idx}
+                                    style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14 }}
                                 >
-                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600"><FaFileAlt /></div>
-                                    CAT Performance
-                                </h4>
-                                <div className="space-y-4">
-                                    {student.marks.cat.map((m, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex justify-between items-center p-4 rounded-2xl border"
-                                            style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}
-                                        >
-                                            <span className="font-semibold" style={{ color: 'var(--theme-text)' }}>{m.subject}</span>
-                                            <span className="font-extrabold" style={{ color: 'var(--theme-text)' }}>{m.score} / {m.max}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Assignment Marks */}
-                                <div className="card rounded-3xl p-6 shadow-md">
-                                    <h4
-                                        className="text-base font-black flex items-center gap-2 mb-4 text-emerald-600"
-                                        style={{ color: 'var(--theme-text)' }}
-                                    >
-                                        <FaMedal /> Assignments
-                                    </h4>
-                                    <div className="space-y-3">
-                                        {student.marks.assignments.map((m, i) => (
-                                            <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="font-medium" style={{ color: 'var(--theme-text)' }}>{m.subject}</span>
-                                                <span className="font-bold" style={{ color: 'var(--theme-text)' }}>{m.score}/20</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Semester Results */}
-                                <div className="bg-navy-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                                    <div className="absolute -right-4 -bottom-4 opacity-10 rotate-12">
-                                        <FaTrophy size={100} />
-                                    </div>
-                                    <h4 className="text-base font-black flex items-center gap-2 mb-4 text-gold-400">
-                                        <FaStar /> Semester Highlights
-                                    </h4>
-                                    <div className="space-y-3">
-                                        {student.marks.semester.map((m, i) => (
-                                            <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="font-semibold text-white">{m.subject}</span>
-                                                <span className="font-black text-gold-300">{m.grade}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Insights & Positive Trajectory Column */}
-                        <div className="lg:col-span-1 space-y-6">
-                            <AIInsightPanel role="PARENT" />
-
-                            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
-                                <h4 className="font-black flex items-center gap-2 mb-4 text-blue-200 uppercase text-xs tracking-widest">
-                                    <FaMagic className="animate-pulse" /> Growth Perspective
-                                </h4>
-                                <div className="space-y-4">
-                                    <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-md">
-                                        <div className="text-xs opacity-70 mb-1">Success Index</div>
-                                        <div className="text-2xl font-black">95.4%</div>
-                                        <div className="w-full bg-white/20 h-1 rounded-full mt-2">
-                                            <div className="bg-gold-400 h-full w-[95%]" />
-                                        </div>
-                                    </div>
-                                    <p className="text-xs leading-relaxed italic opacity-90">
-                                        "Excellent consistency in lab performance. Ram's focus on practical application is a key strength this semester."
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() => handleCardClick("Detailed Analytics", "Extended performance tracking and historical trends are currently being aggregated for the mid-term review.")}
-                                className="w-full py-4 rounded-2xl border text-sm font-bold shadow-sm flex items-center justify-center gap-2 bg-slate-100 dark:bg-navy-800 border-slate-500 dark:border-navy-400 text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-navy-700 hover:border-gold-500 transition-colors"
-                            >
-                                <FaChartIcon /> Detailed performance stats
-                            </button>
-                        </div>
+                                    <span>{m.subject}</span>
+                                    <span style={{ fontWeight: 800, color: '#0B2C6B' }}>{m.grade}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
-            ))}
+            </div>
+
             <ChatbotWidget />
         </div>
     );
