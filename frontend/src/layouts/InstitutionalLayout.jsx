@@ -66,11 +66,11 @@ const InstitutionalLayout = () => {
         };
     }, [addToast]);
 
+    const navigate = useNavigate();
+
     const handleLogout = () => {
         logout();
-        if (typeof window !== 'undefined') {
-            window.location.assign('/login');
-        }
+        navigate('/login', { replace: true });
     };
 
     const displayName = user?.firstName && user?.lastName
