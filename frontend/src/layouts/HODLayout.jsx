@@ -1,6 +1,6 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, Outlet, NavLink } from 'react-router-dom';
+import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
@@ -24,6 +24,7 @@ const hodNavItems = [
 
 const HODLayout = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -50,16 +51,7 @@ const HODLayout = () => {
 
   const handleLogout = () => {
     logout();
-    if (typeof window !== 'undefined') {
-      window.history.replaceState(null, '', '/login');
-    }
-    // use client-side navigation when possible to avoid full reload 404 on Vercel
-    try {
-      // lazy import to avoid adding useNavigate here; <ProtectedRoute> will also redirect unauthenticated users
-      window.location.assign('/login');
-    } catch {
-      window.location.href = '/login';
-    }
+    navigate('/login', { replace: true });
   };
 
   const displayName = user?.firstName && user?.lastName
