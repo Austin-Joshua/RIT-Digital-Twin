@@ -78,22 +78,22 @@ const AcademicFee = () => {
                     </div>
 
                     {/* Student Info */}
-                    <div className="card border border-gray-100 dark:border-navy-700">
+                    <div className="card border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-900 shadow-sm">
                         <h3 className="font-bold text-navy-900 dark:text-white mb-4 flex items-center gap-2">
                             <FaBuilding className="text-gray-400" /> Account Owner
                         </h3>
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between border-b border-gray-100 dark:border-navy-800 pb-2">
-                                <span className="text-gray-500">Degree</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-200">B.Tech IT</span>
+                                <span className="text-slate-700 dark:text-slate-300">Degree</span>
+                                <span className="font-bold text-navy-900 dark:text-gray-100">B.Tech IT</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-100 dark:border-navy-800 pb-2">
-                                <span className="text-gray-500">Admission Yr</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-200">2022</span>
+                                <span className="text-slate-700 dark:text-slate-300">Admission Yr</span>
+                                <span className="font-bold text-navy-900 dark:text-gray-100">2022</span>
                             </div>
                             <div className="flex justify-between pb-2">
-                                <span className="text-gray-500">Quota</span>
-                                <span className="font-bold text-navy-900 dark:text-gray-200">Management</span>
+                                <span className="text-slate-700 dark:text-slate-300">Quota</span>
+                                <span className="font-bold text-navy-900 dark:text-gray-100">Management</span>
                             </div>
                         </div>
                     </div>

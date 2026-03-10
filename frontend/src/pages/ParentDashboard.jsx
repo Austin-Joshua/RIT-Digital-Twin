@@ -378,7 +378,7 @@ const ParentDashboard = () => {
                                     <div className="space-y-3">
                                         {student.marks.semester.map((m, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="opacity-80 font-medium">{m.subject}</span>
+                                                <span className="font-semibold text-blue-100">{m.subject}</span>
                                                 <span className="font-black text-gold-400">{m.grade}</span>
                                             </div>
                                         ))}
@@ -411,7 +411,7 @@ const ParentDashboard = () => {
 
                             <button
                                 onClick={() => handleCardClick("Detailed Analytics", "Extended performance tracking and historical trends are currently being aggregated for the mid-term review.")}
-                                className="w-full bg-white dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-slate-400 dark:border-navy-500 text-slate-900 dark:text-slate-100 font-bold hover:border-gold-500 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors flex items-center justify-center gap-2"
+                                className="w-full py-4 rounded-2xl border text-sm font-bold shadow-sm flex items-center justify-center gap-2 bg-slate-100 dark:bg-navy-800 border-slate-500 dark:border-navy-400 text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-navy-700 hover:border-gold-500 transition-colors"
                             >
                                 <FaChartIcon /> Detailed performance stats
                             </button>
