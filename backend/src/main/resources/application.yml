@@ -1,3 +1,6 @@
+# SQL directory: project root 'database/' (schema.sql, seed-data.sql) or classpath schema/data
+app.sql.directory: ${APP_SQL_DIRECTORY:database}
+
 spring:
   application:
     name: rit-university-erp
