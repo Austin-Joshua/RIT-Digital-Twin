@@ -62,14 +62,12 @@ const LoginPage = () => {
         try {
             const result = await login(credentials.username.trim(), (credentials.password || '').trim());
             if (result.success) {
-                const storedUser = JSON.parse(localStorage.getItem('user'));
-                const role = storedUser?.role;
-                const normalizedRole = role?.replace('ROLE_', '').replace(/_/g, '').toUpperCase();
+                const normalizedRole = (result.role || '').replace('ROLE_', '').replace(/_/g, '').toUpperCase();
 
-                if (normalizedRole === 'STUDENT') window.location.href = '/student';
-                else if (normalizedRole === 'PARENT') window.location.href = '/parent';
-                else if (normalizedRole === 'HOD') window.location.href = '/hod';
-                else window.location.href = '/';
+                if (normalizedRole === 'STUDENT') navigate('/student', { replace: true });
+                else if (normalizedRole === 'PARENT') navigate('/parent', { replace: true });
+                else if (normalizedRole === 'HOD') navigate('/hod', { replace: true });
+                else navigate('/', { replace: true });
             } else {
                 setError(result.message || 'Invalid username or password.');
             }
@@ -86,14 +84,12 @@ const LoginPage = () => {
         try {
             const result = await googleLogin(credentialResponse.credential);
             if (result.success) {
-                const storedUser = JSON.parse(localStorage.getItem('user'));
-                const role = storedUser?.role;
-                const normalizedRole = role?.replace('ROLE_', '').replace(/_/g, '').toUpperCase();
+                const normalizedRole = (result.role || '').replace('ROLE_', '').replace(/_/g, '').toUpperCase();
 
-                if (normalizedRole === 'STUDENT') window.location.href = '/student';
-                else if (normalizedRole === 'PARENT') window.location.href = '/parent';
-                else if (normalizedRole === 'HOD') window.location.href = '/hod';
-                else window.location.href = '/';
+                if (normalizedRole === 'STUDENT') navigate('/student', { replace: true });
+                else if (normalizedRole === 'PARENT') navigate('/parent', { replace: true });
+                else if (normalizedRole === 'HOD') navigate('/hod', { replace: true });
+                else navigate('/', { replace: true });
             } else {
                 setError(result.message);
             }
