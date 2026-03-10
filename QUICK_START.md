@@ -119,6 +119,50 @@ Full steps and troubleshooting: see **DEPLOYMENT_GUIDE.md** (Part 2: Vercel + lo
 
 ---
 
+## ☁️ Verifying Aiven Database (MySQL in Aiven)
+
+To confirm your database is stored and reachable on **Aiven**:
+
+### 1. Use Aiven connection in `.env`
+
+Set these in your project `.env` (get values from [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**):
+
+```env
+SPRING_DATASOURCE_URL=jdbc:mysql://<host>:<port>/<database>?ssl-mode=REQUIRED
+SPRING_DATASOURCE_USERNAME=<service_username>
+SPRING_DATASOURCE_PASSWORD=<service_password>
+SPRING_PROFILES_ACTIVE=prod
+```
+
+Use the **JDBC/URI** or host, port, and database name from Aiven. Enable SSL as Aiven requires it.
+
+### 2. Check from the backend
+
+1. Start the backend with the Aiven `.env` (or export those variables).
+2. Open: **http://localhost:8080/actuator/health**
+3. If the database is reachable, you should see something like `"status":"UP"` and often a `db` entry with status UP.
+
+If the backend fails to start or health shows DOWN, the app is not connecting to Aiven (check URL, user, password, SSL, and firewall/allowlist).
+
+### 3. Check in Aiven Console
+
+- **Service → Overview:** Service status should be **Running**.
+- **Metrics:** Check **Disk usage** and **Connections** to confirm storage and that the app is connecting.
+- **Backups:** If enabled, confirm backups are listed and recent (data is stored and backed up).
+
+### 4. Check from MySQL client (optional)
+
+From Aiven Console, copy the **MySQL connection string** (or host, port, user, password). Then:
+
+```powershell
+# If you have MySQL client installed; use the host, user, and password from Aiven
+mysql -h <aiven-host> -P <port> -u <username> -p <database_name> -e "SELECT 1; SHOW TABLES;"
+```
+
+If this connects and shows tables, data is stored and accessible on Aiven.
+
+---
+
 ## 🔒 Key Configurations
 
 ### Backend Port
@@ -174,17 +218,7 @@ Allowed Origins: [
 
 ## 📚 Full Documentation
 
-For complete details, see: **`IMPROVEMENTS_REPORT.md`**
-
-Topics covered:
-- Backend configuration details
-- Vercel pipeline setup
-- Color palette specifications
-- Responsive breakpoints
-- Data flow architecture
-- Security & CORS
-- Testing checklist
-- Performance metrics
+See **README.md** and **DEPLOYMENT_GUIDE.md** (if present) for backend configuration, Vercel setup, and deployment.
 
 ---
 
