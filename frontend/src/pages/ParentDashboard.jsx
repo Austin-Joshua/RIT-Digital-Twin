@@ -252,7 +252,7 @@ const ParentDashboard = () => {
     };
 
     return (
-        <div className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
+        <div className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto text-slate-900 dark:text-slate-100">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -284,11 +284,11 @@ const ParentDashboard = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-3 md:gap-4 w-full md:w-auto">
                             <div className="text-center bg-slate-50 dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-200 dark:border-navy-700 shadow-sm">
-                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Current CGPA</div>
+                                <div className="text-[10px] font-black text-slate-500 dark:text-slate-300 uppercase mb-1">Current CGPA</div>
                                 <div className="text-xl md:text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
                             </div>
                             <div className="text-center bg-slate-50 dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-200 dark:border-navy-700 shadow-sm">
-                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Attendance</div>
+                                <div className="text-[10px] font-black text-slate-500 dark:text-slate-300 uppercase mb-1">Attendance</div>
                                 <div className="text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
                             </div>
                         </div>
@@ -322,7 +322,7 @@ const ParentDashboard = () => {
                                     <div className="space-y-3">
                                         {student.marks.assignments.map((m, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="text-gray-500 font-medium">{m.subject}</span>
+                                                <span className="text-slate-700 dark:text-slate-200 font-medium">{m.subject}</span>
                                                 <span className="font-bold text-navy-900 dark:text-white">{m.score}/20</span>
                                             </div>
                                         ))}
@@ -373,7 +373,7 @@ const ParentDashboard = () => {
 
                             <button
                                 onClick={() => handleCardClick("Detailed Analytics", "Extended performance tracking and historical trends are currently being aggregated for the mid-term review.")}
-                                className="w-full bg-white dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-navy-600 text-gray-500 font-bold hover:border-gold-500 transition-colors flex items-center justify-center gap-2"
+                                className="w-full bg-white dark:bg-navy-800 py-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-navy-600 text-slate-700 dark:text-slate-200 font-bold hover:border-gold-500 transition-colors flex items-center justify-center gap-2"
                             >
                                 <FaChartIcon /> Detailed performance stats
                             </button>
