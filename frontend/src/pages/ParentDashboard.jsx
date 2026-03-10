@@ -252,20 +252,36 @@ const ParentDashboard = () => {
     };
 
     return (
-        <div className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-navy-900">
+        <div
+            className="p-6 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto"
+            style={{
+                color: 'var(--theme-text)',
+                background: 'var(--page-bg, var(--theme-bg-muted))'
+            }}
+        >
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                    <h1
+                        className="text-3xl font-black flex items-center gap-3"
+                        style={{ color: 'var(--theme-text)' }}
+                    >
                         <FaHandshake className="text-blue-600 dark:text-gold-500" /> Parent Portal
                     </h1>
-                    <p className="text-slate-700 dark:text-slate-300 mt-1 font-medium">
+                    <p className="mt-1 font-medium" style={{ color: 'var(--theme-text-muted)' }}>
                         Celebrating and monitoring your child's academic journey at RIT.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="bg-emerald-200 dark:bg-green-900/50 text-emerald-800 dark:text-green-300 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-400 dark:border-green-700 shadow-sm">
+                    <div
+                        className="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm"
+                        style={{
+                            background: 'var(--color-success-soft, rgba(16,185,129,0.12))',
+                            color: 'var(--color-success, #047857)',
+                            border: '1px solid rgba(16,185,129,0.25)'
+                        }}
+                    >
                         Institutional Access Verified
                     </div>
                 </div>
@@ -274,23 +290,33 @@ const ParentDashboard = () => {
             {students.map(student => (
                 <div key={student.id} className="space-y-6">
                     {/* Compact Header */}
-                    <div className="bg-white dark:bg-navy-800 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-navy-700 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="card p-6 rounded-2xl shadow-md flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex items-center gap-5">
                             <div className="w-16 h-16 bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 rounded-2xl flex items-center justify-center text-2xl shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform">
                                 <FaChild />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-black text-slate-900 dark:text-white m-0">{student.user.firstName} {student.user.lastName}</h3>
-                                <p className="text-sm font-bold text-slate-500 dark:text-gray-400 m-0 uppercase tracking-widest">{student.studentIdNumber} • CSE-A • Year 3</p>
+                                <h3
+                                    className="text-2xl font-black m-0"
+                                    style={{ color: 'var(--theme-text)' }}
+                                >
+                                    {student.user.firstName} {student.user.lastName}
+                                </h3>
+                                <p
+                                    className="text-sm font-bold m-0 uppercase tracking-widest"
+                                    style={{ color: 'var(--theme-text-muted)' }}
+                                >
+                                    {student.studentIdNumber} • CSE-A • Year 3
+                                </p>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 md:gap-4 w-full md:w-auto">
-                            <div className="text-center bg-white dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-300 dark:border-navy-700 shadow-md">
-                                <div className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase mb-1">Current CGPA</div>
+                            <div className="text-center px-4 md:px-6 py-3 rounded-2xl border shadow-md" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                <div className="text-[10px] font-black uppercase mb-1" style={{ color: 'var(--theme-text-muted)' }}>Current CGPA</div>
                                 <div className="text-xl md:text-2xl font-black text-blue-600 dark:text-blue-400">{student.currentCgpa}</div>
                             </div>
-                            <div className="text-center bg-white dark:bg-navy-900 px-4 md:px-6 py-3 rounded-2xl border border-slate-300 dark:border-navy-700 shadow-md">
-                                <div className="text-[10px] font-black text-slate-700 dark:text-slate-200 uppercase mb-1">Attendance</div>
+                            <div className="text-center px-4 md:px-6 py-3 rounded-2xl border shadow-md" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+                                <div className="text-[10px] font-black uppercase mb-1" style={{ color: 'var(--theme-text-muted)' }}>Attendance</div>
                                 <div className="text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400">{student.attendance}%</div>
                             </div>
                         </div>
@@ -300,16 +326,23 @@ const ParentDashboard = () => {
                         {/* Marks Summary Column */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* CAT Marks Card */}
-                            <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-md border border-slate-300 dark:border-navy-700">
-                                <h4 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-3 mb-6">
+                            <div className="card rounded-3xl p-6 shadow-md">
+                                <h4
+                                    className="text-lg font-black flex items-center gap-3 mb-6"
+                                    style={{ color: 'var(--theme-text)' }}
+                                >
                                     <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600"><FaFileAlt /></div>
                                     CAT Performance
                                 </h4>
                                 <div className="space-y-4">
                                     {student.marks.cat.map((m, i) => (
-                                        <div key={i} className="flex justify-between items-center p-4 bg-slate-50 dark:bg-navy-900 rounded-2xl border border-slate-300 dark:border-navy-700">
-                                            <span className="font-semibold text-slate-900 dark:text-blue-100">{m.subject}</span>
-                                            <span className="font-extrabold text-slate-900 dark:text-white">{m.score} / {m.max}</span>
+                                        <div
+                                            key={i}
+                                            className="flex justify-between items-center p-4 rounded-2xl border"
+                                            style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}
+                                        >
+                                            <span className="font-semibold" style={{ color: 'var(--theme-text)' }}>{m.subject}</span>
+                                            <span className="font-extrabold" style={{ color: 'var(--theme-text)' }}>{m.score} / {m.max}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -317,15 +350,18 @@ const ParentDashboard = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Assignment Marks */}
-                                <div className="bg-white dark:bg-navy-800 rounded-3xl p-6 shadow-md border border-slate-300 dark:border-navy-700">
-                                    <h4 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 mb-4 text-emerald-600">
+                                <div className="card rounded-3xl p-6 shadow-md">
+                                    <h4
+                                        className="text-base font-black flex items-center gap-2 mb-4 text-emerald-600"
+                                        style={{ color: 'var(--theme-text)' }}
+                                    >
                                         <FaMedal /> Assignments
                                     </h4>
                                     <div className="space-y-3">
                                         {student.marks.assignments.map((m, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="text-slate-900 dark:text-slate-100 font-medium">{m.subject}</span>
-                                                <span className="font-bold text-slate-900 dark:text-white">{m.score}/20</span>
+                                                <span className="font-medium" style={{ color: 'var(--theme-text)' }}>{m.subject}</span>
+                                                <span className="font-bold" style={{ color: 'var(--theme-text)' }}>{m.score}/20</span>
                                             </div>
                                         ))}
                                     </div>
