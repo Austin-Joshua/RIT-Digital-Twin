@@ -109,6 +109,8 @@
 
 .dark .stu-user-badge {
     background-color: #3c8dbc;
+    color: #f9fafb;
+    border-color: rgba(15, 23, 42, 0.6);
 }
 
 .dark .stu-info-card,
@@ -590,11 +592,13 @@
 
 /* User badge - pill shape, not a heavy rectangle */
 .stu-user-badge {
-    background-color: var(--ims-active-blue);
-    color: white;
+    background-color: #e0f2fe;
+    /* light cyan */
+    color: #0b2c6b;
+    /* RIT navy for icon/text */
     padding: 6px 14px;
     border-radius: 9999px;
-    border: none;
+    border: 1px solid rgba(15, 23, 42, 0.12);
     display: flex;
     align-items: center;
     gap: 8px;
