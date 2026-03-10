@@ -378,8 +378,8 @@ const ParentDashboard = () => {
                                     <div className="space-y-3">
                                         {student.marks.semester.map((m, i) => (
                                             <div key={i} className="flex justify-between items-center text-sm">
-                                                <span className="font-semibold text-blue-100">{m.subject}</span>
-                                                <span className="font-black text-gold-400">{m.grade}</span>
+                                                <span className="font-semibold text-white">{m.subject}</span>
+                                                <span className="font-black text-gold-300">{m.grade}</span>
                                             </div>
                                         ))}
                                     </div>

@@ -101,7 +101,7 @@ const AcademicFee = () => {
 
                 {/* Fee Breakdown Table */}
                 <div className="lg:col-span-2">
-                    <div className="card overflow-hidden">
+                    <div className="card overflow-hidden bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-700 shadow-sm">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-bold text-navy-900 dark:text-white text-lg">Fee Breakdown (Current AY)</h3>
                             <button className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Download Proforma Invoice</button>
@@ -110,7 +110,7 @@ const AcademicFee = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="text-[10px] uppercase tracking-widest border-b border-slate-200 dark:border-navy-700" style={{ background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
+                                    <tr className="text-[10px] uppercase tracking-widest border-b border-slate-200 dark:border-navy-700 bg-slate-100 dark:bg-navy-800 text-slate-700 dark:text-slate-100">
                                         <th className="p-3 font-black rounded-tl-lg">Description</th>
                                         <th className="p-3 font-black">Category</th>
                                         <th className="p-3 font-black text-right rounded-tr-lg">Amount (₹)</th>
@@ -118,20 +118,29 @@ const AcademicFee = () => {
                                 </thead>
                                 <tbody className="text-sm">
                                     {feeDetails.map((fee, idx) => (
-                                        <tr key={idx} className="border-b border-gray-50 dark:border-navy-800 hover:bg-gray-50 dark:hover:bg-navy-900/50 transition-colors">
-                                            <td className="p-4 font-bold text-slate-900 dark:text-white">
+                                        <tr key={idx} className="border-b border-gray-100 dark:border-navy-800 even:bg-slate-50 dark:even:bg-navy-900/40 hover:bg-slate-100 dark:hover:bg-navy-900 transition-colors">
+                                            <td className="p-4 font-semibold text-slate-900 dark:text-slate-50">
                                                 {fee.label}
-                                                {!fee.required && <span className="ml-2 text-[9px] bg-slate-100 dark:bg-navy-700 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Optional</span>}
+                                                {!fee.required && (
+                                                    <span className="ml-2 text-[9px] bg-slate-200 dark:bg-navy-700 text-slate-700 dark:text-slate-100 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                                        Optional
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td className="p-4 text-slate-600 dark:text-gray-400 font-medium">Recurring</td>
-                                            <td className="p-4 font-mono text-right text-slate-900 dark:text-gray-100 font-black">
+                                            <td className="p-4 text-slate-700 dark:text-slate-300 font-medium">Recurring</td>
+                                            <td className="p-4 font-mono text-right text-slate-900 dark:text-slate-50 font-black">
                                                 {fee.amount.toLocaleString('en-IN')}
                                             </td>
                                         </tr>
                                     ))}
-                                    <tr style={{ background: 'var(--theme-bg-muted)' }}>
-                                        <td colSpan="2" className="p-4 font-black text-right uppercase text-xs tracking-widest" style={{ color: 'var(--theme-text)' }}>Total Mandatory Dues</td>
-                                        <td className="p-4 font-black text-right text-lg" style={{ color: 'var(--color-accent-gold)' }}>
+                                    <tr className="bg-slate-100 dark:bg-navy-800">
+                                        <td
+                                            colSpan="2"
+                                            className="p-4 font-black text-right uppercase text-xs tracking-widest text-slate-800 dark:text-slate-100"
+                                        >
+                                            Total Mandatory Dues
+                                        </td>
+                                        <td className="p-4 font-black text-right text-lg text-amber-500">
                                             ₹{totalRequired.toLocaleString('en-IN')}
                                         </td>
                                     </tr>
