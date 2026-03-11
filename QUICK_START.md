@@ -161,6 +161,42 @@ mysql -h <aiven-host> -P <port> -u <username> -p <database_name> -e "SELECT 1; S
 
 If this connects and shows tables, data is stored and accessible on Aiven.
 
+### 5. Wipe all data and restore (full reset)
+
+To **remove all data** in the Aiven database and **restore** from your schema and seed files:
+
+1. **Get Aiven connection details**  
+   From [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**: note **Host**, **Port**, **User**, **Password**, and **Database name**.
+
+2. **Run the reset and restore scripts** (from the project root, with MySQL client installed):
+
+   ```powershell
+   # Replace <host>, <port>, <user>, <database> with your Aiven values. You'll be prompted for password.
+
+   # Step 1: Wipe all tables
+   mysql -h <host> -P <port> -u <user> -p <database> < database/reset-aiven.sql
+
+   # Step 2: Recreate tables and base data (roles, etc.)
+   mysql -h <host> -P <port> -u <user> -p <database> < database/schema.sql
+
+   # Step 3: Load seed data (buildings, departments, classrooms, etc.)
+   mysql -h <host> -P <port> -u <user> -p <database> < database/seed-data.sql
+   ```
+
+   Example (use your real host/port/user/db):
+
+   ```powershell
+   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/reset-aiven.sql
+   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/schema.sql
+   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/seed-data.sql
+   ```
+
+3. **Optional: let the app recreate JPA tables**  
+   If you use `spring.jpa.hibernate.ddl-auto=update`, start the backend once so it can recreate any tables only defined in code (e.g. `students`, `subjects`, `attendance`). Then you can run `seed-data.sql` again if needed, or add user/student seed data separately.
+
+4. **Verify**  
+   Use the MySQL command from step 4 above (`SHOW TABLES;`) or open **http://localhost:8080/actuator/health** after starting the backend.
+
 ---
 
 ## 🔒 Key Configurations
