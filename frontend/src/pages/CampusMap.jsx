@@ -26,14 +26,14 @@ const buildingIcon = new L.Icon({
     popupAnchor: [0, -28]
 });
 
-// RIT Chennai Approximate Coordinates
-const RIT_CENTER = [13.0483, 80.0573];
+// RIT Chennai – Rajalakshmi Institute of Technology (from Google Maps)
+const RIT_CENTER = [13.0382427, 80.0453935];
 
 const CampusMap = () => {
     const [activeBuses, setActiveBuses] = useState([
-        { id: 1, route: 'R44 - Tambaram', position: [13.0490, 80.0580], status: 'Moving', speed: '24 km/h' },
-        { id: 2, route: 'R12 - Adyar', position: [13.0470, 80.0560], status: 'Stopped', speed: '0 km/h' },
-        { id: 3, route: 'R05 - Navallur', position: [13.0485, 80.0555], status: 'Approaching', speed: '15 km/h' }
+        { id: 1, route: 'R44 - Tambaram', position: [13.0379, 80.0449], status: 'Moving', speed: '24 km/h' },
+        { id: 2, route: 'R12 - Adyar', position: [13.0387, 80.0458], status: 'Stopped', speed: '0 km/h' },
+        { id: 3, route: 'R05 - Navallur', position: [13.0381, 80.0461], status: 'Approaching', speed: '15 km/h' }
     ]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -75,7 +75,7 @@ const CampusMap = () => {
             </div>
 
             <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--theme-border)', boxShadow: 'var(--shadow-soft)' }}>
-                <MapContainer center={RIT_CENTER} zoom={16} style={{ height: '100%', width: '100%' }}>
+                <MapContainer center={RIT_CENTER} zoom={17} style={{ height: '100%', width: '100%' }}>
                     {/* Modern Clean Map Tiles */}
                     <TileLayer
                         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -83,32 +83,50 @@ const CampusMap = () => {
                     />
 
                     {/* Campus Boundary Radius */}
-                    <Circle center={RIT_CENTER} pathOptions={{ fillColor: '#0B2C6B', color: '#0B2C6B', weight: 2 }} radius={300}>
+                    <Circle center={RIT_CENTER} pathOptions={{ fillColor: '#0B2C6B', color: '#0B2C6B', weight: 2 }} radius={220}>
                         <Popup>RIT Geo-Fence Zone</Popup>
                     </Circle>
 
-                    {/* Institutional Blocks */}
-                    <Marker position={[13.0483, 80.0573]} icon={buildingIcon}>
+                    {/* Institutional Blocks – approximate positions around the real campus location */}
+                    <Marker position={[13.03835, 80.04540]} icon={buildingIcon}>
                         <Popup>
-                            <strong>Main Block (Admin)</strong><br />
+                            <strong>Main Academic Block</strong><br />
                             Power Usage: 45 kW<br />
-                            HVAC Status: Optimal
+                            HVAC Status: Optimal<br />
+                            Env Sensors: Temp, CO₂, Noise
                         </Popup>
                     </Marker>
 
-                    <Marker position={[13.0495, 80.0585]} icon={buildingIcon}>
+                    <Marker position={[13.03810, 80.04505]} icon={buildingIcon}>
                         <Popup>
-                            <strong>Green Building (CSE/IT)</strong><br />
+                            <strong>Steve Jobs Block (Labs)</strong><br />
                             Occupancy: 84%<br />
+                            Lab Safety: Normal<br />
                             Air Quality: 42 AQI (Good)
                         </Popup>
                     </Marker>
 
-                    <Marker position={[13.0475, 80.0550]} icon={buildingIcon}>
+                    <Marker position={[13.03795, 80.04555]} icon={buildingIcon}>
                         <Popup>
-                            <strong>Boys Hostel</strong><br />
-                            Water Tank Level: 68%<br />
-                            WiFi Active Devices: 342
+                            <strong>RIT Canteen</strong><br />
+                            Queue Status: 10–15 min<br />
+                            Cold Storage: 3°C (OK)
+                        </Popup>
+                    </Marker>
+
+                    <Marker position={[13.03885, 80.04570]} icon={buildingIcon}>
+                        <Popup>
+                            <strong>Ground & Open Area</strong><br />
+                            Smart Lights: 12/12 Online<br />
+                            Crowd Density: Low
+                        </Popup>
+                    </Marker>
+
+                    <Marker position={[13.03780, 80.04490]} icon={buildingIcon}>
+                        <Popup>
+                            <strong>Main Gate / Bus Bay</strong><br />
+                            Bus GPS Gateway Online<br />
+                            Gate Camera: Streaming
                         </Popup>
                     </Marker>
 
