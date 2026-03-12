@@ -119,13 +119,13 @@ Full steps and troubleshooting: see **DEPLOYMENT_GUIDE.md** (Part 2: Vercel + lo
 
 ---
 
-## ☁️ Verifying Aiven Database (MySQL in Aiven)
+## ☁️ Verifying Remote MySQL Database (e.g. Railway)
 
-To confirm your database is stored and reachable on **Aiven**:
+To confirm your database is stored and reachable on **your provider**:
 
-### 1. Use Aiven connection in `.env`
+### 1. Use your provider connection in `.env`
 
-Set these in your project `.env` (get values from [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**):
+Set these in your project `.env` (get values from [your DB provider dashboard](https://console.your provider.io) → your MySQL service → **Connection information**):
 
 ```env
 SPRING_DATASOURCE_URL=jdbc:mysql://<host>:<port>/<database>?ssl-mode=REQUIRED
@@ -134,17 +134,17 @@ SPRING_DATASOURCE_PASSWORD=<service_password>
 SPRING_PROFILES_ACTIVE=prod
 ```
 
-Use the **JDBC/URI** or host, port, and database name from Aiven. Enable SSL as Aiven requires it.
+Use the **JDBC/URI** or host, port, and database name from your provider. Enable SSL as your provider requires it.
 
 ### 2. Check from the backend
 
-1. Start the backend with the Aiven `.env` (or export those variables).
+1. Start the backend with the your provider `.env` (or export those variables).
 2. Open: **http://localhost:8080/actuator/health**
 3. If the database is reachable, you should see something like `"status":"UP"` and often a `db` entry with status UP.
 
-If the backend fails to start or health shows DOWN, the app is not connecting to Aiven (check URL, user, password, SSL, and firewall/allowlist).
+If the backend fails to start or health shows DOWN, the app is not connecting to your provider (check URL, user, password, SSL, and firewall/allowlist).
 
-### 3. Check in Aiven Console
+### 3. Check in your DB provider dashboard
 
 - **Service → Overview:** Service status should be **Running**.
 - **Metrics:** Check **Disk usage** and **Connections** to confirm storage and that the app is connecting.
@@ -152,29 +152,29 @@ If the backend fails to start or health shows DOWN, the app is not connecting to
 
 ### 4. Check from MySQL client (optional)
 
-From Aiven Console, copy the **MySQL connection string** (or host, port, user, password). Then:
+From your DB provider dashboard, copy the **MySQL connection string** (or host, port, user, password). Then:
 
 ```powershell
-# If you have MySQL client installed; use the host, user, and password from Aiven
-mysql -h <aiven-host> -P <port> -u <username> -p <database_name> -e "SELECT 1; SHOW TABLES;"
+# If you have MySQL client installed; use the host, user, and password from your provider
+mysql -h <remote-host> -P <port> -u <username> -p <database_name> -e "SELECT 1; SHOW TABLES;"
 ```
 
-If this connects and shows tables, data is stored and accessible on Aiven.
+If this connects and shows tables, data is stored and accessible on your provider.
 
 ### 5. Wipe all data and restore (full reset)
 
-To **remove all data** in the Aiven database and **restore** from your schema and seed files:
+To **remove all data** in the remote database and **restore** from your schema and seed files:
 
-1. **Get Aiven connection details**  
-   From [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**: note **Host**, **Port**, **User**, **Password**, and **Database name**.
+1. **Get your provider connection details**  
+   From [your DB provider dashboard](https://console.your provider.io) → your MySQL service → **Connection information**: note **Host**, **Port**, **User**, **Password**, and **Database name**.
 
 2. **Run the reset and restore scripts** (from the project root, with MySQL client installed):
 
    ```powershell
-   # Replace <host>, <port>, <user>, <database> with your Aiven values. You'll be prompted for password.
+   # Replace <host>, <port>, <user>, <database> with your your provider values. You'll be prompted for password.
 
    # Step 1: Wipe all tables
-   mysql -h <host> -P <port> -u <user> -p <database> < database/reset-aiven.sql
+   mysql -h <host> -P <port> -u <user> -p <database> < database/reset-your provider.sql
 
    # Step 2: Recreate tables and base data (roles, etc.)
    mysql -h <host> -P <port> -u <user> -p <database> < database/schema.sql
@@ -186,9 +186,9 @@ To **remove all data** in the Aiven database and **restore** from your schema an
    Example (use your real host/port/user/db):
 
    ```powershell
-   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/reset-aiven.sql
-   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/schema.sql
-   mysql -h my-service.aivencloud.com -P 12345 -u avnadmin -p defaultdb < database/seed-data.sql
+   mysql -h <remote-mysql-host> -P 12345 -u avnadmin -p defaultdb < database/reset-your provider.sql
+   mysql -h <remote-mysql-host> -P 12345 -u avnadmin -p defaultdb < database/schema.sql
+   mysql -h <remote-mysql-host> -P 12345 -u avnadmin -p defaultdb < database/seed-data.sql
    ```
 
 3. **Optional: let the app recreate JPA tables**  

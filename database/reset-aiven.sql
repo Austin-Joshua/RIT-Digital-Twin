@@ -1,5 +1,5 @@
 -- =====================================================
--- RIT Digital Twin – Wipe all tables (Aiven / any MySQL)
+-- RIT Digital Twin – Wipe all tables (any remote MySQL, e.g. Railway)
 -- Run this to remove ALL data, then run schema.sql and seed-data.sql to restore.
 -- =====================================================
 

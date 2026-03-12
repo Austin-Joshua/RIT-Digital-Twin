@@ -1,11 +1,11 @@
 @echo off
 REM Run from project root:  database\run-aiven-reset.bat
-REM You will be prompted for the Aiven MySQL password (avnadmin) 3 times.
+REM Generic remote MySQL reset helper (e.g. Railway).
 
-set MYSQL_HOST=mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com
-set MYSQL_PORT=27171
-set MYSQL_USER=avnadmin
-set MYSQL_DB=defaultdb
+set MYSQL_HOST=<REMOTE_MYSQL_HOST>
+set MYSQL_PORT=<REMOTE_MYSQL_PORT>
+set MYSQL_USER=<REMOTE_MYSQL_USER>
+set MYSQL_DB=<REMOTE_MYSQL_DB>
 
 echo Step 1/3: Wiping all tables...
 mysql -h %MYSQL_HOST% -P %MYSQL_PORT% -u %MYSQL_USER% -p --ssl-mode=REQUIRED %MYSQL_DB% < "%~dp0reset-aiven.sql"
