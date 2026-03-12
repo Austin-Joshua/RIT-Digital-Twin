@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import Skeleton from '../../components/common/Skeleton';
 
@@ -6,23 +6,42 @@ const ALIGN_TIMES = ['09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00',
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
 
 const Timetable = () => {
-    const [timetable, setTimetable] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const cacheRef = useRef(null);
+    const [timetable, setTimetable] = useState(cacheRef.current || []);
+    const [loading, setLoading] = useState(!cacheRef.current);
 
     useEffect(() => {
-        const fetchTimetable = async () => {
+        let isMounted = true;
+
+        const fetchTimetable = async (opts = { setState: true }) => {
             try {
                 const res = await api.get('/academic/student/timetable');
-                setTimetable(res.data || []);
+                const data = res.data || [];
+                cacheRef.current = data;
+                if (opts.setState && isMounted) {
+                    setTimetable(data);
+                    setLoading(false);
+                }
             } catch (err) {
                 console.error("Timetable Fetch Error:", err);
-                // Fallback to empty if not assigned yet
-                setTimetable([]);
-            } finally {
-                setLoading(false);
+                if (opts.setState && isMounted) {
+                    setTimetable([]);
+                    setLoading(false);
+                }
             }
         };
-        fetchTimetable();
+
+        // If we don't have cached data yet, load and show skeleton
+        if (!cacheRef.current) {
+            fetchTimetable({ setState: true });
+        } else {
+            // We already rendered from cache; refresh silently in background
+            fetchTimetable({ setState: false });
+        }
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const getSlot = (day, timePrefix) => {
