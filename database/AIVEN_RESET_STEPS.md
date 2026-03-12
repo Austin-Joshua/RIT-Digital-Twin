@@ -1,4 +1,4 @@
-# Start from Scratch: Wipe and Restore Aiven Database
+# Start from Scratch: Wipe and Restore Remote MySQL (e.g. Railway)
 
 Do **all** steps in **Command Prompt**. Do **not** run the wipe/schema/seed commands when you see `mysql>` — only when you see `C:\...>`.
 
@@ -38,16 +38,16 @@ Run **one** of the two options below.
 **Option A — If `mysql` is in your PATH** (you can run `mysql --version` successfully):
 
 ```cmd
-mysql -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\reset-aiven.sql
+mysql -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\reset-aiven.sql
 ```
 
 **Option B — Use full path** (use this if you get "mysql is not recognized"):
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\reset-aiven.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\reset-aiven.sql
 ```
 
-- When prompted, type your **Aiven password** and press **Enter** (nothing will show as you type).
+- When prompted, type your **database password** and press **Enter** (nothing will show as you type).
 - If it succeeds, you may see no output. That is normal. All tables are dropped.
 
 **Important:** You must run this in the same Command Prompt window where you see `C:\...\RIT-Digital-Twin>`, **not** inside a `mysql>` session.
@@ -59,16 +59,16 @@ mysql -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmi
 **Option A:**
 
 ```cmd
-mysql -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\schema.sql
+mysql -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\schema.sql
 ```
 
 **Option B (full path):**
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\schema.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\schema.sql
 ```
 
-Enter your Aiven password when prompted.
+Enter your database password when prompted.
 
 ---
 
@@ -77,16 +77,16 @@ Enter your Aiven password when prompted.
 **Option A:**
 
 ```cmd
-mysql -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\seed-data.sql
+mysql -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\seed-data.sql
 ```
 
 **Option B (full path):**
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\seed-data.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\seed-data.sql
 ```
 
-Enter your Aiven password when prompted.
+Enter your database password when prompted.
 
 ---
 
@@ -97,13 +97,13 @@ Run this (from the same prompt `C:\...\RIT-Digital-Twin>`, not inside `mysql>`):
 **Option A:**
 
 ```cmd
-mysql -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb -e "SHOW TABLES;"
+mysql -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> -e "SHOW TABLES;"
 ```
 
 **Option B (full path):**
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb -e "SHOW TABLES;"
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> -e "SHOW TABLES;"
 ```
 
 Enter your password. You should see a list of table names. Then you’re done.
@@ -126,19 +126,19 @@ If you ever see `mysql>`, type **exit** and press **Enter** to get back to `C:\.
 After Step 2, run these **one by one** (same window, prompt `C:\...\RIT-Digital-Twin>`):
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\reset-aiven.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\reset-aiven.sql
 ```
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\schema.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\schema.sql
 ```
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb < database\seed-data.sql
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> < database\seed-data.sql
 ```
 
-Type your Aiven password when each command asks for it (4 times total if you also run the check command below):
+Type your database password when each command asks for it (4 times total if you also run the check command below):
 
 ```cmd
-"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h mysql-36ee303c-austinjoshuamj-0251.i.aivencloud.com -P 27171 -u avnadmin -p --ssl-mode=REQUIRED defaultdb -e "SHOW TABLES;"
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h <REMOTE_MYSQL_HOST> -P <REMOTE_MYSQL_PORT> -u <REMOTE_MYSQL_USER> -p --ssl-mode=REQUIRED <REMOTE_MYSQL_DB> -e "SHOW TABLES;"
 ```

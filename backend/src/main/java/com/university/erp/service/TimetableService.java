@@ -22,10 +22,9 @@ public class TimetableService {
         this.departmentRepository = departmentRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<TimetableSlot> getStudentTimetable(Long userId) {
-        Student student = studentRepository.findAll().stream()
-                .filter(s -> s.getUser() != null && s.getUser().getId().equals(userId))
-                .findFirst()
+        Student student = studentRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Student profile not found"));
 
         if (student.getDepartment() == null) {
