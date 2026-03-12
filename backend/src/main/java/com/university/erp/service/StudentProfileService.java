@@ -16,7 +16,7 @@ public class StudentProfileService {
 
     @Cacheable(cacheNames = "studentProfiles", key = "#userId")
     public Student getByUserId(Long userId) {
-        return studentRepository.findByUser_UserId(userId)
+        return studentRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new com.university.erp.exception.ErpException.ResourceNotFoundException(
                         "Student profile not found"));
     }
