@@ -92,3 +92,11 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: validate
+  datasource:
+    hikari:
+      # Tuned for cloud DBs like Aiven in production
+      maximum-pool-size: ${HIKARI_MAX_POOL:20}
+      minimum-idle: 5
+      idle-timeout: 300000      # 5 minutes
+      max-lifetime: 1800000     # 30 minutes (below typical Aiven limit)
+      connection-timeout: 30000 # 30 seconds

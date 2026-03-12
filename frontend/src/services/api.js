@@ -33,8 +33,6 @@ const getBackendRootURL = () => {
 
 const API_URL = getAPIBaseURL();
 
-console.log(`[API Service] Using API endpoint: ${API_URL}`); // Debug logging
-
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -74,7 +72,10 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor: Handle authentication errors
+// Simple delay helper for retry backoff
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Response interceptor: Handle authentication errors + lightweight retries for transient failures
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -93,7 +94,24 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
       }
+      return Promise.reject(error);
     }
+
+    // Basic retry for transient network/5xx errors
+    const status = error.response?.status;
+    const shouldRetry = !status || (status >= 500 && status < 600);
+    const config = error.config || {};
+
+    if (shouldRetry && !isLoginRequest) {
+      config.__retryCount = config.__retryCount || 0;
+      if (config.__retryCount < 2) {
+        config.__retryCount += 1;
+        const backoffMs = 250 * config.__retryCount;
+        await sleep(backoffMs);
+        return api(config);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
