@@ -1,7 +1,15 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.*;
-import com.university.erp.repository.*;
+import com.university.erp.entity.Department;
+import com.university.erp.entity.Student;
+import com.university.erp.entity.Subject;
+import com.university.erp.entity.TimetableSlot;
+import com.university.erp.repository.DepartmentRepository;
+import com.university.erp.repository.StudentRepository;
+import com.university.erp.repository.SubjectRepository;
+import com.university.erp.repository.TimetableSlotRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
@@ -23,6 +31,7 @@ public class TimetableService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "studentTimetable", key = "#userId")
     public List<TimetableSlot> getStudentTimetable(Long userId) {
         Student student = studentRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new RuntimeException("Student profile not found"));
@@ -36,6 +45,7 @@ public class TimetableService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "studentTimetable", allEntries = true)
     public List<TimetableSlot> generateWeeklyTimetable(Long deptId, String section) {
         Department dept = departmentRepository.findById(deptId)
                 .orElseThrow(() -> new RuntimeException("Department not found"));
