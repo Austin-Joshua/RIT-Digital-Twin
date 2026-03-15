@@ -64,6 +64,36 @@ springdoc:
 app.cors:
   allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://*.ngrok-free.app,https://*.ngrok-free.dev,https://*.ngrok.io}
 
+# Adaptive Defense (military-grade behavioral security)
+app.adaptive-defense:
+  enabled: true
+  baseline-window-minutes: 60
+  baseline-min-samples: 20
+  risk:
+    low-threshold: 25
+    medium-threshold: 50
+    high-threshold: 75
+    critical-threshold: 90
+    decay-per-minute: 2
+  rate-limit:
+    normal-requests-per-minute: 300
+    elevated-requests-per-minute: 120
+    high-requests-per-minute: 60
+    critical-requests-per-minute: 20
+    window-seconds: 60
+  session:
+    max-requests-per-minute-per-session: 120
+    rapid-action-window-ms: 2000
+    rapid-action-threshold: 15
+    revalidate-after-anomaly: true
+  data-access:
+    list-request-burst-threshold: 30
+    list-burst-window-seconds: 60
+  cooldown:
+    high-risk-minutes: 5
+    critical-minutes: 15
+  stealth: true
+
 # Actuator
 management:
   endpoints:

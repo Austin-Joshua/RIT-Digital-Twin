@@ -7,6 +7,7 @@ import com.university.erp.entity.Role;
 import com.university.erp.entity.User;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
+import com.university.erp.defense.RiskScoringService;
 import com.university.erp.security.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,13 +36,15 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final BruteForceProtectionService bruteForceProtectionService;
+    private final RiskScoringService riskScoringService;
 
     @Value("${app.google.client-id:}")
     private String googleClientId;
 
     public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
             RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils,
-            RefreshTokenService refreshTokenService, BruteForceProtectionService bruteForceProtectionService) {
+            RefreshTokenService refreshTokenService, BruteForceProtectionService bruteForceProtectionService,
+            RiskScoringService riskScoringService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -49,14 +52,19 @@ public class AuthService {
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
         this.bruteForceProtectionService = bruteForceProtectionService;
+        this.riskScoringService = riskScoringService;
     }
 
     @Transactional
-    public AuthResponse login(AuthRequest request) {
+    public AuthResponse login(AuthRequest request, String clientIp) {
         log.info("Attempting login for user: {}", request.getUsername());
         if (bruteForceProtectionService.isBlocked(request.getUsername())) {
             log.warn("Account is blocked due to too many failed attempts: {}", request.getUsername());
             throw new RuntimeException("Account is temporarily blocked. Please try again later.");
+        }
+        if (clientIp != null && bruteForceProtectionService.isBlockedByIp(clientIp)) {
+            log.warn("Client IP is blocked due to too many failed attempts: {}", clientIp);
+            throw new RuntimeException("Too many attempts. Please try again later.");
         }
         try {
             log.info("Authenticating credentials for username: {}", request.getUsername());
@@ -76,6 +84,7 @@ public class AuthService {
 
             log.info("Authentication successful. Building session for user ID: {}", user.getUserId());
             bruteForceProtectionService.loginSucceeded(request.getUsername());
+            bruteForceProtectionService.loginSucceededByIp(clientIp);
 
             String jwt = jwtUtils.generateToken(user);
             log.info("JWT generated successfully");
@@ -99,6 +108,10 @@ public class AuthService {
         } catch (Exception e) {
             log.error("CRITICAL: Login process failed for user {}: {}", request.getUsername(), e.getMessage(), e);
             bruteForceProtectionService.loginFailed(request.getUsername());
+            if (clientIp != null) {
+                bruteForceProtectionService.loginFailedByIp(clientIp);
+                riskScoringService.recordFailedAuth(clientIp);
+            }
             throw e;
         }
     }

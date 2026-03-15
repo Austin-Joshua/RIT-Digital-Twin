@@ -1,6 +1,7 @@
 package com.university.erp.config;
 
 import com.university.erp.security.JwtAuthenticationFilter;
+import com.university.erp.defense.AdaptiveDefenseFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -33,11 +34,14 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final com.university.erp.security.XssSanitizationFilter xssSanitizationFilter;
+    private final AdaptiveDefenseFilter adaptiveDefenseFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-            com.university.erp.security.XssSanitizationFilter xssSanitizationFilter) {
+            com.university.erp.security.XssSanitizationFilter xssSanitizationFilter,
+            AdaptiveDefenseFilter adaptiveDefenseFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.xssSanitizationFilter = xssSanitizationFilter;
+        this.adaptiveDefenseFilter = adaptiveDefenseFilter;
     }
 
     @Bean
@@ -118,6 +122,7 @@ public class SecurityConfig {
 
         http.addFilterBefore(xssSanitizationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(adaptiveDefenseFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
 }
