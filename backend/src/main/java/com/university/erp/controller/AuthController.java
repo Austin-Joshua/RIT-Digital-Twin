@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 
@@ -29,8 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
-        return ResponseEntity.ok(authService.login(authRequest));
+    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest,
+                                                         HttpServletRequest request) {
+        String clientIp = getClientIp(request);
+        return ResponseEntity.ok(authService.login(authRequest, clientIp));
     }
 
     @PostMapping("/google")
@@ -86,5 +89,26 @@ public class AuthController {
         }
         bruteForceProtectionService.unblock(username.trim());
         return ResponseEntity.ok("Account unblocked: " + username);
+    }
+
+    /** Unblock an IP that was locked due to too many failed login attempts. Admin only. */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/unblock-ip")
+    public ResponseEntity<String> unblockIp(@RequestBody Map<String, String> body) {
+        String ip = body != null ? body.get("ip") : null;
+        if (ip == null || ip.isBlank()) {
+            return ResponseEntity.badRequest().body("Missing 'ip' in request body.");
+        }
+        bruteForceProtectionService.unblockIp(ip.trim());
+        return ResponseEntity.ok("IP unblocked.");
+    }
+
+    private static String getClientIp(HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            return xff.split(",")[0].trim();
+        }
+        String remote = request.getRemoteAddr();
+        return remote != null ? remote : "0.0.0.0";
     }
 }
