@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import ExportButtons from '../../components/common/ExportButtons';
 import { useToast } from '../../context/ToastContext';
+import api from '../../services/api';
 
 const AttendanceReport = () => {
     const [search, setSearch] = useState('');
@@ -17,6 +18,27 @@ const AttendanceReport = () => {
     ]);
 
     React.useEffect(() => {
+        const loadSummary = async () => {
+            try {
+                const res = await api.get('/erp/student/attendance-summary');
+                const rows = Array.isArray(res.data) ? res.data : [];
+                if (rows.length > 0) {
+                    setAttendanceRecords(rows.map((r, i) => ({
+                        slNo: i + 1,
+                        code: r.subjectCode,
+                        name: r.subjectName,
+                        faculty: 'Assigned Faculty',
+                        attended: r.present,
+                        total: r.total,
+                        percent: Number(r.percentage || 0)
+                    })));
+                    return;
+                }
+            } catch {
+                // fall back to local mirror
+            }
+        };
+
         const checkConnectivity = () => {
             const syncedData = localStorage.getItem('connectivity_attendance');
             if (syncedData) {
@@ -42,6 +64,7 @@ const AttendanceReport = () => {
             }
         };
 
+        loadSummary();
         checkConnectivity();
         // Add event listener for cross-tab sync
         window.addEventListener('storage', checkConnectivity);

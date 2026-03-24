@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
 import { useToast } from '../../context/ToastContext';
 import { useRef } from 'react';
+import api from '../../services/api';
 
 const Profile = () => {
     const { user } = useAuth();
@@ -20,6 +21,19 @@ const Profile = () => {
         address: false,
         documents: false
     });
+    const [profileData, setProfileData] = useState(null);
+
+    React.useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const res = await api.get('/student/dashboard-summary');
+                setProfileData(res.data?.profile || null);
+            } catch {
+                setProfileData(null);
+            }
+        };
+        fetchSummary();
+    }, []);
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -112,8 +126,10 @@ const Profile = () => {
                         accept="image/*"
                         onChange={handleAvatarChange}
                     />
-                    <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: textColor }}>{user?.firstName} {user?.lastName}</h3>
-                    <p style={{ margin: '0', fontSize: '12px', color: subText }}>Batch / Course / Year / Semester / Section</p>
+                    <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: textColor }}>{profileData?.name || `${user?.firstName} ${user?.lastName}`}</h3>
+                    <p style={{ margin: '0', fontSize: '12px', color: subText }}>
+                        {profileData?.batch || 'Batch'} / {profileData?.department || 'Course'} / {profileData?.section || 'Section'}
+                    </p>
                 </div>
 
                 {/* Student Info Card */}
@@ -121,9 +137,9 @@ const Profile = () => {
                     <h4 style={{ color: accentColor, margin: '0 0 15px 0', borderBottom: `1px solid ${borderColor}`, paddingBottom: '10px' }}>Student Info</h4>
                     <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px', flex: 1 }}>
                         <InfoRow label="Full Name" value={`${user?.firstName} ${user?.lastName}`} />
-                        <InfoRow label="Register Number" value={user?.username || "..."} />
-                        <InfoRow label="Institutional Email" value={user?.email || "..."} />
-                        <InfoRow label="Academic Status" value="Active / Regular" />
+                        <InfoRow label="Register Number" value={profileData?.registerNo || user?.username || "..."} />
+                        <InfoRow label="Institutional Email" value={profileData?.email || user?.email || "..."} />
+                        <InfoRow label="Academic Status" value={profileData?.status || "Active"} />
                     </div>
 
                     {/* Account Security / Integration */}
@@ -187,7 +203,7 @@ const Profile = () => {
                         style={sectionBodyStyle}
                     >
                         <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
-                            <InfoRow label="Register Number" value="..." />
+                            <InfoRow label="Register Number" value={profileData?.registerNo || "..."} />
                             <InfoRow label="Roll Number" value="..." />
                             <InfoRow label="EMIS Number" value="..." />
                             <InfoRow label="UMIS Number" value="..." />
@@ -195,13 +211,13 @@ const Profile = () => {
                             <InfoRow label="First Graduate" value="..." />
                             <InfoRow label="GQ GOVT" value="..." />
                             <InfoRow label="Scholarship" value="..." />
-                            <InfoRow label="Hosteler" value="..." />
+                            <InfoRow label="Hosteler" value={profileData?.scholarType || "..."} />
                             <InfoRow label="Late Entry" value="..." />
-                            <InfoRow label="Course" value="..." />
-                            <InfoRow label="Batch" value="..." />
+                            <InfoRow label="Course" value={profileData?.department || "..."} />
+                            <InfoRow label="Batch" value={profileData?.batch || "..."} />
                             <InfoRow label="Academic Year" value="..." />
                             <InfoRow label="Semester" value="..." />
-                            <InfoRow label="Section" value="..." />
+                            <InfoRow label="Section" value={profileData?.section || "..."} />
                         </div>
                     </motion.div>
                 )}

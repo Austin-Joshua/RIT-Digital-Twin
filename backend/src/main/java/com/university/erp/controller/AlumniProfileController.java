@@ -15,13 +15,13 @@ public class AlumniProfileController {
     private AlumniProfileRepository repository;
 
     @GetMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SA','M')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public List<AlumniProfile> getAllAlumni() {
         return repository.findAll();
     }
 
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SA','M')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public AlumniProfile createAlumni(@org.springframework.lang.NonNull @RequestBody AlumniProfile profile) {
         java.util.Objects.requireNonNull(profile, "profile must not be null");
         return repository.save(profile);

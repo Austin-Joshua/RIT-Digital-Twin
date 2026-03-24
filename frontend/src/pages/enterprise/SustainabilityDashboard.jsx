@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '../../components/common/Card';
 import { FaLeaf, FaSolarPanel, FaWater, FaRecycle, FaTree, FaChartLine } from 'react-icons/fa';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import api from '../../services/api';
 
 const SustainabilityDashboard = () => {
+    const [remote, setRemote] = useState(null);
 
-    const carbonData = [
+    const fallbackCarbonData = [
         { month: 'Jan', emitted: 400, offset: 240 },
         { month: 'Feb', emitted: 300, offset: 139 },
         { month: 'Mar', emitted: 200, offset: 380 },
@@ -15,12 +17,32 @@ const SustainabilityDashboard = () => {
         { month: 'Jul', emitted: 349, offset: 430 },
     ];
 
-    const kpis = [
+    const fallbackKpis = [
         { title: 'Carbon Footprint', value: '42.5 tCO2e', trend: '-12% vs Last Yr', color: '#10b981', icon: <FaLeaf size={24} color="#059669" />, bg: '#d1fae5' },
         { title: 'Renewable Power', value: '35%', trend: '+5% Solar Added', color: '#f59e0b', icon: <FaSolarPanel size={24} color="#d97706" />, bg: '#fef3c7' },
         { title: 'Water Recycled', value: '1.2M Ltrs', trend: 'STP Operating @ 90%', color: '#3b82f6', icon: <FaWater size={24} color="#2563eb" />, bg: '#dbeafe' },
         { title: 'Waste Diverted', value: '88%', trend: 'To compost & recycle', color: '#8b5cf6', icon: <FaRecycle size={24} color="#7c3aed" />, bg: '#ede9fe' },
     ];
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const res = await api.get('/analytics/sustainability');
+                setRemote(res.data);
+            } catch (_err) {
+                setRemote(null);
+            }
+        };
+        load();
+    }, []);
+
+    const kpis = (remote?.kpis || fallbackKpis).map((kpi, idx) => ({
+        ...kpi,
+        color: fallbackKpis[idx]?.color || '#10b981',
+        bg: fallbackKpis[idx]?.bg || '#d1fae5',
+        icon: fallbackKpis[idx]?.icon || <FaLeaf size={24} color="#059669" />
+    }));
+    const carbonData = remote?.carbonData || fallbackCarbonData;
 
     return (
         <div style={{ padding: '24px' }}>

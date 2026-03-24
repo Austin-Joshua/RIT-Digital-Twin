@@ -233,7 +233,7 @@ const ParentDashboard = () => {
     useEffect(() => {
         const fetchLinkedStudents = async () => {
             try {
-                const res = await api.get('/api/parent/students');
+                const res = await api.get('/parent/students');
                 if (res.data && res.data.length > 0) {
                     setStudents(res.data.map(s => ({ ...s, attendance: 88, marks: mockMarks })));
                 } else {

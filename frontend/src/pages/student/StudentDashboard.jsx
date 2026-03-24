@@ -47,6 +47,8 @@ const StudentDashboard = () => {
     const [riskScore, setRiskScore] = useState(null);
     const [ranking, setRanking] = useState(null);
     const [selectedModal, setSelectedModal] = useState(null);
+    const [clubInvolvement, setClubInvolvement] = useState([]);
+    const [clubLoading, setClubLoading] = useState(true);
 
     useEffect(() => {
         const fetchKpis = async () => {
@@ -69,6 +71,21 @@ const StudentDashboard = () => {
         };
 
         fetchKpis();
+    }, [user]);
+
+    useEffect(() => {
+        const fetchClubInvolvement = async () => {
+            try {
+                setClubLoading(true);
+                const res = await api.get('/clubs/student/me/involvement');
+                setClubInvolvement(Array.isArray(res.data) ? res.data : []);
+            } catch (e) {
+                setClubInvolvement([]);
+            } finally {
+                setClubLoading(false);
+            }
+        };
+        fetchClubInvolvement();
     }, [user]);
 
     const kpis = [
@@ -124,6 +141,45 @@ const StudentDashboard = () => {
             </div>
 
             <div className="stu-info-row">
+                <div className="stu-info-card" style={{ borderTopColor: '#7c3aed' }}>
+                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>
+                        My Club Involvement
+                    </div>
+                    <div className="info-body" style={{ padding: '15px', minHeight: '120px', color: 'var(--theme-text-muted)' }}>
+                        {clubLoading ? (
+                            <div>Loading your clubs...</div>
+                        ) : clubInvolvement.length === 0 ? (
+                            <div>You are not currently enrolled in any club.</div>
+                        ) : (
+                            <div style={{ display: 'grid', gap: '10px' }}>
+                                {clubInvolvement.map((club) => (
+                                    <div
+                                        key={club.membershipId}
+                                        style={{
+                                            border: '1px solid var(--theme-border)',
+                                            borderRadius: '8px',
+                                            padding: '10px',
+                                            background: 'var(--theme-bg-muted)'
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: 700, color: 'var(--theme-text)' }}>{club.clubName}</div>
+                                        <div style={{ fontSize: '13px' }}>{club.clubDescription}</div>
+                                        <div style={{ marginTop: '6px', fontSize: '13px', color: 'var(--theme-text)' }}>
+                                            Role: <strong>{club.roleType}</strong> | Coordinator: {club.facultyCoordinator}
+                                        </div>
+                                        <div style={{ marginTop: '4px', fontSize: '12px' }}>
+                                            Joined: {club.joinedDate} | Status: {club.status}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}>
+                        <Link to="/student/clubs" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)' }}>View all clubs</Link>
+                    </div>
+                </div>
+
                 <div className="stu-info-card">
                     <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Announcements</div>
                     <div className="info-body" style={{ padding: '15px', minHeight: '100px', color: 'var(--theme-text-muted)' }}>

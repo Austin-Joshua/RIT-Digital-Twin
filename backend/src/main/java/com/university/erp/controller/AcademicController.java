@@ -5,6 +5,7 @@ import com.university.erp.entity.User;
 import com.university.erp.entity.Role;
 import com.university.erp.service.AcademicService;
 import com.university.erp.service.StudentProfileService;
+import com.university.erp.service.StudentAcademicOnboardingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,15 +17,18 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/academic")
+@RequestMapping({ "/api/academic", "/api/academics" })
 public class AcademicController {
 
     private final AcademicService academicService;
     private final StudentProfileService studentProfileService;
+    private final StudentAcademicOnboardingService onboardingService;
 
-    public AcademicController(AcademicService academicService, StudentProfileService studentProfileService) {
+    public AcademicController(AcademicService academicService, StudentProfileService studentProfileService,
+            StudentAcademicOnboardingService onboardingService) {
         this.academicService = academicService;
         this.studentProfileService = studentProfileService;
+        this.onboardingService = onboardingService;
     }
 
     @PostMapping("/marks/{studentId}")
@@ -83,5 +87,13 @@ public class AcademicController {
         }
 
         return ResponseEntity.ok(marks);
+    }
+
+    @GetMapping("/student/cgpa")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<java.util.Map<String, Object>>> getStudentCgpa() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(onboardingService.getSemGpa(currentUser.getId()));
     }
 }

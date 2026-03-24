@@ -30,6 +30,7 @@ const studentNav = [
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
     { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
+    { path: '/student/clubs', label: 'Club Management', icon: <LuUsers /> },
     { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
     { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/marks")
+@RequestMapping({ "/api/marks", "/api/academics/marks" })
 public class MarksUploadController {
 
     private final AcademicService academicService;

@@ -5,6 +5,7 @@ import com.university.erp.entity.User;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Profile("dev")
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
 
@@ -109,6 +111,7 @@ public class DataInitializer implements CommandLineRunner {
 
                 // 7. Initialize CSBS Curriculum (and other dept subjects if needed)
                 seedCsbsData();
+                ensureDemoAcademicLinks();
 
                 // 8. Seed one HOD per department and assign to their department
                 seedHodsForAllDepartments();
@@ -455,6 +458,71 @@ public class DataInitializer implements CommandLineRunner {
                 seedSubject(csbs, "Data and Information Security", "CB23511", 3, "R2023");
                 seedSubject(csbs, "Fundamentals of Management", "CB23512", 3, "R2023");
                 seedSubject(csbs, "Business Analytics", "CB23531", 4, "R2023");
+        }
+
+        /**
+         * Auto-repair deterministic demo links for end-to-end academic workflows.
+         * Ensures faculty profiles, faculty-subject mappings, student-user links, and parent ward link.
+         */
+        private void ensureDemoAcademicLinks() {
+                try {
+                        jdbcTemplate.update("""
+                                        INSERT INTO faculty_profiles (user_id, employee_code, department, status)
+                                        SELECT u.user_id, CONCAT('FAC-', u.user_id), 'CSBS', 'active'
+                                        FROM users u
+                                        JOIN roles r ON r.role_id = u.role_id
+                                        WHERE r.role_name = 'FACULTY'
+                                          AND NOT EXISTS (
+                                            SELECT 1 FROM faculty_profiles fp WHERE fp.user_id = u.user_id
+                                          )
+                                        """);
+
+                        jdbcTemplate.update("""
+                                        UPDATE users u
+                                        JOIN roles r ON r.role_id = u.role_id
+                                        SET u.linked_student_id = (
+                                          SELECT s.id FROM students s WHERE s.user_id = u.user_id LIMIT 1
+                                        )
+                                        WHERE r.role_name = 'STUDENT'
+                                          AND u.linked_student_id IS NULL
+                                          AND EXISTS (SELECT 1 FROM students s2 WHERE s2.user_id = u.user_id)
+                                        """);
+
+                        jdbcTemplate.update("""
+                                        UPDATE users p
+                                        JOIN roles rp ON rp.role_id = p.role_id AND rp.role_name = 'PARENT'
+                                        SET p.linked_student_id = (
+                                          SELECT s.id
+                                          FROM students s
+                                          ORDER BY s.id ASC
+                                          LIMIT 1
+                                        )
+                                        WHERE p.linked_student_id IS NULL
+                                        """);
+
+                        jdbcTemplate.update("""
+                                        INSERT INTO faculty_subjects (faculty_id, subject_id, section, semester_id, created_at)
+                                        SELECT fp.faculty_id, ss.subject_id, COALESCE(st.section,'CSE-A'), ss.semester_id, CURRENT_TIMESTAMP
+                                        FROM faculty_profiles fp
+                                        JOIN users fu ON fu.user_id = fp.user_id
+                                        JOIN roles fr ON fr.role_id = fu.role_id AND fr.role_name = 'FACULTY'
+                                        JOIN student_subjects ss ON 1=1
+                                        JOIN students st ON st.id = ss.student_id
+                                        WHERE st.section IS NOT NULL
+                                          AND NOT EXISTS (
+                                            SELECT 1
+                                            FROM faculty_subjects fs
+                                            WHERE fs.faculty_id = fp.faculty_id
+                                              AND fs.subject_id = ss.subject_id
+                                              AND LOWER(fs.section) = LOWER(COALESCE(st.section,'CSE-A'))
+                                              AND fs.semester_id = ss.semester_id
+                                          )
+                                        """);
+
+                        log.info("Demo academic links repaired: faculty profiles, subject mappings, student/parent links.");
+                } catch (Exception e) {
+                        log.warn("Demo academic link repair skipped: {}", e.getMessage());
+                }
         }
 
         private void seedSubject(Department dept, String name, String code, int credits, String regulation) {
