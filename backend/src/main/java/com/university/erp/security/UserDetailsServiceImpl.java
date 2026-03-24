@@ -33,6 +33,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .or(() -> userRepository.findByUsername(lower))
                 .or(() -> userRepository.findByEmail(searchEmail))
                 .or(() -> userRepository.findByEmail(normalized))
+                .or(() -> userRepository.findByLinkedStudent_RegisterNo(normalized))
+                .or(() -> userRepository.findByLinkedStudent_StudentIdNumber(normalized))
                 .map(user -> {
                     String roleName = user.getRole() != null && user.getRole().getRoleName() != null
                             ? user.getRole().getRoleName().name()

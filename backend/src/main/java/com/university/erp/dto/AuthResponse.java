@@ -19,4 +19,6 @@ public class AuthResponse {
     private String firstName;
     private String lastName;
     private Boolean forcePasswordChange;
+    private Long studentId;
+    private String registerNo;
 }
