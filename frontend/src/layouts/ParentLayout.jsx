@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import {
     LuLayoutDashboard, LuBookOpen, LuCalendarCheck2, LuAward,
-    LuBanknote, LuKey, LuLogOut, LuMenu, LuUser, LuSun, LuMoon, LuMonitor
+    LuBanknote, LuKey, LuLogOut, LuMenu, LuUser, LuSun, LuMoon, LuMonitor, LuUsers
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
@@ -16,6 +16,7 @@ const parentNav = [
     { path: '/parent/grades', label: 'Academic Grades', icon: <LuAward /> },
     { path: '/parent/attendance', label: 'Attendance Feed', icon: <LuCalendarCheck2 /> },
     { path: '/parent/fees', label: 'Fee Payments', icon: <LuBanknote /> },
+    { path: '/parent/clubs', label: 'Club Participation', icon: <LuUsers /> },
     { path: '/parent/change-password', label: 'Change Password', icon: <LuKey /> },
 ];
 

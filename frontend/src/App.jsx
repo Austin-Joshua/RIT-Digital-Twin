@@ -85,6 +85,7 @@ const ThemeSettingsPage = lazy(() => import('./pages/ThemeSettingsPage'));
 const CourseMaterials = lazy(() => import('./pages/student/CourseMaterials'));
 const EventsClubs = lazy(() => import('./pages/student/EventsClubs'));
 const Library = lazy(() => import('./pages/student/Library'));
+const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage'));
 
 /* Lazy Loaded Enterprise ERP Pages (Student) */
 const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
@@ -174,6 +175,7 @@ const App = () => {
                     <Route path="settings" element={<ThemeSettingsPage />} />
                     <Route path="materials" element={<CourseMaterials />} />
                     <Route path="events" element={<EventsClubs />} />
+                    <Route path="clubs" element={<ClubsPage />} />
                     <Route path="library" element={<Library />} />
                     <Route path="map" element={<CampusMap />} />
 
@@ -190,6 +192,7 @@ const App = () => {
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="fees" element={<AcademicFee />} />
                     <Route path="change-password" element={<ChangePassword />} />
+                    <Route path="clubs" element={<ClubsPage />} />
                   </Route>
 
                   {/* HOD (Head of Department) Mode – intermediate between Admin and Faculty */}
@@ -200,6 +203,7 @@ const App = () => {
                     <Route path="student/:studentId" element={<HODStudentPerformance />} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
+                    <Route path="clubs" element={<ClubsPage />} />
                   </Route>
 
                   {/* Institutional / Admin / Management / Faculty Mode */}
@@ -231,6 +235,7 @@ const App = () => {
                     <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
                     <Route path="management/inventory" element={<InventoryAssets />} />
                     <Route path="management/alumni" element={<AlumniPortal />} />
+                    <Route path="management/clubs" element={<ClubsPage />} />
 
                     <Route path="change-password" element={<ChangePassword />} />
 
@@ -246,6 +251,7 @@ const App = () => {
                     <Route path="faculty/grading" element={<FacultyGrading />} />
                     <Route path="faculty/proctor" element={<ProctorDashboard />} />
                     <Route path="faculty/research" element={<ResearchTracker />} />
+                    <Route path="faculty/clubs" element={<ClubsPage />} />
 
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />

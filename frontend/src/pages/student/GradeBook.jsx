@@ -1,48 +1,39 @@
 import React, { useState } from 'react';
 import ExportButtons from '../../components/common/ExportButtons';
 import { useToast } from '../../context/ToastContext';
+import api from '../../services/api';
 
 const GradeBook = () => {
     const [semester, setSemester] = useState('');
     const [showData, setShowData] = useState(false);
     const { addToast } = useToast();
-    const [grades, setGrades] = useState([
-        { year: '2025-26', sem: 'III', code: 'CS3301', title: 'Data Structures', grade: 'O', result: 'PASS', monthYear: 'DEC 2025' },
-        { year: '2025-26', sem: 'III', code: 'CS3302', title: 'Discrete Mathematics', grade: 'A+', result: 'PASS', monthYear: 'DEC 2025' },
-        { year: '2025-26', sem: 'III', code: 'CS3303', title: 'Digital Principles', grade: 'A', result: 'PASS', monthYear: 'DEC 2025' },
-        { year: '2025-26', sem: 'III', code: 'EE3301', title: 'Electrical Circuits', grade: 'B+', result: 'PASS', monthYear: 'DEC 2025' },
-        { year: '2024-25', sem: 'II', code: 'MA3201', title: 'Calculus', grade: 'A+', result: 'PASS', monthYear: 'MAY 2025' },
-        { year: '2024-25', sem: 'I', code: 'PH3101', title: 'Physics', grade: 'O', result: 'PASS', monthYear: 'DEC 2024' },
-        { year: '2025-26', sem: 'VI', code: 'CS8651', title: 'Internet Programming', grade: 'A+', result: 'PASS', monthYear: 'MAY 2026' }
-    ]);
+    const [grades, setGrades] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
-        const checkConnectivity = () => {
-            const syncedData = localStorage.getItem('connectivity_grading');
-            if (syncedData) {
-                const data = JSON.parse(syncedData);
-                const courseCode = data.course.split(' - ')[0];
-
-                setGrades(prev => prev.map(g => {
-                    if (g.code === courseCode) {
-                        const studentData = data.students.find(s => s.reg === '211520104001');
-                        if (studentData) {
-                            return {
-                                ...g,
-                                grade: studentData.currentGrade,
-                                result: 'PASS' // Simple assumption
-                            };
-                        }
-                    }
-                    return g;
-                }));
+        const fetchGradebook = async () => {
+            try {
+                setLoading(true);
+                const params = semester ? { semester: Number(semester) } : {};
+                const res = await api.get('/student/gradebook', { params });
+                const rows = Array.isArray(res.data) ? res.data : [];
+                setGrades(rows.map((g) => ({
+                    year: g.semester <= 2 ? '2024-25' : '2025-26',
+                    sem: toRoman(g.semester),
+                    code: g.subjectCode,
+                    title: g.subjectName,
+                    grade: g.gradeLetter,
+                    result: g.gradeLetter === 'RA' ? 'RA' : 'PASS',
+                    monthYear: g.semester % 2 === 1 ? 'DEC 2024' : 'MAY 2025'
+                })));
+            } catch {
+                setGrades([]);
+            } finally {
+                setLoading(false);
             }
         };
-
-        checkConnectivity();
-        window.addEventListener('storage', checkConnectivity);
-        return () => window.removeEventListener('storage', checkConnectivity);
-    }, []);
+        fetchGradebook();
+    }, [semester]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -133,7 +124,9 @@ const GradeBook = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredGrades.length > 0 ? (
+                                {loading ? (
+                                    <tr><td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>Loading gradebook...</td></tr>
+                                ) : filteredGrades.length > 0 ? (
                                     filteredGrades.map((g, i) => (
                                         <tr key={i} style={{ borderBottom: '1px solid var(--theme-border)' }}>
                                             <td style={{ textAlign: 'center', padding: '16px' }}><input type="checkbox" /></td>
@@ -186,6 +179,11 @@ const GradeBook = () => {
             </div>
         </div>
     );
+};
+
+const toRoman = (n) => {
+    const map = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+    return map[n] || String(n);
 };
 
 export default GradeBook;

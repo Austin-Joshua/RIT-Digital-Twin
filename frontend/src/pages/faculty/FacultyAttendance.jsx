@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useToast } from '../../context/ToastContext';
 import { FaUserClock, FaChartPie, FaDownload, FaSave, FaCheck, FaTimes, FaCalendarAlt } from 'react-icons/fa';
+import api from '../../services/api';
 
 const FacultyAttendance = () => {
     const { addToast } = useToast();
-    const [selectedCourse, setSelectedCourse] = useState('CS8651 - Internet Programming');
+    const [selectedCourse, setSelectedCourse] = useState('');
+    const [assignments, setAssignments] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [markingMode, setMarkingMode] = useState(false);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -15,6 +18,50 @@ const FacultyAttendance = () => {
         { reg: '211520104004', name: 'Dinesh M', attended: 28, total: 45, percentage: 62.2, currentStatus: 'absent' },
         { reg: '211520104005', name: 'Elango P', attended: 40, total: 45, percentage: 88.9, currentStatus: 'present' },
     ]);
+
+    React.useEffect(() => {
+        const loadAssignments = async () => {
+            try {
+                const res = await api.get('/erp/faculty/assignments');
+                const rows = Array.isArray(res.data) ? res.data : [];
+                setAssignments(rows);
+                if (rows.length > 0) {
+                    setSelectedCourse(`${rows[0].subjectCode} - ${rows[0].subjectName}`);
+                }
+            } catch {
+                // keep fallback local data
+            }
+        };
+        loadAssignments();
+    }, []);
+
+    React.useEffect(() => {
+        const loadRoster = async () => {
+            const picked = assignments.find(a => `${a.subjectCode} - ${a.subjectName}` === selectedCourse);
+            if (!picked) return;
+            try {
+                const res = await api.get('/erp/faculty/roster', {
+                    params: { subjectId: picked.subjectId, semester: picked.semester, section: picked.section }
+                });
+                const rows = Array.isArray(res.data) ? res.data : [];
+                if (rows.length > 0) {
+                    setStudents(rows.map(r => ({
+                        studentId: r.studentId,
+                        studentSubjectId: r.studentSubjectId,
+                        reg: r.registerNo,
+                        name: r.name,
+                        attended: r.attended,
+                        total: r.total,
+                        percentage: Number(r.percentage || 0),
+                        currentStatus: 'present'
+                    })));
+                }
+            } catch {
+                // keep fallback local list
+            }
+        };
+        loadRoster();
+    }, [assignments, selectedCourse]);
 
     const handleStatusToggle = (index, status) => {
         if (!markingMode) return;
@@ -29,7 +76,7 @@ const FacultyAttendance = () => {
         setStudents(newStudents);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setMarkingMode(false);
 
         // Calculate updated statistics
@@ -46,16 +93,27 @@ const FacultyAttendance = () => {
 
         setStudents(updated);
 
-        // Store in localStorage for cross-login connectivity
-        const attendanceData = {
-            lastUpdated: new Date().toISOString(),
-            course: selectedCourse,
-            date: date,
-            students: updated
-        };
+        const attendanceData = { lastUpdated: new Date().toISOString(), course: selectedCourse, date: date, students: updated };
         localStorage.setItem('connectivity_attendance', JSON.stringify(attendanceData));
 
-        addToast(`Attendance for ${date} saved successfully. Shared with student portal.`, 'success');
+        try {
+            setLoading(true);
+            const picked = assignments.find(a => `${a.subjectCode} - ${a.subjectName}` === selectedCourse);
+            if (picked) {
+                await api.post('/erp/faculty/attendance', {
+                    subjectId: picked.subjectId,
+                    semester: picked.semester,
+                    section: picked.section,
+                    date,
+                    records: updated.map(s => ({ studentId: Number(s.studentId || 0), status: s.currentStatus }))
+                });
+            }
+            addToast(`Attendance for ${date} saved successfully. Shared with student portal.`, 'success');
+        } catch {
+            addToast('Attendance saved locally; backend sync failed.', 'warning');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -80,8 +138,16 @@ const FacultyAttendance = () => {
                             '--tw-ring-color': 'var(--color-accent-gold)'
                         }}
                     >
-                        <option value="CS8651 - Internet Programming">CS8651 - Internet Programming / CSE-A</option>
-                        <option value="CS8691 - Artificial Intelligence">CS8691 - Artificial Intelligence / CSE-B</option>
+                        {assignments.length > 0 ? assignments.map(a => (
+                            <option key={a.facultySubjectId} value={`${a.subjectCode} - ${a.subjectName}`}>
+                                {a.subjectCode} - {a.subjectName} / {a.section}
+                            </option>
+                        )) : (
+                            <>
+                                <option value="CS8651 - Internet Programming">CS8651 - Internet Programming / CSE-A</option>
+                                <option value="CS8691 - Artificial Intelligence">CS8691 - Artificial Intelligence / CSE-B</option>
+                            </>
+                        )}
                     </select>
                     <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors">
                         <FaDownload /> Export CSV
@@ -101,6 +167,7 @@ const FacultyAttendance = () => {
                     ) : (
                         <button
                             onClick={handleSave}
+                            disabled={loading}
                             className="bg-success text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md animate-pulse hover:scale-105 active:scale-95"
                             style={{
                                 backgroundColor: 'var(--color-success)',

@@ -64,6 +64,10 @@ public class AuthController {
         return ResponseEntity.ok(AuthResponse.builder()
                 .username(user.getUsername())
                 .role(user.getRole().getRoleName().name())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .forcePasswordChange(user.isForcePasswordChange())
                 .build());
     }
 

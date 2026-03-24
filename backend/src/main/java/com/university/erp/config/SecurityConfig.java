@@ -91,6 +91,12 @@ public class SecurityConfig {
         if (!combinedOrigins.contains("http://127.0.0.1:5173")) {
             combinedOrigins.add("http://127.0.0.1:5173");
         }
+        if (!combinedOrigins.contains("http://localhost:5174")) {
+            combinedOrigins.add("http://localhost:5174");
+        }
+        if (!combinedOrigins.contains("http://127.0.0.1:5174")) {
+            combinedOrigins.add("http://127.0.0.1:5174");
+        }
 
         configuration.setAllowedOriginPatterns(combinedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

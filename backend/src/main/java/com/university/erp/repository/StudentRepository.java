@@ -20,6 +20,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
     Optional<Student> findByStudentIdNumber(String studentIdNumber);
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
+    Optional<Student> findByRegisterNo(String registerNo);
+
     Optional<Student> findByUser_Id(Long userId);
 
     List<Student> findByDepartmentId(Long departmentId);
@@ -32,4 +35,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     long countByDepartment_Id(Long departmentId);
 
     long countByDepartment_IdAndYear(Long departmentId, Integer year);
+
+    List<Student> findBySectionIgnoreCase(String section);
 }

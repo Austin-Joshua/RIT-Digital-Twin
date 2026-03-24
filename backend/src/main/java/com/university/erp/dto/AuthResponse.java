@@ -15,4 +15,8 @@ public class AuthResponse {
     private Long id;
     private String username;
     private String role;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private Boolean forcePasswordChange;
 }

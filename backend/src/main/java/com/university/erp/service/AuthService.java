@@ -83,8 +83,13 @@ public class AuthService {
             }
 
             log.info("Authentication successful. Building session for user ID: {}", user.getUserId());
+            if ("inactive".equalsIgnoreCase(user.getAccountStatus())) {
+                throw new RuntimeException("Account is inactive. Please contact admin.");
+            }
             bruteForceProtectionService.loginSucceeded(request.getUsername());
             bruteForceProtectionService.loginSucceededByIp(clientIp);
+            user.setLastLogin(java.time.LocalDateTime.now());
+            userRepository.save(user);
 
             String jwt = jwtUtils.generateToken(user);
             log.info("JWT generated successfully");
@@ -104,6 +109,10 @@ public class AuthService {
                     .id(user.getUserId())
                     .username(user.getUsername())
                     .role(roleName)
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .forcePasswordChange(user.isForcePasswordChange())
                     .build();
         } catch (Exception e) {
             log.error("CRITICAL: Login process failed for user {}: {}", request.getUsername(), e.getMessage(), e);
@@ -166,6 +175,10 @@ public class AuthService {
                     .id(user.getUserId())
                     .username(user.getUsername())
                     .role(user.getRole().getRoleName().name())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .forcePasswordChange(user.isForcePasswordChange())
                     .build();
 
         } catch (Exception e) {
@@ -217,6 +230,7 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .role(role)
+                .accountStatus("active")
                 .build();
 
         userRepository.save(user);
@@ -226,6 +240,7 @@ public class AuthService {
     @Transactional
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setForcePasswordChange(false);
         userRepository.save(user);
     }
 
@@ -243,6 +258,10 @@ public class AuthService {
                             .id(user.getUserId())
                             .username(user.getUsername())
                             .role(user.getRole().getRoleName().name())
+                            .email(user.getEmail())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .forcePasswordChange(user.isForcePasswordChange())
                             .build();
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));

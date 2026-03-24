@@ -15,13 +15,13 @@ public class AssetInventoryController {
     private AssetInventoryRepository repository;
 
     @GetMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SA','M')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public List<AssetInventory> getAllAssets() {
         return repository.findAll();
     }
 
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','SA','M')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public AssetInventory createAsset(@org.springframework.lang.NonNull @RequestBody AssetInventory asset) {
         java.util.Objects.requireNonNull(asset, "asset must not be null");
         return repository.save(asset);

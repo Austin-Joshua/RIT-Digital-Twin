@@ -32,10 +32,28 @@ public class Student extends BaseEntity {
     @Column(name = "student_id_number", unique = true, nullable = false)
     private String studentIdNumber;
 
+    @Column(name = "register_no", unique = true)
+    private String registerNo;
+
+    @Column(name = "student_name")
+    private String studentName;
+
     @Column(name = "academic_year")
     private Integer year;
 
     private String section;
+    @Column(name = "batch_label")
+    private String batch;
+    @Column(name = "scholar_type")
+    private String scholarType;
+    @Column(name = "contact_email")
+    private String email;
+    private String phone;
+    private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curriculum_id")
+    private Curriculum curriculum;
+    private Integer currentSemester;
     private BigDecimal currentCgpa;
     private Integer arrearCount;
 

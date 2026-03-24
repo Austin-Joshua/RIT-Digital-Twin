@@ -39,7 +39,7 @@ function TransportPage() {
         setLoading(true);
         setError('');
         try {
-            const res = await api.post('/api/simulate/transport', params);
+            const res = await api.post('/simulate/transport', params);
             setData(res.data);
         } catch (err) {
             setError(err.response?.data?.message || 'Unable to complete network analysis. Please verify your connection to the institution server.');

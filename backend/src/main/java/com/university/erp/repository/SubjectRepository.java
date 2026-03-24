@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findByDepartmentId(Long departmentId);
+    List<Subject> findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(Integer semesterNumber, String departmentName);
+    List<Subject> findBySemester_SemesterNumberOrderBySubjectCodeAsc(Integer semesterNumber);
 
     Optional<Subject> findBySubjectCode(String subjectCode);
 }

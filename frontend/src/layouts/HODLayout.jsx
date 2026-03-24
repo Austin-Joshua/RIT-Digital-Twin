@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
 import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
-import { LuUser, LuMenu, LuLayoutDashboard, LuKey, LuSettings, LuLogOut, LuSun, LuMoon, LuMonitor } from 'react-icons/lu';
+import { LuUser, LuMenu, LuLayoutDashboard, LuKey, LuSettings, LuLogOut, LuSun, LuMoon, LuMonitor, LuUsers } from 'react-icons/lu';
 import './student-layout.css';
 
 const LayoutLoader = () => (
@@ -19,6 +19,7 @@ const LG_BREAKPOINT = 1024;
 
 const hodNavItems = [
   { path: '/hod', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+  { path: '/hod/clubs', label: 'Clubs', icon: <LuUsers /> },
   { path: '/hod/change-password', label: 'Change Password', icon: <LuKey /> },
 ];
 

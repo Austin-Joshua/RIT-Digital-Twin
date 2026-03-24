@@ -17,4 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByRole_RoleNameAndDepartment_Id(Role.UserRole roleName, Long departmentId);
 
     List<User> findByRole_RoleNameAndDepartment_Id(Role.UserRole roleName, Long departmentId);
+
+    List<User> findByRole_RoleName(Role.UserRole roleName);
+
+    java.util.Optional<User> findByLinkedStudent_Id(Long studentId);
 }
