@@ -113,6 +113,8 @@ public class AuthService {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .forcePasswordChange(user.isForcePasswordChange())
+                    .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
+                    .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                     .build();
         } catch (Exception e) {
             log.error("CRITICAL: Login process failed for user {}: {}", request.getUsername(), e.getMessage(), e);
@@ -179,6 +181,8 @@ public class AuthService {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .forcePasswordChange(user.isForcePasswordChange())
+                    .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
+                    .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                     .build();
 
         } catch (Exception e) {
@@ -262,6 +266,8 @@ public class AuthService {
                             .firstName(user.getFirstName())
                             .lastName(user.getLastName())
                             .forcePasswordChange(user.isForcePasswordChange())
+                            .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
+                            .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                             .build();
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
