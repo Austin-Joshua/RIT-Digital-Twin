@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../services/api';
+import api from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaExclamationTriangle, FaLightbulb, FaTimes } from 'react-icons/fa';
 
