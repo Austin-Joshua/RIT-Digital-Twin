@@ -301,7 +301,6 @@ const ClubsPage = () => {
         }
     };
 
-    if (loading) return <div className="stu-info-card" style={{ padding: '16px' }}>Loading clubs...</div>;
 
     return (
         <div className="stu-dashboard" style={{ display: 'grid', gap: '18px' }}>
