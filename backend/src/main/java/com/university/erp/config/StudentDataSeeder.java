@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-// @Component
-@Profile("dev")
+@Component
+// @Profile("dev")
 @org.springframework.context.annotation.Lazy
 @Slf4j
 public class StudentDataSeeder implements CommandLineRunner {
