@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { academicAiApi } from '../../services/enterpriseApi';
+import { academicAiApi } from '../../../services/enterpriseApi';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaCalculator, FaChartLine } from 'react-icons/fa';
 

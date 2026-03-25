@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { academicAiApi } from '../../services/enterpriseApi';
+import { academicAiApi } from '../../../services/enterpriseApi';
 import { FaLightbulb, FaCheckCircle } from 'react-icons/fa';
 
 const CareerRecommendation = ({ studentId }) => {
