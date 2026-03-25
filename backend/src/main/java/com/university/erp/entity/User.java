@@ -61,14 +61,24 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "linked_student_id")
     private Student linkedStudent;
 
-    @Column(name = "account_status")
-    private String accountStatus;
+    @Column(name = "account_status", nullable = false)
+    @Builder.Default
+    private String accountStatus = "active";
 
-    @Column(name = "force_password_change")
-    private boolean forcePasswordChange;
+    @Column(name = "must_change_password")
+    private boolean mustChangePassword;
+
+    @Column(name = "failed_login_attempts")
+    private int failedLoginAttempts;
+
+    @Column(name = "lock_until")
+    private LocalDateTime lockUntil;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    @Column(name = "last_password_change")
+    private LocalDateTime lastPasswordChange;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -85,6 +95,12 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
+        if ("locked".equalsIgnoreCase(accountStatus)) {
+            return false;
+        }
+        if (lockUntil != null && lockUntil.isAfter(LocalDateTime.now())) {
+            return false;
+        }
         return true;
     }
 
@@ -95,6 +111,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !"deactivated".equalsIgnoreCase(accountStatus);
     }
 }

@@ -67,7 +67,7 @@ public class AuthController {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .forcePasswordChange(user.isForcePasswordChange())
+                .mustChangePassword(user.isMustChangePassword())
                 .build());
     }
 

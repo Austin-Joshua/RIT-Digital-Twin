@@ -5,13 +5,12 @@ import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import NotificationBar from '../components/NotificationBar';
-import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
 import {
     LuUser, LuMenu, LuLayoutGrid, LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuSettings,
     LuPenTool, LuFlame, LuLogOut, LuChevronDown, LuChevronRight,
-    LuSun, LuMoon, LuMonitor
+    LuSun, LuMoon, LuMonitor, LuShieldAlert
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
 import './student-layout.css';
@@ -82,6 +81,7 @@ const InstitutionalLayout = () => {
         { path: '/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
         { path: '/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
         { path: '/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
+        { path: '/management/users', label: 'User Accounts', icon: <LuShieldAlert /> },
         { path: '/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
         { path: '/management/results', label: 'Results', icon: <LuBook /> },
         { path: '/management/clubs', label: 'Club Management', icon: <LuUsers /> },
@@ -313,7 +313,7 @@ const InstitutionalLayout = () => {
                     </div>
                 </header>
 
-                <GlobalAlertBar />
+
 
                 {/* Content */}
                 <div className="stu-content">

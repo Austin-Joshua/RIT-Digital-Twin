@@ -2,7 +2,6 @@ package com.university.erp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,14 +16,22 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private String role;
-    private String action;
-    private Long departmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "actor_id")
+    private User actor;
 
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    @Column(nullable = false)
+    private String action;
+
+    @Column(name = "action_time", nullable = false)
+    private LocalDateTime actionTime;
 
     @Column(columnDefinition = "TEXT")
     private String details;
+
+    @Column(name = "affected_user_id")
+    private Long affectedUserId;
+
+    @Column(name = "ip_address")
+    private String ipAddress;
 }

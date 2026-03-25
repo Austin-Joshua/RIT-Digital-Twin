@@ -81,7 +81,11 @@ export const AuthProvider = ({ children }) => {
             setRole(userData.role || null);
             setIsAuthenticated(true);
 
-            return { success: true, role: userData.role || null };
+            return { 
+                success: true, 
+                role: userData.role || null,
+                mustChangePassword: userData.mustChangePassword === true
+            };
         } catch (error) {
             console.error('Login failed', error);
             if (error.response) {
@@ -122,7 +126,11 @@ export const AuthProvider = ({ children }) => {
             setRole(userData.role || null);
             setIsAuthenticated(true);
 
-            return { success: true, role: userData.role || null };
+            return { 
+                success: true, 
+                role: userData.role || null,
+                mustChangePassword: userData.mustChangePassword === true
+            };
         } catch (error) {
             console.error('Google Login failed', error);
             const errorMessage = error.response?.data?.message || 'Google authentication failed. Please ensure you are using your institutional account.';

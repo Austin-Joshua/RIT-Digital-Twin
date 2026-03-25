@@ -1,7 +1,7 @@
 package com.university.erp.config;
 
 import com.university.erp.security.JwtAuthenticationFilter;
-import com.university.erp.defense.AdaptiveDefenseFilter;
+import com.university.erp.security.defense.AdaptiveDefenseFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -36,9 +36,9 @@ public class SecurityConfig {
     private final com.university.erp.security.XssSanitizationFilter xssSanitizationFilter;
     private final AdaptiveDefenseFilter adaptiveDefenseFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-            com.university.erp.security.XssSanitizationFilter xssSanitizationFilter,
-            AdaptiveDefenseFilter adaptiveDefenseFilter) {
+    public SecurityConfig(@org.springframework.context.annotation.Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
+            @org.springframework.context.annotation.Lazy com.university.erp.security.XssSanitizationFilter xssSanitizationFilter,
+            @org.springframework.context.annotation.Lazy AdaptiveDefenseFilter adaptiveDefenseFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.xssSanitizationFilter = xssSanitizationFilter;
         this.adaptiveDefenseFilter = adaptiveDefenseFilter;
@@ -56,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.security.authentication.dao.DaoAuthenticationProvider authenticationProvider(
-            com.university.erp.security.UserDetailsServiceImpl userDetailsService) {
+            @org.springframework.context.annotation.Lazy com.university.erp.security.UserDetailsServiceImpl userDetailsService) {
         org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider = new org.springframework.security.authentication.dao.DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
