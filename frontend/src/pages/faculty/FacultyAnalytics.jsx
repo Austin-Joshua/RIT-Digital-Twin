@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from '../../components/common/Card';
-import ClassRiskHeatmap from '../../components/intelligence/ClassRiskHeatmap';
+import ClassRiskHeatmap from '../../features/ai/components/ClassRiskHeatmap';
 import { FaExclamationTriangle, FaChartLine, FaBrain } from 'react-icons/fa';
 
 const FacultyAnalytics = () => {

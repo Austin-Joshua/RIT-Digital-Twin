@@ -4,8 +4,8 @@ import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tool
 import api from '../../services/api';
 import { FaChild, FaCalendarAlt, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt, FaMagic, FaMedal, FaTrophy, FaStar, FaHandshake, FaChartLine as FaChartIcon } from 'react-icons/fa';
 import { useToast } from '../../context/ToastContext';
-import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
-import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
+import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
+import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
 
 // Simple Modal reused for standard details
 const DetailModal = ({ detail, onClose }) => {
