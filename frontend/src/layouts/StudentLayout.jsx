@@ -12,7 +12,6 @@ import {
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
-import GlobalAlertBar from '../features/ai/components/GlobalAlertBar';
 import { ThemeContext } from '../context/ThemeContext';
 import './student-layout.css';
 
@@ -334,7 +333,6 @@ const StudentLayout = () => {
                     </div>
                 </header>
 
-                <GlobalAlertBar />
 
                 {/* Content */}
                 <div className="stu-content">
