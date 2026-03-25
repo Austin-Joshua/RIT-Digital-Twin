@@ -8,7 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import KPIDetailsModal from '../../components/common/KPIDetailsModal';
 import { FaBus, FaUsers, FaChartLine, FaRobot, FaMicrochip } from 'react-icons/fa';
-import './modules/Transport.css';
+import '../modules/Transport.css';
 
 const COLORS = ['var(--color-primary-navy)', 'var(--color-accent-gold)', 'var(--color-primary-600)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-error)', 'var(--color-primary-400)'];
 
