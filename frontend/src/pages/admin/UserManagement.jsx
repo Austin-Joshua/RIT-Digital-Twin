@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LuSearch, LuUnlock, LuLock, LuShieldAlert, LuUserX, LuRefreshCcw } from 'react-icons/lu';
+import { LuSearch, LuLockOpen, LuLock, LuShieldAlert, LuUserX, LuRefreshCcw } from 'react-icons/lu';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -115,7 +115,7 @@ const UserManagement = () => {
                                         user.accountStatus === 'active' ? 'text-green-500' :
                                         user.accountStatus === 'locked' ? 'text-red-500' : 'text-gray-500'
                                     }`}>
-                                        {user.accountStatus === 'active' ? <LuUnlock size={14}/> : <LuLock size={14}/>}
+                                        {user.accountStatus === 'active' ? <LuLockOpen size={14}/> : <LuLock size={14}/>}
                                         {user.accountStatus?.toUpperCase()}
                                     </span>
                                 </td>
@@ -132,7 +132,7 @@ const UserManagement = () => {
                                             disabled={user.accountStatus !== 'locked'}
                                             className="p-2 hover:bg-green-50 text-green-600 rounded-lg disabled:opacity-30"
                                         >
-                                            <LuUnlock size={18} />
+                                            <LuLockOpen size={18} />
                                         </button>
                                         <button 
                                             title="Reset Password"
