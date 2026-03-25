@@ -21,6 +21,7 @@ const Sidebar = () => {
             { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
             { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
             { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
+            { path: '/management/algorithms', name: 'Smart Algorithms', icon: <FaTools /> },
             { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
             { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
             { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },

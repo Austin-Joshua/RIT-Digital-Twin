@@ -12,8 +12,8 @@ import {
 } from 'recharts';
 import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
-import ChatbotWidget from '../../components/intelligence/ChatbotWidget';
-import AIInsightPanel from '../../components/intelligence/AIInsightPanel';
+import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
+import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import Card from '../../components/common/Card';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import DetailedReportModal from '../../components/common/DetailedReportModal';
@@ -131,14 +131,6 @@ const StudentDashboard = () => {
 
             {/* Announcements & Events */}
             {/* AI Insights for Student */}
-            <div className="stu-info-row">
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-accent-gold)' }}>
-                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>AI Insights</div>
-                    <div className="info-body" style={{ padding: '15px', minHeight: '80px' }}>
-                        <AIInsightPanel role="STUDENT" />
-                    </div>
-                </div>
-            </div>
 
             <div className="stu-info-row">
                 <div className="stu-info-card" style={{ borderTopColor: '#7c3aed' }}>
@@ -203,25 +195,6 @@ const StudentDashboard = () => {
             <div style={{ marginTop: '20px', borderTop: '2px solid var(--theme-border)', paddingTop: '20px' }}>
                 <h3 style={{ marginBottom: '15px' }}>Advanced ERP Features</h3>
 
-                {/* Enterprise AI Risk Banner */}
-                <AnimatePresence>
-                    {riskScore && riskScore.riskLevel !== 'LOW' && (
-                        <motion.div initial={{ opacity: 0, y: -20, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} style={{
-                            background: riskScore.riskLevel === 'HIGH' ? 'var(--color-error-rgba, rgba(239, 68, 68, 0.1))' : 'var(--color-warning-rgba, rgba(245, 158, 11, 0.1))',
-                            borderLeft: `4px solid ${riskScore.riskLevel === 'HIGH' ? 'var(--color-error)' : 'var(--color-warning)'}`,
-                            padding: '16px 20px', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'flex-start', gap: '16px',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
-                        }}>
-                            <div style={{ fontSize: '1.5rem' }}>⚠️</div>
-                            <div>
-                                <h3 style={{ margin: 0, color: riskScore.riskLevel === 'HIGH' ? 'var(--color-error)' : 'var(--color-warning)', fontSize: '1.1rem' }}>Academic Risk Warning</h3>
-                                <p style={{ margin: '4px 0 0 0', color: 'var(--theme-text)', fontSize: '0.9rem' }}>
-                                    Your AI-predicted failure risk is <strong>{riskScore.failureProbability.toFixed(1)}% ({riskScore.riskLevel})</strong>. Action recommended: <span style={{ color: 'var(--theme-text-muted)' }}>{riskScore.suggestedActions}</span>
-                                </p>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
 
                 {/* Enterprise Ranking Panel */}
                 {ranking && (

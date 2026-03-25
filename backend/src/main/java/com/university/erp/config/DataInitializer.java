@@ -122,6 +122,9 @@ public class DataInitializer implements CommandLineRunner {
                 // 10. Clear login attempt blocks so seeded accounts (e.g. HOD) can log in after restart
                 bruteForceProtectionService.clearAll();
                 log.info("Cleared login attempt blocks for all accounts.");
+
+                // 11. Assign fixed Register Numbers to demo students so login by register number works
+                assignRegisterNumbersToDemoStudents();
         }
 
         /** UG and PG programmes as per RIT Chennai (ritchennai.org) */
@@ -248,6 +251,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         .orElseThrow(() -> new RuntimeException(
                                                                         "Role " + roleEnum + " not found"));
                                         user.setRole(role);
+                                        user.setMustChangePassword(true);
 
                                         userRepository.save(user);
                                 },
@@ -264,6 +268,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         .firstName(firstName)
                                                         .lastName(lastName)
                                                         .role(role)
+                                                        .mustChangePassword(true)
                                                         .build();
 
                                         userRepository.save(user);
@@ -522,6 +527,55 @@ public class DataInitializer implements CommandLineRunner {
                         log.info("Demo academic links repaired: faculty profiles, subject mappings, student/parent links.");
                 } catch (Exception e) {
                         log.warn("Demo academic link repair skipped: {}", e.getMessage());
+                }
+        }
+
+        /**
+         * Assigns fixed registration numbers to the core demo students
+         * so the user can test logging in via registerNo.
+         */
+        private void assignRegisterNumbersToDemoStudents() {
+                try {
+                        String[][] studentData = {
+                                {"student@ritchennai.edu.in", "211422104101", "CSE-A"},
+                                {"student2@ritchennai.edu.in", "211422104102", "CSE-A"},
+                                {"student3@ritchennai.edu.in", "211422104103", "CSE-B"}
+                        };
+
+                        for (String[] data : studentData) {
+                                String email = data[0];
+                                String regNo = data[1];
+                                String section = data[2];
+
+                                // 1. Ensure a student record exists for this user
+                                jdbcTemplate.update("""
+                                        INSERT INTO students (user_id, register_no, student_id_number, section, created_at)
+                                        SELECT u.user_id, ?, ?, ?, CURRENT_TIMESTAMP
+                                        FROM users u
+                                        WHERE u.email = ?
+                                          AND NOT EXISTS (SELECT 1 FROM students s WHERE s.user_id = u.user_id)
+                                        """, regNo, regNo, section, email);
+
+                                // 2. Update the existing student record (if it already existed)
+                                jdbcTemplate.update("""
+                                        UPDATE students s
+                                        JOIN users u ON u.user_id = s.user_id
+                                        SET s.register_no = ?, s.student_id_number = ?, s.section = ?
+                                        WHERE u.email = ?
+                                        """, regNo, regNo, section, email);
+                                
+                                // 3. Ensure the user's linked_student_id is set
+                                jdbcTemplate.update("""
+                                        UPDATE users u
+                                        JOIN students s ON s.user_id = u.user_id
+                                        SET u.linked_student_id = s.id
+                                        WHERE u.email = ?
+                                        """, email);
+                                
+                                log.info("Assigned register number {} to {}", regNo, email);
+                        }
+                } catch (Exception e) {
+                        log.warn("Failed to assign register numbers to demo students: {}", e.getMessage());
                 }
         }
 

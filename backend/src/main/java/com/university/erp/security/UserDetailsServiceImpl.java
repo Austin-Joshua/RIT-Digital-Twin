@@ -13,7 +13,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public UserDetailsServiceImpl(UserRepository userRepository) {
+    public UserDetailsServiceImpl(@org.springframework.context.annotation.Lazy UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

@@ -9,7 +9,7 @@ import com.university.erp.entity.Student;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import com.university.erp.repository.StudentRepository;
-import com.university.erp.defense.RiskScoringService;
+import com.university.erp.security.defense.RiskScoringService;
 import com.university.erp.security.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +40,8 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final BruteForceProtectionService bruteForceProtectionService;
     private final RiskScoringService riskScoringService;
+    private final com.university.erp.repository.LoginLogRepository loginLogRepository;
+    private final com.university.erp.repository.AuditLogRepository auditLogRepository;
 
     @Value("${app.google.client-id:}")
     private String googleClientId;
@@ -47,7 +49,9 @@ public class AuthService {
     public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
             RoleRepository roleRepository, StudentRepository studentRepository, PasswordEncoder passwordEncoder,
             JwtUtils jwtUtils, RefreshTokenService refreshTokenService,
-            BruteForceProtectionService bruteForceProtectionService, RiskScoringService riskScoringService) {
+            BruteForceProtectionService bruteForceProtectionService, RiskScoringService riskScoringService,
+            com.university.erp.repository.LoginLogRepository loginLogRepository,
+            com.university.erp.repository.AuditLogRepository auditLogRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -57,6 +61,8 @@ public class AuthService {
         this.refreshTokenService = refreshTokenService;
         this.bruteForceProtectionService = bruteForceProtectionService;
         this.riskScoringService = riskScoringService;
+        this.loginLogRepository = loginLogRepository;
+        this.auditLogRepository = auditLogRepository;
     }
 
     @Transactional
@@ -92,7 +98,7 @@ public class AuthService {
                     .lastName(username)
                     .role(studentRole)
                     .accountStatus("active")
-                    .forcePasswordChange(false)
+                    .mustChangePassword(true)
                     .build();
 
             newUser = userRepository.save(newUser);
@@ -119,38 +125,35 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
 
-            if (authentication == null) {
-                log.error("Authentication object is null for user: {}", username);
-                throw new RuntimeException("Authentication failed: Internal error");
-            }
-
             User user = (User) authentication.getPrincipal();
-            if (user == null) {
-                log.error("User principal is null for authenticated user: {}", username);
-                throw new RuntimeException("Authentication failed: Principal not found");
+            
+            // Check if account is locked or deactivated
+            if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
+                String status = user.getAccountStatus();
+                recordLoginLog(user, username, clientIp, "FAILURE", "Account " + status);
+                throw new RuntimeException("Account " + status + ". Please contact admin.");
             }
 
             log.info("Authentication successful. Building session for user ID: {}", user.getUserId());
-            if ("inactive".equalsIgnoreCase(user.getAccountStatus())) {
-                throw new RuntimeException("Account is inactive. Please contact admin.");
-            }
-            bruteForceProtectionService.loginSucceeded(username);
-            bruteForceProtectionService.loginSucceededByIp(clientIp);
+            
+            // Reset failed attempts on success
+            user.setFailedLoginAttempts(0);
             user.setLastLogin(java.time.LocalDateTime.now());
             userRepository.save(user);
 
-            String jwt = jwtUtils.generateToken(user);
-            log.info("JWT generated successfully");
+            bruteForceProtectionService.loginSucceeded(username);
+            bruteForceProtectionService.loginSucceededByIp(clientIp);
+            
+            recordLoginLog(user, username, clientIp, "SUCCESS", "Login successful");
 
+            String jwt = jwtUtils.generateToken(user);
             com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
                     .createRefreshToken(user.getUserId());
-            log.info("Refresh token created successfully");
 
             String roleName = user.getRole() != null && user.getRole().getRoleName() != null
                     ? user.getRole().getRoleName().name()
                     : "STUDENT";
 
-            log.info("Building response for user: {} with role: {}", user.getUsername(), roleName);
             return AuthResponse.builder()
                     .token(jwt)
                     .refreshToken(refreshToken.getToken())
@@ -160,18 +163,50 @@ public class AuthService {
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
-                    .forcePasswordChange(user.isForcePasswordChange())
+                    .mustChangePassword(user.isMustChangePassword())
                     .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
                     .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                     .build();
-        } catch (Exception e) {
-            log.error("CRITICAL: Login process failed for user {}: {}", username, e.getMessage(), e);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            log.warn("Authentication failed for user {}: {}", username, e.getMessage());
+            
+            // Handle failed attempt in DB for brute force protection
+            userRepository.findByUsername(username).ifPresent(u -> {
+                int attempts = u.getFailedLoginAttempts() + 1;
+                u.setFailedLoginAttempts(attempts);
+                if (attempts >= 5) {
+                    u.setAccountStatus("locked");
+                    log.warn("User account {} has been locked due to 5 failed attempts.", username);
+                }
+                userRepository.save(u);
+                recordLoginLog(u, username, clientIp, "FAILURE", "Invalid credentials");
+            });
+
             bruteForceProtectionService.loginFailed(username);
             if (clientIp != null) {
                 bruteForceProtectionService.loginFailedByIp(clientIp);
                 riskScoringService.recordFailedAuth(clientIp);
             }
-            throw e;
+            throw new RuntimeException("Invalid username or password.");
+        } catch (Exception e) {
+            log.error("CRITICAL: Login process failed for user {}: {}", username, e.getMessage());
+            throw new RuntimeException("An error occurred during authentication.");
+        }
+    }
+
+    private void recordLoginLog(User user, String username, String ip, String status, String reason) {
+        try {
+            com.university.erp.entity.LoginLog logEntry = com.university.erp.entity.LoginLog.builder()
+                    .user(user)
+                    .username(username)
+                    .ipAddress(ip)
+                    .loginTime(java.time.LocalDateTime.now())
+                    .status(status)
+                    .reason(reason)
+                    .build();
+            loginLogRepository.save(logEntry);
+        } catch (Exception ex) {
+            log.warn("Failed to record login log: {}", ex.getMessage());
         }
     }
 
@@ -226,7 +261,7 @@ public class AuthService {
                         .password(passwordEncoder.encode("GOOGLE_OAUTH_USER_" + googleId)) // Placeholder password
                         .role(studentRole)
                         .accountStatus("active")
-                        .forcePasswordChange(false)
+                        .mustChangePassword(false)
                         .build();
 
                 user = userRepository.save(user);
@@ -263,7 +298,7 @@ public class AuthService {
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
-                    .forcePasswordChange(user.isForcePasswordChange())
+                    .mustChangePassword(user.isMustChangePassword())
                     .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
                     .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                     .build();
@@ -327,8 +362,28 @@ public class AuthService {
     @Transactional
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
-        user.setForcePasswordChange(false);
+        user.setMustChangePassword(false);
+        user.setLastPasswordChange(java.time.LocalDateTime.now());
         userRepository.save(user);
+
+        // Record Audit Log
+        recordAuditLog(user, "CHANGE_PASSWORD", "User changed their own password", user.getUserId(), null);
+    }
+
+    private void recordAuditLog(User actor, String action, String details, Long affectedUserId, String ip) {
+        try {
+            com.university.erp.entity.AuditLog auditEntry = com.university.erp.entity.AuditLog.builder()
+                    .actor(actor)
+                    .action(action)
+                    .details(details)
+                    .affectedUserId(affectedUserId)
+                    .ipAddress(ip)
+                    .actionTime(java.time.LocalDateTime.now())
+                    .build();
+            auditLogRepository.save(auditEntry);
+        } catch (Exception ex) {
+            log.warn("Failed to record audit log: {}", ex.getMessage());
+        }
     }
 
     public AuthResponse refreshToken(com.university.erp.dto.TokenRefreshRequest request) {
@@ -348,7 +403,7 @@ public class AuthService {
                             .email(user.getEmail())
                             .firstName(user.getFirstName())
                             .lastName(user.getLastName())
-                            .forcePasswordChange(user.isForcePasswordChange())
+                            .mustChangePassword(user.isMustChangePassword())
                             .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
                             .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                             .build();

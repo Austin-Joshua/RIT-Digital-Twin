@@ -15,20 +15,21 @@ import HODLayout from './layouts/HODLayout';
 import AuthLayout from './layouts/AuthLayout';
 
 /* Lazy Loaded Auth Pages */
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
 /* Lazy Loaded Admin Pages */
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const ClassroomPage = lazy(() => import('./pages/ClassroomPage'));
-const EnergyPage = lazy(() => import('./pages/EnergyPage'));
-const TransportDirectory = lazy(() => import('./pages/TransportDirectory'));
-const TransportSimulation = lazy(() => import('./pages/TransportSimulation'));
-const CrowdPage = lazy(() => import('./pages/CrowdPage'));
-const PredictionPage = lazy(() => import('./pages/PredictionPage'));
-const CampusMap = lazy(() => import('./pages/CampusMap'));
+const Dashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const ClassroomPage = lazy(() => import('./pages/enterprise/ClassroomPage'));
+const EnergyPage = lazy(() => import('./pages/enterprise/EnergyPage'));
+const TransportDirectory = lazy(() => import('./pages/enterprise/TransportDirectory'));
+const TransportSimulation = lazy(() => import('./pages/enterprise/TransportSimulation'));
+const CrowdPage = lazy(() => import('./pages/enterprise/CrowdPage'));
+const PredictionPage = lazy(() => import('./pages/enterprise/PredictionPage'));
+const SmartAlgorithms = lazy(() => import('./pages/enterprise/SmartAlgorithms'));
+const CampusMap = lazy(() => import('./pages/enterprise/CampusMap'));
 
-const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
+const ParentDashboard = lazy(() => import('./pages/parent/ParentDashboard'));
 
 /* HOD (Head of Department) */
 const HODDashboard = lazy(() => import('./pages/hod/HODDashboard'));
@@ -50,6 +51,7 @@ const SustainabilityDashboard = lazy(() => import('./pages/enterprise/Sustainabi
 const RecruitmentHR = lazy(() => import('./pages/enterprise/RecruitmentHR'));
 const AlumniPortal = lazy(() => import('./pages/enterprise/AlumniPortal'));
 const InventoryAssets = lazy(() => import('./pages/enterprise/InventoryAssets'));
+const UserManagement = lazy(() => import('./pages/admin/UserManagement'));
 
 /* Lazy Loaded Faculty Pages Placeholder */
 const FacultyAcademics = lazy(() => import('./pages/faculty/FacultyAcademics'));
@@ -78,10 +80,10 @@ const CommitteeSchedule = lazy(() => import('./pages/student/CommitteeSchedule')
 const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
 const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
 const Messages = lazy(() => import('./pages/student/Messages'));
-const ChangePassword = lazy(() => import('./pages/ChangePassword'));
+const ChangePassword = lazy(() => import('./pages/auth/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
 const ProfilePage = lazy(() => import('./pages/student/Profile'));
-const ThemeSettingsPage = lazy(() => import('./pages/ThemeSettingsPage'));
+const ThemeSettingsPage = lazy(() => import('./pages/enterprise/ThemeSettingsPage'));
 const CourseMaterials = lazy(() => import('./pages/student/CourseMaterials'));
 const EventsClubs = lazy(() => import('./pages/student/EventsClubs'));
 const Library = lazy(() => import('./pages/student/Library'));
@@ -231,6 +233,8 @@ const App = () => {
                     <Route path="management/results" element={<AutomatedResultPublishing />} />
                     <Route path="management/safety" element={<EmergencyDashboard />} />
                     <Route path="management/assets" element={<MaintenanceModule />} />
+                    <Route path="management/users" element={<UserManagement />} />
+                    <Route path="management/algorithms" element={<SmartAlgorithms />} />
 
                     <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
                     <Route path="management/inventory" element={<InventoryAssets />} />

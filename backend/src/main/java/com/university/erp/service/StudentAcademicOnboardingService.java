@@ -91,7 +91,7 @@ public class StudentAcademicOnboardingService {
             user.setRole(studentRole);
             user.setDepartment(cse);
             user.setAccountStatus("active");
-            user.setForcePasswordChange(true);
+            user.setMustChangePassword(true);
             if (isNewUser) {
                 user.setPassword(passwordEncoder.encode(registerNo)); // first login credential
             }
@@ -125,7 +125,7 @@ public class StudentAcademicOnboardingService {
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student user account not found"));
         String registerNo = user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : user.getUsername();
         user.setPassword(passwordEncoder.encode(registerNo));
-        user.setForcePasswordChange(true);
+        user.setMustChangePassword(true);
         userRepository.save(user);
     }
 
@@ -460,7 +460,7 @@ public class StudentAcademicOnboardingService {
     private Map<String, Object> toStudentProfile(Student s) {
         Map<String, Object> map = toStudentAdminCard(s);
         map.put("username", s.getUser() != null ? s.getUser().getUsername() : null);
-        map.put("forcePasswordChange", s.getUser() != null && s.getUser().isForcePasswordChange());
+        map.put("mustChangePassword", s.getUser() != null && s.getUser().isMustChangePassword());
         return map;
     }
 

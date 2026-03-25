@@ -36,16 +36,8 @@ const ClassRiskHeatmap = () => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
                 <div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Class Risk AI Heatmap</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>Predictive performance clusters across the current batch</p>
-                </div>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--card-bg)', padding: '6px 12px', borderRadius: '12px', border: '1.5px solid var(--theme-border)' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-muted)', textTransform: 'uppercase' }}>AI Analysis</span>
-                        <div style={{ width: '32px', height: '18px', background: '#16a34a', borderRadius: '10px', position: 'relative', cursor: 'pointer' }}>
-                            <div style={{ position: 'absolute', right: '2px', top: '2px', width: '14px', height: '14px', background: 'white', borderRadius: '50%' }}></div>
-                        </div>
-                    </div>
+                    <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Academic Performance Analytics</h1>
+                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>Performance clusters across the current batch</p>
                 </div>
             </div>
 
@@ -70,19 +62,8 @@ const ClassRiskHeatmap = () => {
                     </div>
                 </div>
 
-                {/* AI Insights */}
+                {/* Analysis */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ background: 'var(--color-primary-navy)', color: 'white', padding: '20px', borderRadius: '16px', boxShadow: '0 8px 20px rgba(11,44,107,0.2)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                            <LuZap color="var(--color-accent-gold)" /> <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '12px' }}>AI Intervention Plan</span>
-                        </div>
-                        <p style={{ fontSize: '14px', lineHeight: '1.6', margin: 0 }}>
-                            Based on clustering, <b>15 students</b> in 'CSE-A' are at high risk of internal failure.
-                            AI suggests scheduling a remedial session for <b>Data Structures</b> before 15th March.
-                        </p>
-                        <button style={{ marginTop: '16px', width: '100%', padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', fontWeight: '800', cursor: 'pointer' }}>Generate Schedule</button>
-                    </div>
-
                     <div style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', padding: '20px', borderRadius: '16px' }}>
                         <div style={{ fontWeight: '700', color: 'var(--theme-text)', marginBottom: '16px' }}>Risk Factors identified</div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
