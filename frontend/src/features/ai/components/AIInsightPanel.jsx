@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import api from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBrain, FaLightbulb, FaArrowRight, FaRobot, FaMagic, FaTimes } from 'react-icons/fa';
 
