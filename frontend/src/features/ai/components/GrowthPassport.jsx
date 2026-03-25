@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { academicAiApi } from '../../services/enterpriseApi';
+import { academicAiApi } from '../../../services/enterpriseApi';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { FaPassport, FaAward } from 'react-icons/fa';
 
