@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableScheduling
-@EnableCaching
 public class ErpApplication {
     public static void main(String[] args) {
         SpringApplication.run(ErpApplication.class, args);

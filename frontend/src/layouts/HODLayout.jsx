@@ -4,7 +4,7 @@ import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
-import GlobalAlertBar from '../components/intelligence/GlobalAlertBar';
+import GlobalAlertBar from '../features/ai/components/GlobalAlertBar';
 import { LuUser, LuMenu, LuLayoutDashboard, LuKey, LuSettings, LuLogOut, LuSun, LuMoon, LuMonitor, LuUsers } from 'react-icons/lu';
 import './student-layout.css';
 
