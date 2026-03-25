@@ -29,12 +29,9 @@ spring:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.MySQL8Dialect
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
   flyway:
     enabled: true
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true}
-    user: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Admin@123}
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
