@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+// @Component
 @Profile("dev")
-@RequiredArgsConstructor
+@org.springframework.context.annotation.Lazy
 @Slf4j
 public class StudentDataSeeder implements CommandLineRunner {
 
@@ -24,6 +24,19 @@ public class StudentDataSeeder implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public StudentDataSeeder(
+            @org.springframework.context.annotation.Lazy UserRepository userRepository,
+            @org.springframework.context.annotation.Lazy StudentRepository studentRepository,
+            @org.springframework.context.annotation.Lazy RoleRepository roleRepository,
+            @org.springframework.context.annotation.Lazy DepartmentRepository departmentRepository,
+            @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.roleRepository = roleRepository;
+        this.departmentRepository = departmentRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     @Transactional
@@ -93,51 +106,23 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     private List<StudentInfo> createCseAData() {
         List<StudentInfo> list = new ArrayList<>();
-        list.add(new StudentInfo("211424104001", "Aakash", "S", false));
-        list.add(new StudentInfo("211424104002", "Abinaya", "R", true));
-        list.add(new StudentInfo("211424104003", "Adhithya", "M", false));
-        list.add(new StudentInfo("211424104004", "Akshaya", "V", false));
-        list.add(new StudentInfo("211424104005", "Bala", "Murugan", true));
-        list.add(new StudentInfo("211424104006", "Deepika", "K", false));
-        list.add(new StudentInfo("211424104007", "Dinesh", "Kumar", false));
-        list.add(new StudentInfo("211424104008", "Ganesh", "P", true));
-        list.add(new StudentInfo("211424104009", "Harini", "S", false));
-        list.add(new StudentInfo("211424104010", "Ishwarya", "B", false));
-        list.add(new StudentInfo("211424104011", "Karthik", "R", true));
-        list.add(new StudentInfo("211424104012", "Kavitha", "M", false));
-        list.add(new StudentInfo("211424104013", "Manoj", "S", false));
-        list.add(new StudentInfo("211424104014", "Nandhini", "V", true));
-        list.add(new StudentInfo("211424104015", "Praveen", "K", false));
-        list.add(new StudentInfo("211424104016", "Rahul", "D", false));
-        list.add(new StudentInfo("211424104017", "Sangeetha", "P", true));
-        list.add(new StudentInfo("211424104018", "Sathish", "J", false));
-        list.add(new StudentInfo("211424104019", "Swetha", "N", false));
-        list.add(new StudentInfo("211424104020", "Vijay", "L", true));
+        // Seed 2117240020001 to 2117240020062
+        for (long i = 2117240020001L; i <= 2117240020062L; i++) {
+            list.add(new StudentInfo(String.valueOf(i), "CSE-Student", String.valueOf(i % 100), i % 2 == 0));
+        }
         return list;
     }
 
     private List<StudentInfo> createCsbsData() {
         List<StudentInfo> list = new ArrayList<>();
-        list.add(new StudentInfo("211424203001", "Anand", "R", false));
-        list.add(new StudentInfo("211424203002", "Bhavya", "S", true));
-        list.add(new StudentInfo("211424203003", "Charu", "L", false));
-        list.add(new StudentInfo("211424203004", "Devika", "M", false));
-        list.add(new StudentInfo("211424203005", "Eshwar", "K", true));
-        list.add(new StudentInfo("211424203006", "Farhana", "A", false));
-        list.add(new StudentInfo("211424203007", "Giri", "Dharen", false));
-        list.add(new StudentInfo("211424203008", "Hemant", "C", true));
-        list.add(new StudentInfo("211424203009", "Indhu", "P", false));
-        list.add(new StudentInfo("211424203010", "Jaya", "Surya", false));
-        list.add(new StudentInfo("211424203011", "Kiran", "Kumari", true));
-        list.add(new StudentInfo("211424203012", "Lokesh", "W", false));
-        list.add(new StudentInfo("211424203013", "Meghana", "V", false));
-        list.add(new StudentInfo("211424203014", "Nithin", "G", true));
-        list.add(new StudentInfo("211424203015", "Oviya", "S", false));
-        list.add(new StudentInfo("211424203016", "Pranav", "M", false));
-        list.add(new StudentInfo("211424203017", "Qasim", "H", true));
-        list.add(new StudentInfo("211424203018", "Ramya", "K", false));
-        list.add(new StudentInfo("211424203019", "Sanjay", "T", false));
-        list.add(new StudentInfo("211424203020", "Tharun", "V", true));
+        // Seed 2117240080119 to 2117240080177 (Correcting 14-digit typo to 13-digit for consistency if prefix is same)
+        // User typed: 21172400800119 to 2117240080177.
+        // Let's use their exact strings if possible.
+        // 21172400800119 is 14 digits. 2117240080177 is 13 digits. 
+        // Clearly a typo. We will use the 13-digit range starting from 2117240080119.
+        for (long i = 2117240080119L; i <= 2117240080177L; i++) {
+            list.add(new StudentInfo(String.valueOf(i), "CSBS-Student", String.valueOf(i % 100), i % 2 != 0));
+        }
         return list;
     }
 

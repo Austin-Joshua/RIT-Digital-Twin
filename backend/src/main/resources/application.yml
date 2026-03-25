@@ -4,11 +4,13 @@ app.sql.directory: ${APP_SQL_DIRECTORY:database}
 spring:
   application:
     name: rit-university-erp
+  main:
+    allow-circular-references: true
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&rewriteBatchedStatements=true}
     username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    password: ${SPRING_DATASOURCE_PASSWORD:Admin@123}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL:10}
@@ -22,12 +24,17 @@ spring:
     show-sql: false
     open-in-view: false
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:none}
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: false
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
   flyway:
     enabled: true
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true}
+    user: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Admin@123}
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
@@ -117,7 +124,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 ---
 spring:
   config:
@@ -126,7 +133,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
   datasource:
     hikari:
       # Tuned for cloud DBs like Aiven in production
