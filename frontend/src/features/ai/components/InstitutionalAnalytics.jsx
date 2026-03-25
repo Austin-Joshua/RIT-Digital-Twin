@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { analyticsApi } from '../../services/enterpriseApi';
+import { analyticsApi } from '../../../services/enterpriseApi';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell
