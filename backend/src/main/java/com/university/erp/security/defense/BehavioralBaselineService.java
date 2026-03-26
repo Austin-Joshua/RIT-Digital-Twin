@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.LongAdder;
 public class BehavioralBaselineService {
 
     private static final int MAX_PATH_HISTORY = 32;
-    private static final long WINDOW_MS = 60_000;
 
     private final AdaptiveDefenseProperties props;
     private final Cache<String, ClientBaseline> baselineCache;
@@ -50,7 +49,6 @@ public class BehavioralBaselineService {
         return s != null && s.getSampleCount() >= props.getBaselineMinSamples();
     }
 
-    @SuppressWarnings("unused")
     public void evict(String clientKey) {
         baselineCache.invalidate(clientKey);
     }
