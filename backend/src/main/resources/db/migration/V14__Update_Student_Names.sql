@@ -86,8 +86,7 @@ UPDATE users SET first_name = 'Vihaan', last_name = 'Smith' WHERE username = '21
 UPDATE students SET student_name = 'Vihaan Smith' WHERE register_no = '2117240020043';
 UPDATE users SET first_name = 'Austin', last_name = 'Joshua M' WHERE username = '2117240020044';
 UPDATE students SET student_name = 'Austin Joshua M' WHERE register_no = '2117240020044';
-UPDATE users SET first_name = 'John', last_name = 'Doe' WHERE username = '2117240020045';
-UPDATE students SET student_name = 'John Doe' WHERE register_no = '2117240020045';
+-- Name for 2117240020045 will be handled by regular seeder logic or updated via CSV
 UPDATE users SET first_name = 'Reyansh', last_name = 'Brown' WHERE username = '2117240020046';
 UPDATE students SET student_name = 'Reyansh Brown' WHERE register_no = '2117240020046';
 UPDATE users SET first_name = 'Ayaan', last_name = 'Jones' WHERE username = '2117240020047';

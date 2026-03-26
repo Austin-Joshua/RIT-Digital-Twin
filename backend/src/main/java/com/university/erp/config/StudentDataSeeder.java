@@ -468,9 +468,6 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (i == 2117240020044L) {
                 fName = "Austin";
                 lName = "Joshua M";
-            } else if (i == 2117240020045L) {
-                fName = "John";
-                lName = "Doe";
             }
             list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 == 0));
         }
