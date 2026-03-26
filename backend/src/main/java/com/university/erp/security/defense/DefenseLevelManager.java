@@ -13,14 +13,13 @@ import java.util.concurrent.atomic.LongAdder;
 @Service
 public class DefenseLevelManager {
 
-    private final AdaptiveDefenseProperties props;
     private final LongAdder recentAnomalyCount = new LongAdder();
     private final LongAdder recentBlockCount = new LongAdder();
     private volatile long lastAnomalyResetMs = System.currentTimeMillis();
     private static final long RESET_WINDOW_MS = 120_000;
 
-    public DefenseLevelManager(AdaptiveDefenseProperties props) {
-        this.props = props;
+    public DefenseLevelManager() {
+        // Default constructor
     }
 
     public void recordAnomaly() {

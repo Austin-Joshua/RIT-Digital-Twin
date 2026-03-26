@@ -2,10 +2,8 @@ package com.university.erp.config;
 
 import com.university.erp.entity.*;
 import com.university.erp.repository.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,22 +104,36 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     private List<StudentInfo> createCseAData() {
         List<StudentInfo> list = new ArrayList<>();
+        String[] firstNames = {"Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Atharva", "Kabir", "Rishi", "Austin", "Ethan", "Noah", "Oliver", "Lucas", "Mason"};
+        String[] lastNames = {"Kumar", "Singh", "Sharma", "Patel", "Reddy", "Rao", "Nair", "Iyer", "Pillai", "George", "Thomas", "Smith", "Johnson", "Williams", "Brown", "Jones"};
+
         // Seed 2117240020001 to 2117240020062
         for (long i = 2117240020001L; i <= 2117240020062L; i++) {
-            list.add(new StudentInfo(String.valueOf(i), "CSE-Student", String.valueOf(i % 100), i % 2 == 0));
+            String fName = firstNames[(int) (i % firstNames.length)];
+            String lName = lastNames[(int) (i % lastNames.length)];
+            
+            if (i == 2117240020044L) {
+                fName = "Austin";
+                lName = "Joshua M";
+            } else if (i == 2117240020045L) {
+                fName = "John";
+                lName = "Doe";
+            }
+
+            list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 == 0));
         }
         return list;
     }
 
     private List<StudentInfo> createCsbsData() {
         List<StudentInfo> list = new ArrayList<>();
-        // Seed 2117240080119 to 2117240080177 (Correcting 14-digit typo to 13-digit for consistency if prefix is same)
-        // User typed: 21172400800119 to 2117240080177.
-        // Let's use their exact strings if possible.
-        // 21172400800119 is 14 digits. 2117240080177 is 13 digits. 
-        // Clearly a typo. We will use the 13-digit range starting from 2117240080119.
+        String[] firstNames = {"Neha", "Priya", "Sneha", "Anjali", "Kavya", "Riya", "Diya", "Isha", "Maya", "Tara", "Sophia", "Emma", "Olivia", "Ava", "Isabella"};
+        String[] lastNames = {"Gupta", "Das", "Menon", "Krishnan", "Verma", "Mehta", "Bose", "Ghosh", "Datta", "Davis", "Miller", "Wilson", "Moore", "Taylor"};
+
         for (long i = 2117240080119L; i <= 2117240080177L; i++) {
-            list.add(new StudentInfo(String.valueOf(i), "CSBS-Student", String.valueOf(i % 100), i % 2 != 0));
+            String fName = firstNames[(int) (i % firstNames.length)];
+            String lName = lastNames[(int) (i % lastNames.length)];
+            list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 != 0));
         }
         return list;
     }

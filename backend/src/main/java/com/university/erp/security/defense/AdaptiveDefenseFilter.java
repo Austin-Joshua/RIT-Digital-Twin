@@ -83,7 +83,6 @@ public class AdaptiveDefenseFilter extends OncePerRequestFilter implements Order
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        long startMs = System.currentTimeMillis();
         ClientContext ctx = buildContext(request);
 
         if (resourcePrioritization.isCritical(ctx.getPath())) {

@@ -29,7 +29,6 @@ public class ErpCoreService {
     private final InternalMarkRepository internalMarkRepository;
     private final GradeRepository gradeRepository;
     private final StudentAcademicRepository studentAcademicRepository;
-    private final ExamRepository examRepository;
     private final NotificationRepository notificationRepository;
 
     @Transactional

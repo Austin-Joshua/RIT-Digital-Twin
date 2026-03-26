@@ -65,7 +65,7 @@ public class PrivilegeMisuseDetector {
         private final java.util.concurrent.ConcurrentLinkedDeque<Long> recentTimestamps = new java.util.concurrent.ConcurrentLinkedDeque<>();
 
         void record(String path, long ts) {
-            pathCounts.merge(path, 1, Integer::sum);
+            pathCounts.put(path, pathCounts.getOrDefault(path, 0) + 1);
             recentTimestamps.add(ts);
             while (recentTimestamps.size() > 200) recentTimestamps.pollFirst();
         }
