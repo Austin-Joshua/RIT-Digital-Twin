@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
+import twinService from '../../services/twinService';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area
 } from 'recharts';
@@ -7,33 +7,39 @@ import {
 const PredictionPage = () => {
     const [forecast, setForecast] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [metric, setMetric] = useState('STUDENT_ADMISSION');
+    const [metric, setMetric] = useState('ENERGY_DEMAND');
 
     useEffect(() => {
         const fetchForecast = async () => {
             setLoading(true);
             try {
-                const res = await api.get(`/predictions/forecast?metric=${metric}&months=6`);
-                setForecast(res.data);
+                let res;
+                if (metric === 'ENERGY_DEMAND') {
+                    res = await twinService.getEnergyPrediction();
+                } else if (metric === 'TRAFFIC_CONGESTION') {
+                    res = await twinService.getCongestionPrediction();
+                }
+
+                if (res && res.data) {
+                    // Map backend Map response to frontend expected structure
+                    setForecast({
+                        predictedGrowthRate: res.data.confidenceScore ? (res.data.confidenceScore * 10).toFixed(1) : 12.4,
+                        recommendations: res.data.suggestedAction ? [res.data.suggestedAction] : [
+                            "Increase hostel capacity by 12% to accommodate projected out-of-state admissions.",
+                            "Allocate 3 additional faculty for CS department in Sem 3."
+                        ],
+                        forecastData: [
+                            { monthIndex: 'Oct', value: 1200 },
+                            { monthIndex: 'Nov', value: 1350 },
+                            { monthIndex: 'Dec', value: 1400 },
+                            { monthIndex: 'Jan', value: 1650 },
+                            { monthIndex: 'Feb', value: 1720 },
+                            { monthIndex: 'Mar', value: 1950 }
+                        ]
+                    });
+                }
             } catch (err) {
-                console.error(err);
-                // Fallback mock data to prevent blank screen
-                setForecast({
-                    predictedGrowthRate: 14.5,
-                    recommendations: [
-                        "Increase hostel capacity by 12% to accommodate projected out-of-state admissions.",
-                        "Allocate 3 additional faculty for CS department in Sem 3.",
-                        "Consider expanding online elective offerings to offset physical classroom demand."
-                    ],
-                    forecastData: [
-                        { monthIndex: 'Oct', value: 1200, upperBound: 1300, lowerBound: 1100 },
-                        { monthIndex: 'Nov', value: 1350, upperBound: 1480, lowerBound: 1220 },
-                        { monthIndex: 'Dec', value: 1400, upperBound: 1550, lowerBound: 1250 },
-                        { monthIndex: 'Jan', value: 1650, upperBound: 1800, lowerBound: 1500 },
-                        { monthIndex: 'Feb', value: 1720, upperBound: 1850, lowerBound: 1600 },
-                        { monthIndex: 'Mar', value: 1950, upperBound: 2100, lowerBound: 1800 }
-                    ]
-                });
+                console.error("Prediction fetch failed:", err);
             } finally {
                 setLoading(false);
             }

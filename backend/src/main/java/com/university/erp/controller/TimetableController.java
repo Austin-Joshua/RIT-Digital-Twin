@@ -27,6 +27,13 @@ public class TimetableController {
         return ResponseEntity.ok(timetableService.getStudentTimetable(currentUser.getId()));
     }
 
+    @GetMapping("/faculty/timetable")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<List<TimetableSlot>> getFacultyTimetable(Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(timetableService.getFacultyTimetable(currentUser.getId()));
+    }
+
     @PostMapping("/timetable/generate")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
     public ResponseEntity<List<TimetableSlot>> generateTimetable(

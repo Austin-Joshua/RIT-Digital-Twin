@@ -37,4 +37,8 @@ public class TimetableSlot extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id")
     private Department department;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classroom_id")
+    private Classroom classroom;
 }

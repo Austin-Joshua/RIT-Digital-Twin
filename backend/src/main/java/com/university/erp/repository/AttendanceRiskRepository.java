@@ -1,0 +1,11 @@
+package com.university.erp.repository;
+
+import com.university.erp.entity.AttendanceRisk;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public interface AttendanceRiskRepository extends JpaRepository<AttendanceRisk, Long> {
+    List<AttendanceRisk> findByStudent_IdOrderByAnalyzedAtDesc(Long studentId);
+}

@@ -19,6 +19,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     long countByDepartment_IdAndYearGreaterThanEqual(Long departmentId, Integer year);
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
     Optional<Student> findByStudentIdNumber(String studentIdNumber);
+    // Add countBySection method for crowd density simulation context
+    long countBySection(String section);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
     Optional<Student> findByRegisterNo(String registerNo);

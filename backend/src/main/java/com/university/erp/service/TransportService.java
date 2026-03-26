@@ -49,7 +49,6 @@ public class TransportService {
         java.util.Objects.requireNonNull(query, "query must not be null");
         String normalized = query.trim().toLowerCase();
 
-        // First try optimized indexed lookup by route number / name
         List<TransportRoute> routesByNumberOrName =
                 routeRepository.findByRouteNumberContainingIgnoreCaseOrRouteNameContainingIgnoreCase(normalized, normalized);
 
@@ -57,10 +56,19 @@ public class TransportService {
             return routesByNumberOrName;
         }
 
-        // Fallback to stop-name based resolution
         return stopRepository.findByStopNameContainingIgnoreCase(normalized).stream()
                 .map(BusStop::getRoute)
                 .distinct()
                 .toList();
+    }
+
+    public TransportRoute createRoute(TransportRoute route) {
+        return routeRepository.save(route);
+    }
+
+    public BusStop addStopToRoute(Long routeId, BusStop stop) {
+        TransportRoute route = routeRepository.findById(routeId).orElseThrow();
+        stop.setRoute(route);
+        return stopRepository.save(stop);
     }
 }

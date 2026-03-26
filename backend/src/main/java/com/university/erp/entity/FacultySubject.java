@@ -25,6 +25,9 @@ public class FacultySubject {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    @Column(name = "academic_year")
+    private Integer academicYear;
+
     private String section;
 
     @ManyToOne(fetch = FetchType.LAZY)
