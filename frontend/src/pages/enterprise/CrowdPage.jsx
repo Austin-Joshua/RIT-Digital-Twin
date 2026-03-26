@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
-import api from '../../services/api';
+import twinService from '../../services/twinService';
 
 const CrowdPage = () => {
     const [buildingId, setBuildingId] = useState('1');
     const [occupancy, setOccupancy] = useState(500);
     const [result, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSimulate = async () => {
+        setLoading(true);
         try {
-            const response = await api.post('/crowd/simulate', { buildingId, occupancy });
-            setResult(JSON.parse(response.data.resultJson));
+            const response = await twinService.getCrowdDensity('MONDAY', '09:00');
+            const data = response.data;
+            if (data && data.length > 0) {
+                const avgDensity = data.reduce((sum, item) => sum + item.value, 0) / data.length;
+                setResult({
+                    congestionLevel: avgDensity > 0.8 ? 'CRITICAL' : avgDensity > 0.5 ? 'HIGH' : 'STABLE',
+                    estimatedEvacuationTimeMin: Math.round(avgDensity * 20) + 5,
+                    readinessScore: Math.round((1 - avgDensity) * 100)
+                });
+            }
         } catch (_error) {
-            setResult({
-                congestionLevel: 'HIGH',
-                estimatedEvacuationTimeMin: 15,
-                readinessScore: 70
-            });
+            console.error("Crowd simulation failed:", _error);
+        } finally {
+            setLoading(false);
         }
     };
 

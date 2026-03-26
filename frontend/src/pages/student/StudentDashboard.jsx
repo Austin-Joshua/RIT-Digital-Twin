@@ -17,6 +17,8 @@ import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import Card from '../../components/common/Card';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import DetailedReportModal from '../../components/common/DetailedReportModal';
+import twinService from '../../services/twinService';
+import analyticsService from '../../services/analyticsService';
 
 const performanceData = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
@@ -49,6 +51,23 @@ const StudentDashboard = () => {
     const [selectedModal, setSelectedModal] = useState(null);
     const [clubInvolvement, setClubInvolvement] = useState([]);
     const [clubLoading, setClubLoading] = useState(true);
+    const [twinStatus, setTwinStatus] = useState({ crowd: '...', energy: '...' });
+
+    useEffect(() => {
+        const fetchTwinData = async () => {
+            try {
+                const crowd = await twinService.getCongestionPrediction();
+                const energy = await twinService.getEnergyPrediction();
+                setTwinStatus({
+                    crowd: crowd.data.trend,
+                    energy: energy.data.peakRiskLevel
+                });
+            } catch (err) {
+                console.error("Twin fetch failed:", err);
+            }
+        };
+        fetchTwinData();
+    }, []);
 
     useEffect(() => {
         const fetchKpis = async () => {
@@ -118,6 +137,23 @@ const StudentDashboard = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            <div className="stu-kpi-row">
+                <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '18px' }}>{twinStatus.crowd}</h3>
+                        <p className="kpi-label">Campus Congestion</p>
+                    </div>
+                    <div className="kpi-more">Campus Twin Live</div>
+                </div>
+                <div className="stu-kpi-card purple" style={{ background: 'linear-gradient(135deg, #581c87 0%, #7e22ce 100%)' }}>
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '18px' }}>{twinStatus.energy}</h3>
+                        <p className="kpi-label">Energy Risk</p>
+                    </div>
+                     <div className="kpi-more">Smart Grid Active</div>
+                </div>
             </div>
 
             <DetailedReportModal

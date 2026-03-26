@@ -14,6 +14,7 @@ export const academicAiApi = {
     generateExamTimetable: (startDate) => api.post(`/academic-ai/generate-exam-timetable?startDate=${startDate}`),
     generateClassTimetable: (deptId, section) => api.post(`/academic/timetable/generate?deptId=${deptId}&section=${section}`),
     getStudentRanking: (studentId) => api.get(`/academic-ai/ranking/${studentId}`),
+    getStudentRisk: (studentId) => api.get(`/analytics/student/${studentId}/risk`),
     triggerAttendanceAlerts: (studentId) => api.post(`/academic-ai/trigger-alerts/${studentId}`),
 };
 

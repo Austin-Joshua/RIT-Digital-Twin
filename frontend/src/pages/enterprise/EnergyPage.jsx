@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import api from '../../services/api';
+import twinService from '../../services/twinService';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaBolt, FaLeaf, FaSolarPanel, FaChartLine } from 'react-icons/fa';
 import { useWebSocket } from '../../context/WebSocketContext';
@@ -11,17 +11,20 @@ const EnergyPage = () => {
     const handleSimulate = async () => {
         setLoading(true);
         try {
-            const response = await api.post('/energy/optimize/1');
-            setOptimizationResult(JSON.parse(response.data.resultJson));
+            const response = await twinService.getEnergyForecast('MONDAY');
+            const data = response.data;
+            if (data && data.length > 0) {
+                const totalLoad = data.reduce((sum, item) => sum + item.value, 0);
+                setOptimizationResult({
+                    currentUsageAvg: totalLoad,
+                    projectedUsage: totalLoad * 0.85,
+                    savings: (totalLoad * 0.15).toFixed(1),
+                    roiMonths: 18,
+                    solarPotential: (totalLoad * 0.22).toFixed(1)
+                });
+            }
         } catch (error) {
-            console.error(error);
-            setOptimizationResult({
-                currentUsageAvg: 500,
-                projectedUsage: 425,
-                savings: 75,
-                roiMonths: 24,
-                solarPotential: 120
-            });
+            console.error("Energy simulation failed:", error);
         } finally {
             setLoading(false);
         }

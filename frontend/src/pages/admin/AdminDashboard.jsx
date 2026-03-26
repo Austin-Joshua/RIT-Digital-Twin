@@ -11,6 +11,8 @@ import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
+import twinService from '../../services/twinService';
+import analyticsService from '../../services/analyticsService';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -21,12 +23,35 @@ const AdminDashboard = () => {
         placementRate: 94.2,
         activeResearch: 12
     });
+    const [metrics, setMetrics] = useState({
+        totalStudents: 0,
+        activeLabs: 0,
+        energyDemand: '...',
+        crowdStatus: 'NOMINAL'
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // In a real app, fetch from /api/admin/stats
         const timer = setTimeout(() => setLoading(false), 500);
         return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const energy = await twinService.getEnergyPrediction();
+                const crowd = await twinService.getCongestionPrediction();
+                setMetrics(prev => ({
+                    ...prev,
+                    energyDemand: energy.data.semesterForecastKW + ' kW',
+                    crowdStatus: crowd.data.trend
+                }));
+            } catch (err) {
+                console.error("Dashboard metrics failed:", err);
+            }
+        };
+        fetchDashboardData();
     }, []);
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton height="400px" /></div>;

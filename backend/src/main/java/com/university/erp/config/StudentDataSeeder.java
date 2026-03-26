@@ -2,6 +2,7 @@ package com.university.erp.config;
 
 import com.university.erp.entity.*;
 import com.university.erp.repository.*;
+import com.university.erp.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,66 @@ public class StudentDataSeeder implements CommandLineRunner {
     private final StudentAcademicRepository studentAcademicRepository;
     private final AttendanceRecordRepository attendanceRecordRepository;
     private final StudentSubjectRepository studentSubjectRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private ParentRepository parentRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private FacultySubjectRepository facultySubjectRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private FacultyProfileRepository facultyProfileRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private TransportRouteRepository transportRouteRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private StudentTransportRepository studentTransportRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private HostelRepository hostelRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private RoomRepository roomRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private CompanyRepository companyRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private PlacementOpportunityRepository opportunityRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private AttendanceAnalyticsService attendanceAnalyticsService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private StudentSuccessService studentSuccessService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private HostelService hostelService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private BuildingRepository buildingRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private ClassroomRepository classroomRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private TimetableSlotRepository timetableSlotRepository;
 
     public StudentDataSeeder(
             @org.springframework.context.annotation.Lazy UserRepository userRepository,
@@ -80,7 +141,94 @@ public class StudentDataSeeder implements CommandLineRunner {
         // CSBS Batch 2024-2028
         seedBatch(csbs, "CSBS-C", "2024-2028", createCsbsData(), studentRole);
         
+        seedOperationsSuiteData(cse);
+        seedSmartCampusSuiteData();
+        seedPhysicalTwinData();
+
         log.info("Student Data Integration Complete.");
+    }
+
+    private void seedSmartCampusSuiteData() {
+        log.info("Seeding Next-Gen Smart Campus Suite Data...");
+
+        // 1. Hostel & Room Seeding
+        if (hostelRepository.count() == 0) {
+            Hostel blockA = hostelRepository.save(Hostel.builder()
+                    .name("Block A - Boys Resonance")
+                    .capacity(200)
+                    .warden("Mr. Warden")
+                    .type("Boys")
+                    .build());
+            
+            Room room101 = roomRepository.save(Room.builder()
+                    .hostel(blockA)
+                    .roomNumber("A-101")
+                    .capacity(4)
+                    .occupancy(0)
+                    .status("Available")
+                    .build());
+
+            // Assign Austin to Room 101
+            userRepository.findByUsername("2117240020044").ifPresent(user -> {
+                if (user.getLinkedStudent() != null) {
+                    hostelService.assignStudentToRoom(user.getLinkedStudent().getId(), room101.getId());
+                    log.info("Assigned Austin to Room A-101");
+                }
+            });
+        }
+
+        // 2. Placement Seeding
+        if (companyRepository.count() == 0) {
+            Company google = companyRepository.save(Company.builder()
+                    .name("Google")
+                    .industry("Tech")
+                    .email("careers@google.com")
+                    .build());
+            
+            opportunityRepository.save(PlacementOpportunity.builder()
+                    .company(google)
+                    .role("Software Engineer")
+                    .type("Placement")
+                    .eligibility("CGPA > 8.5")
+                    .deadline(java.time.LocalDate.now().plusMonths(2))
+                    .status("Open")
+                    .build());
+        }
+
+        // 3. Trigger initial Analytics
+        attendanceAnalyticsService.runAttendanceAnalysisForAllStudents();
+        studentSuccessService.runPerformanceAnalysisForAllStudents();
+        log.info("Smart Campus Analytics run complete.");
+    }
+
+    private void seedPhysicalTwinData() {
+        if (buildingRepository.count() > 0) return;
+        
+        log.info("Seeding Physical Campus Twin...");
+        Building mainBlock = buildingRepository.save(Building.builder()
+                .name("Main Academic Block").code("MAIN").totalCapacity(1500)
+                .baseEnergyLoad(new BigDecimal("150.0")).location("Center Campus").build());
+        
+        Building labBlock = buildingRepository.save(Building.builder()
+                .name("Advanced Research Lab").code("LAB-X").totalCapacity(500)
+                .baseEnergyLoad(new BigDecimal("350.0")).location("North Wing").build());
+
+        Classroom hall101 = classroomRepository.save(Classroom.builder()
+                .name("LEC-101").building(mainBlock).capacity(60).type("Lecture Hall")
+                .peakLoadMultiplier(new BigDecimal("1.2")).build());
+
+        Classroom labA = classroomRepository.save(Classroom.builder()
+                .name("LAB-A").building(labBlock).capacity(30).type("Computer Lab")
+                .peakLoadMultiplier(new BigDecimal("2.5")).build());
+
+        // Assign classrooms to existing timetable slots (just sample assigning)
+        List<TimetableSlot> slots = timetableSlotRepository.findAll();
+        for (int i=0; i<slots.size(); i++) {
+            TimetableSlot s = slots.get(i);
+            s.setClassroom(i % 2 == 0 ? hall101 : labA);
+            timetableSlotRepository.save(s);
+        }
+        log.info("Physical Twin Seeding Complete.");
     }
 
     private void seedStaffAccounts() {
@@ -91,6 +239,79 @@ public class StudentDataSeeder implements CommandLineRunner {
         if (adminRole != null) ensureStaffUser("ADM-001", "Admin User", adminRole);
         if (facultyRole != null) ensureStaffUser("FAC-001", "Faculty Member", facultyRole);
         if (hodRole != null) ensureStaffUser("HOD-001", "Head of Department", hodRole);
+    }
+
+    private void seedOperationsSuiteData(Department cseDept) {
+        // 1. Parent Account
+        userRepository.findByUsername("2117240020044").ifPresent(studentUser -> {
+            Student student = studentUser.getLinkedStudent();
+            if (student != null && parentRepository.findByUser_Id(studentUser.getId()).isEmpty()) {
+                Role parentRole = roleRepository.findByRoleName(Role.UserRole.PARENT).orElse(null);
+                if (parentRole != null && userRepository.findByUsername("P-2117240020044").isEmpty()) {
+                    User parentUser = User.builder()
+                            .username("P-2117240020044")
+                            .password(passwordEncoder.encode("password123"))
+                            .email("parent44@example.com")
+                            .firstName("Mr. Joshua")
+                            .lastName("M")
+                            .role(parentRole)
+                            .accountStatus("active")
+                            .mustChangePassword(true)
+                            .build();
+                    parentUser = userRepository.save(parentUser);
+                    Parent parent = Parent.builder()
+                            .user(parentUser)
+                            .student(student)
+                            .name("Mr. Joshua M")
+                            .contactInfo("9876543210")
+                            .relationship("Father")
+                            .build();
+                    parentRepository.save(parent);
+                    log.info("Seeded Parent Account for Austin Joshua M");
+                }
+            }
+        });
+
+        // 2. Transport Route
+        if (transportRouteRepository.count() == 0) {
+            TransportRoute route = new TransportRoute();
+            route.setRouteName("Central Station");
+            route.setRouteNumber("R-01");
+            route.setStartPoint("Tambaram");
+            route.setEndPoint("RIT Campus");
+            route.setBusNumber("TN-01-AB-1234");
+            route.setCoordinatorName("Mr. Driver");
+            route.setCoordinatorPhone("9999999999");
+            final TransportRoute savedRoute = transportRouteRepository.save(route);
+
+            // Assign Austin to Route
+            userRepository.findByUsername("2117240020044").ifPresent(studentUser -> {
+                Student student = studentUser.getLinkedStudent();
+                if (student != null) {
+                    StudentTransportMapping map = new StudentTransportMapping();
+                    map.setStudent(student);
+                    map.setRoute(savedRoute);
+                    map.setPickupPoint("Tambaram Stop 1");
+                    studentTransportRepository.save(map);
+                }
+            });
+            log.info("Seeded Transport Route and assigned student");
+        }
+
+        // 3. Faculty Allocation
+        userRepository.findByUsername("FAC-001").ifPresent(facUser -> {
+            FacultyProfile fp = facultyProfileRepository.findByUser_Id(facUser.getId())
+                    .orElseGet(() -> facultyProfileRepository.save(FacultyProfile.builder().user(facUser).employeeCode("FAC-001").department("CSE").status("active").build()));
+            
+            if (facultySubjectRepository.findByFaculty_User_Id(facUser.getId()).isEmpty()) {
+                Semester sem1 = semesterRepository.findBySemesterNumber(1).orElseThrow();
+                subjectRepository.findBySubjectCode("CS1101-CSE").ifPresent(subject -> {
+                    facultySubjectRepository.save(FacultySubject.builder()
+                            .faculty(fp).subject(subject).semester(sem1).section("CSE-A").academicYear(2024).build());
+                });
+                log.info("Seeded Faculty Allocation for FAC-001");
+            }
+        });
     }
 
     private void ensureStaffUser(String username, String name, Role role) {
