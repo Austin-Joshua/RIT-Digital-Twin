@@ -8,11 +8,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Component
-// @Profile("dev")
 @org.springframework.context.annotation.Lazy
 @Slf4j
 public class StudentDataSeeder implements CommandLineRunner {
@@ -22,18 +24,36 @@ public class StudentDataSeeder implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubjectRepository subjectRepository;
+    private final SemesterRepository semesterRepository;
+    private final GradeRepository gradeRepository;
+    private final StudentAcademicRepository studentAcademicRepository;
+    private final AttendanceRecordRepository attendanceRecordRepository;
+    private final StudentSubjectRepository studentSubjectRepository;
 
     public StudentDataSeeder(
             @org.springframework.context.annotation.Lazy UserRepository userRepository,
             @org.springframework.context.annotation.Lazy StudentRepository studentRepository,
             @org.springframework.context.annotation.Lazy RoleRepository roleRepository,
             @org.springframework.context.annotation.Lazy DepartmentRepository departmentRepository,
-            @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder) {
+            @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder,
+            @org.springframework.context.annotation.Lazy SubjectRepository subjectRepository,
+            @org.springframework.context.annotation.Lazy SemesterRepository semesterRepository,
+            @org.springframework.context.annotation.Lazy GradeRepository gradeRepository,
+            @org.springframework.context.annotation.Lazy StudentAcademicRepository studentAcademicRepository,
+            @org.springframework.context.annotation.Lazy AttendanceRecordRepository attendanceRecordRepository,
+            @org.springframework.context.annotation.Lazy StudentSubjectRepository studentSubjectRepository) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.subjectRepository = subjectRepository;
+        this.semesterRepository = semesterRepository;
+        this.gradeRepository = gradeRepository;
+        this.studentAcademicRepository = studentAcademicRepository;
+        this.attendanceRecordRepository = attendanceRecordRepository;
+        this.studentSubjectRepository = studentSubjectRepository;
     }
 
     @Override
@@ -45,22 +65,79 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
         Department cse = departmentRepository.findByCode("CSE")
-                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSE").deptName("B.E. Computer Science and Engineering").build()));
+                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSE").deptName("B.E. CSE").build()));
         
         Department csbs = departmentRepository.findByCode("CSBS")
-                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech. Computer Science and Business Systems").build()));
+                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech CS & BS").build()));
+
+        seedStaffAccounts();
+        seedCurriculum(cse, "B.E. CSE");
+        seedCurriculum(csbs, "B.Tech CS & BS");
 
         // CSE-A Batch 2024-2028
         seedBatch(cse, "CSE-A", "2024-2028", createCseAData(), studentRole);
         
         // CSBS Batch 2024-2028
-        seedBatch(csbs, "CSBS", "2024-2028", createCsbsData(), studentRole);
+        seedBatch(csbs, "CSBS-C", "2024-2028", createCsbsData(), studentRole);
         
         log.info("Student Data Integration Complete.");
     }
 
+    private void seedStaffAccounts() {
+        Role adminRole = roleRepository.findByRoleName(Role.UserRole.ADMIN).orElse(null);
+        Role facultyRole = roleRepository.findByRoleName(Role.UserRole.FACULTY).orElse(null);
+        Role hodRole = roleRepository.findByRoleName(Role.UserRole.HOD).orElse(null);
+        
+        if (adminRole != null) ensureStaffUser("ADM-001", "Admin User", adminRole);
+        if (facultyRole != null) ensureStaffUser("FAC-001", "Faculty Member", facultyRole);
+        if (hodRole != null) ensureStaffUser("HOD-001", "Head of Department", hodRole);
+    }
+
+    private void ensureStaffUser(String username, String name, Role role) {
+        if (userRepository.findByUsername(username).isPresent()) return;
+        String[] parts = name.split(" ", 2);
+        User user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(username))
+                .email(username.toLowerCase() + "@ritchennai.edu.in")
+                .firstName(parts[0])
+                .lastName(parts.length > 1 ? parts[1] : "")
+                .role(role)
+                .accountStatus("active")
+                .mustChangePassword(true)
+                .build();
+        userRepository.save(user);
+    }
+
+    private void seedCurriculum(Department dept, String deptName) {
+        Semester sem1 = semesterRepository.findBySemesterNumber(1)
+                .orElseGet(() -> semesterRepository.save(Semester.builder().semesterNumber(1).build()));
+        
+        seedSubject("MA1101-" + dept.getCode(), "Mathematics I", 4, sem1, dept, deptName);
+        seedSubject("PH1101-" + dept.getCode(), "Physics", 3, sem1, dept, deptName);
+        seedSubject("GE1101-" + dept.getCode(), "Engineering Graphics", 4, sem1, dept, deptName);
+        seedSubject("CS1101-" + dept.getCode(), "Programming Fundamentals", 3, sem1, dept, deptName);
+        seedSubject("HS1101-" + dept.getCode(), "English", 2, sem1, dept, deptName);
+        seedSubject("EE1101-" + dept.getCode(), "Basic Electrical Engineering", 3, sem1, dept, deptName);
+    }
+
+    private void seedSubject(String code, String name, int credits, Semester semester, Department dept, String deptName) {
+        Subject subject = subjectRepository.findBySubjectCode(code).orElseGet(Subject::new);
+        subject.setSubjectCode(code);
+        subject.setSubjectName(name);
+        subject.setCredits(credits);
+        subject.setDepartment(dept);
+        subject.setDepartmentName(deptName);
+        subject.setSemester(semester);
+        subject.setRegulation("R2024");
+        subjectRepository.save(subject);
+    }
+
     private void seedBatch(Department dept, String section, String batch, List<StudentInfo> records, Role role) {
         int created = 0;
+        Semester sem1 = semesterRepository.findBySemesterNumber(1).orElseThrow();
+        List<Subject> subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(1, dept.getDeptName());
+
         for (StudentInfo info : records) {
             if (userRepository.findByUsername(info.regNo).isPresent()) continue;
 
@@ -74,9 +151,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .department(dept)
                     .accountStatus("active")
                     .mustChangePassword(true) // Mandatory change on first login
-                    .failedLoginAttempts(0)
                     .build();
-            
             user = userRepository.save(user);
 
             Student student = Student.builder()
@@ -87,19 +162,77 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .section(section)
                     .batch(batch)
                     .year(1)
+                    .currentSemester(1)
                     .status("active")
                     .department(dept)
                     .scholarType(info.isHosteller ? "Hosteller" : "Day Scholar")
                     .email(user.getEmail())
                     .build();
-            
-            studentRepository.save(student);
+            student = studentRepository.save(student);
             
             user.setLinkedStudent(student);
             userRepository.save(user);
+
+            assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));
             created++;
         }
-        log.info("Seeded {} new students for section {}", created, section);
+        log.info("Seeded {} new students with full data for section {}", created, section);
+    }
+
+    private void assignSubjectsAndGrades(Student student, Semester sem, List<Subject> subjects, double factor) {
+        Random random = new Random(student.getRegisterNo().hashCode());
+        BigDecimal totalGradePoints = BigDecimal.ZERO;
+        int totalCredits = 0;
+
+        for (Subject sub : subjects) {
+            StudentSubject ss = studentSubjectRepository.save(StudentSubject.builder()
+                    .student(student)
+                    .subject(sub)
+                    .semester(sem)
+                    .status("active")
+                    .build());
+
+            int totalClasses = 45;
+            int attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
+            for (int i=0; i<attended; i++) {
+                attendanceRecordRepository.save(AttendanceRecord.builder()
+                        .studentSubject(ss)
+                        .date(java.time.LocalDate.now().minusDays(i))
+                        .status("Present")
+                        .build());
+            }
+
+            double internalBase = 28 + (factor * 6) + (random.nextDouble() * 6);
+            double externalBase = 40 + (factor * 12) + (random.nextDouble() * 18);
+            BigDecimal internal = bd(internalBase, 50);
+            BigDecimal external = bd(externalBase, 100);
+            BigDecimal total = internal.add(external).setScale(2, RoundingMode.HALF_UP);
+            GradeScale gs = toGrade(total.doubleValue());
+
+            gradeRepository.save(Grade.builder()
+                    .student(student)
+                    .subject(sub)
+                    .semester(sem)
+                    .internalMarks(internal)
+                    .externalMarks(external)
+                    .totalMarks(total)
+                    .gradeLetter(gs.letter)
+                    .gradePoints(BigDecimal.valueOf(gs.points))
+                    .build());
+
+            totalGradePoints = totalGradePoints.add(BigDecimal.valueOf(gs.points * sub.getCredits()));
+            totalCredits += sub.getCredits();
+        }
+
+        BigDecimal cgpa = totalCredits == 0 ? BigDecimal.ZERO : totalGradePoints.divide(BigDecimal.valueOf(totalCredits), 2, RoundingMode.HALF_UP);
+        studentAcademicRepository.save(StudentAcademic.builder()
+                .student(student)
+                .semester(sem.getSemesterNumber())
+                .gpa(cgpa)
+                .cgpa(cgpa)
+                .build());
+        student.setCurrentCgpa(cgpa);
+        studentRepository.save(student);
     }
 
     private List<StudentInfo> createCseAData() {
@@ -107,7 +240,6 @@ public class StudentDataSeeder implements CommandLineRunner {
         String[] firstNames = {"Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Atharva", "Kabir", "Rishi", "Austin", "Ethan", "Noah", "Oliver", "Lucas", "Mason"};
         String[] lastNames = {"Kumar", "Singh", "Sharma", "Patel", "Reddy", "Rao", "Nair", "Iyer", "Pillai", "George", "Thomas", "Smith", "Johnson", "Williams", "Brown", "Jones"};
 
-        // Seed 2117240020001 to 2117240020062
         for (long i = 2117240020001L; i <= 2117240020062L; i++) {
             String fName = firstNames[(int) (i % firstNames.length)];
             String lName = lastNames[(int) (i % lastNames.length)];
@@ -119,7 +251,6 @@ public class StudentDataSeeder implements CommandLineRunner {
                 fName = "John";
                 lName = "Doe";
             }
-
             list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 == 0));
         }
         return list;
@@ -150,5 +281,29 @@ public class StudentDataSeeder implements CommandLineRunner {
             this.lastName = lastName;
             this.isHosteller = isHosteller;
         }
+    }
+
+    private static double performanceFactor(String key) {
+        int hash = Math.abs(key.hashCode());
+        int bucket = hash % 10;
+        if (bucket <= 2) return 2.8; 
+        if (bucket <= 7) return 1.8; 
+        return 0.9; 
+    }
+
+    private static GradeScale toGrade(double total) {
+        if (total >= 90) return new GradeScale("O", 10.0);
+        if (total >= 80) return new GradeScale("A+", 9.0);
+        if (total >= 70) return new GradeScale("A", 8.0);
+        if (total >= 60) return new GradeScale("B+", 7.0);
+        if (total >= 50) return new GradeScale("B", 6.0);
+        if (total >= 45) return new GradeScale("C", 5.0);
+        return new GradeScale("RA", 0.0);
+    }
+    private record GradeScale(String letter, double points) {}
+
+    private static BigDecimal bd(double value, int max) {
+        double bounded = Math.max(0, Math.min(value, max));
+        return BigDecimal.valueOf(bounded).setScale(2, RoundingMode.HALF_UP);
     }
 }
