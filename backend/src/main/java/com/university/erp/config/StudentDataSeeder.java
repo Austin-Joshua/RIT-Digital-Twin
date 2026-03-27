@@ -251,7 +251,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                     User parentUser = User.builder()
                             .username("P-2117240020044")
                             .password(passwordEncoder.encode("password123"))
-                            .email("parent44@example.com")
+                            .email("parent@ritchennai.edu.in")
                             .firstName("Mr. Joshua")
                             .lastName("M")
                             .role(parentRole)
@@ -320,7 +320,10 @@ public class StudentDataSeeder implements CommandLineRunner {
         User user = User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(username))
-                .email(username.toLowerCase() + "@ritchennai.edu.in")
+                .email(username.equalsIgnoreCase("ADM-001") ? "admin@ritchennai.edu.in" :
+                       username.equalsIgnoreCase("FAC-001") ? "faculty@ritchennai.edu.in" :
+                       username.equalsIgnoreCase("HOD-001") ? "hod@ritchennai.edu.in" :
+                       username.toLowerCase() + "@ritchennai.edu.in")
                 .firstName(parts[0])
                 .lastName(parts.length > 1 ? parts[1] : "")
                 .role(role)
