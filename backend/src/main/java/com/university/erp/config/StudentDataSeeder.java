@@ -461,32 +461,132 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     private List<StudentInfo> createCseAData() {
         List<StudentInfo> list = new ArrayList<>();
-        String[] firstNames = {"Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Atharva", "Kabir", "Rishi", "Austin", "Ethan", "Noah", "Oliver", "Lucas", "Mason"};
-        String[] lastNames = {"Kumar", "Singh", "Sharma", "Patel", "Reddy", "Rao", "Nair", "Iyer", "Pillai", "George", "Thomas", "Smith", "Johnson", "Williams", "Brown", "Jones"};
-
-        for (long i = 2117240020001L; i <= 2117240020062L; i++) {
-            String fName = firstNames[(int) (i % firstNames.length)];
-            String lName = lastNames[(int) (i % lastNames.length)];
-            
-            if (i == 2117240020044L) {
-                fName = "Austin";
-                lName = "Joshua M";
-            }
-            list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 == 0));
-        }
+        list.add(new StudentInfo("2117240020001", "AAKASH", "B K", false));
+        list.add(new StudentInfo("2117240020002", "AARTHI", "M", true));
+        list.add(new StudentInfo("2117240020003", "AASHIDA", "V", false));
+        list.add(new StudentInfo("2117240020004", "ABHILASH", "M", true));
+        list.add(new StudentInfo("2117240020005", "ABIMANUE", "M", false));
+        list.add(new StudentInfo("2117240020006", "ABINA JERLIN", "M", false));
+        list.add(new StudentInfo("2117240020007", "ABINAYA", "S G", false));
+        list.add(new StudentInfo("2117240020008", "ABINESH", "S", false));
+        list.add(new StudentInfo("2117240020009", "ABIRAMI", "B", true));
+        list.add(new StudentInfo("2117240020010", "ABISHEK", "S", false));
+        list.add(new StudentInfo("2117240020011", "ADARSH", "H", false));
+        list.add(new StudentInfo("2117240020012", "ADITYA", "PARTHASARATHY", false));
+        list.add(new StudentInfo("2117240020013", "AFSA", "R", false));
+        list.add(new StudentInfo("2117240020014", "AISWARYAA", "BABU", false));
+        list.add(new StudentInfo("2117240020015", "AKASH", "A", false));
+        list.add(new StudentInfo("2117240020016", "AKSHARA", "P", false));
+        list.add(new StudentInfo("2117240020017", "AKSHAY", "V", false));
+        list.add(new StudentInfo("2117240020018", "AMERUNNISA", "A", true));
+        list.add(new StudentInfo("2117240020019", "ANIRUTH", "K", false));
+        list.add(new StudentInfo("2117240020020", "ANIRUTH", "V", false));
+        list.add(new StudentInfo("2117240020021", "ANTHONY BEN", "I", false));
+        list.add(new StudentInfo("2117240020022", "ANU", "E", true));
+        list.add(new StudentInfo("2117240020023", "ANU", "R S", false));
+        list.add(new StudentInfo("2117240020024", "ANUSHANNA", "K", false));
+        list.add(new StudentInfo("2117240020025", "ARAVINDH", "G", false));
+        list.add(new StudentInfo("2117240020026", "ARUN KUMAR", "M", false));
+        list.add(new StudentInfo("2117240020027", "ASWINKUMAR", "V", false));
+        list.add(new StudentInfo("2117240020028", "ATHARAN", "S B", false));
+        list.add(new StudentInfo("2117240020029", "ATHULYA", "SURESH", false));
+        list.add(new StudentInfo("2117240020030", "ATHVICK", "ARANGANATHAN", false));
+        list.add(new StudentInfo("2117240020031", "AYMAN", "I", false));
+        list.add(new StudentInfo("2117240020032", "BALA SUNDHAR", "B", false));
+        list.add(new StudentInfo("2117240020033", "BALAN", "V", false));
+        list.add(new StudentInfo("2117240020034", "BALKISH FAUZIYA", "M", true));
+        list.add(new StudentInfo("2117240020035", "BHARANI", "S S", false));
+        list.add(new StudentInfo("2117240020036", "BHAVANA", "N", false));
+        list.add(new StudentInfo("2117240020037", "BHAVATHARANI", "V V", false));
+        list.add(new StudentInfo("2117240020038", "BHUWANESHWARI", "E", false));
+        list.add(new StudentInfo("2117240020039", "BRUHADIS", "K S", false));
+        list.add(new StudentInfo("2117240020040", "CATHERINE", "SADIAH S", true));
+        list.add(new StudentInfo("2117240020041", "CHAMPION", "B", false));
+        list.add(new StudentInfo("2117240020042", "CHANDRU", "R", false));
+        list.add(new StudentInfo("2117240020043", "CHATHRIAN", "R", false));
+        list.add(new StudentInfo("2117240020044", "AUSTIN JOSHUA", "M", false));
+        list.add(new StudentInfo("2117240020045", "DHARANIDHARAN", "C J", false));
+        list.add(new StudentInfo("2117240020046", "DHARRUN", "S R", false));
+        list.add(new StudentInfo("2117240020047", "DHEENATHAYALAN", "B", false));
+        list.add(new StudentInfo("2117240020048", "DHEEPTHI", "S", false));
+        list.add(new StudentInfo("2117240020049", "DHIYANESHVARAN", "V", false));
+        list.add(new StudentInfo("2117240020050", "DHRUVASHANKAR", "E", false));
+        list.add(new StudentInfo("2117240020051", "DIVYADHARSHINI", "M", false));
+        list.add(new StudentInfo("2117240020052", "EGAVALLI", "P", false));
+        list.add(new StudentInfo("2117240020053", "ELAVARASAN", "P", false));
+        list.add(new StudentInfo("2117240020054", "ESAKKI GAUTHAM", "S", false));
+        list.add(new StudentInfo("2117240020055", "ESWAR", "C", false));
+        list.add(new StudentInfo("2117240020056", "FAIZAL AHMED", "I", true));
+        list.add(new StudentInfo("2117240020057", "GEETHANJALI", "S", false));
+        list.add(new StudentInfo("2117240020058", "GIRITHARAN", "U", false));
+        list.add(new StudentInfo("2117240020059", "GOKULA KRISHNAN", "F", false));
+        list.add(new StudentInfo("2117240020060", "GOUTHAM", "G", false));
+        list.add(new StudentInfo("2117240020061", "GURU PRASHATH", "U S", false));
+        list.add(new StudentInfo("2117240020062", "HAREENIPRIYANKA", "S", true));
         return list;
     }
 
     private List<StudentInfo> createCsbsData() {
         List<StudentInfo> list = new ArrayList<>();
-        String[] firstNames = {"Neha", "Priya", "Sneha", "Anjali", "Kavya", "Riya", "Diya", "Isha", "Maya", "Tara", "Sophia", "Emma", "Olivia", "Ava", "Isabella"};
-        String[] lastNames = {"Gupta", "Das", "Menon", "Krishnan", "Verma", "Mehta", "Bose", "Ghosh", "Datta", "Davis", "Miller", "Wilson", "Moore", "Taylor"};
-
-        for (long i = 2117240080119L; i <= 2117240080177L; i++) {
-            String fName = firstNames[(int) (i % firstNames.length)];
-            String lName = lastNames[(int) (i % lastNames.length)];
-            list.add(new StudentInfo(String.valueOf(i), fName, lName, i % 2 != 0));
-        }
+        list.add(new StudentInfo("2117240080119", "SACHIN", "S", false));
+        list.add(new StudentInfo("2117240080120", "SAI JEEVA", "S", false));
+        list.add(new StudentInfo("2117240080121", "SANJANA", "M", false));
+        list.add(new StudentInfo("2117240080122", "SANJAY", "S", false));
+        list.add(new StudentInfo("2117240080123", "SANJAY KUMAR", "M P", true));
+        list.add(new StudentInfo("2117240080124", "SANTHOSH", "M N", true));
+        list.add(new StudentInfo("2117240080125", "SARAN", "S", false));
+        list.add(new StudentInfo("2117240080126", "SARATH", "S D", false));
+        list.add(new StudentInfo("2117240080127", "SESHARENGAN", "S", true));
+        list.add(new StudentInfo("2117240080128", "SHALINI", "C", false));
+        list.add(new StudentInfo("2117240080129", "SHANTANU", "DEGAPUDI", false));
+        list.add(new StudentInfo("2117240080130", "SHANTHINI", "C", true));
+        list.add(new StudentInfo("2117240080131", "SHARAN KUMAR", "H", false));
+        list.add(new StudentInfo("2117240080132", "SHARANYA", "M", false));
+        list.add(new StudentInfo("2117240080133", "SHARUKESHWARAN", "V", false));
+        list.add(new StudentInfo("2117240080134", "SHEIK ABDUL KHADER", "T", true));
+        list.add(new StudentInfo("2117240080135", "SHESHIKA", "P T", true));
+        list.add(new StudentInfo("2117240080136", "SHREENIDHI", "K P", false));
+        list.add(new StudentInfo("2117240080137", "SHRI RAM", "P", false));
+        list.add(new StudentInfo("2117240080138", "SIVAKANNAN", "S", true));
+        list.add(new StudentInfo("2117240080139", "SIVARAJ", "S", false));
+        list.add(new StudentInfo("2117240080140", "SOUNDARYA", "M", false));
+        list.add(new StudentInfo("2117240080141", "SREE MATHESH", "A R", false));
+        list.add(new StudentInfo("2117240080142", "SREENITHI", "M", false));
+        list.add(new StudentInfo("2117240080143", "SRI ADITYA", "M", false));
+        list.add(new StudentInfo("2117240080144", "SRI SAKTHI VELAN", "K", false));
+        list.add(new StudentInfo("2117240080145", "SRI VISHNU", "P", false));
+        list.add(new StudentInfo("2117240080146", "SUJITHKUMAR", "V", false));
+        list.add(new StudentInfo("2117240080147", "SURYAH", "S", false));
+        list.add(new StudentInfo("2117240080148", "SUVEATHA", "M", false));
+        list.add(new StudentInfo("2117240080149", "SWETHA", "K", true));
+        list.add(new StudentInfo("2117240080150", "SYED ABUTHAHIR", "M", true));
+        list.add(new StudentInfo("2117240080151", "TEJAS", "K G", false));
+        list.add(new StudentInfo("2117240080152", "THARUN", "B", false));
+        list.add(new StudentInfo("2117240080153", "THARUN", "M", false));
+        list.add(new StudentInfo("2117240080154", "THIRUCHELVAM", "M", false));
+        list.add(new StudentInfo("2117240080155", "THULASI", "MANI B", false));
+        list.add(new StudentInfo("2117240080156", "UMA SHANKAR", "S", true));
+        list.add(new StudentInfo("2117240080157", "VARUN", "H", false));
+        list.add(new StudentInfo("2117240080158", "VARUN", "U", false));
+        list.add(new StudentInfo("2117240080159", "VEDHAA SREE", "K", false));
+        list.add(new StudentInfo("2117240080160", "VELAN", "B", false));
+        list.add(new StudentInfo("2117240080161", "VELMURUGAN", "G", true));
+        list.add(new StudentInfo("2117240080162", "VIGNESH", "S", false));
+        list.add(new StudentInfo("2117240080163", "VIGNESH", "V", false));
+        list.add(new StudentInfo("2117240080164", "VIJAY SAMRAT", "G J", false));
+        list.add(new StudentInfo("2117240080165", "VIMALADITYAN", "M", false));
+        list.add(new StudentInfo("2117240080166", "VINOTHKUMAR", "T", false));
+        list.add(new StudentInfo("2117240080167", "VISHAKA", "V", false));
+        list.add(new StudentInfo("2117240080168", "VISHAL", "S", false));
+        list.add(new StudentInfo("2117240080169", "VISHNU", "B", false));
+        list.add(new StudentInfo("2117240080170", "VISHNu", "C S", false));
+        list.add(new StudentInfo("2117240080171", "VISWA", "B", false));
+        list.add(new StudentInfo("2117240080172", "VISWA", "S", false));
+        list.add(new StudentInfo("2117240080173", "VISWAJEETH", "S", false));
+        list.add(new StudentInfo("2117240080174", "YASHWANT RAJ", "D B", false));
+        list.add(new StudentInfo("2117240080175", "YASHWANTH", "D", true));
+        list.add(new StudentInfo("2117240080176", "YOGESHWAR", "R", false));
+        list.add(new StudentInfo("2117240080177", "YOGESHWARAN", "R", false));
         return list;
     }
 
