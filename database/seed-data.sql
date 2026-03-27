@@ -32,13 +32,6 @@ INSERT IGNORE INTO classrooms (room_number, building_id, capacity, has_projector
 ('AB1-101', 2, 60, TRUE, FALSE),
 ('AB1-102', 2, 60, TRUE, FALSE);
 
--- =====================================================
--- TIMETABLES
--- =====================================================
-INSERT IGNORE INTO timetables (classroom_id, department_id, subject_name, course_name, day_of_week, start_time, end_time) VALUES
-(1, 1, 'Data Structures', 'BTech CSE', 'MONDAY', '09:00', '10:00'),
-(1, 1, 'Operating Systems', 'BTech CSE', 'MONDAY', '10:00', '11:00'),
-(2, 1, 'Database Management', 'BTech CSE', 'MONDAY', '09:00', '10:00');
 
 -- =====================================================
 -- SAMPLE ENERGY LOGS (one day)
