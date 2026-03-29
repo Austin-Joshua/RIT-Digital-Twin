@@ -131,7 +131,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         Department csbs = departmentRepository.findByCode("CSBS")
                 .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech CS & BS").build()));
 
-        seedStaffAccounts();
+        // seedStaffAccounts(); // Handled by DataInitializer
         seedCurriculum(cse, "B.E. CSE");
         seedCurriculum(csbs, "B.Tech CS & BS");
 
@@ -231,15 +231,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         log.info("Physical Twin Seeding Complete.");
     }
 
-    private void seedStaffAccounts() {
-        Role adminRole = roleRepository.findByRoleName(Role.UserRole.ADMIN).orElse(null);
-        Role facultyRole = roleRepository.findByRoleName(Role.UserRole.FACULTY).orElse(null);
-        Role hodRole = roleRepository.findByRoleName(Role.UserRole.HOD).orElse(null);
-        
-        if (adminRole != null) ensureStaffUser("ADM-001", "Admin User", adminRole);
-        if (facultyRole != null) ensureStaffUser("FAC-001", "Faculty Member", facultyRole);
-        if (hodRole != null) ensureStaffUser("HOD-001", "Head of Department", hodRole);
-    }
+
 
     private void seedOperationsSuiteData(Department cseDept) {
         // Parent accounts are now seeded automatically for all students in the seedBatch method.
@@ -286,24 +278,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         });
     }
 
-    private void ensureStaffUser(String username, String name, Role role) {
-        if (userRepository.findByUsername(username).isPresent()) return;
-        String[] parts = name.split(" ", 2);
-        User user = User.builder()
-                .username(username)
-                .password(passwordEncoder.encode(username))
-                .email(username.equalsIgnoreCase("ADM-001") ? "admin@ritchennai.edu.in" :
-                       username.equalsIgnoreCase("FAC-001") ? "faculty@ritchennai.edu.in" :
-                       username.equalsIgnoreCase("HOD-001") ? "hod@ritchennai.edu.in" :
-                       username.toLowerCase() + "@ritchennai.edu.in")
-                .firstName(parts[0])
-                .lastName(parts.length > 1 ? parts[1] : "")
-                .role(role)
-                .accountStatus("active")
-                .mustChangePassword(true)
-                .build();
-        userRepository.save(user);
-    }
+
 
     private void seedCurriculum(Department dept, String deptName) {
         Semester sem1 = semesterRepository.findBySemesterNumber(1)
