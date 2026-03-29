@@ -21,6 +21,7 @@ public class Student extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Transient
     public Long getStudentId() {
         return id;
     }
