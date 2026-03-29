@@ -111,7 +111,7 @@ const AuthLayout = () => {
                     .brand-description,
                     .brand-tagline { display: none !important; }
                     .brand-panel img { height: 60px !important; }
-                    .form-panel { padding: 20px !important; height: auto !important; display: block !important; padding-top: 10px !important; z-index: 2 !important; }
+                    .form-panel { padding: 20px !important; height: auto !important; display: flex !important; justify-content: center !important; align-items: center !important; padding-top: 10px !important; z-index: 2 !important; }
                 }
                 @media (max-width: 480px) {
                     .brand-panel { padding: 16px 16px 12px !important; }
