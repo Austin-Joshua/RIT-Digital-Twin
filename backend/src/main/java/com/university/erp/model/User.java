@@ -25,10 +25,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "user_id")
     private Long userId;
 
+    @Transient
     public Long getUserId() {
         return userId;
     }
 
+    @Transient
     public Long getId() {
         return userId;
     }

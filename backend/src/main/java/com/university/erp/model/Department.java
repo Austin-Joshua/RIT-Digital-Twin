@@ -19,10 +19,6 @@ public class Department extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    public Long getDeptId() {
-        return id;
-    }
-
     @Column(unique = true, nullable = false)
     private String deptName;
 
