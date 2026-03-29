@@ -79,7 +79,7 @@ const ParentLayout = () => {
                 </div>
 
                 <div className="stu-sidebar-search">
-                    <GlobalSearch navItems={parentNav} placeholder="Search portal..." />
+                    <GlobalSearch navItems={parentNav} placeholder="Search" />
                 </div>
 
                 <nav className="stu-nav">

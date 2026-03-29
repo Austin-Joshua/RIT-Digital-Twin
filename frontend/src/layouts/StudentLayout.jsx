@@ -122,7 +122,7 @@ const StudentLayout = () => {
                         navItems={navItems.filter(item => !item.isDropdown).concat(
                             navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
                         )}
-                        placeholder="Search student portal..."
+                        placeholder="Search"
                     />
                 </div>
 

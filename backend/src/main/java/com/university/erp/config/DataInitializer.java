@@ -231,7 +231,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         .orElseThrow(() -> new RuntimeException(
                                                                         "Role " + roleEnum + " not found"));
                                         user.setRole(role);
-                                        user.setMustChangePassword(true);
+                                        user.setMustChangePassword(false);
 
                                         userRepository.save(user);
                                 },
@@ -248,7 +248,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         .firstName(firstName)
                                                         .lastName(lastName)
                                                         .role(role)
-                                                        .mustChangePassword(true)
+                                                        .mustChangePassword(false)
                                                         .build();
 
                                         userRepository.save(user);

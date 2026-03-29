@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LuSearch, LuX, LuArrowRight } from 'react-icons/lu';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const GlobalSearch = ({ navItems = [], placeholder = "Search functionalities..." }) => {
+const GlobalSearch = ({ navItems = [], placeholder = "Search" }) => {
     const [query, setQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [results, setResults] = useState([]);
