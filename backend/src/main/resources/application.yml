@@ -71,7 +71,7 @@ springdoc:
 
 # CORS: local dev + Vercel frontend + ngrok tunnel hosts (for deployed frontend + local backend)
 app.cors:
-  allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://*.ngrok-free.app,https://*.ngrok-free.dev,https://*.ngrok.io}
+  allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://*.up.railway.app,https://*.railway.app,https://*.ngrok-free.app,https://*.ngrok-free.dev,https://*.ngrok.io}
 
 # Adaptive Defense (military-grade behavioral security)
 app.adaptive-defense:

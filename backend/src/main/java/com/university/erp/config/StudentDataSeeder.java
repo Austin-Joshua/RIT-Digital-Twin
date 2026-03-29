@@ -242,35 +242,7 @@ public class StudentDataSeeder implements CommandLineRunner {
     }
 
     private void seedOperationsSuiteData(Department cseDept) {
-        // 1. Parent Account
-        userRepository.findByUsername("2117240020044").ifPresent(studentUser -> {
-            Student student = studentUser.getLinkedStudent();
-            if (student != null && parentRepository.findByUser_Id(studentUser.getId()).isEmpty()) {
-                Role parentRole = roleRepository.findByRoleName(Role.UserRole.PARENT).orElse(null);
-                if (parentRole != null && userRepository.findByUsername("P-2117240020044").isEmpty()) {
-                    User parentUser = User.builder()
-                            .username("P-2117240020044")
-                            .password(passwordEncoder.encode("password123"))
-                            .email("parent@ritchennai.edu.in")
-                            .firstName("Mr. Joshua")
-                            .lastName("M")
-                            .role(parentRole)
-                            .accountStatus("active")
-                            .mustChangePassword(true)
-                            .build();
-                    parentUser = userRepository.save(parentUser);
-                    Parent parent = Parent.builder()
-                            .user(parentUser)
-                            .student(student)
-                            .name("Mr. Joshua M")
-                            .contactInfo("9876543210")
-                            .relationship("Father")
-                            .build();
-                    parentRepository.save(parent);
-                    log.info("Seeded Parent Account for Austin Joshua M");
-                }
-            }
-        });
+        // Parent accounts are now seeded automatically for all students in the seedBatch method.
 
         // 2. Transport Route
         if (transportRouteRepository.count() == 0) {
@@ -394,6 +366,9 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .build();
             student = studentRepository.save(student);
             
+            // Auto-link Parent account
+            ensureParentForStudent(student);
+            
             user.setLinkedStudent(student);
             userRepository.save(user);
 
@@ -401,6 +376,37 @@ public class StudentDataSeeder implements CommandLineRunner {
             created++;
         }
         log.info("Seeded {} new students with full data for section {}", created, section);
+    }
+
+    private void ensureParentForStudent(Student student) {
+        String parentUsername = "P-" + student.getRegisterNo();
+        if (userRepository.findByUsername(parentUsername).isPresent()) return;
+
+        Role parentRole = roleRepository.findByRoleName(Role.UserRole.PARENT).orElse(null);
+        if (parentRole == null) return;
+
+        String parentName = student.getStudentName() != null ? student.getStudentName().split(" ")[0] : "Student";
+
+        User parentUser = User.builder()
+                .username(parentUsername)
+                .password(passwordEncoder.encode("password123"))
+                .email(student.getRegisterNo() + "_parent@ritchennai.edu.in")
+                .firstName(parentName)
+                .lastName("Parent")
+                .role(parentRole)
+                .accountStatus("active")
+                .build();
+
+        parentUser = userRepository.save(parentUser);
+
+        Parent parent = Parent.builder()
+                .user(parentUser)
+                .student(student)
+                .name(parentName + " Parent")
+                .relationship("Parent")
+                .build();
+
+        parentRepository.save(parent);
     }
 
     private void assignSubjectsAndGrades(Student student, Semester sem, List<Subject> subjects, double factor) {

@@ -1,4 +1,4 @@
-# Start from Scratch: Wipe and Restore Remote MySQL (e.g. Railway)
+# Start from Scratch: Wipe and Restore Remote MySQL (Aiven)
 
 Do **all** steps in **Command Prompt**. Do **not** run the wipe/schema/seed commands when you see `mysql>` — only when you see `C:\...>`.
 

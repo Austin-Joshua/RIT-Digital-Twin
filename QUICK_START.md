@@ -37,12 +37,20 @@ cd frontend
 ```
 ✅ **Open browser:** http://localhost:5173
 
-### 4️⃣ Login
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@ritchennai.edu.in | admin123 |
-| Faculty | faculty@ritchennai.edu.in | faculty123 |
-| Student | student@ritchennai.edu.in | student123 |
+### 4️⃣ Login Credentials
+
+The platform uses a unified login. Your dashboard is automatically determined by your credentials.
+
+| Role | Username / Identifier | Password | Dashboard |
+|------|-----------------------|----------|-----------|
+| **Admin** | `ADM-001` | `ADM-001` | Institutional |
+| **Faculty** | `FAC-001` | `FAC-001` | Institutional |
+| **HOD** | `HOD-001` | `HOD-001` | HOD Dashboard |
+| **Student** | **13-digit Register No** | Same as Reg No | Student Portal |
+| **Parent** | `P-` + **13-digit Reg No** | `password123` | Parent Portal |
+
+> [!IMPORTANT]
+> **Register Number Format:** Use the full **13-digit** number (e.g., `2117240020001`). Using 12 digits (e.g., `211724002001`) will result in a login failure.
 
 ---
 
@@ -119,18 +127,18 @@ Full steps and troubleshooting: see **DEPLOYMENT_GUIDE.md** (Part 2: Vercel + lo
 
 ---
 
-## ☁️ Verifying Remote MySQL Database (e.g. Railway)
+## ☁️ Verifying Remote MySQL Database (Aiven)
 
 To confirm your database is stored and reachable on **your provider**:
 
 ### 1. Use your provider connection in `.env`
 
-Set these in your project `.env` (get values from [your DB provider dashboard](https://console.your provider.io) → your MySQL service → **Connection information**):
+Set these in your project `.env` (get values from the [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**):
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:mysql://<host>:<port>/<database>?ssl-mode=REQUIRED
-SPRING_DATASOURCE_USERNAME=<service_username>
-SPRING_DATASOURCE_PASSWORD=<service_password>
+SPRING_DATASOURCE_URL=jdbc:mysql://<host>:<port>/defaultdb?ssl-mode=REQUIRED
+SPRING_DATASOURCE_USERNAME=avnadmin
+SPRING_DATASOURCE_PASSWORD=<your_password>
 SPRING_PROFILES_ACTIVE=prod
 ```
 
@@ -165,8 +173,8 @@ If this connects and shows tables, data is stored and accessible on your provide
 
 To **remove all data** in the remote database and **restore** from your schema and seed files:
 
-1. **Get your provider connection details**  
-   From [your DB provider dashboard](https://console.your provider.io) → your MySQL service → **Connection information**: note **Host**, **Port**, **User**, **Password**, and **Database name**.
+1. **Get your Aiven connection details**  
+   From the [Aiven Console](https://console.aiven.io) → your MySQL service → **Connection information**: note **Host**, **Port**, **User**, **Password**, and **Database name** (usually `defaultdb`).
 
 2. **Run the reset and restore scripts** (from the project root, with MySQL client installed):
 
@@ -174,13 +182,13 @@ To **remove all data** in the remote database and **restore** from your schema a
    # Replace <host>, <port>, <user>, <database> with your your provider values. You'll be prompted for password.
 
    # Step 1: Wipe all tables
-   mysql -h <host> -P <port> -u <user> -p <database> < database/reset-your provider.sql
+   mysql -h <host> -P <port> -u avnadmin -p defaultdb --ssl-mode=REQUIRED < database/reset-aiven.sql
 
    # Step 2: Recreate tables and base data (roles, etc.)
-   mysql -h <host> -P <port> -u <user> -p <database> < database/schema.sql
+   mysql -h <host> -P <port> -u avnadmin -p defaultdb --ssl-mode=REQUIRED < database/schema.sql
 
    # Step 3: Load seed data (buildings, departments, classrooms, etc.)
-   mysql -h <host> -P <port> -u <user> -p <database> < database/seed-data.sql
+   mysql -h <host> -P <port> -u avnadmin -p defaultdb --ssl-mode=REQUIRED < database/seed-data.sql
    ```
 
    Example (use your real host/port/user/db):

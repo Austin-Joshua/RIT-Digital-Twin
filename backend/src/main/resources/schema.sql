@@ -14,7 +14,7 @@ CREATE TABLE roles (
 
 -- 2. Departments Table
 CREATE TABLE IF NOT EXISTS departments (
-    dept_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dept_name VARCHAR(100) NOT NULL UNIQUE,
     code VARCHAR(20) NOT NULL UNIQUE,
     head_of_dept VARCHAR(100),
@@ -33,10 +33,17 @@ CREATE TABLE IF NOT EXISTS users (
     role_id BIGINT NOT NULL,
     dept_id BIGINT,
     google_id VARCHAR(255) UNIQUE,
+    account_status VARCHAR(20) NOT NULL DEFAULT 'active',
+    must_change_password BOOLEAN DEFAULT FALSE,
+    failed_login_attempts INT DEFAULT 0,
+    lock_until DATETIME DEFAULT NULL,
+    last_login DATETIME DEFAULT NULL,
+    last_password_change DATETIME DEFAULT NULL,
+    linked_student_id BIGINT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE RESTRICT,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (dept_id) REFERENCES departments(id) ON DELETE SET NULL,
     INDEX idx_username (username),
     INDEX idx_email (email)
 );

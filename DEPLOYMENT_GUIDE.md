@@ -201,7 +201,7 @@ After saving env vars, trigger a **Redeploy** (Deployments → ⋮ → Redeploy)
 ### Prerequisite: Backend Must Be Publicly Accessible
 
 Your Spring Boot backend must be deployed somewhere accessible online:
-- ✅ AWS EC2, Azure VM, DigitalOcean, Heroku, Railway, Render, etc.
+- ✅ AWS EC2, Azure VM, DigitalOcean, Heroku, Render, etc.
 - ✅ Or local backend exposed via tunnel (see Part 2 above)
 - ❌ Plain localhost only (browsers cannot reach your machine’s localhost from the Vercel site)
 
@@ -228,10 +228,10 @@ VITE_API_BASE_URL=https://api.yourdomain.com/api
 VITE_WEBSOCKET_URL=https://api.yourdomain.com/ws
 ```
 
-**If backend on Railway:**
+**If backend on Render:**
 ```env
-VITE_API_BASE_URL=https://your-app-name.up.railway.app/api
-VITE_WEBSOCKET_URL=https://your-app-name.up.railway.app/ws
+VITE_API_BASE_URL=https://your-app-name.onrender.com/api
+VITE_WEBSOCKET_URL=https://your-app-name.onrender.com/ws
 ```
 
 **If backend is local (use a tunnel):**  
@@ -506,10 +506,12 @@ docker run -e VITE_API_BASE_URL=https://api.example.com/api \
            your-frontend-image
 ```
 
-### For Railway/Heroku
+### For Render
 ```bash
-deployctl set VITE_API_BASE_URL=https://your-backend.railway.app/api
-deployctl set VITE_WEBSOCKET_URL=https://your-backend.railway.app/ws
+# Set environment variables in Render Dashboard
+# SPRING_DATASOURCE_URL = jdbc:mysql://YOUR-AIVEN-HOST:PORT/defaultdb?ssl-mode=REQUIRED
+# SPRING_DATASOURCE_USERNAME = uoname
+# SPRING_DATASOURCE_PASSWORD = your-password
 ```
 
 ### For GitHub Secrets (CI/CD)

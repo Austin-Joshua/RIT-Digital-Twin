@@ -41,9 +41,9 @@ APP_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://*.v
 
 ---
 
-## Option B: Vercel frontend + public backend (ngrok or hosted)
-
-Use this when the backend is reachable via a public URL (ngrok, Railway, Render, etc.).
+### Option B: Vercel frontend + public backend (ngrok or hosted)
+6: 
+Use this when the backend is reachable via a public URL (ngrok, Render, etc.).
 
 ### 1. Environment variables in Vercel
 
