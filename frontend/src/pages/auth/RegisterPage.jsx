@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import api from '../../services/api';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
-import { ThemeContext } from '../../context/ThemeContext';
+import { ThemeContext } from '../../hooks/ThemeContext';
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({

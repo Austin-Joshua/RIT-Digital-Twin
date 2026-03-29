@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import twinService from '../../services/twinService';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaBolt, FaLeaf, FaSolarPanel, FaChartLine } from 'react-icons/fa';
-import { useWebSocket } from '../../context/WebSocketContext';
+import { useWebSocket } from '../../hooks/WebSocketContext';
 
 const EnergyPage = () => {
     const [optimizationResult, setOptimizationResult] = useState(null);
