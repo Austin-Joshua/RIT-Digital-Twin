@@ -35,6 +35,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@org.springframework.core.annotation.Order(1)
 @SuppressWarnings("unused") // Seeder utility methods kept for manual invocation; not all are called at startup
 public class DataInitializer implements CommandLineRunner {
 
