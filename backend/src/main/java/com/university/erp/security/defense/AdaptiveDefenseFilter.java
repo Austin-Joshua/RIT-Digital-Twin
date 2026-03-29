@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import com.university.erp.entity.User;
+import com.university.erp.model.User;
 
 /**
  * Military-grade adaptive defense filter. Runs first to record behavior,

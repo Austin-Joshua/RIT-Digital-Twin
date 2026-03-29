@@ -1,6 +1,6 @@
 package com.university.erp.config;
 
-import com.university.erp.entity.*;
+import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import com.university.erp.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -601,6 +601,7 @@ public class StudentDataSeeder implements CommandLineRunner {
     }
 
     private static double performanceFactor(String key) {
+        if (key == null) return 1.8;
         int hash = Math.abs(key.hashCode());
         int bucket = hash % 10;
         if (bucket <= 2) return 2.8; 
@@ -620,7 +621,9 @@ public class StudentDataSeeder implements CommandLineRunner {
     private record GradeScale(String letter, double points) {}
 
     private static BigDecimal bd(double value, int max) {
+        if (Double.isNaN(value) || Double.isInfinite(value)) value = 0.0;
         double bounded = Math.max(0, Math.min(value, max));
         return BigDecimal.valueOf(bounded).setScale(2, RoundingMode.HALF_UP);
     }
 }
+

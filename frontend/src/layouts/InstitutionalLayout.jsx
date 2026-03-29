@@ -1,9 +1,9 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, Outlet, useNavigate, NavLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext';
-import { useToast } from '../context/ToastContext';
+import { useAuth } from '../hooks/AuthContext';
+import { ThemeContext } from '../hooks/ThemeContext';
+import { useToast } from '../hooks/ToastContext';
 import NotificationBar from '../components/NotificationBar';
 import {
     LuUser, LuMenu, LuLayoutGrid, LuLayoutDashboard, LuTrendingUp, LuBriefcase,

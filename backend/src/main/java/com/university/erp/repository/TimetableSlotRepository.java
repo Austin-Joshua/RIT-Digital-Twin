@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.TimetableSlot;
+import com.university.erp.model.TimetableSlot;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

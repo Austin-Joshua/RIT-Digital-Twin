@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaFilePdf, FaFileExcel, FaPrint, FaCopy } from 'react-icons/fa';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../hooks/ToastContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 

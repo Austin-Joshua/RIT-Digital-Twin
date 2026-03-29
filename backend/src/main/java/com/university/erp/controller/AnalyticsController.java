@@ -1,7 +1,7 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.AttendanceRisk;
-import com.university.erp.entity.PerformanceWarning;
+import com.university.erp.model.AttendanceRisk;
+import com.university.erp.model.PerformanceWarning;
 import com.university.erp.service.AttendanceAnalyticsService;
 import com.university.erp.service.StudentSuccessService;
 import com.university.erp.repository.AttendanceRiskRepository;

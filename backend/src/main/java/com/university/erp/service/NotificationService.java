@@ -1,7 +1,7 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.Notification;
-import com.university.erp.entity.User;
+import com.university.erp.model.Notification;
+import com.university.erp.model.User;
 import com.university.erp.repository.NotificationRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

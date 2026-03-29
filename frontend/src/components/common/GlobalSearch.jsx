@@ -175,4 +175,5 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search" }) => {
     );
 };
 
-export default GlobalSearch;
+export default React.memo(GlobalSearch);
+

@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
-import { WebSocketProvider } from './context/WebSocketContext';
+import { AuthProvider, useAuth } from './hooks/AuthContext';
+import { ThemeProvider } from './hooks/ThemeContext';
+import { ToastProvider } from './hooks/ToastContext';
+import { WebSocketProvider } from './hooks/WebSocketContext';
 import Skeleton from './components/common/Skeleton';
 import BroadcastListener from './components/BroadcastListener';
 

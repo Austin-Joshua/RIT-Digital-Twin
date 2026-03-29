@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.TransportRoute;
-import com.university.erp.entity.BusStop;
-import com.university.erp.entity.StudentTransportMapping;
+import com.university.erp.model.TransportRoute;
+import com.university.erp.model.BusStop;
+import com.university.erp.model.StudentTransportMapping;
 import com.university.erp.repository.StudentTransportRepository;
 import com.university.erp.repository.StudentRepository;
 import com.university.erp.service.TransportService;

@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.BusStop;
+import com.university.erp.model.BusStop;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

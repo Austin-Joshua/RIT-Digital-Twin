@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/AuthContext';
 import {
     FaHome, FaChalkboardTeacher, FaBolt, FaBus,
     FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,

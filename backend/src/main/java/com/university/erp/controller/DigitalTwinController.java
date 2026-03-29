@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.DigitalTwinMetrics;
+import com.university.erp.model.DigitalTwinMetrics;
 import com.university.erp.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

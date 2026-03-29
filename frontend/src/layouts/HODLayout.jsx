@@ -1,8 +1,8 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext';
+import { useAuth } from '../hooks/AuthContext';
+import { ThemeContext } from '../hooks/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
 import { LuUser, LuMenu, LuLayoutDashboard, LuKey, LuSettings, LuLogOut, LuSun, LuMoon, LuMonitor, LuUsers } from 'react-icons/lu';
 import './student-layout.css';

@@ -1,7 +1,7 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Role;
-import com.university.erp.entity.User;
+import com.university.erp.model.Role;
+import com.university.erp.model.User;
 import com.university.erp.service.HODService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

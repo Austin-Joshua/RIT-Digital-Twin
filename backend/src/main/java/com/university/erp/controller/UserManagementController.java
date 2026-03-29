@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.User;
+import com.university.erp.model.User;
 import com.university.erp.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

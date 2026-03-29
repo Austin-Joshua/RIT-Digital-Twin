@@ -5,15 +5,17 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 -- 1. Aggressive cleanup of legacy tables that may have broken foreign keys to 'buildings'
--- We drop these even IF they are not explicitly part of the current schema to clear out Aiven/Render artifacts
+-- We drop these in an order that respects potential internal constraints
+DROP TABLE IF EXISTS digital_twin_metrics;
+DROP TABLE IF EXISTS energy_logs;
+DROP TABLE IF EXISTS energy_metrics;
+DROP TABLE IF EXISTS timetable_slots;
 DROP TABLE IF EXISTS crowd_data;
 DROP TABLE IF EXISTS occupancy_stats;
 DROP TABLE IF EXISTS building_metrics;
-DROP TABLE IF EXISTS energy_metrics;
-DROP TABLE IF EXISTS digital_twin_metrics;
 DROP TABLE IF EXISTS classrooms;
-DROP TABLE IF EXISTS timetables;
 DROP TABLE IF EXISTS buildings;
+
 
 -- 2. Clean Recreation of the Buildings Table
 -- Using 'id' as the standard primary key
@@ -75,3 +77,4 @@ SET @sql = IF(@fk_exists = 0, 'ALTER TABLE timetable_slots ADD CONSTRAINT fk_tim
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET FOREIGN_KEY_CHECKS=1;
+

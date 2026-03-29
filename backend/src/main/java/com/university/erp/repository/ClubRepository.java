@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.Club;
+import com.university.erp.model.Club;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,7 +1,7 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/AuthContext';
 import {
     LuLayoutDashboard, LuClock, LuBookOpen, LuFileText, LuCalendarCheck2,
     LuAward, LuPenTool, LuTestTube, LuClipboardList,
@@ -12,7 +12,7 @@ import {
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
-import { ThemeContext } from '../context/ThemeContext';
+import { ThemeContext } from '../hooks/ThemeContext';
 import './student-layout.css';
 
 const studentNav = [

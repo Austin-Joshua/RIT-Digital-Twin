@@ -1,7 +1,7 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.TimetableSlot;
-import com.university.erp.entity.User;
+import com.university.erp.model.TimetableSlot;
+import com.university.erp.model.User;
 import com.university.erp.service.TimetableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

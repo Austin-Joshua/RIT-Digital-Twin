@@ -1,6 +1,6 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.*;
+import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

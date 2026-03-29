@@ -1,8 +1,8 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.AttendanceRecord;
-import com.university.erp.entity.AttendanceRisk;
-import com.university.erp.entity.Student;
+import com.university.erp.model.AttendanceRecord;
+import com.university.erp.model.AttendanceRisk;
+import com.university.erp.model.Student;
 import com.university.erp.repository.AttendanceRecordRepository;
 import com.university.erp.repository.AttendanceRiskRepository;
 import com.university.erp.repository.StudentRepository;

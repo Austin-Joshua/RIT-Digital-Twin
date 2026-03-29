@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Marks;
-import com.university.erp.entity.User;
-import com.university.erp.entity.Role;
+import com.university.erp.model.Marks;
+import com.university.erp.model.User;
+import com.university.erp.model.Role;
 import com.university.erp.service.AcademicService;
 import com.university.erp.service.StudentProfileService;
 import com.university.erp.service.StudentAcademicOnboardingService;
@@ -55,11 +55,11 @@ public class AcademicController {
         Objects.requireNonNull(currentUser, "user principal must not be null");
         Role.UserRole role = currentUser.getRole().getRoleName();
 
-        com.university.erp.entity.Student targetStudent = studentProfileService.getByStudentId(studentId);
+        com.university.erp.model.Student targetStudent = studentProfileService.getByStudentId(studentId);
 
         // Student can only access their own marks
         if (role == Role.UserRole.STUDENT) {
-            com.university.erp.entity.Student self = studentProfileService.getByUserId(currentUser.getId());
+            com.university.erp.model.Student self = studentProfileService.getByUserId(currentUser.getId());
             if (!self.getId().equals(studentId)) {
                 throw new AccessDeniedException("Students can only view their own marks.");
             }
