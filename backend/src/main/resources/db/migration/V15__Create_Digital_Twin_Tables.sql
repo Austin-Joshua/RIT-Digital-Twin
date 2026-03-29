@@ -1,26 +1,23 @@
 -- V15__Create_Digital_Twin_Tables.sql
 -- Robust creation of Digital Twin core tables with safety checks for existing infrastructure
+-- Specifically designed to handle orphaned foreign keys and legacy schema conflicts (Error 3734 / 1215)
 
 SET FOREIGN_KEY_CHECKS=0;
 
--- Check if legacy non-id buildings table exists
-SET @col_exists = (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'buildings' AND column_name = 'id');
-SET @tbl_exists = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'buildings');
-
-SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS timetables', 'SELECT 1');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
-
-SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS classrooms', 'SELECT 1');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
-
-SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS buildings', 'SELECT 1');
-PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
-
--- Always drop these to ensure a clean slate for Digital Twin
+-- 1. Aggressive cleanup of legacy tables that may have broken foreign keys to 'buildings'
+-- We drop these even IF they are not explicitly part of the current schema to clear out Aiven/Render artifacts
+DROP TABLE IF EXISTS crowd_data;
+DROP TABLE IF EXISTS occupancy_stats;
+DROP TABLE IF EXISTS building_metrics;
+DROP TABLE IF EXISTS energy_metrics;
 DROP TABLE IF EXISTS digital_twin_metrics;
+DROP TABLE IF EXISTS classrooms;
+DROP TABLE IF EXISTS timetables;
+DROP TABLE IF EXISTS buildings;
 
--- 1. Buildings Table
-CREATE TABLE IF NOT EXISTS buildings (
+-- 2. Clean Recreation of the Buildings Table
+-- Using 'id' as the standard primary key
+CREATE TABLE buildings (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) NOT NULL UNIQUE,
@@ -31,8 +28,8 @@ CREATE TABLE IF NOT EXISTS buildings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- 2. Classrooms Table
-CREATE TABLE IF NOT EXISTS classrooms (
+-- 3. Classrooms Table
+CREATE TABLE classrooms (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     building_id BIGINT,
@@ -44,8 +41,8 @@ CREATE TABLE IF NOT EXISTS classrooms (
     FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE
 );
 
--- 3. Digital Twin Metrics
-CREATE TABLE IF NOT EXISTS digital_twin_metrics (
+-- 4. Digital Twin Metrics
+CREATE TABLE digital_twin_metrics (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     metric_type VARCHAR(100) NOT NULL,
     location_code VARCHAR(50),
@@ -61,7 +58,7 @@ CREATE TABLE IF NOT EXISTS digital_twin_metrics (
     INDEX idx_timestamp (timestamp)
 );
 
--- 4. Safely add classroom_id to timetable_slots
+-- 5. Safely add classroom_id to timetable_slots
 SET @col_exists = (
     SELECT COUNT(*) FROM information_schema.columns 
     WHERE table_schema = DATABASE() AND table_name = 'timetable_slots' AND column_name = 'classroom_id'
@@ -69,7 +66,7 @@ SET @col_exists = (
 SET @sql = IF(@col_exists = 0, 'ALTER TABLE timetable_slots ADD COLUMN classroom_id BIGINT', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
--- 5. Safely add FK to timetable_slots
+-- 6. Safely add FK to timetable_slots
 SET @fk_exists = (
     SELECT COUNT(*) FROM information_schema.referential_constraints 
     WHERE constraint_schema = DATABASE() AND constraint_name = 'fk_timetable_classroom'
