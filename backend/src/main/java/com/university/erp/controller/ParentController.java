@@ -1,7 +1,7 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Student;
-import com.university.erp.entity.User;
+import com.university.erp.model.Student;
+import com.university.erp.model.User;
 import com.university.erp.service.ParentService;
 import com.university.erp.service.ErpCoreService;
 import org.springframework.http.ResponseEntity;

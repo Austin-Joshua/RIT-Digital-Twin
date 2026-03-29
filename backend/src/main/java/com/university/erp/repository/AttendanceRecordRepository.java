@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.AttendanceRecord;
+import com.university.erp.model.AttendanceRecord;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.AssetInventory;
+import com.university.erp.model.AssetInventory;
 import com.university.erp.repository.AssetInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

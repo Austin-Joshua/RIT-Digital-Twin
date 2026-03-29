@@ -1,6 +1,6 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.*;
+import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -383,7 +383,7 @@ public class HODService {
 
     public Map<String, Object> getStudentPerformance(Long departmentId, Long studentId) {
         ensureDepartmentExists(departmentId);
-        Student student = studentRepository.findById(studentId).orElseThrow(() -> new com.university.erp.exception.ErpException.ResourceNotFoundException("Student not found"));
+        Student student = studentRepository.findById(studentId).orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found"));
         boolean isHandS = isHandSDepartment(departmentId);
         boolean canAccess = isHandS
                 ? (student.getYear() != null && student.getYear() == 1)
@@ -422,6 +422,6 @@ public class HODService {
     }
 
     private void ensureDepartmentExists(Long departmentId) {
-        departmentRepository.findById(departmentId).orElseThrow(() -> new com.university.erp.exception.ErpException.ResourceNotFoundException("Department not found."));
+        departmentRepository.findById(departmentId).orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Department not found."));
     }
 }

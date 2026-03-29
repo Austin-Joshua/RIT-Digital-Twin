@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.PerformanceWarning;
+import com.university.erp.model.PerformanceWarning;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

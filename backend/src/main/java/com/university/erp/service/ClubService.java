@@ -1,7 +1,7 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.*;
-import com.university.erp.exception.ErpException;
+import com.university.erp.model.*;
+import com.university.erp.util.ErpException;
 import com.university.erp.repository.ClubRepository;
 import com.university.erp.repository.StudentClubMembershipRepository;
 import com.university.erp.repository.StudentRepository;

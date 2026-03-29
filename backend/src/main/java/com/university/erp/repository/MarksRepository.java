@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.Marks;
+import com.university.erp.model.Marks;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

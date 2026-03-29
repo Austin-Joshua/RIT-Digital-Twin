@@ -4,7 +4,7 @@ import {
     FaArrowCircleRight
 } from 'react-icons/fa';
 import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,

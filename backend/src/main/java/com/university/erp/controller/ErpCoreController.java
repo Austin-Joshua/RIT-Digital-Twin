@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Curriculum;
-import com.university.erp.entity.Subject;
-import com.university.erp.entity.User;
+import com.university.erp.model.Curriculum;
+import com.university.erp.model.Subject;
+import com.university.erp.model.User;
 import com.university.erp.service.ErpCoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

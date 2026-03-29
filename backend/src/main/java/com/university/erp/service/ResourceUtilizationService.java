@@ -1,6 +1,6 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.*;
+import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

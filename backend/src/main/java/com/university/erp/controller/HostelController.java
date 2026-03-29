@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Hostel;
-import com.university.erp.entity.HostelAssignment;
-import com.university.erp.entity.Room;
+import com.university.erp.model.Hostel;
+import com.university.erp.model.HostelAssignment;
+import com.university.erp.model.Room;
 import com.university.erp.service.HostelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

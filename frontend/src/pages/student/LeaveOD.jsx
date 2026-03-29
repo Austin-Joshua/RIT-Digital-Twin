@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LuCalendarDays, LuClipboardList, LuCircleCheckBig, LuCircleX, LuClock, LuFileText, LuSend, LuUpload, LuTicket } from 'react-icons/lu';
 import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 const STATUS_STYLES = {
     APPROVED: { bg: 'rgba(22,163,74,0.12)', color: '#166534', border: '#16a34a' },

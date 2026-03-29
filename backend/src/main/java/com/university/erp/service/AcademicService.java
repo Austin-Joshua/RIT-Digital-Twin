@@ -1,10 +1,10 @@
 package com.university.erp.service;
 
-import com.university.erp.exception.ErpException;
-import com.university.erp.entity.Marks;
+import com.university.erp.util.ErpException;
+import com.university.erp.model.Marks;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import com.university.erp.entity.Student;
+import com.university.erp.model.Student;
 import com.university.erp.repository.MarksRepository;
 import com.university.erp.repository.MarkHistoryRepository;
 import com.university.erp.repository.StudentRepository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.university.erp.dto.MarksUploadRequestDto;
-import com.university.erp.entity.Subject;
+import com.university.erp.model.Subject;
 import com.university.erp.repository.SubjectRepository;
 
 import java.util.List;
@@ -147,7 +147,7 @@ public class AcademicService {
 
     private void trackChange(Marks mark, Marks newMark, String field, String oldVal, String newVal) {
         if (oldVal != null && !oldVal.equals(newVal)) {
-            historyRepository.save(com.university.erp.entity.MarkHistory.builder()
+            historyRepository.save(com.university.erp.model.MarkHistory.builder()
                     .mark(mark)
                     .fieldName(field)
                     .oldValue(oldVal)

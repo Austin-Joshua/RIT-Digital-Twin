@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.FacultyProfile;
+import com.university.erp.model.FacultyProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

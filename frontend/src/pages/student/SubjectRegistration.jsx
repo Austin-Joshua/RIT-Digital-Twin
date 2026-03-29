@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaBookOpen, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { workflowApi } from '../../services/enterpriseApi';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 const SubjectRegistration = () => {
     const { user } = useAuth();

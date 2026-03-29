@@ -1,8 +1,8 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.InternalMark;
-import com.university.erp.entity.PerformanceWarning;
-import com.university.erp.entity.Student;
+import com.university.erp.model.InternalMark;
+import com.university.erp.model.PerformanceWarning;
+import com.university.erp.model.Student;
 import com.university.erp.repository.InternalMarkRepository;
 import com.university.erp.repository.PerformanceWarningRepository;
 import com.university.erp.repository.StudentRepository;

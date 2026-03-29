@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Role;
-import com.university.erp.entity.Student;
-import com.university.erp.entity.User;
+import com.university.erp.model.Role;
+import com.university.erp.model.Student;
+import com.university.erp.model.User;
 import com.university.erp.repository.StudentRepository;
 import com.university.erp.service.ClubService;
 import com.university.erp.service.StudentProfileService;
@@ -156,7 +156,7 @@ public class ClubController {
             return;
         }
         Student target = studentRepository.findById(studentId)
-                .orElseThrow(() -> new com.university.erp.exception.ErpException.ResourceNotFoundException("Student not found"));
+                .orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found"));
         if ((role == Role.UserRole.FACULTY || role == Role.UserRole.HOD) && current.getDepartment() != null && target.getDepartment() != null
                 && !Objects.equals(current.getDepartment().getId(), target.getDepartment().getId())) {
             throw new AccessDeniedException("Department scope violation");

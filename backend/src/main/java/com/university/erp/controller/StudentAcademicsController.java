@@ -1,6 +1,6 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.User;
+import com.university.erp.model.User;
 import com.university.erp.service.StudentAcademicOnboardingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

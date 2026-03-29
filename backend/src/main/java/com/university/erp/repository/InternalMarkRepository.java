@@ -1,6 +1,6 @@
 package com.university.erp.repository;
 
-import com.university.erp.entity.InternalMark;
+import com.university.erp.model.InternalMark;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

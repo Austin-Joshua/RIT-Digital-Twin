@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { ThemeContext } from '../../context/ThemeContext';
+import { ThemeContext } from '../../hooks/ThemeContext';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import api, { getBackendRootURL, getAPIBaseURL } from '../../services/api';
 

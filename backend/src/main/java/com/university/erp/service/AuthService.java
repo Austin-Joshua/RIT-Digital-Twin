@@ -3,9 +3,9 @@ package com.university.erp.service;
 import com.university.erp.dto.AuthRequest;
 import com.university.erp.dto.AuthResponse;
 import com.university.erp.dto.RegisterRequest;
-import com.university.erp.entity.Role;
-import com.university.erp.entity.User;
-import com.university.erp.entity.Student;
+import com.university.erp.model.Role;
+import com.university.erp.model.User;
+import com.university.erp.model.Student;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import com.university.erp.repository.StudentRepository;
@@ -147,7 +147,7 @@ public class AuthService {
             recordLoginLog(user, username, clientIp, "SUCCESS", "Login successful");
 
             String jwt = jwtUtils.generateToken(user);
-            com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
+            com.university.erp.model.RefreshToken refreshToken = refreshTokenService
                     .createRefreshToken(user.getUserId());
 
             String roleName = user.getRole() != null && user.getRole().getRoleName() != null
@@ -196,7 +196,7 @@ public class AuthService {
 
     private void recordLoginLog(User user, String username, String ip, String status, String reason) {
         try {
-            com.university.erp.entity.LoginLog logEntry = com.university.erp.entity.LoginLog.builder()
+            com.university.erp.model.LoginLog logEntry = com.university.erp.model.LoginLog.builder()
                     .user(user)
                     .username(username)
                     .ipAddress(ip)
@@ -285,7 +285,7 @@ public class AuthService {
             }
 
             String jwt = jwtUtils.generateToken(user);
-            com.university.erp.entity.RefreshToken refreshToken = refreshTokenService
+            com.university.erp.model.RefreshToken refreshToken = refreshTokenService
                     .createRefreshToken(user.getUserId());
             log.info("Google login successful for user: {}", user.getUsername());
 
@@ -372,7 +372,7 @@ public class AuthService {
 
     private void recordAuditLog(User actor, String action, String details, Long affectedUserId, String ip) {
         try {
-            com.university.erp.entity.AuditLog auditEntry = com.university.erp.entity.AuditLog.builder()
+            com.university.erp.model.AuditLog auditEntry = com.university.erp.model.AuditLog.builder()
                     .actor(actor)
                     .action(action)
                     .details(details)
@@ -391,7 +391,7 @@ public class AuthService {
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(com.university.erp.entity.RefreshToken::getUser)
+                .map(com.university.erp.model.RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtils.generateToken(user);
                     return AuthResponse.builder()

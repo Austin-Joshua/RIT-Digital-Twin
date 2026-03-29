@@ -1,8 +1,8 @@
 package com.university.erp.controller;
 
-import com.university.erp.entity.Company;
-import com.university.erp.entity.PlacementOpportunity;
-import com.university.erp.entity.PlacementApplication;
+import com.university.erp.model.Company;
+import com.university.erp.model.PlacementOpportunity;
+import com.university.erp.model.PlacementApplication;
 import com.university.erp.service.PlacementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.university.erp.service;
 
-import com.university.erp.entity.Parent;
-import com.university.erp.entity.Student;
+import com.university.erp.model.Parent;
+import com.university.erp.model.Student;
 import com.university.erp.repository.ParentRepository;
 import org.springframework.stereotype.Service;
 
