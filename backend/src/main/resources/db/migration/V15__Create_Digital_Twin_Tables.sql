@@ -16,7 +16,8 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS buildings', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-SET FOREIGN_KEY_CHECKS=1;
+-- Always drop these to ensure a clean slate for Digital Twin
+DROP TABLE IF EXISTS digital_twin_metrics;
 
 -- 1. Buildings Table
 CREATE TABLE IF NOT EXISTS buildings (
@@ -75,3 +76,5 @@ SET @fk_exists = (
 );
 SET @sql = IF(@fk_exists = 0, 'ALTER TABLE timetable_slots ADD CONSTRAINT fk_timetable_classroom FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET FOREIGN_KEY_CHECKS=1;
