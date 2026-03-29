@@ -1,15 +1,22 @@
 -- V15__Create_Digital_Twin_Tables.sql
 -- Robust creation of Digital Twin core tables with safety checks for existing infrastructure
 
+SET FOREIGN_KEY_CHECKS=0;
+
 -- Check if legacy non-id buildings table exists
 SET @col_exists = (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'buildings' AND column_name = 'id');
 SET @tbl_exists = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'buildings');
+
+SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS timetables', 'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS classrooms', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'DROP TABLE IF EXISTS buildings', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET FOREIGN_KEY_CHECKS=1;
 
 -- 1. Buildings Table
 CREATE TABLE IF NOT EXISTS buildings (
