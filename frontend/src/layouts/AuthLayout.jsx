@@ -103,7 +103,7 @@ const AuthLayout = () => {
             </div>
             <style>{`
                 @media (max-width: 1024px) {
-                    .auth-wrapper { flex-direction: column !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; }
+                    .auth-wrapper { flex-direction: column !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; justify-content: center !important; align-items: center !important; }
                     .brand-panel, .form-panel { width: 100% !important; position: relative !important; transform: none !important; left: auto !important; right: auto !important; }
                     .brand-panel { padding: 24px 20px 16px !important; height: auto !important; z-index: 1 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center; }
                     .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
