@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ExportButtons from '../../components/common/ExportButtons';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../hooks/ToastContext';
 import api from '../../services/api';
 
 const GradeBook = () => {

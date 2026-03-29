@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LuFileCode } from 'react-icons/lu';
 import { academicAiApi } from '../../services/enterpriseApi';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../hooks/ToastContext';
 
 const ExamTimetableGeneratorUI = () => {
     const [mode, setMode] = useState('EXAM'); // 'EXAM' or 'WEEKLY'

@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminDashboard from './AdminDashboard';
 import FacultyDashboard from '../faculty/FacultyDashboard';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 const Dashboard = () => {
     const { user } = useAuth();

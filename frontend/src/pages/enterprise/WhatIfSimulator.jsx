@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, RadialBarChart, RadialBar, PolarAngleAxis, Tooltip } from 'recharts';
 import { LuCalculator, LuTrendingUp, LuRefreshCw, LuPlus, LuTrash2 } from 'react-icons/lu';
 import { academicAiApi } from '../../services/enterpriseApi';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 const GRADE_OPTIONS = [
     { label: 'O  (Outstanding) — 10', value: 10 },
