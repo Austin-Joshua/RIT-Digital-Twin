@@ -18,6 +18,7 @@ import java.util.Random;
 @Component
 @org.springframework.context.annotation.Lazy
 @Slf4j
+@org.springframework.core.annotation.Order(2)
 public class StudentDataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -31,6 +32,8 @@ public class StudentDataSeeder implements CommandLineRunner {
     private final StudentAcademicRepository studentAcademicRepository;
     private final AttendanceRecordRepository attendanceRecordRepository;
     private final StudentSubjectRepository studentSubjectRepository;
+
+    private User facultyUser; // Cached faculty for recording attendance
 
     @org.springframework.beans.factory.annotation.Autowired
     @org.springframework.context.annotation.Lazy
@@ -127,6 +130,13 @@ public class StudentDataSeeder implements CommandLineRunner {
         
         Department cse = departmentRepository.findByCode("CSE")
                 .orElseGet(() -> departmentRepository.save(Department.builder().code("CSE").deptName("B.E. CSE").build()));
+        
+        // Fetch a default faculty to record attendance
+        this.facultyUser = userRepository.findByEmail("faculty@ritchennai.edu.in")
+            .orElseGet(() -> userRepository.findAll().stream()
+                .filter(u -> u.getRole() != null && u.getRole().getRoleName() == Role.UserRole.FACULTY)
+                .findFirst()
+                .orElse(null));
         
         Department csbs = departmentRepository.findByCode("CSBS")
                 .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech CS & BS").build()));
@@ -400,11 +410,16 @@ public class StudentDataSeeder implements CommandLineRunner {
             int totalClasses = 45;
             int attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
             for (int i=0; i<attended; i++) {
-                attendanceRecordRepository.save(AttendanceRecord.builder()
+                AttendanceRecord.AttendanceRecordBuilder arb = AttendanceRecord.builder()
                         .studentSubject(ss)
                         .date(java.time.LocalDate.now().minusDays(i))
-                        .status("Present")
-                        .build());
+                        .status("Present");
+                
+                if (facultyUser != null) {
+                    arb.recordedBy(facultyUser);
+                }
+                
+                attendanceRecordRepository.save(arb.build());
             }
 
             double internalBase = 28 + (factor * 6) + (random.nextDouble() * 6);

@@ -3,26 +3,23 @@ spring:
     activate:
       on-profile: dev
 
-  # Dev uses Flyway for schema management (consistent with prod)
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    validate-on-migrate: false
-
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://127.0.0.1:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true"
+    username: root
+    password: "123456"
+
+  flyway:
+    enabled: false
 
   jpa:
-    hibernate:
-      ddl-auto: none
     show-sql: true
+    hibernate:
+      ddl-auto: update
     defer-datasource-initialization: false
 
 logging:
   level:
-    com.university.erp: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.flywaydb: INFO
+    com.university.erp: INFO
+    org.hibernate.SQL: WARN
+    org.flywaydb: WARN

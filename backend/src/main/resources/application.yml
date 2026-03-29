@@ -24,17 +24,17 @@ spring:
     show-sql: false
     open-in-view: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: false
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     baseline-on-migrate: true
-    validate-on-migrate: true
+    validate-on-migrate: false
 
   # Error handling for production
   mvc:
@@ -113,15 +113,6 @@ management:
     health:
       show-details: never
 
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: none
 ---
 spring:
   config:
