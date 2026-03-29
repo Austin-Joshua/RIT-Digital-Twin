@@ -114,3 +114,7 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1800000
       connection-timeout: 30000
+  flyway:
+    enabled: true
+    validate-on-migrate: false
+    baseline-on-migrate: true
