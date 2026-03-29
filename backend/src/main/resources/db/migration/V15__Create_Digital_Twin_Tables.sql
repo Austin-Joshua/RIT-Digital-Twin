@@ -9,7 +9,6 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS digital_twin_metrics;
 DROP TABLE IF EXISTS energy_logs;
 DROP TABLE IF EXISTS energy_metrics;
-DROP TABLE IF EXISTS timetable_slots;
 DROP TABLE IF EXISTS crowd_data;
 DROP TABLE IF EXISTS occupancy_stats;
 DROP TABLE IF EXISTS building_metrics;
@@ -61,19 +60,27 @@ CREATE TABLE digital_twin_metrics (
 );
 
 -- 5. Safely add classroom_id to timetable_slots
+SET @tbl_exists = (
+    SELECT COUNT(*) FROM information_schema.tables 
+    WHERE table_schema = DATABASE() AND table_name = 'timetable_slots'
+);
 SET @col_exists = (
     SELECT COUNT(*) FROM information_schema.columns 
     WHERE table_schema = DATABASE() AND table_name = 'timetable_slots' AND column_name = 'classroom_id'
 );
-SET @sql = IF(@col_exists = 0, 'ALTER TABLE timetable_slots ADD COLUMN classroom_id BIGINT', 'SELECT 1');
+SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0, 'ALTER TABLE timetable_slots ADD COLUMN classroom_id BIGINT', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- 6. Safely add FK to timetable_slots
+SET @tbl_exists = (
+    SELECT COUNT(*) FROM information_schema.tables 
+    WHERE table_schema = DATABASE() AND table_name = 'timetable_slots'
+);
 SET @fk_exists = (
     SELECT COUNT(*) FROM information_schema.referential_constraints 
     WHERE constraint_schema = DATABASE() AND constraint_name = 'fk_timetable_classroom'
 );
-SET @sql = IF(@fk_exists = 0, 'ALTER TABLE timetable_slots ADD CONSTRAINT fk_timetable_classroom FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL', 'SELECT 1');
+SET @sql = IF(@tbl_exists = 1 AND @fk_exists = 0, 'ALTER TABLE timetable_slots ADD CONSTRAINT fk_timetable_classroom FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL', 'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET FOREIGN_KEY_CHECKS=1;
