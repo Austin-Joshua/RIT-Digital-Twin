@@ -115,7 +115,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny())
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:8080 http://127.0.0.1:8080 https://*.vercel.app https://*.railway.app ws: wss:"))
+                                "default-src 'self'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' http://localhost:8080 http://127.0.0.1:8080 https://*.vercel.app https://*.onrender.com https://*.railway.app https://*.up.railway.app ws://localhost:8080 wss://*.onrender.com wss://*.railway.app wss://*.up.railway.app"))
                         .contentTypeOptions(Customizer.withDefaults())
                         .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -36,6 +36,7 @@ import java.util.Map;
 @Component
 @Profile("dev")
 @Slf4j
+@SuppressWarnings("unused") // Seeder utility methods kept for manual invocation; not all are called at startup
 public class DataInitializer implements CommandLineRunner {
 
         private final UserRepository userRepository;
@@ -74,7 +75,7 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         @Transactional
         public void run(String... args) throws Exception {
-                // 1. Initialize Roles (must run first so ADMIN exists for migration)
+                // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
                                 log.info("Seeding role: {}", roleEnum);
@@ -84,47 +85,27 @@ public class DataInitializer implements CommandLineRunner {
                         }
                 }
 
-                // 2. Migrate BOSS/MANAGEMENT/SUPER_ADMIN users to ADMIN and drop those roles
-                migrateLegacyRolesToAdmin();
-
-                // 3. Initialize Default Users
+                // 2. Initialize Default Users
                 seedUser("admin@ritchennai.edu.in", "admin123", Role.UserRole.ADMIN, "System", "Admin");
                 seedUser("faculty@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "John", "Faculty");
                 seedUser("student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
 
-                // Additional Demo Users
-                seedUser("faculty2@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "Sarah", "Professor");
-                seedUser("student2@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Michael", "Lee");
-                seedUser("student3@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Emily", "Chen");
-
                 // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
-                // 4. Initialize RIT Chennai departments (from ritchennai.org courses offered)
-                seedRitDepartments();
+                // Remaining seeders commented out due to schema inconsistencies
+                // migrateLegacyRolesToAdmin();
+                // seedRitDepartments();
+                // seedTransportData();
+                // seedErpData();
+                // seedCsbsData();
+                // ensureDemoAcademicLinks();
+                // seedHodsForAllDepartments();
+                // assignFacultyToDepartment();
+                // assignRegisterNumbersToDemoStudents();
 
-                // 5. Initialize Transport Data
-                seedTransportData();
-
-                // 6. Initialize ERP Data
-                seedErpData();
-
-                // 7. Initialize CSBS Curriculum (and other dept subjects if needed)
-                seedCsbsData();
-                ensureDemoAcademicLinks();
-
-                // 8. Seed one HOD per department and assign to their department
-                seedHodsForAllDepartments();
-
-                // 9. Assign demo faculty to a department so HOD can see them
-                assignFacultyToDepartment();
-
-                // 10. Clear login attempt blocks so seeded accounts (e.g. HOD) can log in after restart
                 bruteForceProtectionService.clearAll();
                 log.info("Cleared login attempt blocks for all accounts.");
-
-                // 11. Assign fixed Register Numbers to demo students so login by register number works
-                assignRegisterNumbersToDemoStudents();
         }
 
         /** UG and PG programmes as per RIT Chennai (ritchennai.org) */
