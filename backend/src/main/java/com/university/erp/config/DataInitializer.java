@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Profile("dev")
 @Slf4j
 @SuppressWarnings("unused") // Seeder utility methods kept for manual invocation; not all are called at startup
 public class DataInitializer implements CommandLineRunner {
@@ -86,12 +85,12 @@ public class DataInitializer implements CommandLineRunner {
                 }
 
                 // 2. Initialize Default Users
-                seedUser("admin@ritchennai.edu.in", "admin123", Role.UserRole.ADMIN, "System", "Admin");
-                seedUser("faculty@ritchennai.edu.in", "faculty123", Role.UserRole.FACULTY, "John", "Faculty");
-                seedUser("student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
+                seedUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
+                seedUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
+                seedUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
 
                 // Parent Seed
-                seedUser("parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
+                seedUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
                 // Remaining seeders commented out due to schema inconsistencies
                 // migrateLegacyRolesToAdmin();
@@ -144,7 +143,7 @@ public class DataInitializer implements CommandLineRunner {
                                 String password = "hod" + code.toLowerCase() + "123";
                                 String firstName = "HOD";
                                 String lastName = code;
-                                seedUser(email, password, Role.UserRole.HOD, firstName, lastName);
+                                seedUser(email, email, password, Role.UserRole.HOD, firstName, lastName);
                                 departmentRepository.findByCode(code).ifPresent(dept ->
                                         userRepository.findByEmail(email).ifPresent(user -> {
                                                 if (user.getDepartment() == null) {
@@ -155,7 +154,7 @@ public class DataInitializer implements CommandLineRunner {
                                         }));
                         }
                         // Legacy single HOD (redirect to CSBS if still used)
-                        seedUser("hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+                        seedUser("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
                         departmentRepository.findByCode("CSBS").ifPresent(dept ->
                                 userRepository.findByEmail("hod@ritchennai.edu.in").ifPresent(user -> {
                                         if (user.getDepartment() == null) {
@@ -220,12 +219,12 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        private void seedUser(String email, String password, Role.UserRole roleEnum, String firstName,
+        private void seedUser(String username, String email, String password, Role.UserRole roleEnum, String firstName,
                         String lastName) {
                 userRepository.findByEmail(email).ifPresentOrElse(
                                 user -> {
                                         log.info("Updating existing demo user: {}", email);
-                                        user.setUsername(email);
+                                        user.setUsername(username);
                                         user.setPassword(passwordEncoder.encode(password));
 
                                         Role role = roleRepository.findByRoleName(roleEnum)
@@ -243,7 +242,7 @@ public class DataInitializer implements CommandLineRunner {
                                                                         "Error: Role " + roleEnum + " not found."));
 
                                         User user = User.builder()
-                                                        .username(email)
+                                                        .username(username)
                                                         .email(email)
                                                         .password(passwordEncoder.encode(password))
                                                         .firstName(firstName)
