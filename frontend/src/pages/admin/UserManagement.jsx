@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LuSearch, LuLockOpen, LuLock, LuShieldAlert, LuUserX, LuRefreshCcw } from 'react-icons/lu';
 import api from '../../services/api';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../hooks/ToastContext';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);

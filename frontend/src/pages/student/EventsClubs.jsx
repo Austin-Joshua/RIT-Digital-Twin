@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../hooks/ToastContext';
 import { FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaCheckCircle, FaRegStar, FaInfoCircle } from 'react-icons/fa';
 
 const EventsClubs = () => {

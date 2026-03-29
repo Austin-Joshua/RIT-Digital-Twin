@@ -4,7 +4,7 @@ import {
     ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 import { Navigate } from 'react-router-dom';
 import KPIDetailsModal from '../../components/common/KPIDetailsModal';
 import { FaBus, FaUsers, FaChartLine, FaRobot, FaMicrochip } from 'react-icons/fa';
