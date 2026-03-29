@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../services/api';
-import { transportRoutes } from '../../data/transportRoutes';
+import { transportRoutes } from '../../utils/data/transportRoutes';
 import { LuBus, LuSearch, LuPhone, LuMapPin, LuClock, LuNavigation, LuRoute, LuCircleCheckBig } from 'react-icons/lu';
 
 const TransportPage = () => {
