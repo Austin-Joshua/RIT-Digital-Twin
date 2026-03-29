@@ -11,10 +11,8 @@ body {
     color: var(--theme-text);
     font-family: var(--font-primary);
     margin: 0;
+    padding: 0;
     transition: background-color var(--transition-speed);
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Touch targets: min 44px for mobile */

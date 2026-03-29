@@ -103,15 +103,49 @@ const AuthLayout = () => {
             </div>
             <style>{`
                 @media (max-width: 1024px) {
-                    .auth-wrapper { flex-direction: column !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; justify-content: center !important; align-items: center !important; }
-                    .brand-panel, .form-panel { width: 100% !important; position: relative !important; transform: none !important; left: auto !important; right: auto !important; }
-                    .brand-panel { padding: 24px 20px 16px !important; height: auto !important; z-index: 1 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center; }
+                    .auth-wrapper { 
+                        flex-direction: column !important; 
+                        overflow-y: auto !important; 
+                        height: auto !important; 
+                        min-height: 100vh !important; 
+                        justify-content: flex-start !important; 
+                        align-items: center !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        gap: 0 !important;
+                        background: var(--theme-bg) !important;
+                    }
+                    .brand-panel, .form-panel { 
+                        width: 100% !important; 
+                        position: relative !important; 
+                        transform: none !important; 
+                        left: auto !important; 
+                        right: auto !important; 
+                        margin: 0 !important;
+                    }
+                    .brand-panel { 
+                        padding: 32px 20px 24px !important; 
+                        height: auto !important; 
+                        z-index: 10 !important; 
+                        display: flex !important; 
+                        flex-direction: column !important; 
+                        align-items: center !important; 
+                        text-align: center;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+                    }
                     .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
-                    .brand-panel p,
-                    .brand-description,
-                    .brand-tagline { display: none !important; }
+                    .brand-panel p, .brand-description, .brand-tagline { display: none !important; }
                     .brand-panel img { height: 60px !important; }
-                    .form-panel { padding: 20px !important; height: auto !important; display: flex !important; justify-content: center !important; align-items: center !important; padding-top: 10px !important; z-index: 2 !important; }
+                    .form-panel { 
+                        padding: 40px 20px !important; 
+                        height: auto !important; 
+                        display: flex !important; 
+                        justify-content: center !important; 
+                        align-items: flex-start !important; 
+                        z-index: 1 !important;
+                        flex: 1;
+                    }
+                    .auth-form-wrapper { width: 100% !important; max-width: 440px !important; margin: 0 auto !important; }
                 }
                 @media (max-width: 480px) {
                     .brand-panel { padding: 16px 16px 12px !important; }
