@@ -47,6 +47,6 @@ public class Grade extends BaseEntity {
     @Column(name = "grade_letter", nullable = false, length = 5)
     private String gradeLetter;
 
-    @Column(name = "grade_points", nullable = false, precision = 3, scale = 2)
+    @Column(name = "grade_points", nullable = false, precision = 4, scale = 2)
     private BigDecimal gradePoints;
 }

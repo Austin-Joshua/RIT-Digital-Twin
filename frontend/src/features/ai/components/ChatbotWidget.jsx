@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaBolt, FaChartBar, FaSearch } from 'react-icons/fa';
 import api from '../../../services/api';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Render bot text with newlines so answers are readable and high-contrast
 const MessageContent = ({ text }) => {
