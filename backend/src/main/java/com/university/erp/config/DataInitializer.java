@@ -99,7 +99,7 @@ public class DataInitializer implements CommandLineRunner {
                 // seedErpData();
                 // seedCsbsData();
                 // ensureDemoAcademicLinks();
-                // seedHodsForAllDepartments();
+                seedHodsForAllDepartments();
                 // assignFacultyToDepartment();
                 // assignRegisterNumbersToDemoStudents();
 
@@ -452,13 +452,13 @@ public class DataInitializer implements CommandLineRunner {
         private void ensureDemoAcademicLinks() {
                 try {
                         jdbcTemplate.update("""
-                                        INSERT INTO faculty_profiles (user_id, employee_code, department, status)
-                                        SELECT u.user_id, CONCAT('FAC-', u.user_id), 'CSBS', 'active'
+                                        INSERT IGNORE INTO faculty_profiles (user_id, employee_code, department, status)
+                                        SELECT u.user_id, 'FAC-001', 'CSBS', 'active'
                                         FROM users u
                                         JOIN roles r ON r.role_id = u.role_id
-                                        WHERE r.role_name = 'FACULTY'
+                                        WHERE r.role_name = 'FACULTY' AND u.username = 'FAC-001'
                                           AND NOT EXISTS (
-                                            SELECT 1 FROM faculty_profiles fp WHERE fp.user_id = u.user_id
+                                            SELECT 1 FROM faculty_profiles fp WHERE fp.employee_code = 'FAC-001'
                                           )
                                         """);
 
@@ -486,7 +486,7 @@ public class DataInitializer implements CommandLineRunner {
                                         """);
 
                         jdbcTemplate.update("""
-                                        INSERT INTO faculty_subjects (faculty_id, subject_id, section, semester_id, created_at)
+                                        INSERT IGNORE INTO faculty_subjects (faculty_id, subject_id, section, semester_id, created_at)
                                         SELECT fp.faculty_id, ss.subject_id, COALESCE(st.section,'CSE-A'), ss.semester_id, CURRENT_TIMESTAMP
                                         FROM faculty_profiles fp
                                         JOIN users fu ON fu.user_id = fp.user_id

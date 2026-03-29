@@ -138,7 +138,7 @@ const InstitutionalLayout = () => {
                 </div>
 
                 <div className="stu-sidebar-search">
-                    <GlobalSearch navItems={navItems} />
+                    <GlobalSearch navItems={navItems} placeholder="Search" />
                 </div>
 
                 {/* Nav */}
