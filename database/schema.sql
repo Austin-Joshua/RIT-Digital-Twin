@@ -138,8 +138,10 @@ CREATE TABLE IF NOT EXISTS faculty_subjects (
 CREATE TABLE IF NOT EXISTS buildings (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     building_name VARCHAR(100) NOT NULL UNIQUE,
+    code VARCHAR(50) NOT NULL UNIQUE,
     total_floors INT NOT NULL,
     total_capacity INT,
+    base_energy_load DECIMAL(10,2),
     location_coordinates VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -148,9 +150,11 @@ CREATE TABLE IF NOT EXISTS buildings (
 -- Classrooms Table
 CREATE TABLE IF NOT EXISTS classrooms (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    room_number VARCHAR(20) NOT NULL,
+    room_number VARCHAR(100) NOT NULL,
     building_id BIGINT NOT NULL,
     capacity INT,
+    type VARCHAR(100),
+    peak_load_multiplier DECIMAL(5,2),
     has_projector BOOLEAN DEFAULT FALSE,
     is_smart_classroom BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
