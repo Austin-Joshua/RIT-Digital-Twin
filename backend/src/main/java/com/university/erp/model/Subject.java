@@ -17,10 +17,6 @@ public class Subject extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Long getSubjectId() {
-        return id;
-    }
-
     private String subjectName;
     private String subjectCode;
     private Integer credits;

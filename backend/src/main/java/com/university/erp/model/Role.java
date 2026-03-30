@@ -15,7 +15,6 @@ public class Role {
     @Column(name = "role_id")
     private Long roleId;
 
-    @Transient
     public Long getRoleId() {
         return roleId;
     }
