@@ -124,7 +124,7 @@ public class StudentDataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         log.info("Starting Bulk Student Data Integration (Zero-Trust Identity Seeding)...");
-        
+        try {
         Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
@@ -156,6 +156,10 @@ public class StudentDataSeeder implements CommandLineRunner {
         seedPhysicalTwinData();
 
         log.info("Student Data Integration Complete.");
+        } catch (Exception e) {
+            log.error("StudentDataSeeder encountered an error - application will continue: {}", e.getMessage());
+            log.debug("StudentDataSeeder stack trace:", e);
+        }
     }
 
     private void seedSmartCampusSuiteData() {

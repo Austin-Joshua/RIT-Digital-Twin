@@ -75,6 +75,7 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         @Transactional
         public void run(String... args) throws Exception {
+                try {
                 // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
@@ -106,6 +107,10 @@ public class DataInitializer implements CommandLineRunner {
 
                 bruteForceProtectionService.clearAll();
                 log.info("Cleared login attempt blocks for all accounts.");
+                } catch (Exception e) {
+                        log.error("DataInitializer encountered an error - application will continue: {}", e.getMessage());
+                        log.debug("DataInitializer stack trace:", e);
+                }
         }
 
         /** UG and PG programmes as per RIT Chennai (ritchennai.org) */
