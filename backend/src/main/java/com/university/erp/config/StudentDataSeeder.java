@@ -137,7 +137,8 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     @Transactional
     public void performSeeding() {
-        Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
+        try {
+            Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
         Department cse = departmentRepository.findByCode("CSE")
