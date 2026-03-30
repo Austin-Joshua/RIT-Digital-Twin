@@ -17,4 +17,6 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
             Long subjectId, Integer semester, String section);
 
     Optional<AttendanceRecord> findByStudentSubject_StudentSubjectIdAndDate(Long studentSubjectId, LocalDate date);
+    
+    long countByStudentSubject_StudentSubjectId(Long studentSubjectId);
 }

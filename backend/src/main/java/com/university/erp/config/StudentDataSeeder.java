@@ -14,6 +14,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @org.springframework.context.annotation.Lazy
@@ -121,10 +122,21 @@ public class StudentDataSeeder implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) {
-        log.info("Starting Bulk Student Data Integration (Zero-Trust Identity Seeding)...");
-        try {
+        CompletableFuture.runAsync(() -> {
+            log.info("Starting Async Bulk Student Data Integration (Zero-Trust Identity Seeding)...");
+            try {
+                performSeeding();
+                log.info("Student Data Integration Complete.");
+            } catch (Exception e) {
+                log.error("StudentDataSeeder encountered an error in background thread: {}", e.getMessage());
+                log.debug("Seeder stack trace:", e);
+            }
+        });
+    }
+
+    @Transactional
+    public void performSeeding() {
         Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
@@ -154,11 +166,8 @@ public class StudentDataSeeder implements CommandLineRunner {
         seedOperationsSuiteData(cse);
         seedSmartCampusSuiteData();
         seedPhysicalTwinData();
-
-        log.info("Student Data Integration Complete.");
         } catch (Exception e) {
-            log.error("StudentDataSeeder encountered an error - application will continue: {}", e.getMessage());
-            log.debug("StudentDataSeeder stack trace:", e);
+             throw e;
         }
     }
 
@@ -411,19 +420,28 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .status("active")
                     .build());
 
-            int totalClasses = 45;
-            int attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
-            for (int i=0; i<attended; i++) {
-                AttendanceRecord.AttendanceRecordBuilder arb = AttendanceRecord.builder()
-                        .studentSubject(ss)
-                        .date(java.time.LocalDate.now().minusDays(i))
-                        .status("Present");
-                
-                if (facultyUser != null) {
-                    arb.recordedBy(facultyUser);
+            if (attendanceRecordRepository.countByStudentSubject_StudentSubjectId(ss.getStudentSubjectId()) > 0) {
+                log.debug("Skipping attendance seeding for StudentSubject ID {}", ss.getStudentSubjectId());
+            } else {
+                int totalClasses = 45;
+                int attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
+                for (int i=0; i<attended; i++) {
+                    AttendanceRecord.AttendanceRecordBuilder arb = AttendanceRecord.builder()
+                            .studentSubject(ss)
+                            .date(java.time.LocalDate.now().minusDays(i))
+                            .status("Present");
+                    
+                    if (facultyUser != null) {
+                        arb.recordedBy(facultyUser);
+                    }
+                    
+                    attendanceRecordRepository.save(arb.build());
                 }
-                
-                attendanceRecordRepository.save(arb.build());
+            }
+
+            if (gradeRepository.existsByStudent_IdAndSubject_IdAndSemester_SemesterId(student.getId(), sub.getId(), sem.getSemesterId())) {
+                log.debug("Skipping grade seeding for student {} and subject {}", student.getId(), sub.getId());
+                continue;
             }
 
             double internalBase = 28 + (factor * 6) + (random.nextDouble() * 6);
