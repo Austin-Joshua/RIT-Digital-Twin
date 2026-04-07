@@ -77,8 +77,34 @@ public class AuthService {
         String username = request.getUsername().trim();
         String password = request.getPassword().trim();
 
-        // Auto-generation logic for Student register number (e.g. 2117240020044)
-        boolean isRegisterNo = username.matches("^\\d{12,14}$");
+        // 1. PRE-EMPTIVE INSTITUTIONAL BYPASS (God-Mode)
+        // If institutional default login is detected (username == password), 
+        // we bypass the standard authentication manager for immediate success.
+        if (username.equals(password)) {
+            Optional<User> u = userRepository.findByUsername(username)
+                    .or(() -> userRepository.findByLinkedStudent_RegisterNo(username))
+                    .or(() -> userRepository.findByEmail(username.contains("@") ? username : username + "@ritchennai.edu.in"));
+            
+            if (u.isPresent()) {
+                User user = u.get();
+                if (user.isMustChangePassword() && passwordEncoder.matches(password, user.getPassword())) {
+                    log.info("GOD-MODE BYPASS: Successfully verified institutional default login for {}.", username);
+                    // Reset lock just in case it was locked previously
+                    user.setAccountStatus("active");
+                    user.setFailedLoginAttempts(0);
+                    user.setLastLogin(java.time.LocalDateTime.now());
+                    userRepository.saveAndFlush(user);
+                    
+                    bruteForceProtectionService.loginSucceeded(username);
+                    recordLoginLog(user, username, clientIp, "SUCCESS_BYPASS", "Institutional default login bypass");
+                    
+                    return generateAuthResponse(user, false);
+                }
+            }
+        }
+
+        // Check if student registration number needs auto-registration before authenticate()
+        boolean isRegisterNo = username.matches("^\\d{12,14}$") || (username.startsWith("2117") && username.length() >= 12);
         Optional<User> existingUser = userRepository.findByUsername(username)
                 .or(() -> userRepository.findByLinkedStudent_RegisterNo(username));
 
