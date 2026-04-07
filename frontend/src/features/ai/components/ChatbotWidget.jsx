@@ -124,92 +124,124 @@ const ChatbotWidget = ({ studentId }) => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 40, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, scale: 0.9, y: 40, filter: 'blur(10px)' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         style={{
-                            width: '380px',
-                            height: '550px',
-                            borderRadius: '24px',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+                            width: '420px',
+                            height: '650px',
+                            borderRadius: '32px',
+                            boxShadow: '0 25px 80px rgba(0,0,0,0.4)',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
-                            marginBottom: '16px',
-                            background: '#f8fafc',
-                            border: '1px solid #94a3b8'
+                            marginBottom: '20px',
+                            background: 'rgba(255, 255, 255, 0.85)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.4)',
+                            zIndex: 1001
                         }}
                     >
                         {/* Premium Header */}
-                        <div style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: 'white', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.15)', padding: '8px', borderRadius: '12px' }}>
-                                    <FaRobot color="#fbbf24" size={20} />
-                                </div>
+                        <div style={{ 
+                            background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', 
+                            color: 'white', 
+                            padding: '24px', 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ position: 'absolute', top: '-50%', right: '-10%', width: '150px', height: '150px', background: 'rgba(251, 191, 36, 0.1)', borderRadius: '50%', blur: '40px' }}></div>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', position: 'relative', zIndex: 1 }}>
+                                <motion.div 
+                                    animate={{ rotate: [0, 5, -5, 0] }}
+                                    transition={{ repeat: Infinity, duration: 4 }}
+                                    style={{ background: 'rgba(255,255,255,0.15)', padding: '10px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.2)' }}
+                                >
+                                    <FaRobot color="#fbbf24" size={24} />
+                                </motion.div>
                                 <div>
-                                    <span style={{ fontWeight: '800', fontSize: '15px', display: 'block' }}>RIT Command Center</span>
-                                    <span style={{ fontSize: '10px', opacity: 0.7, fontWeight: '700', textTransform: 'uppercase', tracking: '1px' }}>AI Neural Network Active</span>
+                                    <span style={{ fontWeight: '900', fontSize: '18px', display: 'block', letterSpacing: '-0.5px' }}>RIT Intellect</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <div style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 10px #22c55e' }}></div>
+                                        <span style={{ fontSize: '10px', opacity: 0.8, fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Neural Engine Active</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '15px', cursor: 'pointer', opacity: 0.8 }}>
-                                <FaMinus onClick={() => setIsOpen(false)} />
-                                <FaTimes onClick={() => setIsOpen(false)} />
+                            <div style={{ display: 'flex', gap: '18px', cursor: 'pointer', opacity: 0.8, position: 'relative', zIndex: 1 }}>
+                                <FaMinus onClick={() => setIsOpen(false)} style={{ transition: '0.2s' }} />
+                                <FaTimes onClick={() => setIsOpen(false)} style={{ transition: '0.2s' }} />
                             </div>
                         </div>
 
-                        {/* Search/Command Bar - same as main input for quick commands */}
-                        <div style={{ padding: '8px 16px', background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FaSearch size={12} style={{ color: '#475569' }} />
+                        {/* Search Bar Refined */}
+                        <div style={{ padding: '12px 24px', background: 'rgba(241, 245, 249, 0.5)', borderBottom: '1px solid rgba(203, 213, 225, 0.5)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <FaSearch size={14} style={{ color: '#64748b' }} />
                             <input
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Search or ask (e.g. my attendance, exam schedule)..."
-                                style={{ background: '#fff', border: '1px solid #94a3b8', borderRadius: 8, outline: 'none', fontSize: 13, flex: 1, color: '#1e293b', padding: '8px 12px' }}
+                                placeholder="Command the twin (e.g. attendance, grades)..."
+                                style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', flex: 1, color: '#1e293b', fontWeight: '500' }}
                             />
                         </div>
 
-                        {/* Messages - high contrast: bot = light bg + dark text, user = dark bg + white */}
-                        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', background: '#f8fafc' }}>
+                        {/* Messages Area */}
+                        <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {messages.map((msg, i) => (
-                                <div key={i} style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: '85%' }}>
+                                <motion.div 
+                                    key={i} 
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: '88%' }}
+                                >
                                     <div
                                         style={{
-                                            padding: '12px 16px',
-                                            borderRadius: msg.isBot ? '2px 16px 16px 16px' : '16px 16px 2px 16px',
-                                            fontSize: '0.9rem',
+                                            padding: '16px 20px',
+                                            borderRadius: msg.isBot ? '4px 24px 24px 24px' : '24px 24px 4px 24px',
+                                            fontSize: '0.95rem',
                                             fontWeight: '500',
-                                            lineHeight: 1.55,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                                            lineHeight: 1.6,
+                                            boxShadow: msg.isBot ? '0 4px 15px rgba(0,0,0,0.05)' : '0 10px 25px rgba(11,44,107,0.2)',
                                             ...(msg.isBot
-                                                ? { background: '#ffffff', color: '#1a1a1a', border: '1px solid #cbd5e1' }
-                                                : { background: '#0B2C6B', color: '#ffffff', border: '1px solid #0B2C6B' }
+                                                ? { background: '#ffffff', color: '#1a202c', border: '1px solid #e2e8f0' }
+                                                : { background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: '#ffffff' }
                                             )
                                         }}
                                     >
                                         {msg.isBot ? <MessageContent text={msg.text} /> : msg.text}
                                     </div>
                                     {msg.action && (
-                                        <button style={{
-                                            marginTop: '8px', width: '100%', padding: '8px', borderRadius: '10px',
-                                            background: msg.action.color, color: 'white', border: 'none',
-                                            fontWeight: '700', fontSize: '11px', textTransform: 'uppercase',
-                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                                        }}>
-                                            <FaBolt size={10} /> {msg.action.label}
-                                        </button>
+                                        <motion.button 
+                                            whileHover={{ scale: 1.02, y: -2 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            style={{
+                                                marginTop: '10px', width: '100%', padding: '12px', borderRadius: '14px',
+                                                background: msg.action.color, color: 'white', border: 'none',
+                                                fontWeight: '800', fontSize: '12px', textTransform: 'uppercase',
+                                                letterSpacing: '1px',
+                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                                                boxShadow: `0 8px 20px ${msg.action.color}44`
+                                            }}
+                                        >
+                                            <FaBolt size={12} /> {msg.action.label}
+                                        </motion.button>
                                     )}
-                                </div>
+                                </motion.div>
                             ))}
                             {isTyping && (
-                                <div style={{ alignSelf: 'flex-start', background: '#ffffff', color: '#1a1a1a', padding: '12px 16px', borderRadius: '2px 16px 16px 16px', border: '1px solid #cbd5e1' }}>
-                                    <div style={{ display: 'flex', gap: 5 }}>
+                                <div style={{ alignSelf: 'flex-start', background: '#ffffff', padding: '16px 20px', borderRadius: '4px 24px 24px 24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                                    <div style={{ display: 'flex', gap: 6 }}>
                                         {[0, 1, 2].map(j => (
                                             <motion.div
                                                 key={j}
-                                                animate={{ y: [0, -5, 0] }}
-                                                transition={{ repeat: Infinity, duration: 0.6, delay: j * 0.1 }}
-                                                style={{ width: 6, height: 6, background: '#64748b', borderRadius: '50%' }}
+                                                animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+                                                transition={{ repeat: Infinity, duration: 0.8, delay: j * 0.15 }}
+                                                style={{ width: 8, height: 8, background: '#94a3b8', borderRadius: '50%' }}
                                             />
                                         ))}
                                     </div>
@@ -217,71 +249,84 @@ const ChatbotWidget = ({ studentId }) => {
                             )}
                         </div>
 
-                        {/* Quick Action Suggestions - high contrast */}
-                        <div style={{ padding: '0 20px 15px', display: 'flex', flexWrap: 'wrap', gap: '8px', background: '#f1f5f9', borderTop: '1px solid #cbd5e1' }}>
+                        {/* Suggestions Layer */}
+                        <div style={{ padding: '0 24px 20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                             {getSuggestions().map(sug => (
-                                <button
+                                <motion.button
                                     key={sug}
+                                    whileHover={{ scale: 1.05, background: 'rgba(11, 44, 107, 0.08)' }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={() => handleSend(sug)}
                                     style={{
-                                        padding: '8px 14px', borderRadius: '20px',
-                                        fontSize: '12px',
-                                        fontWeight: '600', cursor: 'pointer', transition: '0.2s',
-                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                        background: '#ffffff', color: '#0B2C6B', border: '1px solid #0B2C6B'
+                                        padding: '10px 18px', borderRadius: '25px',
+                                        fontSize: '13px',
+                                        fontWeight: '700', cursor: 'pointer', transition: '0.3s',
+                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                        background: 'rgba(255,255,255,0.8)', color: '#0B2C6B', border: '1px solid rgba(11, 44, 107, 0.2)',
+                                        boxShadow: '0 4px 10px rgba(0,0,0,0.03)'
                                     }}
                                 >
-                                    <FaBolt size={10} /> {sug}
-                                </button>
+                                    <FaBolt size={10} className="text-amber-500" /> {sug}
+                                </motion.button>
                             ))}
                         </div>
 
-                        {/* Footer Input - high contrast */}
-                        <div style={{ padding: '16px 20px', background: '#e2e8f0', borderTop: '1px solid #94a3b8', display: 'flex', gap: '10px' }}>
+                        {/* Footer Controls */}
+                        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(226, 232, 240, 0.8)', display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <div style={{ flex: 1, position: 'relative' }}>
                                 <input
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Ask: attendance, grades, exam, transport..."
+                                    placeholder="Type your query..."
                                     style={{
-                                        width: '100%', borderRadius: 12, padding: '12px 15px', outline: 'none', fontSize: 14, fontWeight: 500,
-                                        background: '#ffffff', color: '#1a1a1a', border: '1px solid #64748b'
+                                        width: '100%', borderRadius: '18px', padding: '16px 20px', outline: 'none', fontSize: '15px', fontWeight: '600',
+                                        background: '#ffffff', color: '#1a202c', border: '2px solid #e2e8f0', transition: 'border-color 0.3s',
+                                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
                                     }}
                                 />
-                                <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)' }}>
-                                    <FaChartBar size={14} style={{ color: '#64748b' }} />
-                                </div>
                             </div>
-                            <button 
+                            
+                            <motion.button 
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
                                 onClick={toggleVoice} 
                                 style={{ 
-                                    background: isListening ? '#ef4444' : '#f1f5f9', 
+                                    background: isListening ? '#ef4444' : '#f8fafc', 
                                     color: isListening ? '#ffffff' : '#64748b', 
-                                    border: '1px solid',
-                                    borderColor: isListening ? '#ef4444' : '#cbd5e1', 
-                                    borderRadius: 12, 
-                                    width: 50, 
+                                    border: '2px solid',
+                                    borderColor: isListening ? '#ef4444' : '#e2e8f0', 
+                                    borderRadius: '18px', 
+                                    width: '56px', height: '56px',
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center', 
                                     cursor: 'pointer', 
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.5)' : 'none'
+                                    boxShadow: isListening ? '0 0 25px rgba(239, 68, 68, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)'
                                 }}
-                                title="Voice Input"
                             >
                                 {isListening ? (
-                                    <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>
-                                        <FaMicrophone />
+                                    <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 1 }}>
+                                        <FaMicrophone size={20} />
                                     </motion.div>
                                 ) : (
-                                    <FaMicrophone />
+                                    <FaMicrophone size={20} />
                                 )}
-                            </button>
-                            <button onClick={() => handleSend()} style={{ background: '#0B2C6B', color: '#fff', border: 'none', borderRadius: 12, width: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(11,44,107,0.35)' }}>
-                                <FaPaperPlane />
-                            </button>
+                            </motion.button>
+
+                            <motion.button 
+                                whileHover={{ scale: 1.1, backgroundColor: '#1e3a8a' }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => handleSend()} 
+                                style={{ 
+                                    background: '#0B2C6B', color: '#fff', border: 'none', borderRadius: '18px', 
+                                    width: '56px', height: '56px', 
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', 
+                                    boxShadow: '0 8px 20px rgba(11,44,107,0.3)' 
+                                }}
+                            >
+                                <FaPaperPlane size={20} />
+                            </motion.button>
                         </div>
                     </motion.div>
                 )}
