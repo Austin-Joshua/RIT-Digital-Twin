@@ -101,9 +101,13 @@ public class DataInitializer implements CommandLineRunner {
                 // seedErpData();
                 // seedCsbsData();
                 // ensureDemoAcademicLinks();
+                // 3. Force Reset Core Institutional Identities (ADM/FAC/STUDENT-DEMO)
+                // This ensures that even if the DB state is stale, core accounts are always 'active' with default passwords.
+                forceResetUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
+                forceResetUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
+                forceResetUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
+
                 seedHodsForAllDepartments();
-                // assignFacultyToDepartment();
-                // assignRegisterNumbersToDemoStudents();
 
                 bruteForceProtectionService.clearAll();
                 log.info("Cleared login attempt blocks for all accounts.");
@@ -225,40 +229,30 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        private void seedUser(String username, String email, String password, Role.UserRole roleEnum, String firstName,
-                        String lastName) {
-                userRepository.findByEmail(email).ifPresentOrElse(
-                                user -> {
-                                        log.info("Updating existing demo user: {}", email);
-                                        user.setUsername(username);
-                                        user.setPassword(passwordEncoder.encode(password));
+        private void seedUser(String username, String email, String password, Role.UserRole roleEnum, String first, String last) {
+                if (userRepository.findByUsername(username).isPresent()) return;
+                forceResetUser(username, email, password, roleEnum, first, last);
+        }
 
-                                        Role role = roleRepository.findByRoleName(roleEnum)
-                                                        .orElseThrow(() -> new RuntimeException(
-                                                                        "Role " + roleEnum + " not found"));
-                                        user.setRole(role);
-                                        user.setMustChangePassword(false);
+        private void forceResetUser(String username, String email, String password, Role.UserRole roleName, String first, String last) {
+                Role role = roleRepository.findByRoleName(roleName)
+                                .orElseGet(() -> roleRepository.save(Role.builder().roleName(roleName).build()));
 
-                                        userRepository.save(user);
-                                },
-                                () -> {
-                                        log.info("Seeding new demo user: {}", email);
-                                        Role role = roleRepository.findByRoleName(roleEnum)
-                                                        .orElseThrow(() -> new RuntimeException(
-                                                                        "Error: Role " + roleEnum + " not found."));
+                User user = userRepository.findByUsername(username)
+                                .orElse(new User());
 
-                                        User user = User.builder()
-                                                        .username(username)
-                                                        .email(email)
-                                                        .password(passwordEncoder.encode(password))
-                                                        .firstName(firstName)
-                                                        .lastName(lastName)
-                                                        .role(role)
-                                                        .mustChangePassword(false)
-                                                        .build();
+                user.setUsername(username);
+                user.setEmail(email);
+                user.setPassword(passwordEncoder.encode(password));
+                user.setRole(role);
+                user.setFirstName(first);
+                user.setLastName(last);
+                user.setAccountStatus("active");
+                user.setFailedLoginAttempts(0);
+                user.setMustChangePassword(true);
 
-                                        userRepository.save(user);
-                                });
+                userRepository.saveAndFlush(user);
+                log.info("Force-reset institutional identity: {}", username);
         }
 
         private void seedErpData() {
