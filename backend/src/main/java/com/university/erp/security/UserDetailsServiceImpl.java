@@ -26,10 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String normalized = username.trim();
         String lower = normalized.toLowerCase();
         
-        // Case-insensitive email lookup (DB stores lowercase)
         final String searchEmail = normalized.contains("@") ? lower : lower + "@ritchennai.edu.in";
         final String searchUsername = normalized;
-        final String prefix = normalized;
 
         return userRepository.findByUsername(searchUsername)
                 .or(() -> userRepository.findByUsername(lower))
