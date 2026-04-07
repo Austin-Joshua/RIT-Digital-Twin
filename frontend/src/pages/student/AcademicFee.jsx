@@ -122,7 +122,7 @@ const AcademicFee = () => {
                                             key={idx}
                                             className="border-b border-slate-200 dark:border-navy-800 bg-white dark:bg-navy-900 hover:bg-slate-50 dark:hover:bg-navy-900/70 transition-colors"
                                         >
-                                            <td className="p-4 font-semibold text-slate-900 dark:text-slate-50">
+                                            <td className="p-4 font-semibold text-slate-800 dark:text-slate-50">
                                                 {fee.label}
                                                 {!fee.required && (
                                                     <span className="ml-2 text-[9px] bg-slate-200 dark:bg-navy-700 text-slate-800 dark:text-slate-100 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
@@ -130,8 +130,8 @@ const AcademicFee = () => {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="p-4 text-slate-800 dark:text-slate-300 font-medium">Recurring</td>
-                                            <td className="p-4 font-mono text-right text-slate-900 dark:text-slate-50 font-black">
+                                            <td className="p-4 text-slate-700 dark:text-slate-300 font-medium">Recurring</td>
+                                            <td className="p-4 font-mono text-right text-slate-800 dark:text-slate-50 font-black">
                                                 {fee.amount.toLocaleString('en-IN')}
                                             </td>
                                         </tr>
