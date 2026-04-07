@@ -193,71 +193,98 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
     );
 };
 
+import { useNavigate } from 'react-router-dom';
+
+import { getAcademicStats, getInternalMarks } from '../../utils/MockDataGenerator';
+
 const ParentDashboard = () => {
-    const [students, setStudents] = useState([]);
-    const [_loading, setLoading] = useState(true);
-    const [selectedDetail, setSelectedDetail] = useState(null);
+    const navigate = useNavigate();
     const { addToast } = useToast();
 
-    // Mock data for marks - strictly as requested
-    const mockMarks = {
-        cat: [
-            { subject: 'Discrete Mathematics', score: 45, max: 50 },
-            { subject: 'Economics', score: 42, max: 50 },
-            { subject: 'Object Oriented Programming', score: 48, max: 50 }
-        ],
-        assignments: [
-            { subject: 'Discrete Mathematics', score: 18, max: 20 },
-            { subject: 'Business Analytics', score: 19, max: 20 },
-            { subject: 'English', score: 20, max: 20 }
-        ],
-        semester: [
-            { subject: 'Matrices and Calculus', grade: 'A+', gpa: 9.5 },
-            { subject: 'Engineering Chemistry', grade: 'A', gpa: 9.0 }
-        ]
-    };
-
+    // Instant data hydration from deterministic generator
     const generateMockStudents = () => {
         return [
             {
                 id: 1,
-                user: { firstName: 'Ram', lastName: 'Kumar' },
+                user: { firstName: 'Ram', lastName: 'Kumar', email: 'ram.kumar@cse.ritchennai.edu.in' },
                 studentIdNumber: 'RIT2021001',
                 currentCgpa: 8.5,
-                attendance: 92,
-                marks: mockMarks
+                attendance: 92
             }
         ];
     };
+
+    const initialStudents = generateMockStudents();
+    const initialPrimary = initialStudents[0];
+    const initialStats = getAcademicStats(initialPrimary.user.email);
+    const initialMarks = getInternalMarks(initialPrimary.user.email);
+
+    const [students, setStudents] = useState(initialStudents);
+    const [_loading, setLoading] = useState(false); // No spinner needed for mock data
+    const [selectedDetail, setSelectedDetail] = useState(null);
+    const [parentNote, setParentNote] = useState('');
+    const [lastSavedNote, setLastSavedNote] = useState('');
 
     useEffect(() => {
         const fetchLinkedStudents = async () => {
             try {
                 const res = await api.get('/parent/students');
                 if (res.data && res.data.length > 0) {
-                    setStudents(res.data.map(s => ({ ...s, attendance: 88, marks: mockMarks })));
-                } else {
-                    setStudents(generateMockStudents());
+                    setStudents(res.data);
                 }
             } catch (err) {
-                setStudents(generateMockStudents());
+                // Silent catch: We already have initial mocks
             }
             setLoading(false);
         };
         fetchLinkedStudents();
     }, []);
 
+    useEffect(() => {
+        if (students.length > 0) {
+            const storedNotes = localStorage.getItem('rit_parent_faculty_notes');
+            if (storedNotes) {
+                const notesObj = JSON.parse(storedNotes);
+                const primaryId = students[0].studentIdNumber;
+                if (notesObj[primaryId]) {
+                    setParentNote(notesObj[primaryId]);
+                    setLastSavedNote(notesObj[primaryId]);
+                }
+            }
+        }
+    }, [students]);
+
+    const handleSaveNote = () => {
+        const primaryId = students[0]?.studentIdNumber || 'RIT2021001';
+        const storedNotes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
+        storedNotes[primaryId] = parentNote;
+        localStorage.setItem('rit_parent_faculty_notes', JSON.stringify(storedNotes));
+        setLastSavedNote(parentNote);
+        addToast('Note shared with Class Advisor successfully.', 'success');
+        
+        const auditLogs = JSON.parse(localStorage.getItem('rit_system_audit_logs') || '[]');
+        auditLogs.unshift({
+            event: 'PARENT_NOTE',
+            user: 'Parent of ' + primaryId,
+            timestamp: new Date().toISOString(),
+            details: 'Shared a pastoral note with Faculty'
+        });
+        localStorage.setItem('rit_system_audit_logs', JSON.stringify(auditLogs.slice(0, 50)));
+    };
+
     const handleCardClick = (title, content) => {
         setSelectedDetail({ title, content });
     };
 
     const primary = students[0] || generateMockStudents()[0];
+    const stats = getAcademicStats(primary.user.email);
+    const marks = getInternalMarks(primary.user.email);
 
     const kpis = [
-        { id: 'cgpa', label: 'Current CGPA', value: primary.currentCgpa.toFixed(2), color: 'green', icon: <FaChartIcon /> },
-        { id: 'attendance', label: 'Overall Attendance', value: `${primary.attendance}%`, color: 'teal', icon: <FaCalendarAlt /> },
-        { id: 'cat', label: 'CAT Avg (Mock)', value: '45 / 50', color: 'blue', icon: <FaFileAlt /> },
-        { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild /> },
+        { id: 'cgpa', label: 'Current CGPA', value: stats.cgpa.toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
+        { id: 'attendance', label: 'Overall Attendance', value: `${stats.attendance.toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
+        { id: 'fees', label: 'Academic Fees', value: '₹45,000 Due', color: 'red', icon: <FaRupeeSign />, link: '/parent/fees' },
+        { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild />, link: '#' },
     ];
 
     return (
@@ -272,13 +299,14 @@ const ParentDashboard = () => {
                 </p>
             </div>
 
-            {/* KPI strip – mirror student mode styling */}
+            {/* Unified KPI Row (3x2 in Tablet, 4+2 in Desktop) */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
                     <div
                         key={kpi.id}
                         className={`stu-kpi-card ${kpi.color}`}
-                        style={{ cursor: 'default' }}
+                        onClick={() => navigate(kpi.link)}
+                        style={{ cursor: 'pointer' }}
                     >
                         <div className="kpi-main">
                             <h3 className="kpi-value">{kpi.value}</h3>
@@ -288,20 +316,37 @@ const ParentDashboard = () => {
                             {kpi.icon}
                         </div>
                         <div className="kpi-more">
-                            Snapshot for this semester
+                            View {kpi.label} Details
                         </div>
                     </div>
                 ))}
+
+                {/* Twin Insight Cards for perfect 6-card alignment */}
+                <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '18px' }}>85% Capacity</h3>
+                        <p className="kpi-label">Campus Congestion</p>
+                    </div>
+                    <div className="kpi-more">Real-time Traffic Alert</div>
+                </div>
+                <div className="stu-kpi-card blue" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)' }}>
+                    <div className="kpi-main">
+                        <h3 className="kpi-value" style={{ fontSize: '18px' }}>Active</h3>
+                        <p className="kpi-label">Smart Grid Monitoring</p>
+                    </div>
+                    <div className="kpi-more">Energy Status: Optimized</div>
+                </div>
             </div>
 
-            {/* Academic + AI insights row */}
-            <div className="stu-info-row">
+            {/* Academic + Communication Row */}
+            <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px' }}>
                 <div className="stu-info-card">
-                    <div className="info-header">
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FaMagic color="var(--color-accent-gold)" />
                         Academic Snapshot – CAT & Assignments
                     </div>
                     <div className="info-body">
-                        <div className="stu-data-table-wrapper">
+                        <div className="stu-data-table-wrapper" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                             <table className="stu-data-table">
                                 <thead>
                                     <tr>
@@ -311,18 +356,18 @@ const ParentDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {primary.marks.cat.map((m, idx) => (
+                                    {marks.cat.map((m, idx) => (
                                         <tr key={`cat-${idx}`}>
                                             <td>{m.subject}</td>
-                                            <td>CAT</td>
-                                            <td className="text-right font-bold">{m.score} / {m.max}</td>
+                                            <td style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>CAT</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--color-primary-navy)' }}>{m.score} / {m.max}</td>
                                         </tr>
                                     ))}
-                                    {primary.marks.assignments.map((m, idx) => (
+                                    {marks.assignments.map((m, idx) => (
                                         <tr key={`assg-${idx}`}>
                                             <td>{m.subject}</td>
-                                            <td>Assignments</td>
-                                            <td className="text-right font-bold">{m.score} / {m.max}</td>
+                                            <td style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>ASSG</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--color-success)' }}>{m.score} / {m.max}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -331,26 +376,64 @@ const ParentDashboard = () => {
                     </div>
                 </div>
 
+                <div className="stu-info-card">
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FaHandshake color="var(--color-primary-navy)" />
+                        Pastoral Communication (Notes to Advisor)
+                    </div>
+                    <div className="info-body" style={{ padding: '20px' }}>
+                        <p style={{ fontSize: '13px', color: 'var(--theme-text-muted)', marginBottom: '16px' }}>
+                            Share private concerns or health updates about your ward directly with the Class Advisor.
+                        </p>
+                        <textarea
+                            value={parentNote}
+                            onChange={(e) => setParentNote(e.target.value)}
+                            placeholder="Type a note for the Faculty..."
+                            className="stu-input"
+                            style={{ 
+                                width: '100%', 
+                                minHeight: '120px', 
+                                padding: '12px', 
+                                fontSize: '14px',
+                                border: '1px solid var(--theme-border)',
+                                borderRadius: '12px',
+                                background: 'var(--theme-bg-muted)',
+                                color: 'var(--theme-text)',
+                                resize: 'none',
+                                marginBottom: '16px'
+                            }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                                {lastSavedNote === parentNote ? '✓ All changes shared' : '⚠️ Unshared changes'}
+                            </span>
+                            <button 
+                                onClick={handleSaveNote}
+                                className="table-btn"
+                                style={{ background: 'var(--color-primary-navy)', color: 'white', padding: '10px 20px', borderRadius: '10px', fontWeight: '800' }}
+                            >
+                                Share with Advisor
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Semester highlights reused but slimmer */}
+            {/* Semester highlights */}
             <div className="stu-info-row">
-                <div className="stu-info-card" style={{ borderTopColor: '#0B2C6B' }}>
-                    <div className="info-header flex items-center gap-2">
-                        <FaStar style={{ color: '#D4AF37' }} /> Semester Highlights
+                <div className="stu-info-card" style={{ borderTop: '4px solid var(--color-accent-gold)' }}>
+                     <div className="info-header flex items-center gap-2">
+                        <FaStar style={{ color: 'var(--color-accent-gold)' }} /> Previous Semester Performance
                     </div>
-                    <div className="info-body">
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                            {primary.marks.semester.map((m, idx) => (
-                                <li
-                                    key={idx}
-                                    style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14 }}
-                                >
-                                    <span>{m.subject}</span>
-                                    <span style={{ fontWeight: 800, color: '#0B2C6B' }}>{m.grade}</span>
-                                </li>
+                    <div className="info-body" style={{ padding: '20px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                            {getSemesterResults(primary.user.email, 1).slice(0, 4).map((m, idx) => (
+                                <div key={idx} style={{ padding: '12px', background: 'var(--theme-bg-muted)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '13px', fontWeight: '600' }}>{m.title}</div>
+                                    <div style={{ fontWeight: '900', color: 'var(--color-primary-navy)' }}>{m.grade}</div>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>

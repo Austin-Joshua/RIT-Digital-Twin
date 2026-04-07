@@ -19,11 +19,18 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             doc.text(`${filename.replace(/_/g, ' ')}`, 14, 15);
 
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
-            const tableRows = data.map(row =>
-                headers.length > 0
-                    ? headers.map(h => row[h] || row[h.toLowerCase()] || '')
-                    : Object.values(row)
-            );
+            const tableRows = data.map(row => {
+                if (headers.length === 0) return Object.values(row);
+                
+                return headers.map(h => {
+                    // Try exact match, then normalized match (lowercase, no spaces)
+                    const normalizedHeader = h.toLowerCase().replace(/\s+/g, '');
+                    const rowKey = Object.keys(row).find(k => 
+                        k === h || k.toLowerCase() === h.toLowerCase() || k.toLowerCase() === normalizedHeader
+                    );
+                    return rowKey ? row[rowKey] : '';
+                });
+            });
 
             doc.autoTable({
                 head: [tableHeaders],
@@ -52,11 +59,15 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             addToast(`Generating CSV for ${filename}...`, 'info');
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
             const csvRows = [
-                tableHeaders.join(','),
+                tableHeaders.map(h => `"${h}"`).join(','),
                 ...data.map(row =>
                     (headers.length > 0 ? headers : Object.keys(row))
                         .map(h => {
-                            const val = row[h] || '';
+                            const normalizedHeader = h.toLowerCase().replace(/\s+/g, '');
+                            const rowKey = Object.keys(row).find(k => 
+                                k === h || k.toLowerCase() === h.toLowerCase() || k.toLowerCase() === normalizedHeader
+                            );
+                            const val = rowKey ? row[rowKey] : '';
                             return `"${String(val).replace(/"/g, '""')}"`;
                         }).join(',')
                 )

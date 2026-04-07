@@ -35,6 +35,7 @@ const API_URL = getAPIBaseURL();
 
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 3500, // 3.5s timeout for lightning-fast responsiveness
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
@@ -42,21 +43,29 @@ const api = axios.create({
   }
 });
 
-// Request interceptor: Add JWT token
+// Institutional Scale Configuration: Prevent duplicate state-changing requests (Throttling)
+const pendingRequests = new Map();
+
 api.interceptors.request.use(
   (config) => {
-    // Allow skipping the interceptor for health checks or other public pings
-    if (config.headers['X-Skip-Interceptor']) {
-      delete config.headers['X-Skip-Interceptor']; // Clean up
+    // 1. Throttling for state-changing requests for institutional scale stability
+    const isStateChanging = ['post', 'put', 'delete'].includes(config.method?.toLowerCase());
+    if (isStateChanging) {
+      const requestKey = `${config.method}:${config.url}:${JSON.stringify(config.data || {})}`;
+      if (pendingRequests.has(requestKey)) {
+        return Promise.reject(new Error('DUPLICATE_REQUEST_THROTTLED'));
+      }
+      pendingRequests.set(requestKey, true);
+      config.__requestKey = requestKey; // Store for cleanup
+    }
 
-      // If hitting actuator, we need to bypass the /api prefix from baseURL
+    // 2. Auth Interceptor logic
+    if (config.headers['X-Skip-Interceptor']) {
+      delete config.headers['X-Skip-Interceptor'];
       if (config.url && config.url.startsWith('/actuator')) {
-        config.url = config.url.replace('/actuator', '/actuator'); // Keep as is, but ensure no /api/actuator
-        // Axios uses baseURL + url. If baseURL has /api, we might need a different approach.
-        // For simplicity, let's just make it an absolute URL if it starts with /actuator
         const baseURLRoot = config.baseURL.replace('/api', '');
         config.url = baseURLRoot + config.url;
-        config.baseURL = ''; // Wipe baseURL for this request to use absolute URL
+        config.baseURL = '';
       }
       return config;
     }
@@ -75,12 +84,25 @@ api.interceptors.request.use(
 // Simple delay helper for retry backoff
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Response interceptor: Handle authentication errors + lightweight retries for transient failures
 api.interceptors.response.use(
   (response) => {
+    // Cleanup pending requests on success
+    if (response.config.__requestKey) {
+      pendingRequests.delete(response.config.__requestKey);
+    }
     return response;
   },
   async (error) => {
+    // Cleanup pending requests on error
+    if (error.config && error.config.__requestKey) {
+      pendingRequests.delete(error.config.__requestKey);
+    }
+
+    // Handle Throttled requests quietly
+    if (error.message === 'DUPLICATE_REQUEST_THROTTLED') {
+      console.warn('Network: Double-click detected. Request throttled for institutional stability.');
+      return new Promise(() => {}); // Return a 'forever pending' promise to silent the UI failure
+    }
     // Don't intercept 401 on the login endpoint — let AuthContext handle it
     const isLoginRequest = error.config && error.config.url && error.config.url.includes('/auth/login');
     if (error.response && error.response.status === 401 && !isLoginRequest) {

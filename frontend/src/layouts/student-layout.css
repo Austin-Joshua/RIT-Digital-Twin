@@ -1788,15 +1788,15 @@ html.dark .stu-calendar-grid th {
         }
     }
 
-    /* Tablet adjustments (768px to 1024px) */
+    /* Tablet adjustments (769px to 1024px) */
     @media (min-width: 769px) and (max-width: 1024px) {
         .stu-kpi-row {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr) !important;
             gap: 16px;
         }
 
         .stu-info-row {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(3, 1fr) !important;
             gap: 18px;
         }
 

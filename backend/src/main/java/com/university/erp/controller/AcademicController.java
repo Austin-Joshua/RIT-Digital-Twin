@@ -23,12 +23,34 @@ public class AcademicController {
     private final AcademicService academicService;
     private final StudentProfileService studentProfileService;
     private final StudentAcademicOnboardingService onboardingService;
+    private final com.university.erp.repository.StudentLeaveRequestRepository leaveRequestRepository;
 
     public AcademicController(AcademicService academicService, StudentProfileService studentProfileService,
-            StudentAcademicOnboardingService onboardingService) {
+            StudentAcademicOnboardingService onboardingService, 
+            com.university.erp.repository.StudentLeaveRequestRepository leaveRequestRepository) {
         this.academicService = academicService;
         this.studentProfileService = studentProfileService;
         this.onboardingService = onboardingService;
+        this.leaveRequestRepository = leaveRequestRepository;
+    }
+
+    @PostMapping("/leave/apply")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<com.university.erp.model.StudentLeaveRequest> applyLeave(@RequestBody com.university.erp.model.StudentLeaveRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        request.setStudentId(currentUser.getUsername());
+        request.setStudentName(currentUser.getFirstName() + " " + currentUser.getLastName());
+        request.setStatus("PENDING");
+        return ResponseEntity.ok(leaveRequestRepository.save(request));
+    }
+
+    @GetMapping("/leave/my-leaves")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<com.university.erp.model.StudentLeaveRequest>> getMyLeaves() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        return ResponseEntity.ok(leaveRequestRepository.findByStudentId(currentUser.getUsername()));
     }
 
     @PostMapping("/marks/{studentId}")

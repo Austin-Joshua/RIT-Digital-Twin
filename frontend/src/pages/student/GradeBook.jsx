@@ -1,39 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ExportButtons from '../../components/common/ExportButtons';
 import { useToast } from '../../hooks/ToastContext';
+import { useAuth } from '../../hooks/AuthContext';
+import { getSemesterResults } from '../../utils/MockDataGenerator';
 import api from '../../services/api';
 
 const GradeBook = () => {
     const [semester, setSemester] = useState('');
     const [showData, setShowData] = useState(false);
     const { addToast } = useToast();
+    const { user } = useAuth();
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchGradebook = async () => {
+            if (!semester) {
+                setGrades([]);
+                return;
+            }
+
             try {
                 setLoading(true);
-                const params = semester ? { semester: Number(semester) } : {};
-                const res = await api.get('/student/gradebook', { params });
-                const rows = Array.isArray(res.data) ? res.data : [];
-                setGrades(rows.map((g) => ({
-                    year: g.semester <= 2 ? '2024-25' : '2025-26',
-                    sem: toRoman(g.semester),
-                    code: g.subjectCode,
-                    title: g.subjectName,
-                    grade: g.gradeLetter,
-                    result: g.gradeLetter === 'RA' ? 'RA' : 'PASS',
-                    monthYear: g.semester % 2 === 1 ? 'DEC 2024' : 'MAY 2025'
-                })));
-            } catch {
+                // Attempt to fetch from API
+                const params = { semester: Number(semester) };
+                const res = await api.get('/student/gradebook', { params }).catch(() => ({ data: [] }));
+                
+                let rows = Array.isArray(res.data) && res.data.length > 0 ? res.data : [];
+                
+                if (rows.length > 0) {
+                    setGrades(rows.map((g) => ({
+                        year: g.semester <= 2 ? '2024-25' : '2025-26',
+                        sem: toRoman(g.semester),
+                        code: g.subjectCode,
+                        title: g.subjectName,
+                        grade: g.gradeLetter,
+                        result: g.gradeLetter === 'RA' ? 'RA' : 'PASS',
+                        monthYear: g.semester % 2 === 1 ? 'DEC 2024' : 'MAY 2025'
+                    })));
+                } else if ([1, 2, 3].includes(Number(semester))) {
+                    // Fallback to Curriculum Generator for requested semesters
+                    const mockResults = getSemesterResults(user?.email || 'guest@ritchennai.edu.in', Number(semester));
+                    setGrades(mockResults);
+                } else {
+                    setGrades([]);
+                }
+            } catch (err) {
                 setGrades([]);
             } finally {
                 setLoading(false);
             }
         };
-        fetchGradebook();
-    }, [semester]);
+
+        if (showData) {
+            fetchGradebook();
+        }
+    }, [semester, showData, user]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

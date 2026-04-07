@@ -1,0 +1,121 @@
+.system_broadcast-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--color-primary-navy);
+    color: white;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.4s ease-out;
+}
+
+/* Priority Colors */
+.system_broadcast-bar.urgent {
+    background: linear-gradient(90deg, #dc2626, #991b1b);
+    border-bottom: 2px solid #ef4444;
+}
+
+.system_broadcast-bar.warning {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    border-bottom: 2px solid #fbbf24;
+}
+
+.system_broadcast-bar.info {
+    background: linear-gradient(90deg, var(--color-primary-navy), #1e293b);
+}
+
+.broadcast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 90%;
+}
+
+.broadcast-icon {
+    font-size: 1.2rem;
+    color: #ffd700;
+}
+
+.broadcast-text {
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.broadcast-text strong {
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #ffd700;
+}
+
+.broadcast-close {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.broadcast-close:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+}
+
+.live-dot {
+    font-size: 6px;
+    color: #ef4444;
+    animation: blink 1s infinite;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes blink {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+.pulse { animation: pulse 2s infinite; }
+
+@media (max-width: 768px) {
+    .system_broadcast-bar {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    .broadcast-icon { font-size: 1rem; }
+    .live-indicator { display: none; }
+}

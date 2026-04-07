@@ -1,5 +1,7 @@
 package com.university.erp.service;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import com.university.erp.util.ErpException;
 import com.university.erp.model.Marks;
 import java.math.BigDecimal;
@@ -14,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.university.erp.dto.MarksUploadRequestDto;
 import com.university.erp.model.Subject;
 import com.university.erp.repository.SubjectRepository;
-
-import java.util.List;
 
 @Service
 public class AcademicService {
@@ -65,68 +65,72 @@ public class AcademicService {
 
     @Transactional
     public void bulkUploadMarks(List<MarksUploadRequestDto> payload) {
-        int count = 0;
+        if (payload == null || payload.isEmpty()) return;
+
+        // Collect all identifiers for bulk lookup
+        Set<String> studentIdentifiers = payload.stream()
+                .map(MarksUploadRequestDto::getStudentIdentifier)
+                .collect(Collectors.toSet());
+        Set<String> subjectCodes = payload.stream()
+                .map(MarksUploadRequestDto::getSubjectCode)
+                .collect(Collectors.toSet());
+
+        // Bulk lookup students and subjects (O(N) instead of O(N^2))
+        Map<String, Student> studentMap = studentRepository.findAll().stream()
+                .filter(s -> s.getStudentIdNumber() != null && studentIdentifiers.contains(s.getStudentIdNumber()) ||
+                             (s.getUser() != null && studentIdentifiers.contains(s.getUser().getEmail())))
+                .collect(Collectors.toMap(
+                    s -> studentIdentifiers.contains(s.getStudentIdNumber()) ? s.getStudentIdNumber() : s.getUser().getEmail(),
+                    s -> s,
+                    (s1, s2) -> s1 // handle duplicates
+                ));
+
+        Map<String, Subject> subjectMap = subjectRepository.findAllBySubjectCodeIn(subjectCodes).stream()
+                .collect(Collectors.toMap(Subject::getSubjectCode, s -> s));
+
+        List<Marks> marksToSave = new ArrayList<>();
+        Set<Long> affectedStudentIds = new HashSet<>();
+
         for (MarksUploadRequestDto dto : payload) {
-            // Find Student by RegNo or Email
-            Student student = studentRepository.findByStudentIdNumber(dto.getStudentIdentifier())
-                    .orElseGet(() -> {
-                        // Fallback to checking by User Email if RegNo isn't found
-                        return studentRepository.findAll().stream()
-                                .filter(s -> s.getUser() != null
-                                        && s.getUser().getEmail().equalsIgnoreCase(dto.getStudentIdentifier()))
-                                .findFirst().orElse(null);
-                    });
+            Student student = studentMap.get(dto.getStudentIdentifier());
+            Subject subject = subjectMap.get(dto.getSubjectCode());
 
-            if (student == null) {
-                System.err.println("Student not found for identifier: " + dto.getStudentIdentifier());
+            if (student == null || subject == null) {
                 continue;
             }
 
-            // Find Subject by Code
-            Subject subject = subjectRepository.findBySubjectCode(dto.getSubjectCode())
-                    .orElse(null);
-
-            if (subject == null) {
-                System.err.println("Subject not found for code: " + dto.getSubjectCode());
-                continue;
-            }
-
-            // Find existing marks or create new
-            Marks mark = marksRepository.findByStudent_Id(student.getStudentId()).stream()
-                    .filter(m -> m.getSubject().getId().equals(subject.getId()))
-                    .findFirst()
+            // Find existing marks or create new (Optimized)
+            Marks mark = marksRepository.findByStudent_IdAndSubject_Id(student.getStudentId(), subject.getId())
                     .orElse(new Marks());
 
             mark.setStudent(student);
             mark.setSubject(subject);
 
-            // Safe assignment with null checks
-            if (dto.getCat1() != null)
-                mark.setCat1Score(dto.getCat1());
-            if (dto.getCat2() != null)
-                mark.setCat2Score(dto.getCat2());
-            if (dto.getCat3() != null)
-                mark.setCat3Score(dto.getCat3());
-            if (dto.getAssignment() != null)
-                mark.setAssignmentScore(dto.getAssignment());
-            if (dto.getSemesterGrade() != null && !dto.getSemesterGrade().isEmpty())
-                mark.setGrade(dto.getSemesterGrade());
-            if (mark.getSemester() == null)
-                mark.setSemester(1); // Default
+            if (dto.getCat1() != null) mark.setCat1Score(dto.getCat1());
+            if (dto.getCat2() != null) mark.setCat2Score(dto.getCat2());
+            if (dto.getCat3() != null) mark.setCat3Score(dto.getCat3());
+            if (dto.getAssignment() != null) mark.setAssignmentScore(dto.getAssignment());
+            if (dto.getSemesterGrade() != null && !dto.getSemesterGrade().isEmpty()) mark.setGrade(dto.getSemesterGrade());
+            if (mark.getSemester() == null) mark.setSemester(1);
 
             calculationService.calculateAll(mark);
-            marksRepository.save(mark);
-
-            // Re-calc CGPA for the student
-            recalculateCgpa(student.getStudentId());
-            count++;
+            marksToSave.add(mark);
+            affectedStudentIds.add(student.getStudentId());
         }
 
-        auditService.log("BULK_MARKS_UPLOAD",
-                "Faculty successfully processed " + count + " academic records via bulk Excel upload.");
-        if (count > 0) {
-            notificationService.sendBroadcast("Marks Updated",
-                    "New marks have been published (" + count + " record(s)). Students: check your gradebook.");
+        if (!marksToSave.isEmpty()) {
+            marksRepository.saveAll(marksToSave);
+            
+            // Recalculate CGPA once per affected student (High Performance)
+            for (Long sid : affectedStudentIds) {
+                recalculateCgpa(sid);
+            }
+
+            auditService.log("BULK_MARKS_UPLOAD", 
+                "Institutional scale processing: " + marksToSave.size() + " records synchronized successfully.");
+            
+            notificationService.sendBroadcast("Academic Update", 
+                "Institutional result processing complete. Check your updated marksheets.");
         }
     }
 
