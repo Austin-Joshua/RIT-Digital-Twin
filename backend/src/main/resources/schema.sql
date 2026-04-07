@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS students (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (dept_id) REFERENCES departments(id) ON DELETE SET NULL,
     INDEX idx_student_id_num (student_id_number),
     INDEX idx_user_id (user_id),
     INDEX idx_dept_id (dept_id)

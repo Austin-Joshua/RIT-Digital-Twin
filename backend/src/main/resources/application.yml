@@ -110,7 +110,7 @@ spring:
       ddl-auto: none
   datasource:
     hikari:
-      maximum-pool-size: ${HIKARI_MAX_POOL:20}
+      maximum-pool-size: ${HIKARI_MAX_POOL:50}
       minimum-idle: 5
       idle-timeout: 300000
       max-lifetime: 1800000
