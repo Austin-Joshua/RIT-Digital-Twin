@@ -94,23 +94,25 @@ public class DataInitializer implements CommandLineRunner {
                 // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
-                // Remaining seeders commented out due to schema inconsistencies
-                // migrateLegacyRolesToAdmin();
-                // seedRitDepartments();
-                // seedTransportData();
-                // seedErpData();
-                // seedCsbsData();
-                // ensureDemoAcademicLinks();
-                // 3. Force Reset Core Institutional Identities (ADM/FAC/STUDENT-DEMO)
-                // This ensures that even if the DB state is stale, core accounts are always 'active' with default passwords.
+                // 3. Forced Identity Reset (ADM/FAC/STUDENT)
                 forceResetUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
                 forceResetUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
                 forceResetUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
 
+                // 4. Institutional Platform Activation
+                migrateLegacyRolesToAdmin();
+                seedRitDepartments();
+                seedTransportData();
+                seedErpData();
+                seedCsbsData();
+                ensureDemoAcademicLinks();
                 seedHodsForAllDepartments();
+                assignFacultyToDepartment();
+                assignRegisterNumbersToDemoStudents();
 
                 bruteForceProtectionService.clearAll();
                 log.info("Cleared login attempt blocks for all accounts.");
+                log.info("RIT Digital Twin: FULL PLATFORM ACTIVATION COMPLETE.");
                 } catch (Exception e) {
                         log.error("DataInitializer encountered an error - application will continue: {}", e.getMessage());
                         log.debug("DataInitializer stack trace:", e);
