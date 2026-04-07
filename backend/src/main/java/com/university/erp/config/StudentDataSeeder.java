@@ -17,7 +17,6 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-@org.springframework.context.annotation.Lazy
 @Slf4j
 @org.springframework.core.annotation.Order(2)
 public class StudentDataSeeder implements CommandLineRunner {
@@ -37,77 +36,62 @@ public class StudentDataSeeder implements CommandLineRunner {
     private User facultyUser; // Cached faculty for recording attendance
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private ParentRepository parentRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private FacultySubjectRepository facultySubjectRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private FacultyProfileRepository facultyProfileRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private TransportRouteRepository transportRouteRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private StudentTransportRepository studentTransportRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private HostelRepository hostelRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private RoomRepository roomRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private CompanyRepository companyRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private PlacementOpportunityRepository opportunityRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private AttendanceAnalyticsService attendanceAnalyticsService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private StudentSuccessService studentSuccessService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private HostelService hostelService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private BuildingRepository buildingRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private ClassroomRepository classroomRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    @org.springframework.context.annotation.Lazy
     private TimetableSlotRepository timetableSlotRepository;
 
     public StudentDataSeeder(
-            @org.springframework.context.annotation.Lazy UserRepository userRepository,
-            @org.springframework.context.annotation.Lazy StudentRepository studentRepository,
-            @org.springframework.context.annotation.Lazy RoleRepository roleRepository,
-            @org.springframework.context.annotation.Lazy DepartmentRepository departmentRepository,
-            @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder,
-            @org.springframework.context.annotation.Lazy SubjectRepository subjectRepository,
-            @org.springframework.context.annotation.Lazy SemesterRepository semesterRepository,
-            @org.springframework.context.annotation.Lazy GradeRepository gradeRepository,
-            @org.springframework.context.annotation.Lazy StudentAcademicRepository studentAcademicRepository,
-            @org.springframework.context.annotation.Lazy AttendanceRecordRepository attendanceRecordRepository,
-            @org.springframework.context.annotation.Lazy StudentSubjectRepository studentSubjectRepository) {
+            UserRepository userRepository,
+            StudentRepository studentRepository,
+            RoleRepository roleRepository,
+            DepartmentRepository departmentRepository,
+            PasswordEncoder passwordEncoder,
+            SubjectRepository subjectRepository,
+            SemesterRepository semesterRepository,
+            GradeRepository gradeRepository,
+            StudentAcademicRepository studentAcademicRepository,
+            AttendanceRecordRepository attendanceRecordRepository,
+            StudentSubjectRepository studentSubjectRepository) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.roleRepository = roleRepository;
@@ -370,6 +354,10 @@ public class StudentDataSeeder implements CommandLineRunner {
             
             user.setLinkedStudent(student);
             userRepository.save(user);
+
+            // Flush to ensure visibility across transactions/threads during high-scale login
+            userRepository.flush();
+            studentRepository.flush();
 
             assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));
             created++;

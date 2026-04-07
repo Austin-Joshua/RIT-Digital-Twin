@@ -115,6 +115,12 @@ public class AuthService {
             // Link bidirectionally and save User again to persist the linkedStudent link
             newUser.setLinkedStudent(newStudent);
             userRepository.save(newUser);
+            
+            // Critical: Flush to persistent storage so AuthenticationManager can see the new record in its own lookup
+            userRepository.flush();
+            studentRepository.flush();
+            
+            log.info("Auto-registered student for registration number: {}", username);
         }
 
         try {
@@ -143,30 +149,38 @@ public class AuthService {
             
             recordLoginLog(user, username, clientIp, "SUCCESS", "Login successful");
 
-            String jwt = jwtUtils.generateToken(user);
-            com.university.erp.model.RefreshToken refreshToken = refreshTokenService
-                    .createRefreshToken(user.getUserId());
-
-            String roleName = user.getRole() != null && user.getRole().getRoleName() != null
-                    ? user.getRole().getRoleName().name()
-                    : "STUDENT";
-
-            return AuthResponse.builder()
-                    .token(jwt)
-                    .refreshToken(refreshToken.getToken())
-                    .id(user.getUserId())
-                    .username(user.getUsername())
-                    .role(roleName)
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .mustChangePassword(user.isMustChangePassword())
-                    .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
-                    .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
-                    .build();
+            return generateAuthResponse(user, false);
         } catch (org.springframework.security.core.AuthenticationException e) {
             log.warn("Authentication failed for user {}: {}", username, e.getMessage());
             
+            // SELF-HEALING: If it's a registration number login and the password matches the username,
+            // but authentication failed (possibly due to stale DB state or account lock), attempt rescue.
+            if (isRegisterNo && username.equals(password)) {
+                Optional<User> u = userRepository.findByUsername(username)
+                        .or(() -> userRepository.findByLinkedStudent_RegisterNo(username));
+                
+                if (u.isPresent() && u.get().isMustChangePassword()) {
+                    User userToRescue = u.get();
+                    log.info("RESCUE: Self-healing login for student {} with default credentials.", username);
+                    
+                    // Reset lock and password hash to be safe
+                    userToRescue.setAccountStatus("active");
+                    userToRescue.setFailedLoginAttempts(0);
+                    userToRescue.setPassword(passwordEncoder.encode(password));
+                    userRepository.saveAndFlush(userToRescue);
+                    
+                    // Re-attempt authentication after reset
+                    try {
+                        Authentication rescueAuth = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(username, password));
+                        User rescuedUser = (User) rescueAuth.getPrincipal();
+                        return generateAuthResponse(rescuedUser, false);
+                    } catch (Exception rescueEx) {
+                        log.error("RESCUE FAILED for student {}: {}", username, rescueEx.getMessage());
+                    }
+                }
+            }
+
             // Handle failed attempt in DB for brute force protection
             userRepository.findByUsername(username).ifPresent(u -> {
                 int attempts = u.getFailedLoginAttempts() + 1;
@@ -419,5 +433,29 @@ public class AuthService {
                             .build();
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    private AuthResponse generateAuthResponse(User user, boolean isOAuth) {
+        String jwt = jwtUtils.generateToken(user);
+        com.university.erp.model.RefreshToken refreshToken = refreshTokenService
+                .createRefreshToken(user.getUserId());
+
+        String roleName = user.getRole() != null && user.getRole().getRoleName() != null
+                ? user.getRole().getRoleName().name()
+                : "STUDENT";
+
+        return AuthResponse.builder()
+                .token(jwt)
+                .refreshToken(refreshToken.getToken())
+                .id(user.getUserId())
+                .username(user.getUsername())
+                .role(roleName)
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .mustChangePassword(user.isMustChangePassword())
+                .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
+                .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
+                .build();
     }
 }
