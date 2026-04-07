@@ -153,17 +153,18 @@ public class AuthService {
         } catch (org.springframework.security.core.AuthenticationException e) {
             log.warn("Authentication failed for user {}: {}", username, e.getMessage());
             
-            // SELF-HEALING: If it's a registration number login and the password matches the username,
-            // but authentication failed (possibly due to stale DB state or account lock), attempt rescue.
-            if (isRegisterNo && username.equals(password)) {
+            // SELF-HEALING & UNIVERSAL RESCUE:
+            // If the password matches the username (institutional default pattern), and the account 
+            // is in 'mustChangePassword' state, we perform a one-time repair (unlock + re-hash).
+            if (username.equals(password)) {
                 Optional<User> u = userRepository.findByUsername(username)
                         .or(() -> userRepository.findByLinkedStudent_RegisterNo(username));
                 
                 if (u.isPresent() && u.get().isMustChangePassword()) {
                     User userToRescue = u.get();
-                    log.info("RESCUE: Self-healing login for student {} with default credentials.", username);
+                    log.info("RESCUE: Universal self-healing login for account {}.", username);
                     
-                    // Reset lock and password hash to be safe
+                    // Reset lock and password hash to ensure default ID-based login works perfectly
                     userToRescue.setAccountStatus("active");
                     userToRescue.setFailedLoginAttempts(0);
                     userToRescue.setPassword(passwordEncoder.encode(password));
@@ -176,12 +177,20 @@ public class AuthService {
                         User rescuedUser = (User) rescueAuth.getPrincipal();
                         return generateAuthResponse(rescuedUser, false);
                     } catch (Exception rescueEx) {
-                        log.error("RESCUE FAILED for student {}: {}", username, rescueEx.getMessage());
+                        log.error("RESCUE FAILURE for account {}: {}", username, rescueEx.getMessage());
                     }
                 }
             }
 
-            // Handle failed attempt in DB for brute force protection
+            // Provide specific feedback for account status issues
+            if (e instanceof org.springframework.security.authentication.LockedException) {
+                throw new RuntimeException("Account is locked due to multiple failed attempts. Please contact admin.");
+            } else if (e instanceof org.springframework.security.authentication.DisabledException) {
+                throw new RuntimeException("Account is disabled. Please contact admin.");
+            } else if (e instanceof org.springframework.security.authentication.CredentialsExpiredException) {
+                throw new RuntimeException("Password has expired.");
+            }
+
             userRepository.findByUsername(username).ifPresent(u -> {
                 int attempts = u.getFailedLoginAttempts() + 1;
                 u.setFailedLoginAttempts(attempts);
