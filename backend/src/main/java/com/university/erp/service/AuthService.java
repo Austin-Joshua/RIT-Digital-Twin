@@ -207,6 +207,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public AuthResponse googleLogin(GoogleAuthRequest request) {
         log.info("Attempting Firebase Google login");
         try {
