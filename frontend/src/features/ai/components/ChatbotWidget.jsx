@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaBolt, FaChartBar, FaSearch } from 'react-icons/fa';
+import { FaRobot, FaPaperPlane, FaTimes, FaMinus, FaBolt, FaChartBar, FaSearch, FaMicrophone } from 'react-icons/fa';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
 
@@ -29,6 +29,46 @@ const ChatbotWidget = ({ studentId }) => {
         { text: `Hello ${user?.firstName || 'there'}! I'm your RIT AI Assistant. Ask about attendance, grades, exams, transport, library, or outpass — or use the quick actions below.`, isBot: true }
     ]);
     const [input, setInput] = useState('');
+    const [isListening, setIsListening] = useState(false);
+
+    const toggleVoice = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Your browser does not support Voice Recognition.");
+            return;
+        }
+
+        if (isListening) {
+            setIsListening(false);
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = (e) => {
+            console.error("Speech Recognition Error:", e.error);
+            setIsListening(false);
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+            setIsListening(false);
+        };
+
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error(e);
+            setIsListening(false);
+        }
+    };
+
 
     const getSuggestions = () => {
         const role = user?.role || 'STUDENT';
@@ -213,6 +253,32 @@ const ChatbotWidget = ({ studentId }) => {
                                     <FaChartBar size={14} style={{ color: '#64748b' }} />
                                 </div>
                             </div>
+                            <button 
+                                onClick={toggleVoice} 
+                                style={{ 
+                                    background: isListening ? '#ef4444' : '#f1f5f9', 
+                                    color: isListening ? '#ffffff' : '#64748b', 
+                                    border: '1px solid',
+                                    borderColor: isListening ? '#ef4444' : '#cbd5e1', 
+                                    borderRadius: 12, 
+                                    width: 50, 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    cursor: 'pointer', 
+                                    transition: 'all 0.3s ease',
+                                    boxShadow: isListening ? '0 0 15px rgba(239, 68, 68, 0.5)' : 'none'
+                                }}
+                                title="Voice Input"
+                            >
+                                {isListening ? (
+                                    <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}>
+                                        <FaMicrophone />
+                                    </motion.div>
+                                ) : (
+                                    <FaMicrophone />
+                                )}
+                            </button>
                             <button onClick={() => handleSend()} style={{ background: '#0B2C6B', color: '#fff', border: 'none', borderRadius: 12, width: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(11,44,107,0.35)' }}>
                                 <FaPaperPlane />
                             </button>
