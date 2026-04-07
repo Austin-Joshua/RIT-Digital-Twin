@@ -1,5 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
+import { auth, googleProvider } from '../utils/firebase';
+import { signInWithPopup, signOut } from 'firebase/auth';
+
 
 const AuthContext = createContext(null);
 
@@ -39,18 +42,15 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('role');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('rit_dt_token');
-        localStorage.removeItem('rit_dt_user');
         sessionStorage.clear();
 
         setUser(null);
         setToken(null);
         setRole(null);
         setIsAuthenticated(false);
+        
+        // Also sign out from Firebase
+        signOut(auth).catch(err => console.warn('Firebase signout warning:', err));
     };
 
     const login = async (username, password) => {
@@ -106,13 +106,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const googleLogin = async (credential) => {
+    const googleLogin = async () => {
         clearSession();
         try {
-            const response = await api.post('/auth/google', { token: credential });
+            // Trigger Firebase Google Sign-In Popup
+            const result = await signInWithPopup(auth, googleProvider);
+            const idToken = await result.user.getIdToken();
+
+            // Send Firebase ID Token to Backend
+            const response = await api.post('/auth/google', { token: idToken });
             const { token: jwt, ...userData } = response.data || {};
+            
             if (!jwt || !userData) {
-                return { success: false, message: 'Invalid Google authentication response from server.' };
+                return { success: false, message: 'Invalid authentication response from server.' };
             }
 
             localStorage.setItem('token', jwt);
@@ -132,8 +138,15 @@ export const AuthProvider = ({ children }) => {
                 mustChangePassword: userData.mustChangePassword === true
             };
         } catch (error) {
-            console.error('Google Login failed', error);
-            const errorMessage = error.response?.data?.message || 'Google authentication failed. Please ensure you are using your institutional account.';
+            console.error('Firebase Google Login failed', error);
+            let errorMessage = 'Google authentication failed.';
+            
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = 'Login popup was closed before completion.';
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
             clearSession();
             return { success: false, message: errorMessage };
         }
