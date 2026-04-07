@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Configuration
 public class FirebaseConfig {
