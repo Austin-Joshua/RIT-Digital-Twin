@@ -15,6 +15,9 @@ coverage/
 
 # Environment
 .env
+.env.local
+*.json.service
+firebase-service-account.json
 .DS_Store
 Thumbs.db
 

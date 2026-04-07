@@ -23,6 +23,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.Collections;
 import java.util.Optional;
@@ -211,21 +213,16 @@ public class AuthService {
     }
 
     public AuthResponse googleLogin(GoogleAuthRequest request) {
-        log.info("Attempting Google login");
+        log.info("Attempting Firebase Google login");
         try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-                    new GsonFactory())
-                    .setAudience(Collections.singletonList(googleClientId))
-                    .build();
-
-            GoogleIdToken idToken = verifier.verify(request.getToken());
-            if (idToken == null) {
-                throw new RuntimeException("Invalid Google ID Token");
+            // Verify Firebase ID Token using Firebase Admin SDK
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
+            if (decodedToken == null) {
+                throw new RuntimeException("Invalid Firebase ID Token");
             }
 
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            String email = payload.getEmail();
-            String googleId = payload.getSubject();
+            String email = decodedToken.getEmail();
+            String googleId = decodedToken.getUid();
 
             Optional<User> userOpt = userRepository.findByEmail(email);
             User user;
@@ -235,10 +232,10 @@ public class AuthService {
                 if (user.getGoogleId() == null) {
                     user.setGoogleId(googleId);
                     userRepository.save(user);
-                    log.info("Linked Google account for user: {}", email);
+                    log.info("Linked Firebase Google account for user: {}", email);
                 }
             } else {
-                // Modified: Auto-registration for students with @ritchennai.edu.in
+                // Auto-registration logic for students with @ritchennai.edu.in
                 if (!email.toLowerCase().matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@[\\w.-]*ritchennai\\.edu\\.in$")) {
                     throw new RuntimeException(
                             "Google account must use an institutional email (@ritchennai.edu.in).");
@@ -251,14 +248,23 @@ public class AuthService {
                 // Try to extract register number from email prefix if numeric
                 String prefix = email.split("@")[0];
                 String registerNo = prefix.matches("^\\d+$") ? prefix : null;
+                
+                String fullName = (String) decodedToken.getClaims().get("name");
+                String firstName = "Student";
+                String lastName = "";
+                if (fullName != null && !fullName.isBlank()) {
+                    String[] parts = fullName.split(" ", 2);
+                    firstName = parts[0];
+                    if (parts.length > 1) lastName = parts[1];
+                }
 
                 user = User.builder()
                         .username(email)
                         .email(email)
                         .googleId(googleId)
-                        .firstName(payload.get("given_name") != null ? (String) payload.get("given_name") : "Student")
-                        .lastName(payload.get("family_name") != null ? (String) payload.get("family_name") : "")
-                        .password(passwordEncoder.encode("GOOGLE_OAUTH_USER_" + googleId)) // Placeholder password
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .password(passwordEncoder.encode("FIREBASE_USER_" + googleId)) // Placeholder password
                         .role(studentRole)
                         .accountStatus("active")
                         .mustChangePassword(false)
@@ -270,7 +276,7 @@ public class AuthService {
                 Student newStudent = Student.builder()
                         .user(user)
                         .registerNo(registerNo)
-                        .studentIdNumber("G-" + (registerNo != null ? registerNo : googleId.substring(0, 10)))
+                        .studentIdNumber("F-" + (registerNo != null ? registerNo : googleId.substring(0, 10)))
                         .studentName(user.getFirstName() + " " + user.getLastName())
                         .email(email)
                         .status("active")
@@ -279,7 +285,6 @@ public class AuthService {
                 studentRepository.save(newStudent);
                 log.info("Auto-registered new student record for: {}", email);
 
-                // Link bidirectionally and save User again to persist the linkedStudent link
                 user.setLinkedStudent(newStudent);
                 userRepository.save(user);
             }
@@ -287,7 +292,7 @@ public class AuthService {
             String jwt = jwtUtils.generateToken(user);
             com.university.erp.model.RefreshToken refreshToken = refreshTokenService
                     .createRefreshToken(user.getUserId());
-            log.info("Google login successful for user: {}", user.getUsername());
+            log.info("Firebase Google login successful for user: {}", user.getUsername());
 
             return AuthResponse.builder()
                     .token(jwt)
@@ -304,8 +309,8 @@ public class AuthService {
                     .build();
 
         } catch (Exception e) {
-            log.error("Google login failed: {}", e.getMessage());
-            throw new RuntimeException("Google authentication failed: " + e.getMessage());
+            log.error("Firebase Google login failed: {}", e.getMessage());
+            throw new RuntimeException("Firebase Google authentication failed: " + e.getMessage());
         }
     }
 

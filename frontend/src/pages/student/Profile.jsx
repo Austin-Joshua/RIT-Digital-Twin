@@ -8,10 +8,11 @@ import { useRef } from 'react';
 import api from '../../services/api';
 
 const Profile = () => {
-    const { user } = useAuth();
+    const { user, googleLogin } = useAuth();
     const { isDarkMode } = useTheme();
     const { addToast } = useToast();
     const fileInputRef = useRef(null);
+    const [isLinking, setIsLinking] = useState(false);
 
     const [openSections, setOpenSections] = useState({
         personal: true,
@@ -150,11 +151,18 @@ const Profile = () => {
                                 <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>Link your @department.ritchennai.edu.in account</div>
                             </div>
                             <button
-                                onClick={() => addToast('Redirecting to Google SSO...', 'info')}
-                                style={{ padding: '8px 16px', borderRadius: '6px', background: 'white', color: '#444', border: '1px solid #ddd', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                                onClick={async () => {
+                                    setIsLinking(true);
+                                    const res = await googleLogin();
+                                    if (res.success) addToast('Google account linked successfully!', 'success');
+                                    else addToast(res.message, 'error');
+                                    setIsLinking(false);
+                                }}
+                                disabled={isLinking}
+                                style={{ padding: '8px 16px', borderRadius: '6px', background: 'white', color: '#444', border: '1px solid #ddd', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: isLinking ? 0.7 : 1 }}
                             >
                                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style={{ width: '14px' }} />
-                                Link Google
+                                {isLinking ? 'Linking...' : 'Link Google'}
                             </button>
                         </div>
                     </div>

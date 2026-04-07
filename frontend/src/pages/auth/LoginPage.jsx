@@ -6,8 +6,8 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../../hooks/ThemeContext';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import api, { getBackendRootURL, getAPIBaseURL } from '../../services/api';
+import { FaGoogle } from 'react-icons/fa';
 
 const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Temporary placeholder
 
@@ -82,11 +82,11 @@ const LoginPage = () => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
+    const handleGoogleLogin = async () => {
         setError('');
         setLoading(true);
         try {
-            const result = await googleLogin(credentialResponse.credential);
+            const result = await googleLogin();
             if (result.success) {
                 const normalizedRole = (result.role || '').replace('ROLE_', '').replace(/_/g, '').toUpperCase();
 
@@ -105,11 +105,6 @@ const LoginPage = () => {
     };
 
     return (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <div className="auth-form-wrapper">
-
-
-
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -236,14 +231,30 @@ const LoginPage = () => {
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={() => setError('Google Authentication Failed')}
-                                theme={isDarkMode ? 'dark' : 'outline'}
-                                shape="pill"
-                                text="signin_with"
-                                width="100%"
-                            />
+                            <button
+                                type="button"
+                                onClick={handleGoogleLogin}
+                                disabled={loading}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--theme-border)',
+                                    background: isDarkMode ? '#2d2d2d' : '#ffffff',
+                                    color: 'var(--theme-text)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '600',
+                                    transition: 'background 0.2s'
+                                }}
+                            >
+                                <FaGoogle color="#4285F4" />
+                                Sign in with Google
+                            </button>
                         </div>
                     </form>
 
