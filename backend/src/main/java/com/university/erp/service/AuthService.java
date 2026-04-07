@@ -308,24 +308,9 @@ public class AuthService {
                 userRepository.save(user);
             }
 
-            String jwt = jwtUtils.generateToken(user);
-            com.university.erp.model.RefreshToken refreshToken = refreshTokenService
-                    .createRefreshToken(user.getUserId());
             log.info("Firebase Google login successful for user: {}", user.getUsername());
 
-            return AuthResponse.builder()
-                    .token(jwt)
-                    .refreshToken(refreshToken.getToken())
-                    .id(user.getUserId())
-                    .username(user.getUsername())
-                    .role(user.getRole().getRoleName().name())
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .mustChangePassword(user.isMustChangePassword())
-                    .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
-                    .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
-                    .build();
+            return generateAuthResponse(user, true);
 
         } catch (Exception e) {
             log.error("Firebase Google login failed: {}", e.getMessage());
@@ -417,20 +402,7 @@ public class AuthService {
                 .map(refreshTokenService::verifyExpiration)
                 .map(com.university.erp.model.RefreshToken::getUser)
                 .map(user -> {
-                    String token = jwtUtils.generateToken(user);
-                    return AuthResponse.builder()
-                            .token(token)
-                            .refreshToken(requestRefreshToken)
-                            .id(user.getUserId())
-                            .username(user.getUsername())
-                            .role(user.getRole().getRoleName().name())
-                            .email(user.getEmail())
-                            .firstName(user.getFirstName())
-                            .lastName(user.getLastName())
-                            .mustChangePassword(user.isMustChangePassword())
-                            .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
-                            .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
-                            .build();
+                    return generateAuthResponse(user, false);
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
