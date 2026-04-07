@@ -230,19 +230,28 @@ public class AuthService {
                     log.info("Linked Firebase Google account for user: {}", email);
                 }
             } else {
-                // Auto-registration logic for students with @ritchennai.edu.in
-                if (!email.toLowerCase().matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@[\\w.-]*ritchennai\\.edu\\.in$")) {
+                // Auto-registration logic for users with institutional emails
+                if (!email.toLowerCase().matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\\.)*ritchennai\\.edu\\.in$")) {
                     throw new RuntimeException(
-                            "Google account must use an institutional email (@ritchennai.edu.in).");
+                            "Google account must use an institutional email (@ritchennai.edu.in or @dept.ritchennai.edu.in).");
                 }
 
                 log.info("User {} not found, performing auto-registration for student.", email);
                 Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                         .orElseThrow(() -> new RuntimeException("Default student role not configured."));
 
-                // Try to extract register number from email prefix if numeric
+                // Try to extract register number from email prefix (e.g. 2117240020044 or firstname.2117240020044)
                 String prefix = email.split("@")[0];
-                String registerNo = prefix.matches("^\\d+$") ? prefix : null;
+                String registerNo = null;
+                if (prefix.matches("^\\d+$")) {
+                    registerNo = prefix;
+                } else if (prefix.contains(".")) {
+                    String[] parts = prefix.split("\\.");
+                    String lastPart = parts[parts.length - 1];
+                    if (lastPart.matches("^\\d+$")) {
+                        registerNo = lastPart;
+                    }
+                }
                 
                 String fullName = (String) decodedToken.getClaims().get("name");
                 String firstName = "Student";
@@ -316,9 +325,9 @@ public class AuthService {
         }
 
         if (request.getEmail() == null || !request.getEmail().toLowerCase()
-                .matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@[\\w.-]+\\.ritchennai\\.edu\\.in$")) {
+                .matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\\.)*ritchennai\\.edu\\.in$")) {
             throw new RuntimeException(
-                    "Error: Registration is restricted to departmental @department.ritchennai.edu.in email addresses.");
+                    "Error: Registration is restricted to institutional email addresses (@ritchennai.edu.in or @dept.ritchennai.edu.in).");
         }
 
         String roleEnumName = "STUDENT";
