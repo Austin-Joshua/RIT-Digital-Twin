@@ -42,16 +42,32 @@ const todayDate = now.getDate();
 const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
 
 
+import { getAcademicStats, getInternalMarks, getDepartmentStats } from '../../utils/MockDataGenerator';
+
 const StudentDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [kpiData, setKpiData] = useState({ cgpa: 0, attendance: 0, arrear: 0, leave: 0 });
+    
+    // Performance optimization: Instant initialization from deterministic twin
+    const email = user?.email || 'guest@ritchennai.edu.in';
+    const initialStats = getAcademicStats(email);
+    const initialMarks = getInternalMarks(email);
+
+    const [kpiData, setKpiData] = useState({
+        cgpa: initialStats.cgpa,
+        attendance: initialStats.attendance,
+        arrear: initialStats.arrears,
+        leave: initialStats.leave
+    });
+    const [performanceData, setPerformanceData] = useState(initialStats.trend);
+    const [marks, setMarks] = useState(initialMarks);
+    
     const [riskScore, setRiskScore] = useState(null);
     const [ranking, setRanking] = useState(null);
     const [selectedModal, setSelectedModal] = useState(null);
     const [clubInvolvement, setClubInvolvement] = useState([]);
     const [clubLoading, setClubLoading] = useState(true);
-    const [twinStatus, setTwinStatus] = useState({ crowd: '...', energy: '...' });
+    const [twinStatus, setTwinStatus] = useState({ crowd: 'Normal', energy: 'Balanced' });
 
     useEffect(() => {
         const fetchTwinData = async () => {
@@ -73,19 +89,20 @@ const StudentDashboard = () => {
         const fetchKpis = async () => {
             try {
                 const cgpaRes = await api.get('/academic/student/cgpa').catch(() => ({ data: [] }));
-                let calculatedCGPA = 0;
+                
+                let apiCgpa = 0;
                 if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
-                    calculatedCGPA = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
+                    apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
                 }
 
-                setKpiData({
-                    cgpa: calculatedCGPA || 8.42,
-                    attendance: 87.5,
-                    arrear: 0,
-                    leave: 2
-                });
+                if (apiCgpa > 0) {
+                    setKpiData(prev => ({
+                        ...prev,
+                        cgpa: apiCgpa
+                    }));
+                }
             } catch (err) {
-                console.error(err);
+                console.error("KPI sync silent fail:", err);
             }
         };
 
@@ -116,7 +133,7 @@ const StudentDashboard = () => {
 
     return (
         <div className="stu-dashboard">
-            {/* Main KPI Cards (Exact IMS Replica) */}
+            {/* Unified KPI Row for perfect fluid alignment (3x2 in Tab, 4+2 in Desktop) */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
                     <div
@@ -137,9 +154,8 @@ const StudentDashboard = () => {
                         </div>
                     </div>
                 ))}
-            </div>
-
-            <div className="stu-kpi-row">
+                
+                {/* Twin Cards moved into the unified grid */}
                 <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
                     <div className="kpi-main">
                         <h3 className="kpi-value" style={{ fontSize: '18px' }}>{twinStatus.crowd}</h3>
@@ -152,7 +168,7 @@ const StudentDashboard = () => {
                         <h3 className="kpi-value" style={{ fontSize: '18px' }}>{twinStatus.energy}</h3>
                         <p className="kpi-label">Energy Risk</p>
                     </div>
-                     <div className="kpi-more">Smart Grid Active</div>
+                    <div className="kpi-more">Smart Grid Active</div>
                 </div>
             </div>
 
@@ -168,63 +184,79 @@ const StudentDashboard = () => {
             {/* Announcements & Events */}
             {/* AI Insights for Student */}
 
-            <div className="stu-info-row">
+            <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', borderBottom: '1px solid var(--theme-border)' }}>
+                        <FaFileAlt color="var(--color-primary-navy)" />
+                        Recent Assessments (CAT & ASSG)
+                    </div>
+                    <div className="info-body">
+                        <div className="stu-data-table-wrapper" style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                            <table className="stu-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Type</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {marks.cat.map((m, idx) => (
+                                        <tr key={`cat-${idx}`}>
+                                            <td>{m.subject}</td>
+                                            <td style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>CAT</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--color-primary-navy)' }}>{m.score}/50</td>
+                                        </tr>
+                                    ))}
+                                    {marks.assignments.map((m, idx) => (
+                                        <tr key={`assg-${idx}`}>
+                                            <td>{m.subject}</td>
+                                            <td style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>ASSG</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--color-success)' }}>{m.score}/20</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}>
+                        <Link to="/student/gradebook" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)', fontWeight: '800' }}>View Full Gradebook</Link>
+                    </div>
+                </div>
+
                 <div className="stu-info-card" style={{ borderTopColor: '#7c3aed' }}>
                     <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>
-                        My Club Involvement
+                        Club & EC Involvement
                     </div>
                     <div className="info-body" style={{ padding: '15px', minHeight: '120px', color: 'var(--theme-text-muted)' }}>
                         {clubLoading ? (
                             <div>Loading your clubs...</div>
                         ) : clubInvolvement.length === 0 ? (
-                            <div>You are not currently enrolled in any club.</div>
+                            <div style={{ padding: '10px', textAlign: 'center' }}>
+                                <p style={{ fontSize: '13px' }}>You are not currently enrolled in any clubs.</p>
+                                <Link to="/student/clubs" className="table-btn" style={{ background: '#7c3aed', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', display: 'inline-block', marginTop: '8px' }}>Explore Clubs</Link>
+                            </div>
                         ) : (
-                            <div style={{ display: 'grid', gap: '10px' }}>
-                                {clubInvolvement.map((club) => (
-                                    <div
-                                        key={club.membershipId}
-                                        style={{
-                                            border: '1px solid var(--theme-border)',
-                                            borderRadius: '8px',
-                                            padding: '10px',
-                                            background: 'var(--theme-bg-muted)'
-                                        }}
-                                    >
-                                        <div style={{ fontWeight: 700, color: 'var(--theme-text)' }}>{club.clubName}</div>
-                                        <div style={{ fontSize: '13px' }}>{club.clubDescription}</div>
-                                        <div style={{ marginTop: '6px', fontSize: '13px', color: 'var(--theme-text)' }}>
-                                            Role: <strong>{club.roleType}</strong> | Coordinator: {club.facultyCoordinator}
-                                        </div>
-                                        <div style={{ marginTop: '4px', fontSize: '12px' }}>
-                                            Joined: {club.joinedDate} | Status: {club.status}
-                                        </div>
+                            <div style={{ display: 'grid', gap: '8px' }}>
+                                {clubInvolvement.slice(0, 2).map((club) => (
+                                    <div key={club.membershipId} style={{ border: '1px solid var(--theme-border)', borderRadius: '8px', padding: '8px', background: 'var(--theme-bg-muted)' }}>
+                                        <div style={{ fontWeight: 700, color: 'var(--theme-text)', fontSize: '14px' }}>{club.clubName}</div>
+                                        <div style={{ fontSize: '11px' }}>Role: <strong>{club.roleType}</strong></div>
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
-                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}>
-                        <Link to="/student/clubs" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)' }}>View all clubs</Link>
-                    </div>
                 </div>
 
                 <div className="stu-info-card">
-                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Announcements</div>
+                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Campus Bulletins</div>
                     <div className="info-body" style={{ padding: '15px', minHeight: '100px', color: 'var(--theme-text-muted)' }}>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                            <li style={{ padding: '8px 0', fontSize: '14px' }}>• No Announcements</li>
-                        </ul>
+                        <div style={{ padding: '10px', background: 'rgba(234, 179, 8, 0.1)', borderLeft: '4px solid #eab308', borderRadius: '4px', marginBottom: '10px' }}>
+                            <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--theme-text)' }}>End Semester Timetable</div>
+                            <div style={{ fontSize: '12px' }}>The November 2025 exam schedule is now available in the Timetable section.</div>
+                        </div>
                     </div>
-                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}><a href="#" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)' }}>More..</a></div>
-                </div>
-                <div className="stu-info-card">
-                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Placement / Events Schedule</div>
-                    <div className="info-body" style={{ padding: '15px', minHeight: '100px', color: 'var(--theme-text-muted)' }}>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                            <li style={{ padding: '8px 0', fontSize: '14px' }}>• No Events</li>
-                        </ul>
-                    </div>
-                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}><a href="#" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)' }}>More..</a></div>
                 </div>
             </div>
 

@@ -14,4 +14,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findBySemester_SemesterNumberOrderBySubjectCodeAsc(Integer semesterNumber);
 
     Optional<Subject> findBySubjectCode(String subjectCode);
+    List<Subject> findAllBySubjectCodeIn(java.util.Collection<String> codes);
 }

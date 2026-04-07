@@ -3,6 +3,7 @@ package com.university.erp.service;
 import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,7 @@ public class HODService {
         return getStudentsUnderHod(departmentId).stream().map(Student::getId).collect(Collectors.toSet());
     }
 
+    @Cacheable(value = "dept_stats", key = "#departmentId")
     public Map<String, Object> getDepartmentStats(Long departmentId) {
         ensureDepartmentExists(departmentId);
         Map<String, Object> stats = new LinkedHashMap<>();
@@ -82,6 +84,7 @@ public class HODService {
         return stats;
     }
 
+    @Cacheable(value = "dept_analytics", key = "#departmentId")
     public Map<String, Object> getDepartmentAnalytics(Long departmentId) {
         ensureDepartmentExists(departmentId);
         Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
@@ -150,6 +153,7 @@ public class HODService {
         return analytics;
     }
 
+    @Cacheable(value = "class_performance", key = "#departmentId + '-' + #sortBy")
     public List<Map<String, Object>> getClassPerformance(Long departmentId, String sortBy) {
         ensureDepartmentExists(departmentId);
         List<Student> students = getStudentsUnderHod(departmentId);
@@ -237,6 +241,7 @@ public class HODService {
         return result;
     }
 
+    @Cacheable(value = "dept_students", key = "#departmentId + '-' + #year + '-' + #section")
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getStudents(Long departmentId, Integer year, String section) {
         ensureDepartmentExists(departmentId);
@@ -266,6 +271,7 @@ public class HODService {
         return list;
     }
 
+    @Cacheable(value = "dept_faculty", key = "#departmentId")
     public List<Map<String, Object>> getFaculty(Long departmentId) {
         ensureDepartmentExists(departmentId);
         List<User> faculty = userRepository.findByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId);
@@ -282,6 +288,7 @@ public class HODService {
         return list;
     }
 
+    @Cacheable(value = "dept_heatmap", key = "#departmentId")
     public List<Map<String, Object>> getSubjectHeatmap(Long departmentId) {
         ensureDepartmentExists(departmentId);
         Set<Long> deptStudentIds = getStudentIdsUnderHod(departmentId);
@@ -316,6 +323,7 @@ public class HODService {
         return rows;
     }
 
+    @Cacheable(value = "dept_weak_subjects", key = "#departmentId + '-' + #avgThreshold + '-' + #failureRateThreshold")
     public List<Map<String, Object>> getWeakSubjects(Long departmentId, BigDecimal avgThreshold, Double failureRateThreshold) {
         ensureDepartmentExists(departmentId);
         Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
@@ -346,6 +354,7 @@ public class HODService {
         return weak;
     }
 
+    @Cacheable(value = "dept_trends", key = "#departmentId + '-' + #by")
     public List<Map<String, Object>> getPerformanceTrends(Long departmentId, String by) {
         ensureDepartmentExists(departmentId);
         Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
@@ -371,6 +380,7 @@ public class HODService {
         return result;
     }
 
+    @Cacheable(value = "dept_rankings", key = "#departmentId")
     public List<Map<String, Object>> getClassRankings(Long departmentId) {
         List<Map<String, Object>> classPerf = getClassPerformance(departmentId, "highest");
         int rank = 1;

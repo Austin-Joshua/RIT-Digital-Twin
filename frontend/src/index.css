@@ -28,6 +28,40 @@ body {
     }
 }
 
+/* Performance Optimizations: Hardware acceleration for smooth transitions */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Instant Feedback: Click/Touch active states */
+button:active, 
+.table-btn:active,
+.btn-primary:active,
+.btn-accent:active,
+.stu-nav-item:active {
+    transform: scale(0.96);
+    filter: brightness(0.9);
+}
+
+.stu-kpi-card, .stu-info-card, .card {
+    cursor: pointer;
+    will-change: transform, box-shadow;
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stu-kpi-card:active, .stu-info-card:active, .card:active {
+    transform: scale(0.98);
+    box-shadow: none !important;
+}
+
+/* Ensure smooth hover for non-touch devices */
+@media (hover: hover) {
+    .stu-kpi-card:hover, .stu-info-card:hover, .card:hover {
+        transform: translateY(-2px);
+    }
+}
+
 .btn-primary {
     background-color: var(--color-primary-navy);
     color: white;
@@ -36,7 +70,7 @@ body {
     padding: 10px 20px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 200ms ease;
+    transition: all 0.1s ease;
 }
 
 .btn-primary:hover {
@@ -51,7 +85,7 @@ body {
     padding: 10px 20px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 200ms ease;
+    transition: all 0.1s ease;
 }
 
 .btn-accent:hover {
@@ -66,11 +100,6 @@ body {
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow-soft);
-    transition: all var(--transition-speed) ease;
-}
-
-.card:hover {
-    box-shadow: var(--shadow-medium);
 }
 
 .input-field {
@@ -79,7 +108,7 @@ body {
     padding: 8px 12px;
     width: 100%;
     outline: none;
-    transition: all 200ms ease;
+    transition: border-color 0.1s ease;
     background-color: var(--input-bg, var(--card-bg));
     color: var(--input-text, var(--theme-text));
 }

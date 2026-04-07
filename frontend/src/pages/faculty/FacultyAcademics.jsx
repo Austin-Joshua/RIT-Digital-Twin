@@ -17,6 +17,9 @@ const FacultyAcademics = () => {
         { code: 'CS8651', name: 'Internet Programming', semester: 'VI', branch: 'CSE', students: 60, syllabusCovered: 85 },
         { code: 'CS8691', name: 'Artificial Intelligence', semester: 'VI', branch: 'CSE', students: 62, syllabusCovered: 70 },
         { code: 'IT8076', name: 'Software Testing', semester: 'VIII', branch: 'IT', students: 55, syllabusCovered: 90 },
+        { code: 'MA3151', name: 'Matrices and Calculus', semester: 'I', branch: 'CSE', students: 64, syllabusCovered: 95 },
+        { code: 'CS3301', name: 'Data Structures', semester: 'III', branch: 'CSE', students: 62, syllabusCovered: 78 },
+        { code: 'BS301', name: 'Business Communication', semester: 'I', branch: 'CSBS', students: 58, syllabusCovered: 88 },
     ];
 
     const defaultMaterials = [
@@ -50,53 +53,83 @@ const FacultyAcademics = () => {
     };
 
     return (
-        <div style={{ padding: isMobile ? '16px' : '24px' }}>
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div style={{
                 display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'space-between',
-                alignItems: isMobile ? 'flex-start' : 'center',
-                marginBottom: '20px',
-                gap: '16px'
+                alignItems: 'center',
             }}>
-                <div>
-                    <h2 style={{ margin: 0, color: 'var(--theme-text)', fontSize: isMobile ? '1.5rem' : '1.875rem' }}>Academic Management</h2>
-                    <div className="breadcrumb-bar" style={{ marginTop: '8px' }}>
-                        <span className="breadcrumb-item" style={{ color: 'var(--theme-text-muted)' }}>Faculty</span>
-                        <span className="breadcrumb-item active" style={{ marginLeft: '8px', color: 'var(--theme-text)' }}>/ Academics</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ background: 'var(--color-primary-navy)', padding: '10px', borderRadius: '10px', color: 'white', display: 'flex' }}>
+                        <FaBook size={24} />
+                    </div>
+                    <div>
+                        <h2 style={{ margin: 0, color: 'var(--theme-text)', fontSize: '1.4rem', fontWeight: '800' }}>Academic Management</h2>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text-muted)' }}>Manage course materials and syllabus progress</p>
                     </div>
                 </div>
-                <button onClick={() => setIsUploadOpen(true)} className="table-btn w-full md:w-auto text-center justify-center flex hover:opacity-90 active:scale-95 transition-all" style={{ background: 'var(--color-primary-navy)', color: 'white', padding: '10px 20px', borderRadius: '10px', border: 'none', fontWeight: 'bold' }}>
-                    + Upload Material
+                <button onClick={() => setIsUploadOpen(true)} className="table-btn" style={{ 
+                    background: 'var(--color-primary-navy)', 
+                    color: 'white', 
+                    padding: '12px 24px', 
+                    borderRadius: '10px', 
+                    border: 'none', 
+                    fontWeight: '800', 
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(11, 44, 107, 0.2)'
+                }}>
+                    + New Material
                 </button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 mb-6">
+            {/* Premium Subject Cards Grid (3 Column for Tab) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                 {subjects.map((sub, idx) => (
-                    <Card key={idx} className="p-3 md:p-5 flex flex-col justify-between" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
-                        <div className="flex justify-between items-start mb-2 md:mb-4">
+                    <div key={idx} className="stu-info-card" style={{ 
+                        borderTop: '4px solid var(--color-primary-navy)',
+                        padding: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        minHeight: '180px',
+                        background: 'var(--theme-card-bg)',
+                        borderRadius: '12px',
+                        border: '1px solid var(--theme-border)'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div>
-                                <h3 className="m-0 text-sm md:text-lg" style={{ color: 'var(--theme-text)' }}>{sub.name}</h3>
-                                <div className="text-[10px] md:text-sm font-bold" style={{ color: 'var(--theme-text-muted)' }}>{sub.code}</div>
+                                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--theme-text)' }}>{sub.name}</h3>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--theme-text-muted)', marginTop: '2px' }}>{sub.code} • Sem {sub.semester}</div>
                             </div>
-                            <span className="status-badge od px-2 py-1 rounded-md text-[9px] md:text-xs whitespace-nowrap ml-2" style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary-navy)' }}>
-                                Sem {sub.semester}
+                            <span style={{ 
+                                background: 'rgba(11, 44, 107, 0.08)', 
+                                color: 'var(--color-primary-navy)', 
+                                padding: '4px 10px', 
+                                borderRadius: '6px', 
+                                fontSize: '11px', 
+                                fontWeight: '800' 
+                            }}>
+                                {sub.branch}
                             </span>
                         </div>
-                        <div className="flex flex-col sm:flex-row justify-between text-[10px] md:text-sm mb-3 md:mb-4 gap-1 sm:gap-0" style={{ color: 'var(--theme-text-muted)' }}>
-                            <span>Branch: <strong style={{ color: 'var(--theme-text)' }}>{sub.branch}</strong></span>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--theme-text-muted)', margin: '15px 0 10px' }}>
                             <span>Students: <strong style={{ color: 'var(--theme-text)' }}>{sub.students}</strong></span>
+                            <span>Syllabus: <strong style={{ color: 'var(--theme-text)' }}>{sub.syllabusCovered}%</strong></span>
                         </div>
-                        <div className="mt-auto">
-                            <div className="flex justify-between text-[9px] md:text-xs mb-1" style={{ color: 'var(--theme-text-muted)' }}>
-                                <span>Syllabus Covered</span>
-                                <span>{sub.syllabusCovered}%</span>
-                            </div>
-                            <div className="w-full h-1.5 md:h-2 rounded-full overflow-hidden" style={{ background: 'var(--theme-bg-muted)' }}>
-                                <div className="h-full rounded-full" style={{ width: `${sub.syllabusCovered}%`, background: sub.syllabusCovered > 80 ? 'var(--color-success)' : 'var(--color-warning)' }}></div>
-                            </div>
+
+                        <div style={{ width: '100%', height: '6px', background: 'var(--theme-bg-muted)', borderRadius: '10px', overflow: 'hidden' }}>
+                            <div style={{ 
+                                width: `${sub.syllabusCovered}%`, 
+                                height: '100%', 
+                                background: 'linear-gradient(90deg, var(--color-primary-navy) 0%, #3b82f6 100%)',
+                                borderRadius: '10px'
+                            }} />
                         </div>
-                    </Card>
+                    </div>
                 ))}
             </div>
 

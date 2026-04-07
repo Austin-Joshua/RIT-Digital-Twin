@@ -7,14 +7,7 @@ import { signInWithPopup, signOut } from 'firebase/auth';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
-    const [role, setRole] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
-
-    // Restore session on first load and validate JWT expiry
-    useEffect(() => {
+    const getInitialAuthState = () => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
 
@@ -23,20 +16,34 @@ export const AuthProvider = ({ children }) => {
                 const payload = JSON.parse(atob(storedToken.split('.')[1] || ''));
                 if (payload.exp && payload.exp * 1000 > Date.now()) {
                     const parsedUser = JSON.parse(storedUser);
-                    setUser(parsedUser);
-                    setToken(storedToken);
-                    setRole(parsedUser.role || null);
-                    setIsAuthenticated(true);
-                } else {
-                    localStorage.clear();
+                    return {
+                        user: parsedUser,
+                        token: storedToken,
+                        role: parsedUser.role || null,
+                        isAuthenticated: true,
+                        loading: false
+                    };
                 }
             } catch (err) {
-                console.error('Failed to restore auth state', err);
-                localStorage.clear();
+                console.warn('Silent local auth failure', err);
             }
         }
-        setLoading(false);
-    }, []);
+        return { user: null, token: null, role: null, isAuthenticated: false, loading: false };
+    };
+
+    const initialState = getInitialAuthState();
+    const [user, setUser] = useState(initialState.user);
+    const [token, setToken] = useState(initialState.token);
+    const [role, setRole] = useState(initialState.role);
+    const [isAuthenticated, setIsAuthenticated] = useState(initialState.isAuthenticated);
+    const [loading, setLoading] = useState(false); // Immediate ready
+
+    // Session heartbeat still useful for background sync
+    useEffect(() => {
+        if (isAuthenticated) {
+            // Heartbeat logic could go here if needed
+        }
+    }, [isAuthenticated]);
 
     const clearSession = () => {
         localStorage.removeItem('token');

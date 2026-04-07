@@ -9,13 +9,14 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
-      # Tuned for Aiven MySQL (proxied connections)
-      maximum-pool-size: ${HIKARI_MAX_POOL:20}
-      minimum-idle: 5
+      # Institutional scale: 100 concurrent connections for massive traffic
+      maximum-pool-size: ${HIKARI_MAX_POOL:100}
+      minimum-idle: 10
       idle-timeout: 300000      # 5 minutes
       max-lifetime: 1800000     # 30 minutes
       connection-timeout: 30000 # 30 seconds
       connection-test-query: SELECT 1
+      pool-name: RIT-DigitalTwin-HikariCP
 
   # Flyway MUST be enabled in prod to run migrations
   flyway:
@@ -29,6 +30,12 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
+    properties:
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.jdbc.batch_versioned_data: true
+      hibernate.generate_statistics: false
 
 logging:
   level:
