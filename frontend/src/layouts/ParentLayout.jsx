@@ -9,6 +9,7 @@ import {
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import './student-layout.css';
 
 const parentNav = [
@@ -199,6 +200,9 @@ const ParentLayout = () => {
                         <Outlet />
                     </Suspense>
                 </div>
+                
+                {/* AI Assistant Integration */}
+                <ChatbotWidget studentId={null} />
             </div>
         </div>
     );

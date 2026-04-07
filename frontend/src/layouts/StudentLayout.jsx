@@ -13,6 +13,7 @@ import {
 import GlobalSearch from '../components/common/GlobalSearch';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import './student-layout.css';
 
 const studentNav = [
@@ -345,6 +346,9 @@ const StudentLayout = () => {
                         <Outlet />
                     </Suspense>
                 </div>
+
+                {/* AI Assistant Integration */}
+                <ChatbotWidget studentId={user?.id} />
             </div>
         </div>
     );
