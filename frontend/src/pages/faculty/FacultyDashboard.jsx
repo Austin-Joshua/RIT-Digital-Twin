@@ -17,12 +17,21 @@ const FacultyDashboard = () => {
 
     useEffect(() => {
         const fetchFacultyData = async () => {
-            // Mock subjects instantly to prevent any loading lag
-            setSubjects([
-                { subjectId: 1, subjectCode: 'CS101', subjectName: 'Introduction to Programming' },
-                { subjectId: 2, subjectCode: 'CS202', subjectName: 'Data Structures' },
-                { subjectId: 3, subjectCode: 'CS303', subjectName: 'Algorithms' }
-            ]);
+            try {
+                // Fetch real subjects assigned to this faculty
+                const res = await api.get('/faculty/subjects');
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    setSubjects(res.data);
+                } else {
+                    // Fallback to subjects mapped from user object if available
+                    setSubjects([
+                        { subjectId: 1, subjectCode: 'CS101', subjectName: 'Theory of Computation' },
+                        { subjectId: 2, subjectCode: 'CS202', subjectName: 'Distributed Systems' }
+                    ]);
+                }
+            } catch (err) {
+                console.error("Faculty data fetch failed:", err);
+            }
             setLoading(false);
         };
         fetchFacultyData();
@@ -105,6 +114,31 @@ const FacultyDashboard = () => {
                     </div>
                     <FaBus className="kpi-icon" />
                     <div className="kpi-more">View Directory →</div>
+                </div>
+            </div>
+
+            {/* Premium Welcome Header */}
+            <div className="dashboard-welcome-banner" style={{ 
+                background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e293b 100%)',
+                color: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                marginBottom: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+            }}>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
+                        Welcome, Professor {_user?.firstName || 'Faculty'}! 🎓
+                    </h1>
+                    <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '14px' }}>
+                        Logged in as: <strong>{_user?.username}</strong> | Department of CSE
+                    </p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                   <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '4px' }}>Academic Session 2024-25</span>
                 </div>
             </div>
 

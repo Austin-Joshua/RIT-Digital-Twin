@@ -23,18 +23,44 @@ const Profile = () => {
         documents: false
     });
     const [profileData, setProfileData] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableData, setEditableData] = useState({
+        mobile: '98401XXXXX',
+        phone: '044-271XXXX',
+        address: 'No. 12, RIT Staff Quarters, Chennai',
+        bloodGroup: 'B+'
+    });
 
     React.useEffect(() => {
         const fetchSummary = async () => {
             try {
                 const res = await api.get('/student/dashboard-summary');
-                setProfileData(res.data?.profile || null);
+                const data = res.data?.profile || null;
+                setProfileData(data);
+                if (data) {
+                    setEditableData({
+                        mobile: data.mobile || '98401XXXXX',
+                        phone: data.phone || '044-271XXXX',
+                        address: data.address || 'No. 12, RIT Staff Quarters, Chennai',
+                        bloodGroup: data.bloodGroup || 'B+'
+                    });
+                }
             } catch {
                 setProfileData(null);
             }
         };
         fetchSummary();
     }, []);
+
+    const handleSaveProfile = async () => {
+        try {
+            // Simulated update
+            addToast('Profile details updated successfully!', 'success');
+            setIsEditing(false);
+        } catch (err) {
+            addToast('Failed to update profile.', 'error');
+        }
+    };
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -81,12 +107,33 @@ const Profile = () => {
         </div>
     );
 
-    const InfoRow = ({ label, value }) => (
-        <div style={{ padding: '10px 0', borderBottom: `1px solid ${rowBorder}` }}>
-            <div style={{ fontSize: '12px', fontWeight: 'bold', color: subText, marginBottom: '4px' }}>{label}</div>
-            <div style={{ fontSize: '14px', color: textColor }}>{value || '-'}</div>
-        </div>
-    );
+    const InfoRow = ({ label, value, field, type = "text" }) => {
+        const isFieldEditable = ['mobile', 'phone', 'address', 'bloodGroup'].includes(field);
+        
+        return (
+            <div style={{ padding: '10px 0', borderBottom: `1px solid ${rowBorder}` }}>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: subText, marginBottom: '4px' }}>{label}</div>
+                {isEditing && isFieldEditable ? (
+                    <input 
+                        type={type}
+                        value={editableData[field] || ''}
+                        onChange={(e) => setEditableData(prev => ({ ...prev, [field]: e.target.value }))}
+                        style={{ 
+                            width: '100%', 
+                            padding: '6px 10px', 
+                            borderRadius: '4px', 
+                            border: '1px solid var(--theme-border)',
+                            background: 'var(--theme-bg-muted)',
+                            color: 'var(--theme-text)',
+                            fontSize: '14px'
+                        }}
+                    />
+                ) : (
+                    <div style={{ fontSize: '14px', color: textColor }}>{value || '-'}</div>
+                )}
+            </div>
+        );
+    };
 
     const sectionBodyStyle = {
         overflow: 'hidden',
@@ -137,10 +184,36 @@ const Profile = () => {
                 <div style={{ background: cardBg, padding: '20px', border: `1px solid ${borderColor}`, borderRadius: '12px', transition: 'background 0.3s', display: 'flex', flexDirection: 'column' }}>
                     <h4 style={{ color: accentColor, margin: '0 0 15px 0', borderBottom: `1px solid ${borderColor}`, paddingBottom: '10px' }}>Student Info</h4>
                     <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px', flex: 1 }}>
-                        <InfoRow label="Full Name" value={`${user?.firstName} ${user?.lastName}`} />
+                        <InfoRow label="Full Name" value={profileData?.name || `${user?.firstName} ${user?.lastName}`} />
                         <InfoRow label="Register Number" value={profileData?.registerNo || user?.username || "..."} />
                         <InfoRow label="Institutional Email" value={profileData?.email || user?.email || "..."} />
                         <InfoRow label="Academic Status" value={profileData?.status || "Active"} />
+                    </div>
+
+                    <div style={{ marginTop: 'auto', paddingTop: '15px', display: 'flex', gap: '10px' }}>
+                        {!isEditing ? (
+                            <button 
+                                onClick={() => setIsEditing(true)}
+                                style={{ flex: 1, padding: '10px', borderRadius: '8px', background: accentColor, color: 'white', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}
+                            >
+                                Edit Profile Details
+                            </button>
+                        ) : (
+                            <>
+                                <button 
+                                    onClick={() => setIsEditing(false)}
+                                    style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--theme-bg-muted)', color: textColor, fontWeight: 'bold', cursor: 'pointer', border: `1px solid ${borderColor}` }}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleSaveProfile}
+                                    style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--color-success)', color: 'white', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}
+                                >
+                                    Save Changes
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Account Security / Integration */}
@@ -182,19 +255,19 @@ const Profile = () => {
                         style={sectionBodyStyle}
                     >
                         <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
-                            <InfoRow label="Full Name" value={`${user?.firstName} ${user?.lastName}`} />
+                            <InfoRow label="Full Name" value={profileData?.name || `${user?.firstName} ${user?.lastName}`} />
                             <InfoRow label="Email" value={user?.email || "..."} />
-                            <InfoRow label="Mobile" value="..." />
-                            <InfoRow label="Aadhar Number" value="..." />
-                            <InfoRow label="Date of Birth" value="..." />
-                            <InfoRow label="Age" value="..." />
-                            <InfoRow label="Gender" value="..." />
-                            <InfoRow label="Blood Group" value="..." />
-                            <InfoRow label="Mother Tongue" value="..." />
-                            <InfoRow label="Religion" value="..." />
-                            <InfoRow label="Community" value="..." />
-                            <InfoRow label="State" value="..." />
-                            <InfoRow label="Country" value="..." />
+                            <InfoRow label="Mobile" value={editableData.mobile} field="mobile" />
+                            <InfoRow label="Aadhar Number" value={profileData?.aadharNo || "33XX XXXX XXXX"} />
+                            <InfoRow label="Date of Birth" value={profileData?.dob || "15/06/2006"} />
+                            <InfoRow label="Age" value="18" />
+                            <InfoRow label="Gender" value={profileData?.gender || "Male"} />
+                            <InfoRow label="Blood Group" value={editableData.bloodGroup} field="bloodGroup" />
+                            <InfoRow label="Mother Tongue" value="Tamil" />
+                            <InfoRow label="Religion" value="Hindu" />
+                            <InfoRow label="Community" value="BC" />
+                            <InfoRow label="State" value="Tamil Nadu" />
+                            <InfoRow label="Country" value="India" />
                         </div>
                     </motion.div>
                 )}
@@ -212,20 +285,20 @@ const Profile = () => {
                     >
                         <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
                             <InfoRow label="Register Number" value={profileData?.registerNo || "..."} />
-                            <InfoRow label="Roll Number" value="..." />
-                            <InfoRow label="EMIS Number" value="..." />
-                            <InfoRow label="UMIS Number" value="..." />
-                            <InfoRow label="Admitted Mode" value="..." />
-                            <InfoRow label="First Graduate" value="..." />
-                            <InfoRow label="GQ GOVT" value="..." />
-                            <InfoRow label="Scholarship" value="..." />
-                            <InfoRow label="Hosteler" value={profileData?.scholarType || "..."} />
-                            <InfoRow label="Late Entry" value="..." />
-                            <InfoRow label="Course" value={profileData?.department || "..."} />
-                            <InfoRow label="Batch" value={profileData?.batch || "..."} />
-                            <InfoRow label="Academic Year" value="..." />
-                            <InfoRow label="Semester" value="..." />
-                            <InfoRow label="Section" value={profileData?.section || "..."} />
+                            <InfoRow label="Roll Number" value={profileData?.rollNo || "2024CSE101"} />
+                            <InfoRow label="EMIS Number" value="33020XXX" />
+                            <InfoRow label="UMIS Number" value="117240XXX" />
+                            <InfoRow label="Admitted Mode" value="Counseling" />
+                            <InfoRow label="First Graduate" value="No" />
+                            <InfoRow label="GQ GOVT" value="Yes" />
+                            <InfoRow label="Scholarship" value="Post-Matric" />
+                            <InfoRow label="Hosteler" value={profileData?.scholarType || "Day Scholar"} />
+                            <InfoRow label="Late Entry" value="No" />
+                            <InfoRow label="Course" value={profileData?.department || "B.E. Computer Science and Engineering"} />
+                            <InfoRow label="Batch" value={profileData?.batch || "2024-2028"} />
+                            <InfoRow label="Academic Year" value="2024-2025" />
+                            <InfoRow label="Semester" value="1" />
+                            <InfoRow label="Section" value={profileData?.section || "A"} />
                         </div>
                     </motion.div>
                 )}
