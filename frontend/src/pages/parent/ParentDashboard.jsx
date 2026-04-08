@@ -311,7 +311,8 @@ const ParentDashboard = () => {
         <div className="stu-dashboard">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
-            {/* Parent header with identity banner */}
+            {/* Parent header with identity banner removed as per user request */}
+            {/* 
             <div className="dashboard-welcome-banner" style={{ 
                 background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
                 color: 'white',
@@ -335,6 +336,7 @@ const ParentDashboard = () => {
                    <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '4px' }}>Parental Monitoring Mode</span>
                 </div>
             </div>
+            */}
 
             <div className="stu-welcome" style={{ marginBottom: 20, display: 'none' }}>
                 <h2 style={{ margin: 0 }}>Parent Guardian Overview</h2>

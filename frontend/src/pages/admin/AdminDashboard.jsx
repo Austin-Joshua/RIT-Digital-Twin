@@ -97,7 +97,8 @@ const AdminDashboard = () => {
                     <button type="submit" className="ims-btn primary" style={{ height: '38px', padding: '0 20px', fontSize: '0.85rem' }}>Send Broadcast</button>
                 </form>
             </div>
-            {/* Professional Welcome Header */}
+            {/* Professional Welcome Header removed as per user request */}
+            {/* 
             <div style={{ 
                 background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e40af 100%)',
                 padding: '30px',
@@ -115,6 +116,7 @@ const AdminDashboard = () => {
                     <FaUniversity size={150} />
                 </div>
             </div>
+            */}
 
             {/* KPI Row */}
             <div className="stu-kpi-row">
