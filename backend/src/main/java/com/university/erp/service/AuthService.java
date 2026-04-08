@@ -315,6 +315,27 @@ public class AuthService {
             String googleId = decodedToken.getUid();
 
             Optional<User> userOpt = userRepository.findByEmail(email);
+            
+            // Link by registration number if email find fails
+            if (userOpt.isEmpty()) {
+                String prefix = email.split("@")[0];
+                String registerNo = null;
+                if (prefix.matches("^\\d+$")) {
+                    registerNo = prefix;
+                } else if (prefix.contains(".")) {
+                    String[] parts = prefix.split("\\.");
+                    String lastPart = parts[parts.length - 1];
+                    if (lastPart.matches("^\\d+$")) {
+                        registerNo = lastPart;
+                    }
+                }
+                
+                if (registerNo != null) {
+                    userOpt = userRepository.findByUsername(registerNo);
+                    log.info("Found existing user by register number {} for Google login {}", registerNo, email);
+                }
+            }
+
             User user;
 
             if (userOpt.isPresent()) {
@@ -323,6 +344,17 @@ public class AuthService {
                     user.setGoogleId(googleId);
                     userRepository.save(user);
                     log.info("Linked Firebase Google account for user: {}", email);
+                }
+                
+                // Sync name from linked student record if present
+                if (user.getLinkedStudent() != null) {
+                    String studentName = user.getLinkedStudent().getStudentName();
+                    if (studentName != null && !studentName.isBlank()) {
+                        String[] parts = studentName.split(" ", 2);
+                        user.setFirstName(parts[0]);
+                        if (parts.length > 1) user.setLastName(parts[1]);
+                        userRepository.save(user);
+                    }
                 }
             } else {
                 if (!email.toLowerCase()
@@ -350,7 +382,15 @@ public class AuthService {
                 String fullName = (String) decodedToken.getClaims().get("name");
                 String firstName = "Student";
                 String lastName = "";
-                if (fullName != null && !fullName.isBlank()) {
+                
+                // Check if student record already exists to pull name
+                Optional<Student> studentRecord = registerNo != null ? studentRepository.findByRegisterNo(registerNo) : Optional.empty();
+                if (studentRecord.isPresent() && studentRecord.get().getStudentName() != null) {
+                    String sName = studentRecord.get().getStudentName();
+                    String[] parts = sName.split(" ", 2);
+                    firstName = parts[0];
+                    if (parts.length > 1) lastName = parts[1];
+                } else if (fullName != null && !fullName.isBlank()) {
                     String[] parts = fullName.split(" ", 2);
                     firstName = parts[0];
                     if (parts.length > 1)
@@ -358,7 +398,7 @@ public class AuthService {
                 }
 
                 user = User.builder()
-                        .username(email)
+                        .username(registerNo != null ? registerNo : email)
                         .email(email)
                         .googleId(googleId)
                         .firstName(firstName)
@@ -372,19 +412,26 @@ public class AuthService {
                 user = userRepository.save(user);
                 log.info("Created new user account for: {}", email);
 
-                Student newStudent = Student.builder()
-                        .user(user)
-                        .registerNo(registerNo)
-                        .studentIdNumber("F-" + (registerNo != null ? registerNo : googleId.substring(0, 10)))
-                        .studentName(user.getFirstName() + " " + user.getLastName())
-                        .email(email)
-                        .status("active")
-                        .build();
-
-                studentRepository.save(newStudent);
+                Student student;
+                if (studentRecord.isPresent()) {
+                    student = studentRecord.get();
+                    student.setUser(user);
+                    student.setEmail(email);
+                    studentRepository.save(student);
+                } else {
+                    student = Student.builder()
+                            .user(user)
+                            .registerNo(registerNo)
+                            .studentIdNumber("F-" + (registerNo != null ? registerNo : googleId.substring(0, 10)))
+                            .studentName(user.getFirstName() + " " + user.getLastName())
+                            .email(email)
+                            .status("active")
+                            .build();
+                    studentRepository.save(student);
+                }
                 log.info("Auto-registered new student record for: {}", email);
 
-                user.setLinkedStudent(newStudent);
+                user.setLinkedStudent(student);
                 userRepository.save(user);
             }
 

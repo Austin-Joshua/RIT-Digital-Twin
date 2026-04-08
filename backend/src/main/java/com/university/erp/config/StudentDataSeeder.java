@@ -525,7 +525,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         list.add(new StudentInfo("2117240020042", "ASWINI", "M", false));
         list.add(new StudentInfo("2117240020043", "ATHISHWAR", "J", false));
         list.add(new StudentInfo("2117240020044", "AUSTIN JOSHUA", "M", false));
-        list.add(new StudentInfo("2117240020045", "AVINESHWARAN", "A", false));
+        list.add(new StudentInfo("2117240020045", "AVINESHWARAN", "A", true));
         list.add(new StudentInfo("2117240020046", "BALAJI", "M R", true));
         list.add(new StudentInfo("2117240020047", "BALAJI", "P", false));
         list.add(new StudentInfo("2117240020048", "BASKAR", "J", false));

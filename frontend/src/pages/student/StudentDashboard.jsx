@@ -166,6 +166,8 @@ const StudentDashboard = () => {
     return (
         <div className="stu-dashboard">
             {/* Instant Identity Header */}
+            {/* Instant Identity Header removed for cleaner UI as per user request */}
+            {/* 
             <div className="dashboard-welcome-banner" style={{ 
                 background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e293b 100%)',
                 color: 'white',
@@ -186,9 +188,9 @@ const StudentDashboard = () => {
                     </p>
                 </div>
                 <div style={{ textAlign: 'right', display: 'none' }}>
-                   {/* Optional Quick Stats could go here */}
                 </div>
             </div>
+            */}
 
             {/* Unified KPI Row for perfect fluid alignment (3x2 in Tab, 4+2 in Desktop) */}
             <div className="stu-kpi-row">
