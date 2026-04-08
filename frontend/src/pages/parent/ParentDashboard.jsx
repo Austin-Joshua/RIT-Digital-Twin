@@ -195,10 +195,12 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
 
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../../hooks/AuthContext';
 import { getAcademicStats, getInternalMarks } from '../../utils/MockDataGenerator';
 
 const ParentDashboard = () => {
     const navigate = useNavigate();
+    const { user: parentUser } = useAuth();
     const { addToast } = useToast();
 
     // Instant data hydration from deterministic generator
@@ -220,10 +222,11 @@ const ParentDashboard = () => {
     const initialMarks = getInternalMarks(initialPrimary.user.email);
 
     const [students, setStudents] = useState(initialStudents);
-    const [_loading, setLoading] = useState(false); // No spinner needed for mock data
+    const [loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
     const [parentNote, setParentNote] = useState('');
     const [lastSavedNote, setLastSavedNote] = useState('');
+    const [realMarks, setRealMarks] = useState({ cat: [], assignments: [] });
 
     useEffect(() => {
         const fetchLinkedStudents = async () => {
@@ -231,9 +234,26 @@ const ParentDashboard = () => {
                 const res = await api.get('/parent/students');
                 if (res.data && res.data.length > 0) {
                     setStudents(res.data);
+                    // Fetch real marks for the first student
+                    const studentId = res.data[0].id;
+                    const marksRes = await api.get(`/academic/marks/student/${studentId}`);
+                    if (Array.isArray(marksRes.data)) {
+                        const apiMarks = marksRes.data;
+                        const cat = apiMarks.filter(m => m.type === 'CAT').map(m => ({
+                            subject: m.subjectName || m.subject?.subjectName,
+                            score: m.score,
+                            max: 50
+                        }));
+                        const assg = apiMarks.filter(m => m.type === 'ASSIGNMENT').map(m => ({
+                            subject: m.subjectName || m.subject?.subjectName,
+                            score: m.score,
+                            max: 20
+                        }));
+                        setRealMarks({ cat, assignments: assg });
+                    }
                 }
             } catch (err) {
-                // Silent catch: We already have initial mocks
+                console.warn('Parent student fetch failed:', err);
             }
             setLoading(false);
         };
@@ -277,12 +297,12 @@ const ParentDashboard = () => {
     };
 
     const primary = students[0] || generateMockStudents()[0];
-    const stats = getAcademicStats(primary.user.email);
-    const marks = getInternalMarks(primary.user.email);
+    const stats = getAcademicStats(primary.user?.email || 'guest@ritchennai.edu.in');
+    const marks = realMarks.cat.length > 0 || realMarks.assignments.length > 0 ? realMarks : getInternalMarks(primary.user?.email || 'guest@ritchennai.edu.in');
 
     const kpis = [
-        { id: 'cgpa', label: 'Current CGPA', value: stats.cgpa.toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
-        { id: 'attendance', label: 'Overall Attendance', value: `${stats.attendance.toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
+        { id: 'cgpa', label: 'Current CGPA', value: (primary.currentCgpa || stats.cgpa).toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
+        { id: 'attendance', label: 'Overall Attendance', value: `${(primary.attendance || stats.attendance).toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
         { id: 'fees', label: 'Academic Fees', value: '₹45,000 Due', color: 'red', icon: <FaRupeeSign />, link: '/parent/fees' },
         { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild />, link: '#' },
     ];
@@ -291,11 +311,35 @@ const ParentDashboard = () => {
         <div className="stu-dashboard">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
-            {/* Parent header */}
-            <div className="stu-welcome" style={{ marginBottom: 20 }}>
+            {/* Parent header with identity banner */}
+            <div className="dashboard-welcome-banner" style={{ 
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                color: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                marginBottom: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+            }}>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
+                        Welcome back, {parentUser?.firstName || 'Parent'}! 👋
+                    </h1>
+                    <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '14px' }}>
+                        Guardian of: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber})
+                    </p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                   <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '4px' }}>Parental Monitoring Mode</span>
+                </div>
+            </div>
+
+            <div className="stu-welcome" style={{ marginBottom: 20, display: 'none' }}>
                 <h2 style={{ margin: 0 }}>Parent Guardian Overview</h2>
                 <p style={{ marginTop: 6, color: 'var(--theme-text-muted)' }}>
-                    Linked student: <strong>{primary.user.firstName} {primary.user.lastName}</strong> ({primary.studentIdNumber})
+                    Linked student: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber})
                 </p>
             </div>
 

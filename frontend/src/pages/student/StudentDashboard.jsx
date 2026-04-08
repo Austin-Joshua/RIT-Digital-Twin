@@ -131,8 +131,65 @@ const StudentDashboard = () => {
         { id: 'leave', label: 'Taken Leave', value: kpiData.leave, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
     ];
 
+    useEffect(() => {
+        const fetchStudentMarks = async () => {
+            if (!user?.studentId) return;
+            try {
+                const res = await api.get(`/academic/marks/student/${user.studentId}`);
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    const apiMarks = res.data;
+                    const catMarks = apiMarks.filter(m => m.type === 'CAT').map(m => ({
+                        subject: m.subjectName || m.subject?.subjectName,
+                        score: m.score,
+                        max: 50
+                    }));
+                    const assignmentMarks = apiMarks.filter(m => m.type === 'ASSIGNMENT').map(m => ({
+                        subject: m.subjectName || m.subject?.subjectName,
+                        score: m.score,
+                        max: 20
+                    }));
+                    
+                    if (catMarks.length > 0 || assignmentMarks.length > 0) {
+                        setMarks({
+                            cat: catMarks.length > 0 ? catMarks : initialMarks.cat,
+                            assignments: assignmentMarks.length > 0 ? assignmentMarks : initialMarks.assignments
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to sync marks from API:", err);
+            }
+        };
+        fetchStudentMarks();
+    }, [user?.studentId]);
+
     return (
         <div className="stu-dashboard">
+            {/* Instant Identity Header */}
+            <div className="dashboard-welcome-banner" style={{ 
+                background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e293b 100%)',
+                color: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                marginBottom: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+            }}>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
+                        Welcome back, {user?.firstName || 'Student'}! 👋
+                    </h1>
+                    <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '14px' }}>
+                        {user?.registerNo ? `Register Number: ${user.registerNo}` : 'Institutional Identity Active'} | 2024–2028 Batch
+                    </p>
+                </div>
+                <div style={{ textAlign: 'right', display: 'none' }}>
+                   {/* Optional Quick Stats could go here */}
+                </div>
+            </div>
+
             {/* Unified KPI Row for perfect fluid alignment (3x2 in Tab, 4+2 in Desktop) */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (

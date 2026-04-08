@@ -437,8 +437,12 @@ public class StudentDataSeeder implements CommandLineRunner {
                 continue;
             }
 
-            double internalBase = 28 + (factor * 6) + (random.nextDouble() * 6);
-            double externalBase = 40 + (factor * 12) + (random.nextDouble() * 18);
+            // Use a unique seed for each subject to ensure scores vary across the semester
+            long combinedSeed = Long.parseLong(student.getRegisterNo()) + sub.getId();
+            Random subjectRandom = new Random(combinedSeed);
+
+            double internalBase = 25 + (factor * 8) + (subjectRandom.nextDouble() * 7);
+            double externalBase = 35 + (factor * 15) + (subjectRandom.nextDouble() * 25);
             BigDecimal internal = bd(internalBase, 50);
             BigDecimal external = bd(externalBase, 100);
             BigDecimal total = internal.add(external).setScale(2, RoundingMode.HALF_UP);
@@ -617,11 +621,15 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     private static double performanceFactor(String key) {
         if (key == null) return 1.8;
-        int hash = Math.abs(key.hashCode());
-        int bucket = hash % 10;
-        if (bucket <= 2) return 2.8; 
-        if (bucket <= 7) return 1.8; 
-        return 0.9; 
+        try {
+            // Highly granular factor based on register number suffix
+            // This ensures ~100 different performance levels
+            long regNum = Long.parseLong(key);
+            int variance = (int) (regNum % 100);
+            return 0.5 + (variance / 35.0); // Ranges from ~0.5 to ~3.35
+        } catch (Exception e) {
+            return 1.8;
+        }
     }
 
     private static GradeScale toGrade(double total) {
