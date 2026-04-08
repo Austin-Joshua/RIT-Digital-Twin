@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/AuthContext';
 import { 
     FaUniversity, FaUsers, FaGraduationCap, FaChartLine, 
     FaLightbulb, FaBus, FaShieldAlt, FaCogs, FaCheckCircle, FaClock,
-    FaClipboardList, FaUserGraduate, FaMagic, FaCalendarCheck
+    FaClipboardList, FaUserGraduate, FaMagic, FaCalendarCheck, FaBullhorn
 } from 'react-icons/fa';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
@@ -49,10 +49,10 @@ const AdminDashboard = () => {
     }, []);
 
     const adminKpis = [
-        { label: 'Total Students', value: stats.totalStudents, icon: <FaUsers />, color: 'blue', link: '/management/users' },
-        { label: 'Faculty Strength', value: stats.totalFaculty, icon: <FaUniversity />, color: 'green', link: '/faculty/academics' },
-        { label: 'Placement Rate', value: `${stats.placementRate}%`, icon: <FaGraduationCap />, color: 'teal', link: '/analytics/placement' },
-        { label: 'Pending Approvals', value: stats.pendingApprovals, icon: <FaClock />, color: 'yellow', link: '/faculty/leaves' },
+        { label: 'Total Students', value: stats?.totalStudents || 0, icon: <FaUsers />, color: 'blue', link: '/management/users' },
+        { label: 'Faculty Strength', value: stats?.totalFaculty || 0, icon: <FaUniversity />, color: 'green', link: '/faculty/academics' },
+        { label: 'Placement Rate', value: `${stats?.placementRate || 0}%`, icon: <FaGraduationCap />, color: 'teal', link: '/analytics/placement' },
+        { label: 'Pending Approvals', value: stats?.pendingApprovals || 0, icon: <FaClock />, color: 'yellow', link: '/faculty/leaves' },
     ];
 
     const triggerBroadcast = (e) => {
@@ -97,26 +97,6 @@ const AdminDashboard = () => {
                     <button type="submit" className="ims-btn primary" style={{ height: '38px', padding: '0 20px', fontSize: '0.85rem' }}>Send Broadcast</button>
                 </form>
             </div>
-            {/* Professional Welcome Header removed as per user request */}
-            {/* 
-            <div style={{ 
-                background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e40af 100%)',
-                padding: '30px',
-                borderRadius: '16px',
-                color: 'white',
-                position: 'relative',
-                overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(11, 44, 107, 0.15)'
-            }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: '800' }}>Admin Command Center</h1>
-                    <p style={{ margin: '8px 0 0', opacity: 0.9, fontSize: '14px' }}>Welcome back, <strong>{user?.firstName || 'Admin'}</strong>. You have {stats.pendingApprovals} pending approvals requiring your attention.</p>
-                </div>
-                <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.1 }}>
-                    <FaUniversity size={150} />
-                </div>
-            </div>
-            */}
 
             {/* KPI Row */}
             <div className="stu-kpi-row">

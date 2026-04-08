@@ -19,8 +19,9 @@ import MiniCalendar from '../../components/common/MiniCalendar';
 import DetailedReportModal from '../../components/common/DetailedReportModal';
 import twinService from '../../services/twinService';
 import analyticsService from '../../services/analyticsService';
+import { getAcademicStats, getInternalMarks, getDepartmentStats } from '../../utils/MockDataGenerator';
 
-const performanceData = [
+const performanceDataStatic = [
     { name: 'Jan', gpa: 7.8, attendance: 82 },
     { name: 'Feb', gpa: 8.1, attendance: 85 },
     { name: 'Mar', gpa: 8.3, attendance: 88 },
@@ -28,27 +29,10 @@ const performanceData = [
     { name: 'May', gpa: 8.4, attendance: 90 },
 ];
 
-/* Feb 2026: starts on Sunday */
-const feb2026 = [
-    [1, 2, 3, 4, 5, 6, 7],
-    [8, 9, 10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19, 20, 21],
-    [22, 23, 24, 25, 26, 27, 28],
-];
-const holidays = [14, 26];
-const noOrderDays = [];
-const now = new Date();
-const todayDate = now.getDate();
-const isCurrentMonth = now.getMonth() === 1 && now.getFullYear() === 2026;
-
-
-import { getAcademicStats, getInternalMarks, getDepartmentStats } from '../../utils/MockDataGenerator';
-
 const StudentDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     
-    // Performance optimization: Instant initialization from deterministic twin
     const email = user?.email || 'guest@ritchennai.edu.in';
     const initialStats = getAcademicStats(email);
     const initialMarks = getInternalMarks(email);
@@ -62,12 +46,11 @@ const StudentDashboard = () => {
     const [performanceData, setPerformanceData] = useState(initialStats.trend);
     const [marks, setMarks] = useState(initialMarks);
     
-    const [riskScore, setRiskScore] = useState(null);
-    const [ranking, setRanking] = useState(null);
     const [selectedModal, setSelectedModal] = useState(null);
     const [clubInvolvement, setClubInvolvement] = useState([]);
     const [clubLoading, setClubLoading] = useState(true);
     const [twinStatus, setTwinStatus] = useState({ crowd: 'Normal', energy: 'Balanced' });
+    const [ranking, setRanking] = useState(null);
 
     useEffect(() => {
         const fetchTwinData = async () => {
@@ -89,23 +72,17 @@ const StudentDashboard = () => {
         const fetchKpis = async () => {
             try {
                 const cgpaRes = await api.get('/academic/student/cgpa').catch(() => ({ data: [] }));
-                
                 let apiCgpa = 0;
                 if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
                     apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
                 }
-
                 if (apiCgpa > 0) {
-                    setKpiData(prev => ({
-                        ...prev,
-                        cgpa: apiCgpa
-                    }));
+                    setKpiData(prev => ({ ...prev, cgpa: apiCgpa }));
                 }
             } catch (err) {
                 console.error("KPI sync silent fail:", err);
             }
         };
-
         fetchKpis();
     }, [user]);
 
@@ -125,10 +102,10 @@ const StudentDashboard = () => {
     }, [user]);
 
     const kpis = [
-        { id: 'cgpa', label: 'CGPA', value: kpiData.cgpa.toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
-        { id: 'arrears', label: 'Arrears In Hand', value: kpiData.arrear, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
-        { id: 'attendance', label: 'Average Attendance', value: `${kpiData.attendance.toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
-        { id: 'leave', label: 'Taken Leave', value: kpiData.leave, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
+        { id: 'cgpa', label: 'CGPA', value: (kpiData?.cgpa || 0).toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
+        { id: 'arrears', label: 'Arrears In Hand', value: kpiData?.arrear || 0, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
+        { id: 'attendance', label: 'Average Attendance', value: `${(kpiData?.attendance || 0).toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
+        { id: 'leave', label: 'Taken Leave', value: kpiData?.leave || 0, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
     ];
 
     useEffect(() => {
@@ -148,7 +125,6 @@ const StudentDashboard = () => {
                         score: m.score,
                         max: 20
                     }));
-                    
                     if (catMarks.length > 0 || assignmentMarks.length > 0) {
                         setMarks({
                             cat: catMarks.length > 0 ? catMarks : initialMarks.cat,
@@ -165,38 +141,10 @@ const StudentDashboard = () => {
 
     return (
         <div className="stu-dashboard">
-            {/* Instant Identity Header */}
-            {/* Instant Identity Header removed for cleaner UI as per user request */}
-            {/* 
-            <div className="dashboard-welcome-banner" style={{ 
-                background: 'linear-gradient(135deg, var(--color-primary-navy) 0%, #1e293b 100%)',
-                color: 'white',
-                padding: '24px',
-                borderRadius: '16px',
-                marginBottom: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-            }}>
-                <div>
-                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-                        Welcome back, {user?.firstName || 'Student'}! 👋
-                    </h1>
-                    <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '14px' }}>
-                        {user?.registerNo ? `Register Number: ${user.registerNo}` : 'Institutional Identity Active'} | 2024–2028 Batch
-                    </p>
-                </div>
-                <div style={{ textAlign: 'right', display: 'none' }}>
-                </div>
-            </div>
-            */}
-
-            {/* Unified KPI Row for perfect fluid alignment (3x2 in Tab, 4+2 in Desktop) */}
             <div className="stu-kpi-row">
                 {kpis.map((kpi) => (
                     <div
-                        key={kpi.label}
+                        key={kpi.id}
                         className={`stu-kpi-card ${kpi.color}`}
                         onClick={() => setSelectedModal(kpi)}
                         style={{ cursor: 'pointer' }}
@@ -214,7 +162,6 @@ const StudentDashboard = () => {
                     </div>
                 ))}
                 
-                {/* Twin Cards moved into the unified grid */}
                 <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
                     <div className="kpi-main">
                         <h3 className="kpi-value" style={{ fontSize: '18px' }}>{twinStatus.crowd}</h3>
@@ -239,9 +186,6 @@ const StudentDashboard = () => {
                 label={selectedModal?.label}
                 icon={selectedModal?.icon}
             />
-
-            {/* Announcements & Events */}
-            {/* AI Insights for Student */}
 
             <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
                 <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
@@ -322,8 +266,6 @@ const StudentDashboard = () => {
             <div style={{ marginTop: '20px', borderTop: '2px solid var(--theme-border)', paddingTop: '20px' }}>
                 <h3 style={{ marginBottom: '15px' }}>Advanced ERP Features</h3>
 
-
-                {/* Enterprise Ranking Panel */}
                 {ranking && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="stu-ranking-panel">
                         <div className="ranking-card rank-dept">
@@ -343,7 +285,6 @@ const StudentDashboard = () => {
                     </motion.div>
                 )}
 
-                {/* Performance Trend & Growth Passport */}
                 <div className="stu-trend-row">
                     <div className="stu-info-card trend-card">
                         <div className="info-header">Performance Trend (CGPA & Attendance)</div>
@@ -377,7 +318,6 @@ const StudentDashboard = () => {
                     </div>
                 </div>
 
-                {/* Simulator Card */}
                 <div className="stu-simulator-row">
                     <div className="stu-info-card simulator-card">
                         <div className="simulator-content">
@@ -388,10 +328,7 @@ const StudentDashboard = () => {
                 </div>
             </div>
 
-            {/* Calendar — Dynamic MiniCalendar */}
             <MiniCalendar />
-
-            {/* AI Academic Chatbot */}
             <ChatbotWidget studentId={user?.studentId || 1} />
         </div>
     );
