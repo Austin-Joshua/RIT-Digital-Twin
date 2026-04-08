@@ -534,16 +534,6 @@ public class StudentDataSeeder implements CommandLineRunner {
         list.add(new StudentInfo("2117240020060", "DEEPA SHREE", "C", false));
         list.add(new StudentInfo("2117240020061", "DEEPESH", "V", false));
         list.add(new StudentInfo("2117240020062", "DEEPIKA", "P", true));
-        list.add(new StudentInfo("2117240020063", "DHARANI", "M", false));
-        list.add(new StudentInfo("2117240020064", "DHARANIDHARAN", "S", false));
-        list.add(new StudentInfo("2117240020065", "DHARSHAN", "K", true));
-        list.add(new StudentInfo("2117240020066", "DHARSHINI", "R", false));
-        list.add(new StudentInfo("2117240020067", "DHATCHANAYA", "P", false));
-        list.add(new StudentInfo("2117240020068", "DHATCHAYANI", "M", false));
-        list.add(new StudentInfo("2117240020069", "DHAYALAN", "V", true));
-        list.add(new StudentInfo("2117240020070", "DHEEPAN", "R", false));
-        list.add(new StudentInfo("2117240020071", "DHEERAN", "S", false));
-        list.add(new StudentInfo("2117240020072", "DINESH", "M", true));
         return list;
     }
 
@@ -608,16 +598,6 @@ public class StudentDataSeeder implements CommandLineRunner {
         list.add(new StudentInfo("2117240080175", "YUVANRAJ", "N", false));
         list.add(new StudentInfo("2117240080176", "YUVARAJ", "Y", false));
         list.add(new StudentInfo("2117240080177", "YUVASHREE", "R", false));
-        list.add(new StudentInfo("2117240080178", "ZABEEN", "A", true));
-        list.add(new StudentInfo("2117240080179", "ZAHEER", "B", false));
-        list.add(new StudentInfo("2117240080180", "ABDUL", "RAHMAN", false));
-        list.add(new StudentInfo("2117240080181", "AKASH", "R", true));
-        list.add(new StudentInfo("2117240080182", "ANUSHA", "P", false));
-        list.add(new StudentInfo("2117240080183", "ASWIN", "M", false));
-        list.add(new StudentInfo("2117240080184", "BHAVANA", "K", true));
-        list.add(new StudentInfo("2117240080185", "CHARAN", "S", false));
-        list.add(new StudentInfo("2117240080186", "DEEPAK", "R", false));
-        list.add(new StudentInfo("2117240080187", "ESHWARI", "V", true));
         return list;
     }
 
