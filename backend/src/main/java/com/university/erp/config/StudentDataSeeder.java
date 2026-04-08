@@ -130,7 +130,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
         Department cse = departmentRepository.findByCode("CSE")
-                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSE").deptName("B.E. CSE").build()));
+                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSE").deptName("B.E. Computer Science and Engineering").build()));
         
         // Fetch a default faculty to record attendance
         this.facultyUser = userRepository.findByEmail("faculty@ritchennai.edu.in")
@@ -140,7 +140,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .orElse(null));
         
         Department csbs = departmentRepository.findByCode("CSBS")
-                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech CS & BS").build()));
+                .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech Computer Science and Business Systems").build()));
 
         // seedStaffAccounts(); // Handled by DataInitializer
         seedCurriculum(cse, "B.E. CSE");
@@ -322,81 +322,86 @@ public class StudentDataSeeder implements CommandLineRunner {
         List<Subject> subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(1, dept.getDeptName());
 
         for (StudentInfo info : records) {
-            if (userRepository.findByUsername(info.regNo).isPresent()) continue;
-
-            User user = User.builder()
-                    .username(info.regNo)
-                    .password(passwordEncoder.encode(info.regNo)) // Default password = register number
-                    .email(info.regNo + "@ritchennai.edu.in")
-                    .firstName(info.firstName)
-                    .lastName(info.lastName)
-                    .role(role)
-                    .department(dept)
-                    .accountStatus("active")
-                    .mustChangePassword(true) // Mandatory change on first login
-                    .build();
+            User user = userRepository.findByUsername(info.regNo).orElse(null);
+            boolean isNew = false;
+            
+            if (user == null) {
+                user = User.builder()
+                        .username(info.regNo)
+                        .password(passwordEncoder.encode(info.regNo)) 
+                        .email(info.regNo + "@ritchennai.edu.in")
+                        .role(role)
+                        .build();
+                isNew = true;
+            }
+            
+            user.setFirstName(info.firstName);
+            user.setLastName(info.lastName);
+            user.setDepartment(dept);
+            user.setAccountStatus("active");
+            user.setMustChangePassword(isNew); 
             user = userRepository.save(user);
 
-            Student student = Student.builder()
-                    .user(user)
-                    .registerNo(info.regNo)
-                    .studentIdNumber("24" + dept.getCode() + info.regNo.substring(info.regNo.length() - 3))
-                    .studentName(info.firstName + " " + info.lastName)
-                    .section(section)
-                    .batch(batch)
-                    .year(1)
-                    .currentSemester(1)
-                    .status("active")
-                    .department(dept)
-                    .scholarType(info.isHosteller ? "Hosteller" : "Day Scholar")
-                    .email(user.getEmail())
-                    .build();
+            Student student = studentRepository.findByRegisterNo(info.regNo).orElse(null);
+            if (student == null) {
+                student = Student.builder().user(user).registerNo(info.regNo).build();
+            }
+            
+            student.setStudentIdNumber("24" + dept.getCode() + info.regNo.substring(info.regNo.length() - 3));
+            student.setStudentName(info.firstName + " " + info.lastName);
+            student.setSection(section);
+            student.setBatch(batch);
+            student.setYear(1);
+            student.setCurrentSemester(1);
+            student.setStatus("active");
+            student.setDepartment(dept);
+            student.setScholarType(info.isHosteller ? "Hosteller" : "Day Scholar");
+            student.setEmail(user.getEmail());
             student = studentRepository.save(student);
             
-            // Auto-link Parent account
             ensureParentForStudent(student);
             
             user.setLinkedStudent(student);
             userRepository.save(user);
 
-            // Flush to ensure visibility across transactions/threads during high-scale login
             userRepository.flush();
             studentRepository.flush();
 
             assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));
-            created++;
+            if (isNew) created++;
         }
         log.info("Seeded {} new students with full data for section {}", created, section);
     }
 
     private void ensureParentForStudent(Student student) {
         String parentUsername = "P-" + student.getRegisterNo();
-        if (userRepository.findByUsername(parentUsername).isPresent()) return;
-
-        Role parentRole = roleRepository.findByRoleName(Role.UserRole.PARENT).orElse(null);
-        if (parentRole == null) return;
-
+        User parentUser = userRepository.findByUsername(parentUsername).orElse(null);
         String parentName = student.getStudentName() != null ? student.getStudentName().split(" ")[0] : "Student";
-
-        User parentUser = User.builder()
+        Role parentRole = roleRepository.findByRoleName(Role.UserRole.PARENT).orElse(null);
+        
+        if (parentUser == null) {
+            if (parentRole == null) return;
+            parentUser = User.builder()
                 .username(parentUsername)
                 .password(passwordEncoder.encode("password123"))
                 .email(student.getRegisterNo() + "_parent@ritchennai.edu.in")
-                .firstName(parentName)
-                .lastName("Parent")
                 .role(parentRole)
-                .accountStatus("active")
                 .build();
-
+        }
+        
+        parentUser.setFirstName(parentName);
+        parentUser.setLastName("Parent");
+        parentUser.setAccountStatus("active");
         parentUser = userRepository.save(parentUser);
 
-        Parent parent = Parent.builder()
-                .user(parentUser)
-                .student(student)
-                .name(parentName + " Parent")
-                .relationship("Parent")
-                .build();
-
+        Parent parent = parentRepository.findByUser_Id(parentUser.getId()).orElse(null);
+        if (parent == null) {
+            parent = Parent.builder().user(parentUser).build();
+        }
+        
+        parent.setStudent(student);
+        parent.setName(parentName + " Parent");
+        parent.setRelationship("Parent");
         parentRepository.save(parent);
     }
 
@@ -520,7 +525,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         list.add(new StudentInfo("2117240020042", "ASWINI", "M", false));
         list.add(new StudentInfo("2117240020043", "ATHISHWAR", "J", false));
         list.add(new StudentInfo("2117240020044", "AUSTIN JOSHUA", "M", false));
-        list.add(new StudentInfo("2117240020045", "AVINESHWARAN", "A", true));
+        list.add(new StudentInfo("2117240020045", "AVINESHWARAN", "A", false));
         list.add(new StudentInfo("2117240020046", "BALAJI", "M R", true));
         list.add(new StudentInfo("2117240020047", "BALAJI", "P", false));
         list.add(new StudentInfo("2117240020048", "BASKAR", "J", false));
