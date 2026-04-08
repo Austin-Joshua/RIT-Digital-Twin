@@ -104,10 +104,11 @@ public class DataInitializer implements CommandLineRunner {
                 // Parent Seed
                 seedUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
-                // 3. Forced Identity Reset (ADM/FAC/STUDENT)
+                // 3. Forced Identity Reset (ADM/FAC/STUDENT/PARENT)
                 forceResetUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
                 forceResetUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
                 forceResetUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
+                forceResetUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
 
                 // 4. Institutional Platform Activation
                 migrateLegacyRolesToAdmin();
@@ -166,6 +167,8 @@ public class DataInitializer implements CommandLineRunner {
                                 String firstName = "HOD";
                                 String lastName = code;
                                 seedUser(email, email, password, Role.UserRole.HOD, firstName, lastName);
+                                // Force-reset HOD password to guarantee login works after every deploy
+                                forceResetUser(email, email, password, Role.UserRole.HOD, firstName, lastName);
                                 departmentRepository.findByCode(code).ifPresent(dept ->
                                         userRepository.findByEmail(email).ifPresent(user -> {
                                                 if (user.getDepartment() == null) {
@@ -175,8 +178,10 @@ public class DataInitializer implements CommandLineRunner {
                                                 }
                                         }));
                         }
+
                         // Legacy single HOD (redirect to CSBS if still used)
                         seedUser("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+                        forceResetUser("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
                         departmentRepository.findByCode("CSBS").ifPresent(dept ->
                                 userRepository.findByEmail("hod@ritchennai.edu.in").ifPresent(user -> {
                                         if (user.getDepartment() == null) {

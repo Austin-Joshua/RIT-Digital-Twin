@@ -25,7 +25,7 @@ const LoginPage = () => {
         let timeoutId;
         const checkConnection = async () => {
             const controller = new AbortController();
-            timeoutId = setTimeout(() => controller.abort(), 4000);
+            timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const healthUrl = `${getBackendRootURL()}/actuator/health`;
@@ -76,7 +76,14 @@ const LoginPage = () => {
                 setError(result.message || 'Invalid username or password.');
             }
         } catch (_err) {
-            setError('Authentication service unavailable.');
+            const msg = _err?.message || '';
+            if (msg.includes('timeout') || msg.includes('ECONNABORTED')) {
+                setError('Server is waking up (cold start). Please wait 15-30 seconds and try again.');
+            } else if (msg.includes('Network Error')) {
+                setError('Cannot reach backend server. It may be starting up — please retry in a moment.');
+            } else {
+                setError('Authentication service unavailable. The server may be cold-starting.');
+            }
         } finally {
             setLoading(false);
         }
@@ -138,7 +145,7 @@ const LoginPage = () => {
                                 background: 'currentColor',
                                 animation: backendStatus === 'checking' ? 'pulse 1.5s infinite' : 'none'
                             }} />
-                            {backendStatus.toUpperCase()}
+                            {backendStatus === 'checking' ? 'WAKING UP...' : backendStatus.toUpperCase()}
                         </div>
                         <h2 style={{
                             fontSize: '1.6rem', fontWeight: '900',

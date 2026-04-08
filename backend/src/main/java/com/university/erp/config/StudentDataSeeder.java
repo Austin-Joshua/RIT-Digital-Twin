@@ -105,12 +105,16 @@ public class StudentDataSeeder implements CommandLineRunner {
         this.studentSubjectRepository = studentSubjectRepository;
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private StudentDataSeeder self; // Self-injection for proxy-aware @Transactional calls from async
+
     @Override
     public void run(String... args) {
         CompletableFuture.runAsync(() -> {
             log.info("Starting Async Bulk Student Data Integration (Zero-Trust Identity Seeding)...");
             try {
-                performSeeding();
+                self.performSeeding(); // Call through Spring proxy so @Transactional works
                 log.info("Student Data Integration Complete.");
             } catch (Exception e) {
                 log.error("StudentDataSeeder encountered an error in background thread: {}", e.getMessage());
