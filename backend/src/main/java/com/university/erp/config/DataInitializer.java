@@ -76,6 +76,16 @@ public class DataInitializer implements CommandLineRunner {
         @Transactional
         public void run(String... args) throws Exception {
                 try {
+                log.info("RIT Digital Twin: Starting Institutional Data Initialization...");
+                
+                // 0. Global Identity Unlock (Wipe Lockouts)
+                try {
+                    jdbcTemplate.execute("UPDATE users SET account_status = 'active', failed_login_attempts = 0 WHERE account_status = 'locked'");
+                    log.info("Institutional identities globally unlocked.");
+                } catch (Exception e) {
+                    log.warn("Global unlock skipped: {}", e.getMessage());
+                }
+
                 // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
