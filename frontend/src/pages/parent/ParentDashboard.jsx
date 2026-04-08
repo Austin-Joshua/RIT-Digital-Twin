@@ -196,7 +196,7 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/AuthContext';
-import { getAcademicStats, getInternalMarks } from '../../utils/MockDataGenerator';
+import { getAcademicStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
 
 const ParentDashboard = () => {
     const navigate = useNavigate();
@@ -301,8 +301,8 @@ const ParentDashboard = () => {
     const marks = realMarks.cat.length > 0 || realMarks.assignments.length > 0 ? realMarks : getInternalMarks(primary.user?.email || 'guest@ritchennai.edu.in');
 
     const kpis = [
-        { id: 'cgpa', label: 'Current CGPA', value: (primary.currentCgpa || stats.cgpa).toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
-        { id: 'attendance', label: 'Overall Attendance', value: `${(primary.attendance || stats.attendance).toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
+        { id: 'cgpa', label: 'Current CGPA', value: (primary?.currentCgpa || stats?.cgpa || 0).toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
+        { id: 'attendance', label: 'Overall Attendance', value: `${(primary?.attendance || stats?.attendance || 0).toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
         { id: 'fees', label: 'Academic Fees', value: '₹45,000 Due', color: 'red', icon: <FaRupeeSign />, link: '/parent/fees' },
         { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild />, link: '#' },
     ];
@@ -310,33 +310,6 @@ const ParentDashboard = () => {
     return (
         <div className="stu-dashboard">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
-
-            {/* Parent header with identity banner removed as per user request */}
-            {/* 
-            <div className="dashboard-welcome-banner" style={{ 
-                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-                color: 'white',
-                padding: '24px',
-                borderRadius: '16px',
-                marginBottom: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-            }}>
-                <div>
-                    <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-                        Welcome back, {parentUser?.firstName || 'Parent'}! 👋
-                    </h1>
-                    <p style={{ margin: '5px 0 0 0', opacity: 0.8, fontSize: '14px' }}>
-                        Guardian of: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber})
-                    </p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                   <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '4px' }}>Parental Monitoring Mode</span>
-                </div>
-            </div>
-            */}
 
             <div className="stu-welcome" style={{ marginBottom: 20, display: 'none' }}>
                 <h2 style={{ margin: 0 }}>Parent Guardian Overview</h2>
