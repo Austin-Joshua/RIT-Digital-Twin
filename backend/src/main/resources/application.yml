@@ -2,6 +2,9 @@
 app:
   sql.directory: ${APP_SQL_DIRECTORY:database}
   external-url: ${RENDER_EXTERNAL_URL:https://rit-backend-0zvm.onrender.com}
+  firebase:
+    credentials: ${APP_FIREBASE_CREDENTIALS:}
+    credentials-file: ${APP_FIREBASE_CREDENTIALS_FILE:}
   jwt:
     secret: ${APP_JWT_SECRET:${JWT_SECRET:RITDigitalTwinSuperSecretKeyForLocalDevelopmentOnly2024XYZ}}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:900000}

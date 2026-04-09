@@ -110,16 +110,15 @@ const InstitutionalLayout = () => {
         { path: '/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
         { path: '/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
         { path: '/simulations/transport', label: 'Route Flow Visualization', icon: <LuBus /> },
-        { path: '/transport', label: 'Transport Directory', icon: <LuBus /> },
         { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
         { path: '/simulations/sustainability', label: 'Sustainability', icon: <LuFlame /> },
         { path: '/predictions', label: 'Predictive Analysis', icon: <LuTrendingUp /> },
-        { path: '/analytics', label: 'Smart Algorithms', icon: <LuCpu /> },
+        { path: '/management/algorithms', label: 'Smart Algorithms', icon: <LuCpu /> },
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 
     const facultyNavItems = [
-        { path: '/', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/faculty', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
         { path: '/faculty/grading', label: 'Performance Grading', icon: <LuAward /> },
         { path: '/faculty/attendance', label: 'Attendance', icon: <LuCalendar /> },
@@ -128,7 +127,8 @@ const InstitutionalLayout = () => {
         { path: '/faculty/proctor', label: 'Proctor Wards', icon: <LuUsers /> },
         { path: '/faculty/clubs', label: 'Club Management', icon: <LuLayoutGrid /> },
         { path: '/faculty/research', label: 'Research Tracker', icon: <LuLightbulb /> },
-        { path: '/transport', label: 'Transport Directory', icon: <LuBus /> },
+        { path: '/faculty/upload-marks', label: 'Upload Marks', icon: <LuAward /> },
+        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: <LuShieldAlert /> },
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
     ];
 

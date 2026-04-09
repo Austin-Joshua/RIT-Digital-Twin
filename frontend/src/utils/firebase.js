@@ -14,21 +14,41 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const hasFirebaseConfig =
+    typeof firebaseConfig.apiKey === "string" &&
+    firebaseConfig.apiKey.trim().length > 0 &&
+    typeof firebaseConfig.authDomain === "string" &&
+    firebaseConfig.authDomain.trim().length > 0 &&
+    typeof firebaseConfig.projectId === "string" &&
+    firebaseConfig.projectId.trim().length > 0 &&
+    typeof firebaseConfig.appId === "string" &&
+    firebaseConfig.appId.trim().length > 0;
 
-// Initialize Analytics (optional)
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+let app = null;
+let analytics = null;
+let auth = null;
+let googleProvider = null;
 
-// Initialize Firebase Auth and Google Provider
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+if (hasFirebaseConfig) {
+    try {
+        app = initializeApp(firebaseConfig);
+        analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
+        auth = getAuth(app);
+        googleProvider = new GoogleAuthProvider();
+    } catch (error) {
+        console.warn("[Firebase] Initialization failed. Google login disabled.", error);
+    }
+} else {
+    console.info("[Firebase] Missing env config. Google login disabled.");
+}
 
-export { app, analytics };
+export { app, analytics, auth, googleProvider };
 
-// Optional: Force account selection
-googleProvider.setCustomParameters({
-    prompt: 'select_account'
-});
+// Optional: Force account selection when Google provider is active
+if (googleProvider) {
+    googleProvider.setCustomParameters({
+        prompt: "select_account",
+    });
+}
 
 export default app;

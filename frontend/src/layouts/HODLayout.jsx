@@ -1,6 +1,7 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { LuLayoutDashboard, LuUsers, LuKey, LuMenu, LuMonitor, LuMoon, LuSun, LuUser, LuSettings, LuLogOut } from 'react-icons/lu';
 import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
 import NotificationBar from '../components/NotificationBar';

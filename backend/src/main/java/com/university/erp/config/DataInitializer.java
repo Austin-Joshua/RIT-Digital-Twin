@@ -73,7 +73,6 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         @Override
-        @Transactional
         public void run(String... args) throws Exception {
                 try {
                 log.info("RIT Digital Twin: Starting Institutional Data Initialization...");
@@ -157,7 +156,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        /** One HOD per department: credentials per HOD_CREDENTIALS.md (hod_<code>@ritchennai.edu.in / hod<code>123) */
+        /** One HOD per department: default pattern (hod_<code>@ritchennai.edu.in / hod<code>123) */
         private void seedHodsForAllDepartments() {
                 try {
                         List<String> codes = List.of("CSE", "AIML", "CCE", "ECE", "MECH", "VLSI", "AIDS", "CSBS", "BT", "MEVLSI", "SANDH");

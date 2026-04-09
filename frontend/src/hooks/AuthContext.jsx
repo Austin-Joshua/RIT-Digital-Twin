@@ -64,8 +64,10 @@ export const AuthProvider = ({ children }) => {
         setRole(null);
         setIsAuthenticated(false);
         
-        // Also sign out from Firebase
-        signOut(auth).catch(err => console.warn('Firebase signout warning:', err));
+        // Also sign out from Firebase if available
+        if (auth) {
+            signOut(auth).catch(err => console.warn('Firebase signout warning:', err));
+        }
     };
 
     const login = async (username, password) => {
@@ -123,6 +125,12 @@ export const AuthProvider = ({ children }) => {
 
     const googleLogin = async () => {
         clearSession();
+        if (!auth || !googleProvider) {
+            return {
+                success: false,
+                message: 'Google login is not configured for this environment.'
+            };
+        }
         try {
             // Trigger Firebase Google Sign-In Popup
             const result = await signInWithPopup(auth, googleProvider);
@@ -158,8 +166,20 @@ export const AuthProvider = ({ children }) => {
             
             if (error.code === 'auth/popup-closed-by-user') {
                 errorMessage = 'Login popup was closed before completion.';
+            } else if (error.code === 'auth/unauthorized-domain') {
+                errorMessage = 'This domain is not authorized in Firebase Auth. Add localhost in Firebase -> Authentication -> Settings -> Authorized domains.';
+            } else if (error.code === 'auth/operation-not-allowed') {
+                errorMessage = 'Google sign-in is disabled in Firebase. Enable Google provider in Firebase -> Authentication -> Sign-in method.';
+            } else if (error.code === 'auth/popup-blocked') {
+                errorMessage = 'Popup was blocked by the browser. Allow popups for this site and try again.';
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                errorMessage = 'Another sign-in popup was already open. Close popups and try again.';
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMessage = 'Network issue while contacting Firebase. Check internet connection and try again.';
             } else if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = `Google authentication failed: ${error.message}`;
             }
             
             clearSession();

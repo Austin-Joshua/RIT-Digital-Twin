@@ -12,6 +12,14 @@ const Sidebar = ({
     navItems = [] 
 }) => {
     const { isDarkMode } = useContext(ThemeContext);
+    const normalizedRole = String(user?.role || '').replace('ROLE_', '').toUpperCase();
+    const homePath = normalizedRole === 'STUDENT'
+        ? '/student'
+        : normalizedRole === 'PARENT'
+            ? '/parent'
+            : normalizedRole === 'HOD'
+                ? '/hod'
+                : '/';
 
     // Filter out dropdown sub-items for search
     const searchItems = navItems.filter(item => !item.subItems).concat(
@@ -22,7 +30,7 @@ const Sidebar = ({
         <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
             {/* Sidebar Header with Logo */}
             <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
+                <Link to={homePath} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
                     {sidebarOpen ? (
                         /* Wide logo when sidebar open */
                         <img

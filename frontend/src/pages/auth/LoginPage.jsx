@@ -6,10 +6,8 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ThemeContext } from '../../hooks/ThemeContext';
-import api, { getBackendRootURL, getAPIBaseURL } from '../../services/api';
+import { getBackendRootURL } from '../../services/api';
 import { FaGoogle } from 'react-icons/fa';
-
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // Temporary placeholder
 
 const LoginPage = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -62,10 +60,6 @@ const LoginPage = () => {
         try {
             const result = await login(credentials.username.trim(), (credentials.password || '').trim());
             if (result.success) {
-                if (result.mustChangePassword) {
-                    navigate('/change-password', { replace: true });
-                    return;
-                }
                 const normalizedRole = (result.role || '').replace('ROLE_', '').replace(/_/g, '').toUpperCase();
 
                 if (normalizedRole === 'STUDENT') navigate('/student', { replace: true });

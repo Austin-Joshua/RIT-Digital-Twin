@@ -5,7 +5,6 @@ import { ThemeProvider } from './hooks/ThemeContext';
 import { ToastProvider } from './hooks/ToastContext';
 import { WebSocketProvider } from './hooks/WebSocketContext';
 import Skeleton from './components/common/Skeleton';
-import BroadcastListener from './components/BroadcastListener';
 
 /* Layouts */
 import InstitutionalLayout from './layouts/InstitutionalLayout';
@@ -19,7 +18,7 @@ const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
 /* Lazy Loaded Admin Pages */
-const Dashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const Dashboard = lazy(() => import('./pages/admin/DashboardWrapper'));
 const ClassroomPage = lazy(() => import('./pages/enterprise/ClassroomPage'));
 const EnergyPage = lazy(() => import('./pages/enterprise/EnergyPage'));
 const TransportDirectory = lazy(() => import('./pages/enterprise/TransportDirectory'));
@@ -136,6 +135,29 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   return children;
 };
 
+const RouteRoleGuard = ({ children, allowedRoles }) => {
+  const { user } = useAuth();
+  const userRole = user?.role?.replace('ROLE_', '').toUpperCase();
+
+  if (!userRole || !allowedRoles?.includes(userRole)) {
+    if (userRole === 'FACULTY') return <Navigate to="/faculty/academics" replace />;
+    if (userRole === 'ADMIN') return <Navigate to="/" replace />;
+    if (userRole === 'HOD') return <Navigate to="/hod" replace />;
+    if (userRole === 'STUDENT') return <Navigate to="/student" replace />;
+    if (userRole === 'PARENT') return <Navigate to="/parent" replace />;
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+const InstitutionalIndexRoute = () => {
+  const { user } = useAuth();
+  const userRole = user?.role?.replace('ROLE_', '').toUpperCase();
+  if (userRole === 'FACULTY') return <Navigate to="/faculty" replace />;
+  return <Dashboard />;
+};
+
 const App = () => {
   return (
     <ThemeProvider>
@@ -190,6 +212,7 @@ const App = () => {
                     <ProtectedRoute requiredRole="PARENT"><ParentLayout /></ProtectedRoute>
                   }>
                     <Route index element={<ParentDashboard />} />
+                    <Route path="profile" element={<ProfilePage />} />
                     <Route path="grades" element={<GradeBook />} />
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="fees" element={<AcademicFee />} />
@@ -212,50 +235,51 @@ const App = () => {
                   <Route path="/" element={
                     <ProtectedRoute><InstitutionalLayout /></ProtectedRoute>
                   }>
-                    <Route index element={<Dashboard />} />
-                    <Route path="simulations/classroom" element={<ClassroomPage />} />
-                    <Route path="simulations/energy" element={<EnergyPage />} />
-                    <Route path="simulations/transport" element={<TransportSimulation />} />
-                    <Route path="transport" element={<TransportDirectory />} />
-                    <Route path="simulations/crowd" element={<CrowdPage />} />
-                    <Route path="simulations/sustainability" element={<SustainabilityDashboard />} />
-                    <Route path="predictions" element={<PredictionPage />} />
+                    <Route index element={<InstitutionalIndexRoute />} />
+                    <Route path="simulations/classroom" element={<RouteRoleGuard allowedRoles={['ADMIN']}><ClassroomPage /></RouteRoleGuard>} />
+                    <Route path="simulations/energy" element={<RouteRoleGuard allowedRoles={['ADMIN']}><EnergyPage /></RouteRoleGuard>} />
+                    <Route path="simulations/transport" element={<RouteRoleGuard allowedRoles={['ADMIN']}><TransportSimulation /></RouteRoleGuard>} />
+                    <Route path="transport" element={<RouteRoleGuard allowedRoles={['ADMIN']}><TransportDirectory /></RouteRoleGuard>} />
+                    <Route path="simulations/crowd" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CrowdPage /></RouteRoleGuard>} />
+                    <Route path="simulations/sustainability" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SustainabilityDashboard /></RouteRoleGuard>} />
+                    <Route path="predictions" element={<RouteRoleGuard allowedRoles={['ADMIN']}><PredictionPage /></RouteRoleGuard>} />
                     <Route path="change-password" element={<ChangePassword />} />
-                    <Route path="map" element={<CampusMap />} />
+                    <Route path="map" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CampusMap /></RouteRoleGuard>} />
 
                     {/* Enterprise ERP Additions (Admin/Faculty) */}
-                    <Route path="analytics" element={<InstitutionalAnalyticsDashboard />} />
-                    <Route path="analytics/placement" element={<PlacementAnalyticsView />} />
-                    <Route path="management/audit" element={<AuditLogViewer />} />
-                    <Route path="management/exam-timetable" element={<ExamTimetableGeneratorUI />} />
-                    <Route path="management/certificates" element={<CertificateApprovalQueue />} />
-                    <Route path="management/substitutions" element={<SubstitutionOverridePanel />} />
-                    <Route path="management/results" element={<AutomatedResultPublishing />} />
-                    <Route path="management/safety" element={<EmergencyDashboard />} />
-                    <Route path="management/assets" element={<MaintenanceModule />} />
-                    <Route path="management/users" element={<UserManagement />} />
-                    <Route path="management/algorithms" element={<SmartAlgorithms />} />
+                    <Route path="analytics" element={<RouteRoleGuard allowedRoles={['ADMIN']}><InstitutionalAnalyticsDashboard /></RouteRoleGuard>} />
+                    <Route path="analytics/placement" element={<RouteRoleGuard allowedRoles={['ADMIN']}><PlacementAnalyticsView /></RouteRoleGuard>} />
+                    <Route path="management/audit" element={<RouteRoleGuard allowedRoles={['ADMIN']}><AuditLogViewer /></RouteRoleGuard>} />
+                    <Route path="management/exam-timetable" element={<RouteRoleGuard allowedRoles={['ADMIN']}><ExamTimetableGeneratorUI /></RouteRoleGuard>} />
+                    <Route path="management/certificates" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CertificateApprovalQueue /></RouteRoleGuard>} />
+                    <Route path="management/substitutions" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SubstitutionOverridePanel /></RouteRoleGuard>} />
+                    <Route path="management/results" element={<RouteRoleGuard allowedRoles={['ADMIN']}><AutomatedResultPublishing /></RouteRoleGuard>} />
+                    <Route path="management/safety" element={<RouteRoleGuard allowedRoles={['ADMIN']}><EmergencyDashboard /></RouteRoleGuard>} />
+                    <Route path="management/assets" element={<RouteRoleGuard allowedRoles={['ADMIN']}><MaintenanceModule /></RouteRoleGuard>} />
+                    <Route path="management/users" element={<RouteRoleGuard allowedRoles={['ADMIN']}><UserManagement /></RouteRoleGuard>} />
+                    <Route path="management/algorithms" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SmartAlgorithms /></RouteRoleGuard>} />
 
-                    <Route path="management/hr-recruitment" element={<RecruitmentHR />} />
-                    <Route path="management/inventory" element={<InventoryAssets />} />
-                    <Route path="management/alumni" element={<AlumniPortal />} />
-                    <Route path="management/clubs" element={<ClubsPage />} />
+                    <Route path="management/hr-recruitment" element={<RouteRoleGuard allowedRoles={['ADMIN']}><RecruitmentHR /></RouteRoleGuard>} />
+                    <Route path="management/inventory" element={<RouteRoleGuard allowedRoles={['ADMIN']}><InventoryAssets /></RouteRoleGuard>} />
+                    <Route path="management/alumni" element={<RouteRoleGuard allowedRoles={['ADMIN']}><AlumniPortal /></RouteRoleGuard>} />
+                    <Route path="management/clubs" element={<RouteRoleGuard allowedRoles={['ADMIN']}><ClubsPage /></RouteRoleGuard>} />
 
                     <Route path="change-password" element={<ChangePassword />} />
 
-                    {/* Specific Faculty Routes (Currently under general layout constraint) */}
-                    <Route path="faculty/risk-heatmap" element={<ClassRiskHeatmap />} />
-                    <Route path="faculty/upload-marks" element={<UploadMarks />} />
-                    <Route path="faculty/academics" element={<FacultyAcademics />} />
-                    <Route path="faculty/leaves" element={<FacultyLeaves />} />
-                    <Route path="faculty/attendance" element={<FacultyAttendance />} />
-                    <Route path="faculty/analytics" element={<FacultyAnalytics />} />
+                    {/* Faculty-only routes */}
+                    <Route path="faculty" element={<RouteRoleGuard allowedRoles={['FACULTY']}><Dashboard /></RouteRoleGuard>} />
+                    <Route path="faculty/risk-heatmap" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ClassRiskHeatmap /></RouteRoleGuard>} />
+                    <Route path="faculty/upload-marks" element={<RouteRoleGuard allowedRoles={['FACULTY']}><UploadMarks /></RouteRoleGuard>} />
+                    <Route path="faculty/academics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAcademics /></RouteRoleGuard>} />
+                    <Route path="faculty/leaves" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyLeaves /></RouteRoleGuard>} />
+                    <Route path="faculty/attendance" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAttendance /></RouteRoleGuard>} />
+                    <Route path="faculty/analytics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAnalytics /></RouteRoleGuard>} />
 
-                    <Route path="faculty/assignments" element={<AssignmentGrading />} />
-                    <Route path="faculty/grading" element={<FacultyGrading />} />
-                    <Route path="faculty/proctor" element={<ProctorDashboard />} />
-                    <Route path="faculty/research" element={<ResearchTracker />} />
-                    <Route path="faculty/clubs" element={<ClubsPage />} />
+                    <Route path="faculty/assignments" element={<RouteRoleGuard allowedRoles={['FACULTY']}><AssignmentGrading /></RouteRoleGuard>} />
+                    <Route path="faculty/grading" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyGrading /></RouteRoleGuard>} />
+                    <Route path="faculty/proctor" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ProctorDashboard /></RouteRoleGuard>} />
+                    <Route path="faculty/research" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ResearchTracker /></RouteRoleGuard>} />
+                    <Route path="faculty/clubs" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ClubsPage /></RouteRoleGuard>} />
 
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />

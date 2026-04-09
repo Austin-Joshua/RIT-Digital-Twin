@@ -68,9 +68,9 @@ public class SecurityConfig {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
         hierarchy.setHierarchy(
                 "ROLE_ADMIN > ROLE_HOD\n" +
-                        "ROLE_HOD > ROLE_FACULTY\n" +
-                        "ROLE_FACULTY > ROLE_STUDENT\n" +
-                        "ROLE_STUDENT > ROLE_PARENT");
+                        "ROLE_ADMIN > ROLE_FACULTY\n" +
+                        "ROLE_ADMIN > ROLE_STUDENT\n" +
+                        "ROLE_ADMIN > ROLE_PARENT");
         return hierarchy;
     }
 
@@ -124,6 +124,17 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/assets/**", "/api/alumni/**").hasRole("ADMIN")
+                        .requestMatchers("/api/hod/**").hasAnyRole("HOD", "ADMIN")
+                        .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "ADMIN")
+                        .requestMatchers("/api/parent/**").hasAnyRole("PARENT", "ADMIN")
+                        .requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/api/placement/apply").hasAnyRole("STUDENT", "ADMIN")
+                        .requestMatchers("/api/placement/**").hasRole("ADMIN")
+                        .requestMatchers("/api/academic/student/**", "/api/academics/student/**").hasAnyRole("STUDENT", "ADMIN")
+                        .requestMatchers("/api/academic/faculty/**", "/api/academics/faculty/**").hasAnyRole("FACULTY", "ADMIN")
                         .anyRequest().authenticated());
 
         http.addFilterBefore(xssSanitizationFilter, UsernamePasswordAuthenticationFilter.class);
