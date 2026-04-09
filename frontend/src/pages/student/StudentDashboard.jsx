@@ -329,7 +329,6 @@ const StudentDashboard = () => {
             </div>
 
             <MiniCalendar />
-            <ChatbotWidget studentId={user?.studentId || 1} />
         </div>
     );
 };

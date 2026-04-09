@@ -8,12 +8,18 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const getInitialAuthState = () => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
+        try {
+            const storedToken = localStorage.getItem('token');
+            const storedUser = localStorage.getItem('user');
 
-        if (storedToken && storedUser) {
-            try {
-                const payload = JSON.parse(atob(storedToken.split('.')[1] || ''));
+            if (storedToken && storedUser) {
+                const parts = storedToken.split('.');
+                if (parts.length !== 3) {
+                    console.warn('[Auth] Malformed token detected');
+                    return { user: null, token: null, role: null, isAuthenticated: false, loading: false };
+                }
+
+                const payload = JSON.parse(atob(parts[1] || ''));
                 if (payload.exp && payload.exp * 1000 > Date.now()) {
                     const parsedUser = JSON.parse(storedUser);
                     return {
@@ -23,10 +29,12 @@ export const AuthProvider = ({ children }) => {
                         isAuthenticated: true,
                         loading: false
                     };
+                } else {
+                    console.info('[Auth] Session expired');
                 }
-            } catch (err) {
-                console.warn('Silent local auth failure', err);
             }
+        } catch (err) {
+            console.error('[Auth] Initialization error:', err);
         }
         return { user: null, token: null, role: null, isAuthenticated: false, loading: false };
     };
