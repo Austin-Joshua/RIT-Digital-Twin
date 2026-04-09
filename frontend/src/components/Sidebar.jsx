@@ -1,236 +1,107 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthContext';
-import {
-    FaHome, FaChalkboardTeacher, FaBolt, FaBus,
-    FaUsers, FaLeaf, FaChartLine, FaCog, FaSignOutAlt,
-    FaUniversity, FaShieldAlt, FaTools, FaMapMarkedAlt, FaBoxes
-} from 'react-icons/fa';
+import React, { useContext } from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import { ThemeContext } from '../hooks/ThemeContext';
+import { LuChevronDown, LuChevronRight } from 'react-icons/lu';
+import GlobalSearch from './common/GlobalSearch';
 
-const Sidebar = () => {
-    const { logout, user } = useAuth();
+const Sidebar = ({ 
+    sidebarOpen, 
+    setSidebarOpen, 
+    user, 
+    isDesktop, 
+    navItems = [] 
+}) => {
+    const { isDarkMode } = useContext(ThemeContext);
 
-    // Role-based menu items
-    const getMenuItems = () => {
-        const baseItems = [
-            { path: '/dashboard', name: 'Dashboard', icon: <FaHome /> },
-            { path: '/map', name: 'Campus IoT Map', icon: <FaMapMarkedAlt /> },
-        ];
-
-        const adminItems = [
-            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
-            { path: '/energy', name: 'Energy Optimization', icon: <FaBolt /> },
-            { path: '/transport', name: 'Transport Manager', icon: <FaBus /> },
-            { path: '/management/algorithms', name: 'Smart Algorithms', icon: <FaTools /> },
-            { path: '/crowd', name: 'Crowd Simulation', icon: <FaUsers /> },
-            { path: '/sustainability', name: 'Sustainability', icon: <FaLeaf /> },
-            { path: '/analytics', name: 'Predictive Analytics', icon: <FaChartLine /> },
-            { path: '/management/safety', name: 'Safety Simulation', icon: <FaShieldAlt /> },
-            { path: '/management/assets', name: 'Asset Monitoring', icon: <FaTools /> },
-            { path: '/settings', name: 'Settings', icon: <FaCog /> },
-            { path: '/change-password', name: 'Change Password', icon: <FaCog /> },
-        ];
-
-        const facultyItems = [
-            { path: '/classrooms', name: 'Smart Classroom', icon: <FaChalkboardTeacher /> },
-            { path: '/crowd', name: 'Crowd Monitor', icon: <FaUsers /> },
-            { path: '/faculty/upload-marks', name: 'Upload Marks', icon: <FaChartLine /> },
-        ];
-
-        const parentItems = [
-            { path: '/parent', name: 'Ward Progress', icon: <FaHome /> },
-        ];
-
-
-        const role = user?.role || 'FACULTY';
-
-        switch (role) {
-
-            case 'PARENT':
-                return [...baseItems, ...parentItems];
-            case 'ADMIN':
-                return [...baseItems, ...adminItems];
-            case 'FACULTY':
-            default:
-                return [...baseItems, ...facultyItems];
-        }
-    };
-
-    const menuItems = getMenuItems();
+    // Filter out dropdown sub-items for search
+    const searchItems = navItems.filter(item => !item.subItems).concat(
+        navItems.filter(item => item.subItems).flatMap(item => item.subItems)
+    );
 
     return (
-        <aside className="sidebar" style={{
-            width: '260px',
-            height: '100vh',
-            background: '#ffffff',
-            borderRight: '1px solid #e2e8f0',
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            zIndex: 1000,
-            boxShadow: '2px 0 10px rgba(0,0,0,0.05)'
-        }}>
-            {/* Header */}
-            <div className="sidebar-header" style={{
-                padding: '20px 24px',
-                background: '#1a365d',
-                borderBottom: '3px solid #d4af37'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                        width: '44px',
-                        height: '44px',
-                        background: '#ffffff',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        padding: '4px'
-                    }}>
-                        <img src="/assets/images/rit-icon.png" alt="RIT" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                    </div>
-                    <div>
-                        <div style={{
-                            fontWeight: '800',
-                            fontSize: '1.1rem',
-                            color: '#ffffff',
-                            letterSpacing: '0.5px',
-                            lineHeight: '1.2'
-                        }}>
-                            Digital Twin
-                        </div>
-                        <div style={{
-                            fontSize: '0.65rem',
-                            color: '#d4af37',
-                            textTransform: 'uppercase',
-                            letterSpacing: '1px',
-                            fontWeight: '600',
-                            marginTop: '2px'
-                        }}>
-                            Smart Campus Platform
-                        </div>
-                    </div>
-                </div>
+        <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
+            {/* Sidebar Header with Logo */}
+            <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
+                <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
+                    {sidebarOpen ? (
+                        /* Wide logo when sidebar open */
+                        <img
+                            src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                            alt="RIT"
+                            style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
+                        />
+                    ) : (
+                        /* Small round icon when sidebar collapsed */
+                        <img
+                            src="/assets/images/RIT_LOGO.webp"
+                            alt="RIT"
+                            style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '6px' }}
+                        />
+                    )}
+                </Link>
+            </div>
+
+            {/* Sidebar Search */}
+            <div className="stu-sidebar-search">
+                <GlobalSearch
+                    navItems={searchItems}
+                    placeholder="Search"
+                />
             </div>
 
             {/* Navigation */}
-            <nav className="sidebar-nav" style={{
-                flex: 1,
-                padding: '16px 0',
-                overflowY: 'auto'
-            }}>
-                <div style={{
-                    padding: '8px 24px',
-                    fontSize: '0.7rem',
-                    color: '#94a3b8',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.5px',
-                    fontWeight: '700',
-                    marginBottom: '8px'
-                }}>
-                    Main Navigation
-                </div>
-
-                {menuItems.map((item) => (
-                    <NavLink
-                        to={item.path}
-                        key={item.name}
-                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                        style={({ isActive }) => ({
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '14px',
-                            padding: '14px 24px',
-                            color: isActive ? '#1a365d' : '#64748b',
-                            textDecoration: 'none',
-                            fontSize: '0.95rem',
-                            fontWeight: isActive ? '600' : '500',
-                            borderLeft: isActive ? '4px solid #d4af37' : '4px solid transparent',
-                            background: isActive ? 'linear-gradient(90deg, rgba(212,175,55,0.1) 0%, transparent 100%)' : 'transparent',
-                            transition: 'all 0.2s ease',
-                            position: 'relative'
-                        })}
-                    >
-                        <span className="sidebar-icon" style={{
-                            fontSize: '1.2rem',
-                            minWidth: '24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            {item.icon}
-                        </span>
-                        <span>{item.name}</span>
-                        {item.path === '/crowd' && (
-                            <span style={{
-                                marginLeft: 'auto',
-                                background: '#ef4444',
-                                color: '#fff',
-                                fontSize: '0.65rem',
-                                padding: '2px 8px',
-                                borderRadius: '10px',
-                                fontWeight: '700'
-                            }}>
-                                LIVE
-                            </span>
+            <nav className="stu-nav">
+                {navItems.map((item, idx) => (
+                    <div key={idx}>
+                        {item.subItems || item.isDropdown ? (
+                            <>
+                                <div
+                                    className={`stu-nav-item ${(item.isOpen || item.active) ? 'active' : ''}`}
+                                    onClick={item.onToggle}
+                                    style={{ cursor: 'pointer', justifyContent: 'space-between' }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span className="nav-icon">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </div>
+                                    <span className="nav-chevron">
+                                        {(item.isOpen || item.active) ? <LuChevronDown fontSize="14px" /> : <LuChevronRight fontSize="14px" />}
+                                    </span>
+                                </div>
+                                {(item.isOpen || item.active) && (
+                                    <div className="stu-submenu">
+                                        {item.subItems.map((sub) => (
+                                            <NavLink
+                                                key={sub.path}
+                                                to={sub.path}
+                                                className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    if (!isDesktop) setSidebarOpen(false);
+                                                }}
+                                            >
+                                                <span className="nav-icon">{sub.icon}</span>
+                                                <span>{sub.label}</span>
+                                            </NavLink>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <NavLink
+                                to={item.path}
+                                end={item.end || item.exact || false}
+                                className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
+                                onClick={() => {
+                                    if (!isDesktop) setSidebarOpen(false);
+                                }}
+                            >
+                                <span className="nav-icon">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </NavLink>
                         )}
-                    </NavLink>
+                    </div>
                 ))}
             </nav>
-
-            {/* Footer */}
-            <div className="sidebar-footer" style={{
-                padding: '16px 24px',
-                borderTop: '1px solid #e2e8f0',
-                background: '#f8fafc'
-            }}>
-                <div
-                    className="sidebar-link logout-link app-logout"
-                    onClick={logout}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '12px 16px',
-                        cursor: 'pointer',
-                        color: '#ef4444',
-                        borderRadius: '6px',
-                        borderTop: '1px solid var(--theme-border, #e2e8f0)',
-                        transition: 'all 0.2s ease',
-                        fontWeight: '800',
-                        fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#fee2e2';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                    }}
-                >
-                    <FaSignOutAlt size={18} style={{ color: 'inherit', flexShrink: 0 }} />
-                    <span>Logout</span>
-                </div>
-
-                <div style={{
-                    marginTop: '16px',
-                    paddingTop: '16px',
-                    borderTop: '1px solid #e2e8f0',
-                    fontSize: '0.7rem',
-                    color: '#94a3b8',
-                    textAlign: 'center',
-                    lineHeight: '1.5'
-                }}>
-                    <div style={{ fontWeight: '600', color: '#64748b' }}>
-                        Version 1.0.0
-                    </div>
-                    <div style={{ marginTop: '4px' }}>
-                        Empowering Data-Driven<br />Institutional Governance
-                    </div>
-                </div>
-            </div>
         </aside>
     );
 };

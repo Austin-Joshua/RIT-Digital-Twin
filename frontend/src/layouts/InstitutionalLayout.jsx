@@ -7,18 +7,25 @@ import { useToast } from '../hooks/ToastContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/layout/Header';
 import SystemBroadcastBar from '../components/layout/SystemBroadcastBar';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import {
     LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuShieldAlert,
     LuLayoutGrid, LuFlame
 } from 'react-icons/lu';
-import './student-layout.css';
+import Skeleton from '../components/common/Skeleton';
 
 const LayoutLoader = () => (
-    <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '40px', height: '40px', border: '4px solid rgba(11, 44, 107, 0.2)', borderTopColor: '#0B2C6B', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <Skeleton height="40px" width="300px" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+            <Skeleton height="120px" />
+            <Skeleton height="120px" />
+            <Skeleton height="120px" />
+            <Skeleton height="120px" />
+        </div>
+        <Skeleton height="400px" />
     </div>
 );
 
@@ -136,6 +143,7 @@ const InstitutionalLayout = () => {
                 setSidebarOpen={handleSetSidebarOpen}
                 user={user}
                 isDesktop={isDesktop}
+                navItems={navItems}
             />
 
             {/* Mobile Sidebar Backdrop */}
@@ -184,6 +192,9 @@ const InstitutionalLayout = () => {
                         <Outlet />
                     </Suspense>
                 </main>
+
+                {/* AI Assistant Integration */}
+                <ChatbotWidget />
             </div>
         </div>
     );

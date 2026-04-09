@@ -8,9 +8,10 @@ import {
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
     LuFileCheck, LuMail, LuKey, LuLogOut,
     LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
-    LuSun, LuMoon, LuMonitor, LuLayoutGrid
+    LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
+import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
@@ -97,91 +98,13 @@ const StudentLayout = () => {
     return (
         <div className="stu-layout">
             {/* ── Sidebar ── */}
-            <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
-                        {sidebarOpen ? (
-                            /* Wide logo when sidebar open */
-                            <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT Rajalakshmi Institute of Technology"
-                                style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
-                            />
-                        ) : (
-                            /* Small round icon when sidebar collapsed */
-                            <img
-                                src="/assets/images/RIT_LOGO.webp"
-                                alt="RIT"
-                                style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '6px' }}
-                            />
-                        )}
-                    </Link>
-                </div>
-
-                <div className="stu-sidebar-search">
-                    <GlobalSearch
-                        navItems={navItems.filter(item => !item.isDropdown).concat(
-                            navItems.filter(item => item.isDropdown).flatMap(item => item.subItems)
-                        )}
-                        placeholder="Search"
-                    />
-                </div>
-
-                {/* Nav */}
-                <nav className="stu-nav">
-                    {navItems.map((item, idx) => (
-                        <div key={idx}>
-                            {item.isDropdown ? (
-                                <>
-                                    <div
-                                        className={`stu-nav-item ${item.isOpen ? 'active' : ''}`}
-                                        onClick={item.onToggle}
-                                        style={{ cursor: 'pointer', justifyContent: 'space-between' }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span className="nav-icon">{item.icon}</span>
-                                            <span>{item.label}</span>
-                                        </div>
-                                        <span className="nav-chevron">
-                                            {item.isOpen ? <LuChevronDown fontSize="14px" /> : <LuChevronRight fontSize="14px" />}
-                                        </span>
-                                    </div>
-                                    {item.isOpen && (
-                                        <div className="stu-submenu">
-                                            {item.subItems.map((sub) => (
-                                                <NavLink
-                                                    key={sub.path}
-                                                    to={sub.path}
-                                                    className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
-                                                    onClick={() => {
-                                                        if (!isDesktop) setSidebarOpen(false);
-                                                    }}
-                                                >
-                                                    <span className="nav-icon">{sub.icon}</span>
-                                                    <span>{sub.label}</span>
-                                                </NavLink>
-                                            ))}
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <NavLink
-                                    to={item.path}
-                                    end={item.end || false}
-                                    className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                                    onClick={() => {
-                                        if (!isDesktop) setSidebarOpen(false);
-                                    }}
-                                >
-                                    <span className="nav-icon">{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </NavLink>
-                            )}
-                        </div>
-                    ))}
-                </nav>
-
-            </aside>
+            <Sidebar 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                user={user}
+                isDesktop={isDesktop}
+                navItems={navItems}
+            />
 
             {/* Mobile Sidebar Backdrop */}
             {sidebarOpen && !isDesktop && (

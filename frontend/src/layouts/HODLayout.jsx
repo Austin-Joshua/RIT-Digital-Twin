@@ -4,13 +4,22 @@ import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
-import { LuUser, LuMenu, LuLayoutDashboard, LuKey, LuSettings, LuLogOut, LuSun, LuMoon, LuMonitor, LuUsers } from 'react-icons/lu';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import './student-layout.css';
+import Sidebar from '../components/Sidebar';
+
+import Skeleton from '../components/common/Skeleton';
 
 const LayoutLoader = () => (
-  <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
-    <div style={{ width: '40px', height: '40px', border: '4px solid rgba(11, 44, 107, 0.2)', borderTopColor: '#0B2C6B', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-    <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <Skeleton height="40px" width="300px" />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+      <Skeleton height="120px" />
+    </div>
+    <Skeleton height="400px" />
   </div>
 );
 
@@ -60,37 +69,13 @@ const HODLayout = () => {
 
   return (
     <div className="stu-layout">
-      <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
-          <Link to="/hod" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
-            {sidebarOpen ? (
-              <img
-                src={isDarkMode ? '/assets/images/institutional-light-logo.png' : '/assets/images/institutional-dark-logo.png'}
-                alt="RIT"
-                style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
-              />
-            ) : (
-              <img src="/assets/images/RIT_LOGO.webp" alt="RIT" style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '6px' }} />
-            )}
-          </Link>
-        </div>
-
-        <nav className="stu-nav">
-          {hodNavItems.map((item, idx) => (
-            <div key={idx}>
-              <NavLink
-                to={item.path}
-                end={item.exact || false}
-                className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                onClick={() => { if (!isDesktop) setSidebarOpen(false); }}
-              >
-                <span className="nav-icon" style={{ fontSize: '18px' }}>{item.icon}</span>
-                <span>{item.label}</span>
-              </NavLink>
-            </div>
-          ))}
-        </nav>
-      </aside>
+      <Sidebar 
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          user={user}
+          isDesktop={isDesktop}
+          navItems={hodNavItems}
+      />
 
       <AnimatePresence>
         {sidebarOpen && !isDesktop && (
@@ -185,6 +170,9 @@ const HODLayout = () => {
             <Outlet />
           </Suspense>
         </div>
+
+        {/* AI Assistant Integration */}
+        <ChatbotWidget />
       </div>
     </div>
   );

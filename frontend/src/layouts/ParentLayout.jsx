@@ -7,6 +7,7 @@ import {
     LuBanknote, LuKey, LuLogOut, LuMenu, LuUser, LuSun, LuMoon, LuMonitor, LuUsers
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
+import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
@@ -60,47 +61,13 @@ const ParentLayout = () => {
 
     return (
         <div className="stu-layout">
-            <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
-                <div className="stu-sidebar-header" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', overflow: 'hidden', height: '50px', background: 'var(--ims-topbar-bg)' }}>
-                    <Link to="/parent" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 0 }}>
-                        {sidebarOpen ? (
-                            <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT"
-                                style={{ height: '50px', width: 'auto', objectFit: 'contain', maxWidth: '200px' }}
-                            />
-                        ) : (
-                            <img
-                                src="/assets/images/RIT_LOGO.webp"
-                                alt="RIT"
-                                style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '6px' }}
-                            />
-                        )}
-                    </Link>
-                </div>
-
-                <div className="stu-sidebar-search">
-                    <GlobalSearch navItems={parentNav} placeholder="Search" />
-                </div>
-
-                <nav className="stu-nav">
-                    {parentNav.map((item, idx) => (
-                        <div key={idx}>
-                            <NavLink
-                                to={item.path}
-                                end={item.end || false}
-                                className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (!isDesktop) setSidebarOpen(false);
-                                }}
-                            >
-                                <span className="nav-icon">{item.icon}</span>
-                                <span>{item.label}</span>
-                            </NavLink>
-                        </div>
-                    ))}
-                </nav>
-            </aside>
+            <Sidebar 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                user={user}
+                isDesktop={isDesktop}
+                navItems={parentNav}
+            />
 
             {sidebarOpen && !isDesktop && (
                 <div
