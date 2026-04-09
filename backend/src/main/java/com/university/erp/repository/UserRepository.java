@@ -23,4 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     java.util.Optional<User> findByLinkedStudent_Id(Long studentId);
     Optional<User> findByLinkedStudent_RegisterNo(String registerNo);
     Optional<User> findByLinkedStudent_StudentIdNumber(String studentIdNumber);
+    List<User> findAllByLinkedStudent_RegisterNoEndingWith(String suffix);
 }

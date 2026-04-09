@@ -21,7 +21,11 @@ import com.university.erp.dto.GoogleAuthRequest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import org.springframework.beans.factory.annotation.Value;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -73,9 +77,7 @@ public class AuthService {
         boolean isRegisterNo = username.matches("^\\d{12,14}$")
                 || (username.startsWith("2117") && username.length() >= 12);
 
-        Optional<User> existingUser = userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))
-                .or(() -> userRepository.findByLinkedStudent_RegisterNo(username));
+        Optional<User> existingUser = resolveUserByAnyIdentity(username);
 
         if (existingUser.isEmpty() && isRegisterNo) {
             log.info("RESCUE: Auto-registering student for register number: {}", username);
@@ -109,9 +111,7 @@ public class AuthService {
 
         // ─── Phase 2: Universal Institutional Rescue ───
         // Handles ALL default credential patterns including HOD (where password != username)
-        Optional<User> rescueUser = userRepository.findByUsername(username)
-                .or(() -> userRepository.findByEmail(username))
-                .or(() -> userRepository.findByLinkedStudent_RegisterNo(username));
+        Optional<User> rescueUser = resolveUserByAnyIdentity(username);
 
         // Deep search: student table directly
         if (rescueUser.isEmpty() && isRegisterNo) {
@@ -318,22 +318,8 @@ public class AuthService {
             
             // Link by registration number if email find fails
             if (userOpt.isEmpty()) {
-                String prefix = email.split("@")[0];
-                String registerNo = null;
-                if (prefix.matches("^\\d+$")) {
-                    registerNo = prefix;
-                } else if (prefix.contains(".")) {
-                    String[] parts = prefix.split("\\.");
-                    String lastPart = parts[parts.length - 1];
-                    if (lastPart.matches("^\\d+$")) {
-                        registerNo = lastPart;
-                    }
-                }
-                
-                if (registerNo != null) {
-                    userOpt = userRepository.findByUsername(registerNo);
-                    log.info("Found existing user by register number {} for Google login {}", registerNo, email);
-                }
+                userOpt = resolveUserByAnyIdentity(email);
+                userOpt.ifPresent(u -> log.info("Found existing user by identity mapping for Google login {}", email));
             }
 
             User user;
@@ -563,5 +549,88 @@ public class AuthService {
                 .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
                 .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                 .build();
+    }
+
+    private Optional<User> resolveUserByAnyIdentity(String identifier) {
+        if (identifier == null || identifier.isBlank()) {
+            return Optional.empty();
+        }
+
+        String normalized = identifier.trim();
+        String lower = normalized.toLowerCase();
+
+        Optional<User> direct = userRepository.findByUsername(normalized)
+                .or(() -> userRepository.findByUsername(lower))
+                .or(() -> userRepository.findByEmail(lower))
+                .or(() -> userRepository.findByEmail(normalized))
+                .or(() -> userRepository.findByLinkedStudent_RegisterNo(normalized))
+                .or(() -> userRepository.findByLinkedStudent_StudentIdNumber(normalized));
+        if (direct.isPresent()) return direct;
+
+        for (String candidate : deriveRegisterNoCandidates(normalized)) {
+            Optional<User> byExactRegister = userRepository.findByLinkedStudent_RegisterNo(candidate)
+                    .or(() -> userRepository.findByUsername(candidate));
+            if (byExactRegister.isPresent()) return byExactRegister;
+        }
+
+        for (String suffix : deriveRegisterNoSuffixCandidates(normalized)) {
+            List<User> matches = userRepository.findAllByLinkedStudent_RegisterNoEndingWith(suffix);
+            if (matches.size() == 1) {
+                return Optional.of(matches.get(0));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private List<String> deriveRegisterNoCandidates(String identifier) {
+        Set<String> candidates = new LinkedHashSet<>();
+        String lower = identifier.toLowerCase();
+
+        if (identifier.matches("^\\d{10,14}$")) {
+            candidates.add(identifier);
+        }
+
+        if (lower.contains("@")) {
+            String local = lower.split("@")[0];
+            if (local.matches("^\\d{10,14}$")) {
+                candidates.add(local);
+            }
+            String trailingDigits = extractTrailingDigits(local);
+            if (trailingDigits != null && trailingDigits.length() >= 10) {
+                candidates.add(trailingDigits);
+            }
+        }
+
+        return new ArrayList<>(candidates);
+    }
+
+    private List<String> deriveRegisterNoSuffixCandidates(String identifier) {
+        Set<String> suffixes = new LinkedHashSet<>();
+        String lower = identifier.toLowerCase();
+
+        if (lower.contains("@")) {
+            String local = lower.split("@")[0];
+            String trailingDigits = extractTrailingDigits(local);
+            if (trailingDigits != null) {
+                if (trailingDigits.length() >= 4) {
+                    suffixes.add(trailingDigits.substring(trailingDigits.length() - 4));
+                }
+                if (trailingDigits.length() >= 5) {
+                    suffixes.add(trailingDigits.substring(trailingDigits.length() - 5));
+                }
+            }
+        }
+        return new ArrayList<>(suffixes);
+    }
+
+    private String extractTrailingDigits(String text) {
+        if (text == null || text.isBlank()) return null;
+        int i = text.length() - 1;
+        while (i >= 0 && Character.isDigit(text.charAt(i))) {
+            i--;
+        }
+        String digits = text.substring(i + 1);
+        return digits.isBlank() ? null : digits;
     }
 }
