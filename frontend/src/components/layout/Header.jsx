@@ -113,7 +113,7 @@ const Header = ({
                                     onClick={logout}
                                     style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', cursor: 'pointer', color: '#ef4444', fontSize: '14px', transition: '0.2s' }}
                                 >
-                                    <LuLogOut /> <span style={{ fontWeight: '700' }}>Logout Instance</span>
+                                    <LuLogOut /> <span style={{ fontWeight: '700' }}>Logout</span>
                                 </div>
                             </motion.div>
                         )}

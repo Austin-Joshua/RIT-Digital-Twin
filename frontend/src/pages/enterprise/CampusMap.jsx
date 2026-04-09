@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-leaflet';
 import L from 'leaflet';
+import { useTheme } from '../../hooks/useTheme';
 
 // Fix for default Leaflet markers in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -30,6 +31,7 @@ const buildingIcon = new L.Icon({
 const RIT_CENTER = [13.0382427, 80.0453935];
 
 const CampusMap = () => {
+    const { isDarkMode } = useTheme();
     const [activeBuses, setActiveBuses] = useState([
         { id: 1, route: 'R44 - Tambaram', position: [13.0379, 80.0449], status: 'Moving', speed: '24 km/h' },
         { id: 2, route: 'R12 - Adyar', position: [13.0387, 80.0458], status: 'Stopped', speed: '0 km/h' },
@@ -78,7 +80,8 @@ const CampusMap = () => {
                 <MapContainer center={RIT_CENTER} zoom={17} style={{ height: '100%', width: '100%' }}>
                     {/* Modern Clean Map Tiles */}
                     <TileLayer
-                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                        key={isDarkMode ? 'dark' : 'light'}
+                        url={isDarkMode ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"}
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                     />
 

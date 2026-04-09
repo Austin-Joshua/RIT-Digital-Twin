@@ -64,8 +64,8 @@ const SmartAlgorithms = () => {
                                     {algo.status}
                                 </span>
                             </div>
-                            <h3 className="font-bold text-gray-700 dark:text-gray-200">{algo.name}</h3>
-                            <div className="mt-2 text-2xl font-black text-gray-900 dark:text-white">
+                            <h3 className="font-bold text-[var(--theme-text)]">{algo.name}</h3>
+                            <div className="mt-2 text-2xl font-black text-[var(--theme-text)]">
                                 {algo.load}
                             </div>
                         </div>

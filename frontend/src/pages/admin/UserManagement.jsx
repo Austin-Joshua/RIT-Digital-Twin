@@ -14,7 +14,8 @@ const UserManagement = () => {
             const response = await api.get('/admin/users');
             setUsers(response.data);
         } catch (error) {
-            addToast('Failed to load users', 'error');
+            console.error('Failed to load users:', error);
+            // Prevent toast spam if backend endpoint is failing
         } finally {
             setLoading(false);
         }

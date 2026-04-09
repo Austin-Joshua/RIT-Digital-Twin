@@ -56,30 +56,23 @@ const AcademicFee = () => {
 
     return (
         <div className="stu-dashboard space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Header Section (Unified Premium Style) */}
-            <div className="relative p-8 rounded-[40px] overflow-hidden shadow-2xl border border-white/20" 
-                 style={{ background: 'linear-gradient(135deg, rgba(11, 44, 107, 0.95) 0%, rgba(30, 58, 138, 0.9) 100%)', backdropFilter: 'blur(10px)' }}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-                <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-black flex items-center gap-4 text-white tracking-tight">
-                            <div className="p-3 bg-white/10 rounded-2xl border border-white/10">
-                                <FaFileInvoice className="text-amber-400" /> 
-                            </div>
-                            {isParent ? `Student Fee Portal: ${studentName}` : 'Academic Fee Portal'}
-                        </h1>
-                        <p className="mt-2 text-blue-100/80 font-medium max-w-xl text-lg">
-                            {isParent 
-                                ? "Monitor and manage your ward's educational investments securely." 
-                                : "Manage your educational investments securely. Integrated with our Digital Twin treasury."
-                            }
-                        </p>
-                    </div>
-                    
-                    <div className="bg-white/10 backdrop-blur-md p-6 rounded-[32px] border border-white/10 shadow-inner text-right">
-                        <span className="text-[10px] uppercase tracking-[4px] text-blue-200 font-bold block mb-1">Academic Year</span>
-                        <span className="text-xl font-black text-white">2024 - 2025</span>
-                    </div>
+            {/* Header Section (Clean UI) */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 px-2">
+                <div>
+                    <h1 className="text-3xl font-black flex items-center gap-4 text-[var(--theme-text)] tracking-tight">
+                        <FaFileInvoice className="text-[#0B2C6B] dark:text-blue-400" />
+                        {isParent ? `Student Fee Portal: ${studentName}` : 'Academic Fee Portal'}
+                    </h1>
+                    <p className="mt-2 text-[var(--theme-text-muted)] font-medium max-w-xl text-lg">
+                        {isParent 
+                            ? "Monitor and manage your ward's educational investments securely." 
+                            : "Manage your educational investments securely."
+                        }
+                    </p>
+                </div>
+                <div className="bg-[var(--theme-bg-muted)] p-4 rounded-xl border border-[var(--theme-border)] text-right">
+                    <span className="text-[10px] uppercase tracking-[4px] text-[var(--theme-text-muted)] font-bold block mb-1">Academic Year</span>
+                    <span className="text-xl font-black text-[var(--theme-text)]">2024 - 2025</span>
                 </div>
             </div>
 
@@ -119,18 +112,18 @@ const AcademicFee = () => {
                                             <th style={{ padding: '16px 24px', textAlign: 'center' }}>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <tbody className="divide-y divide-[var(--theme-border)]">
                                         {feeDetails.map((fee) => (
-                                            <tr key={fee.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                            <tr key={fee.id} className="hover:bg-[var(--theme-bg-muted)] transition-colors">
                                                 <td style={{ padding: '16px 24px' }}>
-                                                    <div className="font-bold text-slate-700 dark:text-slate-200">{fee.label}</div>
-                                                    <div className="text-[10px] text-slate-500 uppercase tracking-widest">{fee.type}</div>
+                                                    <div className="font-bold text-[var(--theme-text)]">{fee.label}</div>
+                                                    <div className="text-[10px] text-[var(--theme-text-muted)] uppercase tracking-widest">{fee.type}</div>
                                                 </td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center', fontSize: '13px' }}>{fee.deadline}</td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'right' }} className="font-bold">₹{fee.amount.toLocaleString('en-IN')}</td>
+                                                <td style={{ padding: '16px 24px', textAlign: 'center', fontSize: '13px', color: 'var(--theme-text)' }}>{fee.deadline}</td>
+                                                <td style={{ padding: '16px 24px', textAlign: 'right', color: 'var(--theme-text)' }} className="font-bold">₹{fee.amount.toLocaleString('en-IN')}</td>
                                                 <td style={{ padding: '16px 24px', textAlign: 'center' }}>
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                                        fee.status === 'PAID' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-500'
+                                                        fee.status === 'PAID' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                                                     }`}>
                                                         {fee.status}
                                                     </span>
@@ -141,10 +134,10 @@ const AcademicFee = () => {
                                 </table>
                             </div>
                         </div>
-                        <div className="info-footer p-6 bg-slate-900 dark:bg-black rounded-b-3xl">
-                            <div className="flex justify-between items-center text-white">
+                        <div className="info-footer p-6 bg-[var(--theme-bg-muted)] rounded-b-3xl border-t border-[var(--theme-border)]">
+                            <div className="flex justify-between items-center text-[var(--theme-text)]">
                                 <span className="text-[10px] uppercase tracking-[4px] font-black opacity-60">Subtotal Payable</span>
-                                <span className="text-2xl font-black text-amber-400">₹{totalDue.toLocaleString('en-IN')}</span>
+                                <span className="text-2xl font-black text-[#0B2C6B] dark:text-blue-400">₹{totalDue.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
                     </div>
@@ -155,15 +148,14 @@ const AcademicFee = () => {
                     {/* Payment Action Card */}
                     <motion.div 
                         whileHover={{ scale: 1.02 }}
-                        className="p-8 rounded-[32px] overflow-hidden shadow-2xl relative bg-slate-900 border border-slate-800 text-white"
+                        className="stu-info-card p-8 flex flex-col items-center"
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 rounded-full blur-[40px] -mr-16 -mt-16"></div>
-                        <div className="relative z-10 flex flex-col items-center">
-                            <div className="text-[10px] uppercase tracking-[6px] opacity-60 font-black mb-2 text-center">Checkout Gateway</div>
-                            <h3 className="text-4xl font-black mb-8 tracking-tighter">₹{totalDue.toLocaleString('en-IN')}</h3>
+                        <div className="z-10 flex flex-col items-center w-full">
+                            <div className="text-[10px] uppercase tracking-[6px] text-[var(--theme-text-muted)] font-black mb-2 text-center">Checkout Gateway</div>
+                            <h3 className="text-4xl font-black mb-8 tracking-tighter text-[var(--theme-text)]">₹{totalDue.toLocaleString('en-IN')}</h3>
                             
                             {paymentStatus === 'success' ? (
-                                <div className="flex flex-col items-center gap-3 py-4 text-emerald-400 animate-in zoom-in-95">
+                                <div className="flex flex-col items-center gap-3 py-4 text-emerald-500 animate-in zoom-in-95">
                                     <FaCheckCircle className="text-5xl" />
                                     <span className="font-black uppercase tracking-widest">Payment Verified</span>
                                 </div>
@@ -171,14 +163,14 @@ const AcademicFee = () => {
                                 <button 
                                     onClick={handlePayment}
                                     disabled={paymentStatus === 'processing'}
-                                    className="w-full py-5 rounded-[24px] bg-gradient-to-r from-amber-400 to-amber-600 text-slate-900 font-extrabold flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] active:scale-95 disabled:grayscale"
+                                    className="w-full py-4 rounded-xl bg-[var(--color-primary-navy)] text-white font-extrabold flex items-center justify-center gap-3 transition-all active:scale-95 disabled:grayscale shadow-lg"
                                 >
                                     {paymentStatus === 'processing' ? 'Processing...' : 'Complete Payment'}
                                     <FaCreditCard />
                                 </button>
                             )}
                             
-                            <div className="flex items-center gap-2 mt-8 opacity-40">
+                            <div className="flex items-center gap-2 mt-8 text-[var(--theme-text-muted)] opacity-80">
                                 <FaShieldAlt className="text-xs" />
                                 <span className="text-[9px] uppercase tracking-widest font-bold">256-Bit SSL Encrypted Gateway</span>
                             </div>
