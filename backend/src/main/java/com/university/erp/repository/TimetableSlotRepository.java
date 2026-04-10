@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface TimetableSlotRepository extends JpaRepository<TimetableSlot, Long> {
     List<TimetableSlot> findByDepartmentIdAndSection(Long departmentId, String section);
+    List<TimetableSlot> findByDepartmentId(Long departmentId);
+    List<TimetableSlot> findByDepartmentIdAndSectionIn(Long departmentId, List<String> sections);
+    void deleteByDepartmentIdAndSectionIn(Long departmentId, List<String> sections);
 }

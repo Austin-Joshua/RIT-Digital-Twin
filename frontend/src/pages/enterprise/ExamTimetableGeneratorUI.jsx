@@ -8,7 +8,9 @@ const ExamTimetableGeneratorUI = () => {
     const [mode, setMode] = useState('EXAM'); // 'EXAM' or 'WEEKLY'
     const [startDate, setStartDate] = useState('');
     const [deptId, setDeptId] = useState('1'); // Generic Default
-    const [section, setSection] = useState('A');
+    const [section, setSection] = useState('CSE-A');
+    const [semesterNumber, setSemesterNumber] = useState('3');
+    const [strictMode, setStrictMode] = useState(true);
     const [constraints, setConstraints] = useState({ minGap: 1, session: 'BOTH' });
     const [generating, setGenerating] = useState(false);
     const [timetable, setTimetable] = useState(null);
@@ -33,32 +35,30 @@ const ExamTimetableGeneratorUI = () => {
                 });
                 addToast('Exam timetable generated with AI optimization!', 'success');
             } else {
-                res = await academicAiApi.generateClassTimetable(deptId, section);
-                setAnalysis({
-                    efficiency: '98%',
-                    clashesResolved: 'Perfect',
-                    roomUtilization: '92%',
-                    facultyBalance: 'Balanced'
+                res = await academicAiApi.generateClassTimetable({
+                    deptId: Number(deptId),
+                    sections: [section],
+                    semesterNumber: Number(semesterNumber),
+                    periodsPerDay: 6,
+                    daysPerWeek: 5,
+                    periodDurationMinutes: 50,
+                    strictMode
                 });
-                addToast('Weekly class timetable generated successfully!', 'success');
+                const payload = res.data || {};
+                const validation = payload.validation || {};
+                setAnalysis({
+                    clashesResolved: `${(validation.facultyClashCount || 0) + (validation.classClashCount || 0)}`,
+                    roomUtilization: `${validation.scheduledPeriods || 0}/${validation.totalDemandPeriods || 0}`,
+                    facultyBalance: validation.allSubjectsScheduled ? 'Balanced' : 'Partial'
+                });
+                addToast(payload.message || 'Weekly class timetable generation finished.', payload.success ? 'success' : 'warning');
             }
-            setTimetable(res.data);
+            setTimetable(mode === 'EXAM' ? res.data : (res.data?.slots || []));
         } catch (error) {
             console.error("Failed to generate timetable", error);
-            addToast('Failed to generate timetable. Using backup schedule.', 'info');
-            // Mock data for display if API gives error during demo
-            if (mode === 'EXAM') {
-                setTimetable([
-                    { id: 1, examDate: startDate || '2024-05-15', startTime: '10:00', endTime: '13:00', subject: { subjectName: 'Data Structures' }, room: { roomNumber: 'LH-101' }, invigilator: { user: { firstName: 'Dr.', lastName: 'Aakash' } } },
-                    { id: 2, examDate: startDate || '2024-05-15', startTime: '14:00', endTime: '17:00', subject: { subjectName: 'Operating Systems' }, room: { roomNumber: 'LH-102' }, invigilator: { user: { firstName: 'Prof.', lastName: 'Senthil' } } }
-                ]);
-            } else {
-                setTimetable([
-                    { id: 1, dayOfWeek: 'MONDAY', startTime: '09:00', endTime: '10:00', subject: { subjectName: 'Discrete Mathematics' }, section: section },
-                    { id: 2, dayOfWeek: 'MONDAY', startTime: '10:00', endTime: '11:00', subject: { subjectName: 'Object Oriented Programming' }, section: section }
-                ]);
-            }
-            setAnalysis({ efficiency: '85%', clashesResolved: 8, roomUtilization: '76%', facultyBalance: 'Fair' });
+            addToast('Failed to generate timetable.', 'error');
+            setTimetable(null);
+            setAnalysis(null);
         } finally {
             setGenerating(false);
         }
@@ -110,9 +110,22 @@ const ExamTimetableGeneratorUI = () => {
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Section</label>
                             <select value={section} onChange={(e) => setSection(e.target.value)}
                                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
-                                <option value="A">Section A</option>
-                                <option value="B">Section B</option>
-                                <option value="C">Section C</option>
+                                <option value="CSE-A">CSE-A</option>
+                                <option value="CSE-B">CSE-B</option>
+                                <option value="CSBS-C">CSBS-C</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Semester</label>
+                            <input type="number" min="1" max="8" value={semesterNumber} onChange={(e) => setSemesterNumber(e.target.value)}
+                                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Mode</label>
+                            <select value={strictMode ? 'STRICT' : 'BEST_EFFORT'} onChange={(e) => setStrictMode(e.target.value === 'STRICT')}
+                                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
+                                <option value="STRICT">Strict (fail if unscheduled)</option>
+                                <option value="BEST_EFFORT">Best effort</option>
                             </select>
                         </div>
                     </>
@@ -151,9 +164,9 @@ const ExamTimetableGeneratorUI = () => {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {[
-                            { issue: 'Faculty Overlap: Dr. Senthil', resolution: 'Rescheduled to Morning session, LH-102', status: 'RESOLVED' },
-                            { issue: 'Room Conflict: Block C LH-101', resolution: 'Allocated LH-103 for CSE-B Batch', status: 'RESOLVED' },
-                            { issue: 'Student Back-to-Back: CSE-A', resolution: 'Ensured 1.5 day gap via shift rotation', status: 'OPTIMIZED' }
+                            { issue: `Faculty clashes`, resolution: `${analysis.clashesResolved || 0} detected after optimization`, status: Number(analysis.clashesResolved) === 0 ? 'RESOLVED' : 'PARTIAL' },
+                            { issue: 'Period coverage', resolution: `Scheduled ratio ${analysis.roomUtilization || '-'}`, status: analysis.facultyBalance === 'Balanced' ? 'OPTIMIZED' : 'PARTIAL' },
+                            { issue: 'Load distribution', resolution: `Faculty load state: ${analysis.facultyBalance || 'Unknown'}`, status: 'REPORTED' }
                         ].map((log, i) => (
                             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--theme-bg-muted)', borderRadius: '12px', border: '1px solid var(--theme-border)' }}>
                                 <div>

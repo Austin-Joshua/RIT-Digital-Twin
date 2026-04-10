@@ -61,6 +61,7 @@ const AssignmentGrading = lazy(() => import('./pages/faculty/AssignmentGrading')
 const FacultyGrading = lazy(() => import('./pages/faculty/FacultyGrading'));
 const ProctorDashboard = lazy(() => import('./pages/faculty/ProctorDashboard'));
 const ResearchTracker = lazy(() => import('./pages/faculty/ResearchTracker'));
+const FacultyTimetable = lazy(() => import('./pages/faculty/FacultyTimetable'));
 
 /* Lazy Loaded Student Pages */
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
@@ -271,6 +272,7 @@ const App = () => {
                     <Route path="faculty/risk-heatmap" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ClassRiskHeatmap /></RouteRoleGuard>} />
                     <Route path="faculty/upload-marks" element={<RouteRoleGuard allowedRoles={['FACULTY']}><UploadMarks /></RouteRoleGuard>} />
                     <Route path="faculty/academics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAcademics /></RouteRoleGuard>} />
+                    <Route path="faculty/timetable" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyTimetable /></RouteRoleGuard>} />
                     <Route path="faculty/leaves" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyLeaves /></RouteRoleGuard>} />
                     <Route path="faculty/attendance" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAttendance /></RouteRoleGuard>} />
                     <Route path="faculty/analytics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAnalytics /></RouteRoleGuard>} />

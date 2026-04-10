@@ -12,7 +12,7 @@ export const academicAiApi = {
     getCareerRecommendation: (studentId) => api.get(`/analytics/career/${studentId}`),
     substituteClass: (timetableId) => api.post(`/academic-ai/substitute-class/${timetableId}`),
     generateExamTimetable: (startDate) => api.post(`/academic-ai/generate-exam-timetable?startDate=${startDate}`),
-    generateClassTimetable: (deptId, section) => api.post(`/academic/timetable/generate?deptId=${deptId}&section=${section}`),
+    generateClassTimetable: (payload) => api.post(`/academic/timetable/generate`, payload),
     getStudentRanking: (studentId) => api.get(`/academic-ai/ranking/${studentId}`),
     getStudentRisk: (studentId) => api.get(`/analytics/student/${studentId}/risk`),
     triggerAttendanceAlerts: (studentId) => api.post(`/academic-ai/trigger-alerts/${studentId}`),

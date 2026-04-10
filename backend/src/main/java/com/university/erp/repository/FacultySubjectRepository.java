@@ -12,4 +12,7 @@ public interface FacultySubjectRepository extends JpaRepository<FacultySubject, 
 
     @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "semester" })
     List<FacultySubject> findBySubject_IdAndSemester_SemesterNumberAndSectionIgnoreCase(Long subjectId, Integer semester, String section);
+
+    @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "subject.department", "subject.semester", "semester" })
+    List<FacultySubject> findBySubject_Department_Id(Long departmentId);
 }

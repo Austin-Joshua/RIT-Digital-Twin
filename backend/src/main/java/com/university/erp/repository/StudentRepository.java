@@ -39,4 +39,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     long countByDepartment_IdAndYear(Long departmentId, Integer year);
 
     List<Student> findBySectionIgnoreCase(String section);
+
+    @org.springframework.data.jpa.repository.Query("select distinct upper(trim(s.section)) from Student s where s.department.id = :departmentId and s.section is not null and trim(s.section) <> ''")
+    List<String> findDistinctSectionsByDepartmentId(@org.springframework.data.repository.query.Param("departmentId") Long departmentId);
 }
