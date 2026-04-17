@@ -73,9 +73,17 @@ const StudentLayout = () => {
         navigate('/login', { replace: true });
     };
 
-    const displayName = user?.firstName && user?.lastName
-        ? `${user.firstName} ${user.lastName}`.toUpperCase()
+    const resolvedFullName = [user?.firstName, user?.lastName]
+        .filter((part) => Boolean(part && String(part).trim()))
+        .join(' ')
+        .trim();
+    const displayName = resolvedFullName
+        ? resolvedFullName.toUpperCase()
         : (user?.username || 'STUDENT').toUpperCase();
+    const signedInPrimary = resolvedFullName || user?.username || 'Student';
+    const signedInSecondary = user?.registerNo
+        ? `Reg No: ${user.registerNo}`
+        : (user?.email || 'student@ritchennai.edu.in');
 
     const navItems = [
         ...studentNav,
@@ -204,7 +212,8 @@ const StudentLayout = () => {
                                     >
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: isDarkMode ? 'var(--ims-bg-dark)' : '#f8fafc' }}>
                                             <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
-                                            <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'student@ritchennai.edu.in'}</div>
+                                            <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInPrimary}</div>
+                                            <div style={{ fontSize: '11px', color: isDarkMode ? '#94a3b8' : '#64748b', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInSecondary}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Admin' : user?.role}</div>
                                         </div>
                                         <NavLink
