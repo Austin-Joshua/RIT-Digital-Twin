@@ -557,6 +557,7 @@ public class AuthService {
         String roleName = user.getRole() != null && user.getRole().getRoleName() != null
                 ? user.getRole().getRoleName().name()
                 : "STUDENT";
+        String[] resolvedName = resolveDisplayName(user);
 
         return AuthResponse.builder()
                 .token(jwt)
@@ -565,12 +566,34 @@ public class AuthService {
                 .username(user.getUsername())
                 .role(roleName)
                 .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .firstName(resolvedName[0])
+                .lastName(resolvedName[1])
                 .mustChangePassword(user.isMustChangePassword())
                 .studentId(user.getLinkedStudent() != null ? user.getLinkedStudent().getId() : null)
                 .registerNo(user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : null)
                 .build();
+    }
+
+    private String[] resolveDisplayName(User user) {
+        String firstName = user.getFirstName() != null ? user.getFirstName().trim() : "";
+        String lastName = user.getLastName() != null ? user.getLastName().trim() : "";
+
+        if (user.getLinkedStudent() != null) {
+            String studentName = user.getLinkedStudent().getStudentName();
+            if (studentName != null) {
+                String normalized = studentName.trim().replaceAll("\\s+", " ");
+                if (!normalized.isEmpty()) {
+                    String[] parts = normalized.split(" ", 2);
+                    firstName = parts[0];
+                    lastName = parts.length > 1 ? parts[1] : "";
+                }
+            }
+        }
+
+        if (firstName.isEmpty()) {
+            firstName = "User";
+        }
+        return new String[] { firstName, lastName };
     }
 
     private Optional<User> resolveUserByAnyIdentity(String identifier) {
