@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell } from 'react-icons/fa';
+import { getSockJsEndpoint } from '../utils/websocketUrls';
 
 const NotificationBar = () => {
     const { user } = useAuth();
@@ -15,7 +16,7 @@ const NotificationBar = () => {
         if (!user) return;
 
         const client = new Client({
-            webSocketFactory: () => new SockJS('/ws-notifications'),
+            webSocketFactory: () => new SockJS(getSockJsEndpoint('/ws-notifications')),
             onConnect: () => {
                 client.subscribe('/topic/global', (message) => {
                     const notif = JSON.parse(message.body);

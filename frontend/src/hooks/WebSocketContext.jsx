@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { getSockJsEndpoint } from '../utils/websocketUrls';
 
 const WebSocketContext = createContext(null);
 
@@ -15,44 +16,7 @@ export const useWebSocket = () => {
 /**
  * Get WebSocket URL from env (Vercel → Environment Variables) or derive from API URL.
  */
-const getWebSocketURL = () => {
-    const base = import.meta.env.VITE_BACKEND_URL;
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-    const fallbackBase = (base && typeof base === 'string' && base.trim())
-        ? base.trim()
-        : ((apiUrl || '').replace(/\/api\/?$/, '') || 'http://localhost:8080');
-
-    const normalizeWsCandidate = (candidate) => {
-        if (!candidate || typeof candidate !== 'string' || !candidate.trim()) return null;
-        let raw = candidate.trim();
-        if (!/^https?:\/\//i.test(raw) && !/^wss?:\/\//i.test(raw)) {
-            raw = `https://${raw}`;
-        }
-        let parsed;
-        try {
-            parsed = new URL(raw);
-        } catch {
-            return null;
-        }
-
-        if (!['http:', 'https:', 'ws:', 'wss:'].includes(parsed.protocol)) {
-            return null;
-        }
-
-        if (parsed.protocol === 'http:') parsed.protocol = 'ws:';
-        if (parsed.protocol === 'https:') parsed.protocol = 'wss:';
-        parsed.pathname = parsed.pathname.replace(/\/+$/, '');
-        if (!parsed.pathname.endsWith('/ws')) {
-            parsed.pathname = `${parsed.pathname}/ws`.replace(/\/{2,}/g, '/');
-        }
-        return parsed.toString().replace(/\/$/, '');
-    };
-
-    const wsEnv = import.meta.env.VITE_WEBSOCKET_URL;
-    const envUrl = normalizeWsCandidate(wsEnv);
-    if (envUrl) return envUrl;
-    return normalizeWsCandidate(fallbackBase) || 'ws://localhost:8080/ws';
-};
+const getWebSocketURL = () => getSockJsEndpoint('/ws');
 
 export const WebSocketProvider = ({ children }) => {
     const [stompClient, setStompClient] = useState(null);

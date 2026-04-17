@@ -367,7 +367,13 @@ public class StudentDataSeeder implements CommandLineRunner {
             userRepository.flush();
             studentRepository.flush();
 
-            assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));
+            try {
+                assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));
+            } catch (Exception ex) {
+                // Keep identity/name synchronization resilient even if grade/analytics seeding fails for one student.
+                log.warn("Skipping grade/academic enrichment for register {} due to: {}", info.regNo, ex.getMessage());
+                log.debug("Grade/academic enrichment stack trace for {}:", info.regNo, ex);
+            }
             if (isNew) created++;
         }
         log.info("Seeded {} new students with full data for section {}", created, section);
