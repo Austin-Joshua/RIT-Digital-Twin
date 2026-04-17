@@ -11,7 +11,11 @@ import java.util.Map;
 public class TimetableValidationReportDto {
     private boolean facultyClashFree;
     private boolean classClashFree;
+    private boolean noSubjectOverlap;
+    private boolean crossClassConflictFree;
     private boolean allSubjectsScheduled;
+    private boolean allRequiredHoursSatisfied;
+    private boolean fullyFilled;
     private boolean allSlotsValid;
     private int totalDemandPeriods;
     private int scheduledPeriods;

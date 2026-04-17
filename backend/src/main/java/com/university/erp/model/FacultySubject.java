@@ -3,6 +3,8 @@ package com.university.erp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "faculty_subjects", uniqueConstraints = {
         @UniqueConstraint(name = "uq_fac_sub", columnNames = { "faculty_id", "subject_id", "section", "semester_id" })
@@ -33,4 +35,18 @@ public class FacultySubject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "semester_id", nullable = false)
     private Semester semester;
+
+    @Column(name = "approval_status", nullable = false)
+    @Builder.Default
+    private String approvalStatus = "APPROVED";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requested_by_user_id")
+    private User requestedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedBy;
+
+    private LocalDateTime approvedAt;
 }

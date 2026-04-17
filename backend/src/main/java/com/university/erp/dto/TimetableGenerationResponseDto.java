@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -13,4 +14,6 @@ public class TimetableGenerationResponseDto {
     private String message;
     private List<TimetableSlot> slots;
     private TimetableValidationReportDto validation;
+    private Map<String, List<TimetableMatrixEntryDto>> classWiseTimetable;
+    private Map<String, List<TimetableMatrixEntryDto>> facultyWiseTimetable;
 }

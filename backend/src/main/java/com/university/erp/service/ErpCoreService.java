@@ -11,11 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ErpCoreService {
+    private static final String APPROVAL_STATUS_PENDING = "PENDING";
+    private static final String APPROVAL_STATUS_APPROVED = "APPROVED";
+    private static final String APPROVAL_STATUS_REJECTED = "REJECTED";
 
     private final CurriculumRepository curriculumRepository;
     private final SemesterRepository semesterRepository;
@@ -54,7 +58,7 @@ public class ErpCoreService {
     }
 
     @Transactional
-    public FacultySubject assignFacultySubject(Map<String, Object> payload) {
+    public FacultySubject assignFacultySubject(Map<String, Object> payload, Long approverUserId) {
         Long facultyUserId = longVal(payload.get("facultyUserId"));
         Long subjectId = longVal(payload.get("subjectId"));
         Integer semesterNo = intVal(payload.get("semester"));
@@ -86,7 +90,73 @@ public class ErpCoreService {
                 .subject(subject)
                 .semester(semester)
                 .section(section)
+                .approvalStatus(APPROVAL_STATUS_APPROVED)
+                .approvedBy(userRepository.findById(approverUserId).orElse(null))
+                .approvedAt(LocalDateTime.now())
                 .build();
+        return facultySubjectRepository.save(fs);
+    }
+
+    @Transactional
+    public FacultySubject submitFacultySubjectPreference(Map<String, Object> payload, Long facultyUserId) {
+        Long subjectId = longVal(payload.get("subjectId"));
+        Integer semesterNo = intVal(payload.get("semester"));
+        String section = text(payload.get("section"));
+        if (subjectId == null || semesterNo == null || section.isBlank()) {
+            throw new ErpException.InvalidOperationException("subjectId, semester, section are required");
+        }
+        FacultyProfile faculty = facultyProfileRepository.findByUser_Id(facultyUserId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Faculty profile not found"));
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Subject not found"));
+        Semester semester = semesterRepository.findBySemesterNumber(semesterNo)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Semester not found"));
+        User requester = userRepository.findById(facultyUserId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Faculty user not found"));
+
+        FacultySubject fs = FacultySubject.builder()
+                .faculty(faculty)
+                .subject(subject)
+                .semester(semester)
+                .section(section)
+                .approvalStatus(APPROVAL_STATUS_PENDING)
+                .requestedBy(requester)
+                .build();
+        return facultySubjectRepository.save(fs);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getPendingFacultySubjectPreferences(Long departmentId) {
+        List<FacultySubject> pending = departmentId == null
+                ? facultySubjectRepository.findByApprovalStatusIgnoreCase(APPROVAL_STATUS_PENDING)
+                : facultySubjectRepository.findByApprovalStatusIgnoreCaseAndSubject_Department_Id(APPROVAL_STATUS_PENDING, departmentId);
+        return pending.stream().map(fs -> {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("facultySubjectId", fs.getFacultySubjectId());
+            row.put("facultyUserId", fs.getFaculty() != null && fs.getFaculty().getUser() != null ? fs.getFaculty().getUser().getId() : null);
+            row.put("facultyName", fs.getFaculty() != null && fs.getFaculty().getUser() != null
+                    ? (text(fs.getFaculty().getUser().getFirstName()) + " " + text(fs.getFaculty().getUser().getLastName())).trim()
+                    : "");
+            row.put("subjectId", fs.getSubject() != null ? fs.getSubject().getId() : null);
+            row.put("subjectCode", fs.getSubject() != null ? fs.getSubject().getSubjectCode() : null);
+            row.put("subjectName", fs.getSubject() != null ? fs.getSubject().getSubjectName() : null);
+            row.put("section", fs.getSection());
+            row.put("semester", fs.getSemester() != null ? fs.getSemester().getSemesterNumber() : null);
+            row.put("approvalStatus", fs.getApprovalStatus());
+            row.put("requestedBy", fs.getRequestedBy() != null ? fs.getRequestedBy().getUsername() : null);
+            return row;
+        }).toList();
+    }
+
+    @Transactional
+    public FacultySubject reviewFacultySubjectPreference(Long facultySubjectId, boolean approved, Long reviewerUserId) {
+        FacultySubject fs = facultySubjectRepository.findById(facultySubjectId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Faculty-subject preference not found"));
+        User reviewer = userRepository.findById(reviewerUserId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Reviewer user not found"));
+        fs.setApprovalStatus(approved ? APPROVAL_STATUS_APPROVED : APPROVAL_STATUS_REJECTED);
+        fs.setApprovedBy(reviewer);
+        fs.setApprovedAt(LocalDateTime.now());
         return facultySubjectRepository.save(fs);
     }
 

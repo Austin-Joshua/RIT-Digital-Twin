@@ -4,7 +4,10 @@ import com.university.erp.dto.CseAStudentImportDto;
 import com.university.erp.model.*;
 import com.university.erp.util.ErpException;
 import com.university.erp.repository.*;
+import com.university.erp.repository.projection.StudentAdminSummaryProjection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class StudentAcademicOnboardingService {
     private final FacultySubjectRepository facultySubjectRepository;
     private final StudentSubjectRepository studentSubjectRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DataIntegrityAuditService dataIntegrityAuditService;
 
     private static final String CSE_DEPARTMENT_NAME = "B.E. CSE";
     private static final String CSE_SECTION = "CSE-A";
@@ -129,19 +133,39 @@ public class StudentAcademicOnboardingService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "studentAdminSectionSummaries", key = "#section", sync = true)
     public List<Map<String, Object>> listStudentsBySection(String section) {
         String sectionValue = normalize(section).isBlank() ? CSE_SECTION : normalize(section);
-        return studentRepository.findBySectionIgnoreCase(sectionValue)
+        return studentRepository.findAdminSummaryBySection(sectionValue)
                 .stream()
                 .map(this::toStudentAdminCard)
                 .toList();
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "studentAdminSectionSummaries", allEntries = true)
     public Map<String, Object> updateStudent(Long studentId, Map<String, Object> payload) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
-        String name = normalize(payload.get("name"));
+        if (payload == null) {
+            throw new ErpException.InvalidOperationException("Payload cannot be empty");
+        }
+        Set<String> allowedKeys = Set.of("name", "scholarType", "phone", "email", "status");
+        for (String key : payload.keySet()) {
+            if (!allowedKeys.contains(key)) {
+                throw new ErpException.InvalidOperationException("Unsupported field in payload: " + key);
+            }
+        }
+
+        Map<String, Object> beforeState = snapshotStudent(student);
+        DataIntegrityAuditService.UpdateAuditContext auditContext = dataIntegrityAuditService.beginTrackedUpdate(
+                "Student",
+                String.valueOf(studentId),
+                "UPDATE_STUDENT_PROFILE",
+                beforeState
+        );
+
+        String name = limit(normalize(payload.get("name")), 200);
         if (!name.isBlank()) {
             student.setStudentName(name);
             String[] split = splitName(name);
@@ -151,11 +175,11 @@ public class StudentAcademicOnboardingService {
                 userRepository.save(student.getUser());
             }
         }
-        String scholarType = normalize(payload.get("scholarType"));
+        String scholarType = limit(normalize(payload.get("scholarType")), 80);
         if (!scholarType.isBlank()) student.setScholarType(scholarType);
-        String phone = normalize(payload.get("phone"));
+        String phone = limit(normalize(payload.get("phone")), 30);
         if (!phone.isBlank()) student.setPhone(phone);
-        String email = normalize(payload.get("email"));
+        String email = limit(normalize(payload.get("email")), 254);
         if (!email.isBlank()) {
             student.setEmail(email);
             if (student.getUser() != null) {
@@ -163,7 +187,7 @@ public class StudentAcademicOnboardingService {
                 userRepository.save(student.getUser());
             }
         }
-        String status = normalize(payload.get("status"));
+        String status = limit(normalize(payload.get("status")), 30);
         if (!status.isBlank()) {
             student.setStatus(status.toLowerCase());
             if (student.getUser() != null) {
@@ -171,7 +195,41 @@ public class StudentAcademicOnboardingService {
                 userRepository.save(student.getUser());
             }
         }
-        return toStudentAdminCard(studentRepository.save(student));
+        Student updated = studentRepository.save(student);
+        Map<String, Object> afterState = snapshotStudent(updated);
+        dataIntegrityAuditService.completeTrackedUpdate(auditContext, afterState);
+
+        Map<String, Object> response = toStudentAdminCard(updated);
+        response.put("integrityVerified", !auditContext.isTamperingDetected());
+        response.put("tamperingFlagged", auditContext.isTamperingDetected());
+        return response;
+    }
+
+    @Transactional
+    @CacheEvict(cacheNames = "studentAdminSectionSummaries", allEntries = true)
+    public Map<String, Object> rollbackStudentLastChange(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student not found"));
+
+        Map<String, Object> currentState = snapshotStudent(student);
+        DataIntegrityAuditService.UpdateAuditContext auditContext = dataIntegrityAuditService.beginTrackedUpdate(
+                "Student",
+                String.valueOf(studentId),
+                "ROLLBACK_STUDENT_PROFILE",
+                currentState
+        );
+
+        Map<String, Object> rollbackState = dataIntegrityAuditService.latestBeforeSnapshot("Student", String.valueOf(studentId))
+                .orElseThrow(() -> new ErpException.InvalidOperationException("No rollback snapshot found for this student."));
+
+        applySnapshot(student, rollbackState);
+        Student saved = studentRepository.save(student);
+        dataIntegrityAuditService.completeTrackedUpdate(auditContext, snapshotStudent(saved));
+
+        Map<String, Object> response = toStudentAdminCard(saved);
+        response.put("rolledBack", true);
+        response.put("integrityVerified", !auditContext.isTamperingDetected());
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -456,6 +514,22 @@ public class StudentAcademicOnboardingService {
         return map;
     }
 
+    private Map<String, Object> toStudentAdminCard(StudentAdminSummaryProjection s) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("studentId", s.getStudentId());
+        map.put("registerNo", s.getRegisterNo());
+        map.put("name", s.getName());
+        map.put("department", s.getDepartment());
+        map.put("section", s.getSection());
+        map.put("batch", s.getBatch());
+        map.put("scholarType", s.getScholarType());
+        map.put("email", s.getEmail());
+        map.put("phone", s.getPhone());
+        map.put("status", s.getStatus());
+        map.put("cgpa", s.getCgpa());
+        return map;
+    }
+
     private Map<String, Object> toStudentProfile(Student s) {
         Map<String, Object> map = toStudentAdminCard(s);
         map.put("username", s.getUser() != null ? s.getUser().getUsername() : null);
@@ -516,6 +590,63 @@ public class StudentAcademicOnboardingService {
 
     private static String normalize(Object value) {
         return value == null ? "" : String.valueOf(value).trim();
+    }
+
+    private Map<String, Object> snapshotStudent(Student student) {
+        Map<String, Object> snapshot = new LinkedHashMap<>();
+        snapshot.put("studentId", student.getId());
+        snapshot.put("registerNo", student.getRegisterNo());
+        snapshot.put("studentIdNumber", student.getStudentIdNumber());
+        snapshot.put("name", student.getStudentName());
+        snapshot.put("scholarType", student.getScholarType());
+        snapshot.put("phone", student.getPhone());
+        snapshot.put("email", student.getEmail());
+        snapshot.put("status", student.getStatus());
+        snapshot.put("section", student.getSection());
+        snapshot.put("batch", student.getBatch());
+        snapshot.put("year", student.getYear());
+        snapshot.put("userId", student.getUser() != null ? student.getUser().getUserId() : null);
+        snapshot.put("userEmail", student.getUser() != null ? student.getUser().getEmail() : null);
+        snapshot.put("userFirstName", student.getUser() != null ? student.getUser().getFirstName() : null);
+        snapshot.put("userLastName", student.getUser() != null ? student.getUser().getLastName() : null);
+        return snapshot;
+    }
+
+    private void applySnapshot(Student student, Map<String, Object> snapshot) {
+        String name = normalize(snapshot.get("name"));
+        if (!name.isBlank()) {
+            student.setStudentName(name);
+            String[] split = splitName(name);
+            if (student.getUser() != null) {
+                student.getUser().setFirstName(split[0]);
+                student.getUser().setLastName(split[1]);
+            }
+        }
+        student.setScholarType(limit(normalize(snapshot.get("scholarType")), 80));
+        student.setPhone(limit(normalize(snapshot.get("phone")), 30));
+        student.setEmail(limit(normalize(snapshot.get("email")), 254));
+        student.setStatus(limit(normalize(snapshot.get("status")), 30));
+
+        if (student.getUser() != null) {
+            if (!normalize(snapshot.get("userEmail")).isBlank()) {
+                student.getUser().setEmail(limit(normalize(snapshot.get("userEmail")), 254));
+            } else if (!normalize(snapshot.get("email")).isBlank()) {
+                student.getUser().setEmail(limit(normalize(snapshot.get("email")), 254));
+            }
+            if (!normalize(snapshot.get("userFirstName")).isBlank()) {
+                student.getUser().setFirstName(limit(normalize(snapshot.get("userFirstName")), 100));
+            }
+            if (!normalize(snapshot.get("userLastName")).isBlank()) {
+                student.getUser().setLastName(limit(normalize(snapshot.get("userLastName")), 100));
+            }
+            userRepository.save(student.getUser());
+        }
+    }
+
+    private String limit(String value, int maxLen) {
+        if (value == null) return "";
+        String sanitized = value.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "").trim();
+        return sanitized.length() <= maxLen ? sanitized : sanitized.substring(0, maxLen);
     }
 
     private record GradeScale(String letter, double points) {}

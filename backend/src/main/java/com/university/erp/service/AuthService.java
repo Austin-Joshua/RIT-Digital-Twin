@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,6 +42,8 @@ public class AuthService {
     private final BruteForceProtectionService bruteForceProtectionService;
     private final com.university.erp.repository.LoginLogRepository loginLogRepository;
     private final com.university.erp.repository.AuditLogRepository auditLogRepository;
+    private final RequestSecurityMonitoringService requestSecurityMonitoringService;
+    private final SecurityAlertService securityAlertService;
 
     @Value("${app.google.client-id:}")
     private String googleClientId;
@@ -50,7 +53,9 @@ public class AuthService {
             JwtUtils jwtUtils, RefreshTokenService refreshTokenService,
             BruteForceProtectionService bruteForceProtectionService,
             com.university.erp.repository.LoginLogRepository loginLogRepository,
-            com.university.erp.repository.AuditLogRepository auditLogRepository) {
+            com.university.erp.repository.AuditLogRepository auditLogRepository,
+            RequestSecurityMonitoringService requestSecurityMonitoringService,
+            SecurityAlertService securityAlertService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -61,13 +66,15 @@ public class AuthService {
         this.bruteForceProtectionService = bruteForceProtectionService;
         this.loginLogRepository = loginLogRepository;
         this.auditLogRepository = auditLogRepository;
+        this.requestSecurityMonitoringService = requestSecurityMonitoringService;
+        this.securityAlertService = securityAlertService;
     }
 
     // ═══════════════════════════════════════════════════════════════════
     //  LOGIN — Three-phase: Standard Auth → Institutional Rescue → Fail
     // ═══════════════════════════════════════════════════════════════════
     @Transactional
-    public AuthResponse login(AuthRequest request, String clientIp) {
+    public AuthResponse login(AuthRequest request, String clientIp, String deviceInfo, String location) {
         String username = request.getUsername().trim();
         String password = request.getPassword().trim();
 
@@ -92,7 +99,7 @@ public class AuthService {
             User user = (User) authentication.getPrincipal();
 
             if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
-                recordLoginLog(user, username, clientIp, "FAILURE", "Account " + user.getAccountStatus());
+                recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Account " + user.getAccountStatus());
                 throw new RuntimeException("Account " + user.getAccountStatus() + ". Please contact admin.");
             }
 
@@ -102,7 +109,8 @@ public class AuthService {
             userRepository.save(user);
             bruteForceProtectionService.loginSucceeded(username);
             bruteForceProtectionService.loginSucceededByIp(clientIp);
-            recordLoginLog(user, username, clientIp, "SUCCESS", "Standard login");
+            recordLoginLog(user, username, clientIp, deviceInfo, location, "SUCCESS", "Standard login");
+            requestSecurityMonitoringService.trackSuccessfulLogin(user.getUserId(), user.getUsername(), clientIp, safeLocation(location), safeDevice(deviceInfo));
             return generateAuthResponse(user, false);
 
         } catch (org.springframework.security.core.AuthenticationException e) {
@@ -140,7 +148,8 @@ public class AuthService {
                 userRepository.saveAndFlush(user);
 
                 bruteForceProtectionService.loginSucceeded(username);
-                recordLoginLog(user, username, clientIp, "SUCCESS_RESCUE", "Institutional rescue");
+                recordLoginLog(user, username, clientIp, deviceInfo, location, "SUCCESS_RESCUE", "Institutional rescue");
+                requestSecurityMonitoringService.trackSuccessfulLogin(user.getUserId(), user.getUsername(), clientIp, safeLocation(location), safeDevice(deviceInfo));
                 return generateAuthResponse(user, false);
             }
         }
@@ -162,7 +171,19 @@ public class AuthService {
                 diagnosticMessage = "Password mismatch. " + (5 - attempts) + " attempts remaining.";
             }
             userRepository.save(user);
-            recordLoginLog(user, username, clientIp, "FAILURE", "Invalid credentials");
+            recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Invalid credentials");
+            long recentFailures = loginLogRepository.countByIpAddressAndStatusAndLoginTimeAfter(clientIp, "FAILURE", java.time.LocalDateTime.now().minusMinutes(10));
+            if (recentFailures >= 8) {
+                securityAlertService.raiseAlert(
+                        "CRITICAL",
+                        "REPEATED_FAILED_LOGINS",
+                        user.getUserId(),
+                        clientIp,
+                        "LOGIN",
+                        Map.of("recentFailedAttempts", recentFailures, "location", safeLocation(location)),
+                        "Repeated failed authentication attempts detected from same IP."
+                );
+            }
         }
 
         bruteForceProtectionService.loginFailed(username);
@@ -283,15 +304,16 @@ public class AuthService {
     // ═══════════════════════════════════════════════════════════
     //  Login Log
     // ═══════════════════════════════════════════════════════════
-    private void recordLoginLog(User user, String username, String ip, String status, String reason) {
+    private void recordLoginLog(User user, String username, String ip, String deviceInfo, String location, String status, String reason) {
         try {
             com.university.erp.model.LoginLog logEntry = com.university.erp.model.LoginLog.builder()
                     .user(user)
                     .username(username)
                     .ipAddress(ip)
+                    .deviceInfo(safeDevice(deviceInfo))
                     .loginTime(java.time.LocalDateTime.now())
                     .status(status)
-                    .reason(reason)
+                    .reason(reason + " | location=" + safeLocation(location))
                     .build();
             loginLogRepository.save(logEntry);
         } catch (Exception ex) {
@@ -632,5 +654,15 @@ public class AuthService {
         }
         String digits = text.substring(i + 1);
         return digits.isBlank() ? null : digits;
+    }
+
+    private String safeDevice(String value) {
+        if (value == null || value.isBlank()) return "unknown";
+        return value.length() > 500 ? value.substring(0, 500) : value;
+    }
+
+    private String safeLocation(String value) {
+        if (value == null || value.isBlank()) return "UNKNOWN";
+        return value.length() > 120 ? value.substring(0, 120) : value;
     }
 }

@@ -2,6 +2,7 @@ package com.university.erp.service;
 
 import com.university.erp.dto.TimetableGenerateRequest;
 import com.university.erp.dto.TimetableGenerationResponseDto;
+import com.university.erp.dto.TimetablePrintReadyReportDto;
 import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -131,5 +132,31 @@ class TimetableServiceTest {
         }
         assertTrue(saved.stream().allMatch(slot -> slot.getStartTime().compareTo("08:00:00") >= 0));
         assertTrue(saved.stream().allMatch(slot -> slot.getEndTime().compareTo("15:00:00") <= 0));
+    }
+
+    @Test
+    void printReadyReportReturnsClassAndFacultyFormat() {
+        TimetableSlot slot = TimetableSlot.builder()
+                .dayOfWeek("MONDAY")
+                .startTime("08:00:00")
+                .endTime("08:50:00")
+                .subject(ds)
+                .faculty(facultyA)
+                .section("CSE-A")
+                .department(dept)
+                .build();
+        when(timetableSlotRepository.findByDepartmentId(1L)).thenReturn(List.of(slot));
+
+        TimetablePrintReadyReportDto report = timetableService.getPrintReadyTimetableReport(1L, null);
+
+        assertNotNull(report);
+        assertEquals("Day -> Period -> Subject -> Faculty", report.getDisplayFormat());
+        assertTrue(report.getClassWiseReport().containsKey("CSE-A"));
+        assertTrue(report.getFacultyWiseReport().containsKey("Faculty A"));
+        String classLine = report.getClassWiseReport().get("CSE-A").get(0);
+        String facultyLine = report.getFacultyWiseReport().get("Faculty A").get(0);
+        assertTrue(classLine.contains("MONDAY -> Period 1"));
+        assertTrue(classLine.contains("-> Faculty A"));
+        assertTrue(facultyLine.contains("[Section: CSE-A]"));
     }
 }

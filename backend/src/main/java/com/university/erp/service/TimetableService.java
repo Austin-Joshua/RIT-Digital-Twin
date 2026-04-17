@@ -3,6 +3,8 @@ package com.university.erp.service;
 import com.university.erp.dto.TimetableGenerateRequest;
 import com.university.erp.dto.TimetableGeneratorAccessDto;
 import com.university.erp.dto.TimetableGenerationResponseDto;
+import com.university.erp.dto.TimetableMatrixEntryDto;
+import com.university.erp.dto.TimetablePrintReadyReportDto;
 import com.university.erp.dto.TimetableUnscheduledItemDto;
 import com.university.erp.dto.TimetableValidationReportDto;
 import com.university.erp.model.*;
@@ -27,6 +29,7 @@ public class TimetableService {
     private static final LocalTime WORK_DAY_END = LocalTime.of(15, 0);
     private static final int FIXED_PERIOD_DURATION_MINUTES = 50;
     private static final int FIXED_PERIODS_PER_DAY = (int) ((WORK_DAY_END.toSecondOfDay() - WORK_DAY_START.toSecondOfDay()) / (FIXED_PERIOD_DURATION_MINUTES * 60L));
+    private static final String APPROVAL_STATUS_APPROVED = "APPROVED";
     private static final Map<String, Integer> CURRICULUM_PERIODS_BY_CODE = buildCurriculumPeriodMap();
 
     private final TimetableSlotRepository timetableSlotRepository;
@@ -85,6 +88,47 @@ public class TimetableService {
     }
 
     @Transactional(readOnly = true)
+    public TimetablePrintReadyReportDto getPrintReadyTimetableReport(Long deptId, String section) {
+        if (deptId == null) {
+            throw new RuntimeException("Department is required");
+        }
+        List<TimetableSlot> slots = getAdminTimetable(deptId, section);
+        List<TimetableSlot> sortedByClass = slots.stream()
+                .sorted(Comparator.comparing(TimetableSlot::getSection, Comparator.nullsLast(String::compareTo))
+                        .thenComparing(this::dayRank)
+                        .thenComparing(TimetableSlot::getStartTime))
+                .toList();
+
+        Map<String, List<String>> classWise = new TreeMap<>();
+        for (TimetableSlot slot : sortedByClass) {
+            String sectionKey = normalizeSection(slot.getSection());
+            classWise.computeIfAbsent(sectionKey, key -> new ArrayList<>())
+                    .add(formatPrintLine(slot, false));
+        }
+
+        List<TimetableSlot> sortedByFaculty = slots.stream()
+                .sorted(Comparator.comparing((TimetableSlot slot) -> facultyLabel(slot.getFaculty()))
+                        .thenComparing(this::dayRank)
+                        .thenComparing(TimetableSlot::getStartTime)
+                        .thenComparing(TimetableSlot::getSection, Comparator.nullsLast(String::compareTo)))
+                .toList();
+        Map<String, List<String>> facultyWise = new TreeMap<>();
+        for (TimetableSlot slot : sortedByFaculty) {
+            String facultyKey = facultyLabel(slot.getFaculty());
+            facultyWise.computeIfAbsent(facultyKey, key -> new ArrayList<>())
+                    .add(formatPrintLine(slot, true));
+        }
+
+        return TimetablePrintReadyReportDto.builder()
+                .departmentId(deptId)
+                .sectionScope(section == null || section.isBlank() ? "ALL" : normalizeSection(section))
+                .displayFormat("Day -> Period -> Subject -> Faculty")
+                .classWiseReport(classWise)
+                .facultyWiseReport(facultyWise)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
     public TimetableGeneratorAccessDto getTimetableGeneratorAccess(User currentUser) {
         boolean canGenerate = canCurrentUserGenerateTimetable(currentUser);
         String configured = normalizeConfiguredGeneratorUsername();
@@ -125,12 +169,13 @@ public class TimetableService {
         }
 
         List<FacultySubject> allocations = facultySubjectRepository.findBySubject_Department_Id(dept.getId()).stream()
+                .filter(this::isApprovedAllocation)
                 .filter(fs -> fs.getSection() != null && sections.contains(normalizeSection(fs.getSection())))
                 .filter(fs -> semesterNumber == 0 || (fs.getSemester() != null && semesterNumber == fs.getSemester().getSemesterNumber()))
                 .toList();
 
         if (allocations.isEmpty()) {
-            throw new RuntimeException("No faculty-subject allocation found for selected scope.");
+            throw new RuntimeException("No HOD-approved faculty-subject allocation found for selected scope.");
         }
 
         List<RequirementUnit> requirementUnits = buildRequirementUnits(dept, sections, allocations, semesterNumber);
@@ -192,12 +237,14 @@ public class TimetableService {
         }
 
         if (strictMode && !unscheduledItems.isEmpty()) {
-            TimetableValidationReportDto report = buildValidationReport(totalDemand, scheduledCount, unscheduledItems, assignmentsBySlot, slotKeys);
+            TimetableValidationReportDto report = buildValidationReport(totalDemand, scheduledCount, unscheduledItems, assignmentsBySlot, slotKeys, sections);
             return TimetableGenerationResponseDto.builder()
                     .success(false)
                     .message("Timetable generation failed in strict mode due to unscheduled requirements.")
                     .slots(Collections.emptyList())
                     .validation(report)
+                    .classWiseTimetable(Collections.emptyMap())
+                    .facultyWiseTimetable(Collections.emptyMap())
                     .build();
         }
 
@@ -220,7 +267,8 @@ public class TimetableService {
         }
         saved = timetableSlotRepository.saveAll(saved);
 
-        TimetableValidationReportDto report = buildValidationReport(totalDemand, scheduledCount, unscheduledItems, assignmentsBySlot, slotKeys);
+        TimetableValidationReportDto report = buildValidationReport(totalDemand, scheduledCount, unscheduledItems, assignmentsBySlot, slotKeys, sections);
+        TimetableMatrices matrices = buildTimetableMatrices(assignmentsBySlot, slotKeys, sections);
         return TimetableGenerationResponseDto.builder()
                 .success(unscheduledItems.isEmpty())
                 .message(unscheduledItems.isEmpty()
@@ -232,6 +280,8 @@ public class TimetableService {
                                 .thenComparing(TimetableSlot::getStartTime))
                         .toList())
                 .validation(report)
+                .classWiseTimetable(matrices.classWise())
+                .facultyWiseTimetable(matrices.facultyWise())
                 .build();
     }
 
@@ -393,7 +443,8 @@ public class TimetableService {
             Map<RequirementUnit, Integer> scheduledCount,
             List<TimetableUnscheduledItemDto> unscheduledItems,
             Map<SlotKey, List<Assignment>> assignmentsBySlot,
-            List<SlotKey> validKeys
+            List<SlotKey> validKeys,
+            List<String> sections
     ) {
         int scheduled = scheduledCount.values().stream().mapToInt(Integer::intValue).sum();
         int unscheduledPeriods = Math.max(totalDemand - scheduled, 0);
@@ -416,19 +467,29 @@ public class TimetableService {
 
         Set<SlotKey> keySet = new HashSet<>(validKeys);
         boolean allSlotsValid = assignmentsBySlot.keySet().stream().allMatch(keySet::contains);
+        boolean allRequiredHoursSatisfied = unscheduledItems.isEmpty()
+                && scheduledCount.entrySet().stream().allMatch(entry -> Objects.equals(entry.getKey().requiredPeriods(), entry.getValue()));
 
         Map<String, Integer> dailyLoadBySection = new TreeMap<>();
+        Map<String, Integer> sectionScheduledCounts = new HashMap<>();
         for (Map.Entry<SlotKey, List<Assignment>> entry : assignmentsBySlot.entrySet()) {
             for (Assignment assignment : entry.getValue()) {
                 String key = assignment.section() + "-" + entry.getKey().day();
                 dailyLoadBySection.merge(key, 1, Integer::sum);
+                sectionScheduledCounts.merge(assignment.section(), 1, Integer::sum);
             }
         }
+        boolean fullyFilled = sections.stream()
+                .allMatch(section -> sectionScheduledCounts.getOrDefault(section, 0) >= validKeys.size());
 
         return TimetableValidationReportDto.builder()
                 .facultyClashFree(facultyClashes == 0)
                 .classClashFree(classClashes == 0)
+                .noSubjectOverlap(facultyClashes == 0)
+                .crossClassConflictFree(facultyClashes == 0)
                 .allSubjectsScheduled(unscheduledItems.isEmpty())
+                .allRequiredHoursSatisfied(allRequiredHoursSatisfied)
+                .fullyFilled(fullyFilled)
                 .allSlotsValid(allSlotsValid)
                 .totalDemandPeriods(totalDemand)
                 .scheduledPeriods(scheduled)
@@ -437,6 +498,64 @@ public class TimetableService {
                 .classClashCount(classClashes)
                 .dailyLoadBySection(dailyLoadBySection)
                 .unscheduledItems(unscheduledItems)
+                .build();
+    }
+
+    private TimetableMatrices buildTimetableMatrices(
+            Map<SlotKey, List<Assignment>> assignmentsBySlot,
+            List<SlotKey> slotKeys,
+            List<String> sections
+    ) {
+        Map<String, Assignment> bySectionSlot = new HashMap<>();
+        Map<String, Assignment> byFacultySlot = new HashMap<>();
+        Set<User> facultyUsers = new HashSet<>();
+
+        for (Map.Entry<SlotKey, List<Assignment>> entry : assignmentsBySlot.entrySet()) {
+            SlotKey slot = entry.getKey();
+            for (Assignment assignment : entry.getValue()) {
+                bySectionSlot.put(assignment.section() + "|" + slot.day() + "|" + slot.periodIndex(), assignment);
+                byFacultySlot.put(assignment.faculty().getUserId() + "|" + slot.day() + "|" + slot.periodIndex(), assignment);
+                facultyUsers.add(assignment.faculty());
+            }
+        }
+
+        Map<String, List<TimetableMatrixEntryDto>> classWise = new TreeMap<>();
+        for (String section : sections) {
+            List<TimetableMatrixEntryDto> entries = new ArrayList<>();
+            for (SlotKey key : slotKeys) {
+                Assignment assignment = bySectionSlot.get(section + "|" + key.day() + "|" + key.periodIndex());
+                entries.add(buildMatrixEntry(key, section, assignment));
+            }
+            classWise.put(section, entries);
+        }
+
+        Map<String, List<TimetableMatrixEntryDto>> facultyWise = new TreeMap<>();
+        for (User faculty : facultyUsers) {
+            String facultyKey = facultyLabel(faculty);
+            List<TimetableMatrixEntryDto> entries = new ArrayList<>();
+            for (SlotKey key : slotKeys) {
+                Assignment assignment = byFacultySlot.get(faculty.getUserId() + "|" + key.day() + "|" + key.periodIndex());
+                entries.add(buildMatrixEntry(key, assignment != null ? assignment.section() : null, assignment));
+            }
+            facultyWise.put(facultyKey, entries);
+        }
+
+        return new TimetableMatrices(classWise, facultyWise);
+    }
+
+    private TimetableMatrixEntryDto buildMatrixEntry(SlotKey key, String section, Assignment assignment) {
+        Subject subject = assignment == null ? null : assignment.subject();
+        User faculty = assignment == null ? null : assignment.faculty();
+        return TimetableMatrixEntryDto.builder()
+                .day(key.day())
+                .period(key.periodIndex() + 1)
+                .startTime(key.startTime())
+                .endTime(key.endTime())
+                .section(section)
+                .subjectCode(subject == null ? "FREE" : subject.getSubjectCode())
+                .subjectName(subject == null ? "FREE PERIOD" : subject.getSubjectName())
+                .facultyName(faculty == null ? "-" : facultyLabel(faculty))
+                .freePeriod(subject == null)
                 .build();
     }
 
@@ -490,6 +609,14 @@ public class TimetableService {
                 || code.contains("act");
     }
 
+    private boolean isApprovedAllocation(FacultySubject facultySubject) {
+        String status = facultySubject.getApprovalStatus();
+        if (status == null || status.isBlank()) {
+            return true; // Backward compatibility for legacy data.
+        }
+        return APPROVAL_STATUS_APPROVED.equalsIgnoreCase(status.trim());
+    }
+
     private boolean canCurrentUserGenerateTimetable(User currentUser) {
         if (currentUser == null) {
             return false;
@@ -529,10 +656,52 @@ public class TimetableService {
     }
 
     private String facultyLabel(User faculty) {
+        if (faculty == null) {
+            return "Unassigned";
+        }
         String firstName = faculty.getFirstName() == null ? "" : faculty.getFirstName().trim();
         String lastName = faculty.getLastName() == null ? "" : faculty.getLastName().trim();
         String full = (firstName + " " + lastName).trim();
         return full.isBlank() ? faculty.getUsername() : full;
+    }
+
+    private String formatPrintLine(TimetableSlot slot, boolean includeSection) {
+        int period = resolvePeriodNumber(slot.getStartTime());
+        String day = slot.getDayOfWeek() == null ? "-" : slot.getDayOfWeek().toUpperCase();
+        String subject = slot.getSubject() == null
+                ? "FREE PERIOD"
+                : ((slot.getSubject().getSubjectCode() == null ? "" : slot.getSubject().getSubjectCode() + " - ")
+                + (slot.getSubject().getSubjectName() == null ? "-" : slot.getSubject().getSubjectName()));
+        String faculty = facultyLabel(slot.getFaculty());
+        String line = day + " -> Period " + period + " -> " + subject + " -> " + faculty;
+        if (includeSection) {
+            line = line + " [Section: " + normalizeSection(slot.getSection()) + "]";
+        }
+        return line;
+    }
+
+    private int resolvePeriodNumber(String startTime) {
+        if (startTime == null || startTime.isBlank()) {
+            return 0;
+        }
+        try {
+            LocalTime slotStart = LocalTime.parse(startTime);
+            int minutes = (int) java.time.Duration.between(WORK_DAY_START, slotStart).toMinutes();
+            if (minutes < 0) return 0;
+            return (minutes / FIXED_PERIOD_DURATION_MINUTES) + 1;
+        } catch (Exception ignored) {
+            return 0;
+        }
+    }
+
+    private int dayRank(TimetableSlot slot) {
+        return dayRank(slot.getDayOfWeek());
+    }
+
+    private int dayRank(String day) {
+        String normalized = day == null ? "" : day.trim().toUpperCase();
+        int index = DEFAULT_DAYS.indexOf(normalized);
+        return index >= 0 ? index : Integer.MAX_VALUE;
     }
 
     private static Map<String, Integer> buildCurriculumPeriodMap() {
@@ -586,4 +755,8 @@ public class TimetableService {
     private record SlotKey(String day, int periodIndex, String startTime, String endTime) { }
     private record Assignment(String section, Subject subject, User faculty, SlotKey slotKey) { }
     private record SlotPair(SlotKey first, SlotKey second) { }
+    private record TimetableMatrices(
+            Map<String, List<TimetableMatrixEntryDto>> classWise,
+            Map<String, List<TimetableMatrixEntryDto>> facultyWise
+    ) { }
 }

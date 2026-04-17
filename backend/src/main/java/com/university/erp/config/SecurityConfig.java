@@ -1,6 +1,7 @@
 package com.university.erp.config;
 
 import com.university.erp.security.JwtAuthenticationFilter;
+import com.university.erp.security.SecurityActivityTrackingFilter;
 import com.university.erp.security.defense.AdaptiveDefenseFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,13 +36,16 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final com.university.erp.security.XssSanitizationFilter xssSanitizationFilter;
     private final AdaptiveDefenseFilter adaptiveDefenseFilter;
+    private final SecurityActivityTrackingFilter securityActivityTrackingFilter;
 
     public SecurityConfig(@org.springframework.context.annotation.Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
             @org.springframework.context.annotation.Lazy com.university.erp.security.XssSanitizationFilter xssSanitizationFilter,
-            @org.springframework.context.annotation.Lazy AdaptiveDefenseFilter adaptiveDefenseFilter) {
+            @org.springframework.context.annotation.Lazy AdaptiveDefenseFilter adaptiveDefenseFilter,
+            @org.springframework.context.annotation.Lazy SecurityActivityTrackingFilter securityActivityTrackingFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.xssSanitizationFilter = xssSanitizationFilter;
         this.adaptiveDefenseFilter = adaptiveDefenseFilter;
+        this.securityActivityTrackingFilter = securityActivityTrackingFilter;
     }
 
     @Bean
@@ -140,6 +144,7 @@ public class SecurityConfig {
         http.addFilterBefore(xssSanitizationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(adaptiveDefenseFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(securityActivityTrackingFilter, AdaptiveDefenseFilter.class);
         return http.build();
     }
 }

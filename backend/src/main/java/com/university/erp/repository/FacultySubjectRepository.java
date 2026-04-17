@@ -15,4 +15,13 @@ public interface FacultySubjectRepository extends JpaRepository<FacultySubject, 
 
     @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "subject.department", "subject.semester", "semester" })
     List<FacultySubject> findBySubject_Department_Id(Long departmentId);
+
+    @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "subject.department", "subject.semester", "semester", "requestedBy", "approvedBy" })
+    List<FacultySubject> findBySubject_Department_IdAndApprovalStatusIgnoreCase(Long departmentId, String approvalStatus);
+
+    @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "subject.department", "subject.semester", "semester", "requestedBy", "approvedBy" })
+    List<FacultySubject> findByApprovalStatusIgnoreCase(String approvalStatus);
+
+    @EntityGraph(attributePaths = { "faculty", "faculty.user", "subject", "subject.department", "subject.semester", "semester", "requestedBy", "approvedBy" })
+    List<FacultySubject> findByApprovalStatusIgnoreCaseAndSubject_Department_Id(String approvalStatus, Long departmentId);
 }

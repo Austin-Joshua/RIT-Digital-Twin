@@ -36,7 +36,25 @@ public class ErpCoreController {
     @PostMapping("/faculty-subjects")
     @PreAuthorize("hasAnyRole('ADMIN','HOD')")
     public ResponseEntity<?> assignFacultySubject(@RequestBody Map<String, Object> payload) {
-        return ResponseEntity.ok(erpCoreService.assignFacultySubject(payload));
+        return ResponseEntity.ok(erpCoreService.assignFacultySubject(payload, currentUser().getId()));
+    }
+
+    @PostMapping("/faculty-subjects/preferences")
+    @PreAuthorize("hasRole('FACULTY')")
+    public ResponseEntity<?> submitFacultyPreference(@RequestBody Map<String, Object> payload) {
+        return ResponseEntity.ok(erpCoreService.submitFacultySubjectPreference(payload, currentUser().getId()));
+    }
+
+    @GetMapping("/faculty-subjects/preferences/pending")
+    @PreAuthorize("hasAnyRole('ADMIN','HOD')")
+    public ResponseEntity<List<Map<String, Object>>> getPendingFacultyPreferences(@RequestParam(required = false) Long departmentId) {
+        return ResponseEntity.ok(erpCoreService.getPendingFacultySubjectPreferences(departmentId));
+    }
+
+    @PostMapping("/faculty-subjects/{facultySubjectId}/review")
+    @PreAuthorize("hasAnyRole('ADMIN','HOD')")
+    public ResponseEntity<?> reviewFacultyPreference(@PathVariable Long facultySubjectId, @RequestParam boolean approved) {
+        return ResponseEntity.ok(erpCoreService.reviewFacultySubjectPreference(facultySubjectId, approved, currentUser().getId()));
     }
 
     @PostMapping("/students/{studentId}/assign-subjects")

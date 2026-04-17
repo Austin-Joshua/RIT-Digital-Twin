@@ -3,6 +3,7 @@ package com.university.erp.controller;
 import com.university.erp.dto.TimetableGenerateRequest;
 import com.university.erp.dto.TimetableGeneratorAccessDto;
 import com.university.erp.dto.TimetableGenerationResponseDto;
+import com.university.erp.dto.TimetablePrintReadyReportDto;
 import com.university.erp.model.TimetableSlot;
 import com.university.erp.model.User;
 import com.university.erp.service.TimetableService;
@@ -46,7 +47,7 @@ public class TimetableController {
     }
 
     @PostMapping("/timetable/generate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
     public ResponseEntity<TimetableGenerationResponseDto> generateTimetable(
             @RequestBody TimetableGenerateRequest request,
             Authentication authentication) {
@@ -55,9 +56,17 @@ public class TimetableController {
     }
 
     @GetMapping("/timetable/generate-access")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
     public ResponseEntity<TimetableGeneratorAccessDto> getTimetableGenerateAccess(Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
         return ResponseEntity.ok(timetableService.getTimetableGeneratorAccess(currentUser));
+    }
+
+    @GetMapping("/timetable/print-report")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
+    public ResponseEntity<TimetablePrintReadyReportDto> getPrintReadyTimetableReport(
+            @RequestParam Long deptId,
+            @RequestParam(required = false) String section) {
+        return ResponseEntity.ok(timetableService.getPrintReadyTimetableReport(deptId, section));
     }
 }

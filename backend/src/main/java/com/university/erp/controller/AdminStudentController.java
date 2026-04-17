@@ -44,6 +44,11 @@ public class AdminStudentController {
         return ResponseEntity.ok(Map.of("message", "Password reset to register number and force change enabled"));
     }
 
+    @PostMapping("/{studentId}/rollback-last-change")
+    public ResponseEntity<Map<String, Object>> rollbackLastChange(@PathVariable Long studentId) {
+        return ResponseEntity.ok(onboardingService.rollbackStudentLastChange(studentId));
+    }
+
     @GetMapping("/export")
     public ResponseEntity<String> export(
             @RequestParam(required = false, defaultValue = "CSE-A") String section) {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,7 +34,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody AuthRequest authRequest,
                                                          HttpServletRequest request) {
         String clientIp = getClientIp(request);
-        return ResponseEntity.ok(authService.login(authRequest, clientIp));
+        return ResponseEntity.ok(authService.login(
+                authRequest,
+                clientIp,
+                request.getHeader("User-Agent"),
+                Optional.ofNullable(request.getHeader("CF-IPCountry"))
+                        .orElse(request.getHeader("X-Country-Code"))
+        ));
     }
 
     @PostMapping("/google")
