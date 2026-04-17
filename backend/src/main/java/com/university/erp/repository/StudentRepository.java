@@ -25,6 +25,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
     Optional<Student> findByRegisterNo(String registerNo);
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "user", "department" })
+    Optional<Student> findByEmailIgnoreCase(String email);
 
     Optional<Student> findByUser_Id(Long userId);
 

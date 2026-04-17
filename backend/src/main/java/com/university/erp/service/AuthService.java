@@ -97,6 +97,7 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(username, password));
 
             User user = (User) authentication.getPrincipal();
+            syncStudentIdentityFromMaster(user, username);
 
             if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
                 recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Account " + user.getAccountStatus());
@@ -133,6 +134,7 @@ public class AuthService {
 
         if (rescueUser.isPresent()) {
             User user = rescueUser.get();
+            syncStudentIdentityFromMaster(user, username);
             boolean isDefaultCredential = isDefaultCredentialMatch(user, username, password);
             boolean passwordMatches = passwordEncoder.matches(password, user.getPassword());
 
@@ -337,33 +339,50 @@ public class AuthService {
             String googleId = decodedToken.getUid();
 
             Optional<User> userOpt = userRepository.findByEmail(email);
+            Optional<Student> studentRecord = Optional.empty();
+            String registerNo = extractRegisterNoFromEmail(email);
             
             // Link by registration number if email find fails
             if (userOpt.isEmpty()) {
                 userOpt = resolveUserByAnyIdentity(email);
                 userOpt.ifPresent(u -> log.info("Found existing user by identity mapping for Google login {}", email));
             }
+            if (registerNo != null) {
+                studentRecord = studentRepository.findByRegisterNo(registerNo);
+                if (userOpt.isEmpty() && studentRecord.isPresent() && studentRecord.get().getUser() != null) {
+                    userOpt = Optional.of(studentRecord.get().getUser());
+                    log.info("Found existing user by student register mapping for Google login {}", email);
+                }
+            }
+            if (userOpt.isEmpty()) {
+                studentRecord = studentRecord.isPresent() ? studentRecord : studentRepository.findByEmailIgnoreCase(email);
+                if (studentRecord.isPresent() && studentRecord.get().getUser() != null) {
+                    userOpt = Optional.of(studentRecord.get().getUser());
+                    log.info("Found existing user by student email mapping for Google login {}", email);
+                }
+            }
 
             User user;
 
             if (userOpt.isPresent()) {
                 user = userOpt.get();
-                if (user.getGoogleId() == null) {
+                if (user.getGoogleId() == null || !googleId.equals(user.getGoogleId())) {
                     user.setGoogleId(googleId);
-                    userRepository.save(user);
-                    log.info("Linked Firebase Google account for user: {}", email);
                 }
-                
-                // Sync name from linked student record if present
-                if (user.getLinkedStudent() != null) {
-                    String studentName = user.getLinkedStudent().getStudentName();
-                    if (studentName != null && !studentName.isBlank()) {
-                        String[] parts = studentName.split(" ", 2);
-                        user.setFirstName(parts[0]);
-                        if (parts.length > 1) user.setLastName(parts[1]);
-                        userRepository.save(user);
+
+                if (studentRecord.isPresent()) {
+                    Student st = studentRecord.get();
+                    if (user.getLinkedStudent() == null || !st.getId().equals(user.getLinkedStudent().getId())) {
+                        user.setLinkedStudent(st);
                     }
                 }
+
+                if (user.getEmail() == null || user.getEmail().isBlank()) {
+                    user.setEmail(email);
+                }
+                userRepository.save(user);
+                syncStudentIdentityFromMaster(user, email);
+                log.info("Linked Firebase Google account for user: {}", email);
             } else {
                 if (!email.toLowerCase()
                         .matches("^[\\w.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\\.)*ritchennai\\.edu\\.in$")) {
@@ -375,24 +394,14 @@ public class AuthService {
                 Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                         .orElseThrow(() -> new RuntimeException("Default student role not configured."));
 
-                String prefix = email.split("@")[0];
-                String registerNo = null;
-                if (prefix.matches("^\\d+$")) {
-                    registerNo = prefix;
-                } else if (prefix.contains(".")) {
-                    String[] parts = prefix.split("\\.");
-                    String lastPart = parts[parts.length - 1];
-                    if (lastPart.matches("^\\d+$")) {
-                        registerNo = lastPart;
-                    }
-                }
-
                 String fullName = (String) decodedToken.getClaims().get("name");
                 String firstName = "Student";
                 String lastName = "";
                 
                 // Check if student record already exists to pull name
-                Optional<Student> studentRecord = registerNo != null ? studentRepository.findByRegisterNo(registerNo) : Optional.empty();
+                studentRecord = studentRecord.isPresent()
+                        ? studentRecord
+                        : (registerNo != null ? studentRepository.findByRegisterNo(registerNo) : Optional.empty());
                 if (studentRecord.isPresent() && studentRecord.get().getStudentName() != null) {
                     String sName = studentRecord.get().getStudentName();
                     String[] parts = sName.split(" ", 2);
@@ -441,6 +450,7 @@ public class AuthService {
 
                 user.setLinkedStudent(student);
                 userRepository.save(user);
+                syncStudentIdentityFromMaster(user, email);
             }
 
             log.info("Firebase Google login successful for user: {}", user.getUsername());
@@ -596,6 +606,68 @@ public class AuthService {
         return new String[] { firstName, lastName };
     }
 
+    private void syncStudentIdentityFromMaster(User user, String identifierHint) {
+        if (user == null || user.getRole() == null || user.getRole().getRoleName() == null) {
+            return;
+        }
+        if (user.getRole().getRoleName() != Role.UserRole.STUDENT) {
+            return;
+        }
+
+        Student linked = user.getLinkedStudent();
+        Student resolvedByIdentity = findStudentByKnownIdentifiers(user, identifierHint).orElse(null);
+        if (resolvedByIdentity != null && (linked == null || !resolvedByIdentity.getId().equals(linked.getId()))) {
+            linked = resolvedByIdentity;
+            user.setLinkedStudent(linked);
+        }
+
+        if (linked == null) {
+            return;
+        }
+
+        String studentName = linked.getStudentName();
+        if (studentName != null) {
+            String normalized = studentName.trim().replaceAll("\\s+", " ");
+            if (!normalized.isEmpty()) {
+                String[] parts = normalized.split(" ", 2);
+                String targetFirst = parts[0];
+                String targetLast = parts.length > 1 ? parts[1] : "";
+                if (!targetFirst.equals(user.getFirstName()) || !targetLast.equals(user.getLastName())) {
+                    user.setFirstName(targetFirst);
+                    user.setLastName(targetLast);
+                }
+            }
+        }
+
+        userRepository.save(user);
+    }
+
+    private Optional<Student> findStudentByKnownIdentifiers(User user, String identifierHint) {
+        List<String> candidates = new ArrayList<>();
+
+        if (identifierHint != null && !identifierHint.isBlank()) {
+            candidates.addAll(deriveRegisterNoCandidates(identifierHint.trim()));
+        }
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
+            candidates.addAll(deriveRegisterNoCandidates(user.getUsername().trim()));
+            if (user.getUsername().trim().matches("^\\d{10,14}$")) {
+                candidates.add(user.getUsername().trim());
+            }
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            candidates.addAll(deriveRegisterNoCandidates(user.getEmail().trim()));
+        }
+
+        Set<String> dedup = new LinkedHashSet<>(candidates);
+        for (String candidate : dedup) {
+            Optional<Student> found = studentRepository.findByRegisterNo(candidate);
+            if (found.isPresent()) {
+                return found;
+            }
+        }
+        return Optional.empty();
+    }
+
     private Optional<User> resolveUserByAnyIdentity(String identifier) {
         if (identifier == null || identifier.isBlank()) {
             return Optional.empty();
@@ -667,6 +739,24 @@ public class AuthService {
             }
         }
         return new ArrayList<>(suffixes);
+    }
+
+    private String extractRegisterNoFromEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+        String local = email.trim().toLowerCase();
+        if (local.contains("@")) {
+            local = local.substring(0, local.indexOf('@'));
+        }
+        if (local.matches("^\\d{10,14}$")) {
+            return local;
+        }
+        String trailingDigits = extractTrailingDigits(local);
+        if (trailingDigits != null && trailingDigits.length() >= 10 && trailingDigits.length() <= 14) {
+            return trailingDigits;
+        }
+        return null;
     }
 
     private String extractTrailingDigits(String text) {
