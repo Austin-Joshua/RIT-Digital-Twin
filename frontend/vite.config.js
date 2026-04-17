@@ -31,6 +31,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg}'],
+        globIgnores: ['**/assets/images/RIT_LOGO.webp', '**/assets/images/rit_logo.webp'],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         maximumFileSizeToCacheInBytes: 30000000
       }
     })

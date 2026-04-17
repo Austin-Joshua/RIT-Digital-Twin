@@ -469,12 +469,15 @@ public class StudentDataSeeder implements CommandLineRunner {
         }
 
         BigDecimal cgpa = totalCredits == 0 ? BigDecimal.ZERO : totalGradePoints.divide(BigDecimal.valueOf(totalCredits), 2, RoundingMode.HALF_UP);
-        studentAcademicRepository.save(StudentAcademic.builder()
-                .student(student)
-                .semester(sem.getSemesterNumber())
-                .gpa(cgpa)
-                .cgpa(cgpa)
-                .build());
+        StudentAcademic academic = studentAcademicRepository
+                .findByStudent_IdAndSemester(student.getId(), sem.getSemesterNumber())
+                .orElseGet(() -> StudentAcademic.builder()
+                        .student(student)
+                        .semester(sem.getSemesterNumber())
+                        .build());
+        academic.setGpa(cgpa);
+        academic.setCgpa(cgpa);
+        studentAcademicRepository.save(academic);
         student.setCurrentCgpa(cgpa);
         studentRepository.save(student);
     }
