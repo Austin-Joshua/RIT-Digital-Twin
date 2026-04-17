@@ -1,6 +1,7 @@
 package com.university.erp.controller;
 
 import com.university.erp.dto.TimetableGenerateRequest;
+import com.university.erp.dto.TimetableGeneratorAccessDto;
 import com.university.erp.dto.TimetableGenerationResponseDto;
 import com.university.erp.model.TimetableSlot;
 import com.university.erp.model.User;
@@ -47,7 +48,16 @@ public class TimetableController {
     @PostMapping("/timetable/generate")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
     public ResponseEntity<TimetableGenerationResponseDto> generateTimetable(
-            @RequestBody TimetableGenerateRequest request) {
-        return ResponseEntity.ok(timetableService.generateWeeklyTimetable(request));
+            @RequestBody TimetableGenerateRequest request,
+            Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(timetableService.generateWeeklyTimetable(request, currentUser));
+    }
+
+    @GetMapping("/timetable/generate-access")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    public ResponseEntity<TimetableGeneratorAccessDto> getTimetableGenerateAccess(Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(timetableService.getTimetableGeneratorAccess(currentUser));
     }
 }

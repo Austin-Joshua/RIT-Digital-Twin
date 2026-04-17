@@ -1,6 +1,7 @@
 package com.university.erp.service;
 
 import com.university.erp.dto.TimetableGenerateRequest;
+import com.university.erp.dto.TimetableGeneratorAccessDto;
 import com.university.erp.dto.TimetableGenerationResponseDto;
 import com.university.erp.dto.TimetableUnscheduledItemDto;
 import com.university.erp.dto.TimetableValidationReportDto;
@@ -8,6 +9,7 @@ import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,10 @@ public class TimetableService {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final List<String> DEFAULT_DAYS = List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY");
+    private static final LocalTime WORK_DAY_START = LocalTime.of(8, 0);
+    private static final LocalTime WORK_DAY_END = LocalTime.of(15, 0);
+    private static final int FIXED_PERIOD_DURATION_MINUTES = 50;
+    private static final int FIXED_PERIODS_PER_DAY = (int) ((WORK_DAY_END.toSecondOfDay() - WORK_DAY_START.toSecondOfDay()) / (FIXED_PERIOD_DURATION_MINUTES * 60L));
     private static final Map<String, Integer> CURRICULUM_PERIODS_BY_CODE = buildCurriculumPeriodMap();
 
     private final TimetableSlotRepository timetableSlotRepository;
@@ -28,6 +34,8 @@ public class TimetableService {
     private final DepartmentRepository departmentRepository;
     private final FacultySubjectRepository facultySubjectRepository;
     private final TimetableSubjectRequirementRepository requirementRepository;
+    @Value("${app.timetable.generator-faculty-username:}")
+    private String generatorFacultyUsername;
 
     public TimetableService(
             TimetableSlotRepository timetableSlotRepository,
@@ -76,9 +84,28 @@ public class TimetableService {
         return timetableSlotRepository.findByDepartmentIdAndSection(deptId, section.trim());
     }
 
+    @Transactional(readOnly = true)
+    public TimetableGeneratorAccessDto getTimetableGeneratorAccess(User currentUser) {
+        boolean canGenerate = canCurrentUserGenerateTimetable(currentUser);
+        String configured = normalizeConfiguredGeneratorUsername();
+        String message = canGenerate
+                ? "You are authorized to generate timetable allocation."
+                : (configured.isEmpty()
+                    ? "Generator faculty is not configured. Set app.timetable.generator-faculty-username."
+                    : "Only configured faculty '" + configured + "' can generate timetable allocation.");
+        return TimetableGeneratorAccessDto.builder()
+                .canGenerate(canGenerate)
+                .configuredFacultyUsername(configured.isEmpty() ? null : configured)
+                .message(message)
+                .build();
+    }
+
     @Transactional
     @CacheEvict(cacheNames = "studentTimetable", allEntries = true)
-    public TimetableGenerationResponseDto generateWeeklyTimetable(TimetableGenerateRequest request) {
+    public TimetableGenerationResponseDto generateWeeklyTimetable(TimetableGenerateRequest request, User currentUser) {
+        if (!canCurrentUserGenerateTimetable(currentUser)) {
+            throw new RuntimeException("You are not allowed to generate timetable. Only the configured faculty can perform this action.");
+        }
         if (request == null || request.getDeptId() == null) {
             throw new RuntimeException("Department is required");
         }
@@ -86,8 +113,8 @@ public class TimetableService {
         Department dept = departmentRepository.findById(request.getDeptId())
                 .orElseThrow(() -> new RuntimeException("Department not found"));
 
-        int periodsPerDay = clamp(request.getPeriodsPerDay(), 6, 8, 6);
-        int periodDurationMinutes = clamp(request.getPeriodDurationMinutes(), 50, 50, 50);
+        int periodsPerDay = FIXED_PERIODS_PER_DAY;
+        int periodDurationMinutes = FIXED_PERIOD_DURATION_MINUTES;
         boolean strictMode = request.getStrictMode() == null || request.getStrictMode();
         int semesterNumber = request.getSemesterNumber() == null ? 0 : request.getSemesterNumber();
         List<String> days = DEFAULT_DAYS.subList(0, clamp(request.getDaysPerWeek(), 1, DEFAULT_DAYS.size(), DEFAULT_DAYS.size()));
@@ -119,19 +146,34 @@ public class TimetableService {
 
         requirementUnits.sort(Comparator.comparingInt(RequirementUnit::requiredPeriods).reversed());
         for (RequirementUnit unit : requirementUnits) {
+            if (isLabOrActivity(unit.subject())) {
+                int pairedTarget = unit.requiredPeriods() / 2;
+                for (int i = 0; i < pairedTarget; i++) {
+                    SlotPair pair = pickBestConsecutiveSlotPair(unit, slotKeys, sectionOccupied, facultyOccupied, sectionDailySubjectCount);
+                    if (pair == null) {
+                        break;
+                    }
+                    Assignment a1 = new Assignment(unit.section(), unit.subject(), unit.facultyUser(), pair.first());
+                    Assignment a2 = new Assignment(unit.section(), unit.subject(), unit.facultyUser(), pair.second());
+                    placeAssignment(unit, a1, assignmentsBySlot, sectionOccupied, facultyOccupied, sectionDailySubjectCount);
+                    placeAssignment(unit, a2, assignmentsBySlot, sectionOccupied, facultyOccupied, sectionDailySubjectCount);
+                    doneByUnit(scheduledCount, unit, 2);
+                }
+            }
             int done = 0;
+            if (scheduledCount.containsKey(unit)) {
+                done = scheduledCount.get(unit);
+            }
             for (int i = 0; i < unit.requiredPeriods(); i++) {
+                if (done >= unit.requiredPeriods()) {
+                    break;
+                }
                 SlotKey picked = pickBestSlot(unit, slotKeys, sectionOccupied, facultyOccupied, sectionDailySubjectCount);
                 if (picked == null) {
                     break;
                 }
                 Assignment assignment = new Assignment(unit.section(), unit.subject(), unit.facultyUser(), picked);
-                assignmentsBySlot.computeIfAbsent(picked, key -> new ArrayList<>()).add(assignment);
-                sectionOccupied.computeIfAbsent(unit.section(), key -> new HashSet<>()).add(picked);
-                facultyOccupied.computeIfAbsent(unit.facultyUser().getUserId(), key -> new HashSet<>()).add(picked);
-                sectionDailySubjectCount
-                        .computeIfAbsent(unit.section(), key -> new HashMap<>())
-                        .merge(dailySubjectKey(picked.day(), unit.subject().getId()), 1, Integer::sum);
+                placeAssignment(unit, assignment, assignmentsBySlot, sectionOccupied, facultyOccupied, sectionDailySubjectCount);
                 done++;
             }
             scheduledCount.put(unit, done);
@@ -191,6 +233,27 @@ public class TimetableService {
                         .toList())
                 .validation(report)
                 .build();
+    }
+
+    private void doneByUnit(Map<RequirementUnit, Integer> scheduledCount, RequirementUnit unit, int delta) {
+        scheduledCount.merge(unit, delta, Integer::sum);
+    }
+
+    private void placeAssignment(
+            RequirementUnit unit,
+            Assignment assignment,
+            Map<SlotKey, List<Assignment>> assignmentsBySlot,
+            Map<String, Set<SlotKey>> sectionOccupied,
+            Map<Long, Set<SlotKey>> facultyOccupied,
+            Map<String, Map<Long, Integer>> sectionDailySubjectCount
+    ) {
+        SlotKey slot = assignment.slotKey();
+        assignmentsBySlot.computeIfAbsent(slot, key -> new ArrayList<>()).add(assignment);
+        sectionOccupied.computeIfAbsent(unit.section(), key -> new HashSet<>()).add(slot);
+        facultyOccupied.computeIfAbsent(unit.facultyUser().getUserId(), key -> new HashSet<>()).add(slot);
+        sectionDailySubjectCount
+                .computeIfAbsent(unit.section(), key -> new HashMap<>())
+                .merge(dailySubjectKey(slot.day(), unit.subject().getId()), 1, Integer::sum);
     }
 
     private List<RequirementUnit> buildRequirementUnits(
@@ -283,6 +346,48 @@ public class TimetableService {
         return best;
     }
 
+    private SlotPair pickBestConsecutiveSlotPair(
+            RequirementUnit unit,
+            List<SlotKey> allKeys,
+            Map<String, Set<SlotKey>> sectionOccupied,
+            Map<Long, Set<SlotKey>> facultyOccupied,
+            Map<String, Map<Long, Integer>> sectionDailySubjectCount
+    ) {
+        SlotPair best = null;
+        int bestScore = Integer.MIN_VALUE;
+        for (SlotKey first : allKeys) {
+            SlotKey second = allKeys.stream()
+                    .filter(candidate -> candidate.day().equals(first.day()) && candidate.periodIndex() == first.periodIndex() + 1)
+                    .findFirst()
+                    .orElse(null);
+            if (second == null) continue;
+            if (!isSlotAvailable(unit, first, sectionOccupied, facultyOccupied)
+                    || !isSlotAvailable(unit, second, sectionOccupied, facultyOccupied)) continue;
+
+            int dayRepeat = sectionDailySubjectCount
+                    .getOrDefault(unit.section(), Collections.emptyMap())
+                    .getOrDefault(dailySubjectKey(first.day(), unit.subject().getId()), 0);
+            int score = 120 - (dayRepeat * 30) - first.periodIndex();
+            if (first.periodIndex() >= 5) score -= 10;
+            if (score > bestScore) {
+                bestScore = score;
+                best = new SlotPair(first, second);
+            }
+        }
+        return best;
+    }
+
+    private boolean isSlotAvailable(
+            RequirementUnit unit,
+            SlotKey key,
+            Map<String, Set<SlotKey>> sectionOccupied,
+            Map<Long, Set<SlotKey>> facultyOccupied
+    ) {
+        Set<SlotKey> classBusy = sectionOccupied.getOrDefault(unit.section(), Collections.emptySet());
+        Set<SlotKey> facultyBusy = facultyOccupied.getOrDefault(unit.facultyUser().getUserId(), Collections.emptySet());
+        return !classBusy.contains(key) && !facultyBusy.contains(key);
+    }
+
     private TimetableValidationReportDto buildValidationReport(
             int totalDemand,
             Map<RequirementUnit, Integer> scheduledCount,
@@ -337,11 +442,11 @@ public class TimetableService {
 
     private List<SlotKey> buildSlotKeys(List<String> days, int periodsPerDay) {
         List<SlotKey> keys = new ArrayList<>();
-        LocalTime start = LocalTime.of(9, 0);
+        LocalTime start = WORK_DAY_START;
         for (String day : days) {
             for (int period = 0; period < periodsPerDay; period++) {
-                LocalTime periodStart = start.plusMinutes(period * 50L);
-                LocalTime periodEnd = periodStart.plusMinutes(50);
+                LocalTime periodStart = start.plusMinutes(period * FIXED_PERIOD_DURATION_MINUTES);
+                LocalTime periodEnd = periodStart.plusMinutes(FIXED_PERIOD_DURATION_MINUTES);
                 keys.add(new SlotKey(day, period, periodStart.format(TIME_FORMATTER), periodEnd.format(TIME_FORMATTER)));
             }
         }
@@ -374,6 +479,44 @@ public class TimetableService {
         String code = subject.getSubjectCode() == null ? "" : subject.getSubjectCode().toLowerCase();
         String name = subject.getSubjectName() == null ? "" : subject.getSubjectName().toLowerCase();
         return code.contains("lab") || name.contains("lab");
+    }
+
+    private boolean isLabOrActivity(Subject subject) {
+        String code = subject.getSubjectCode() == null ? "" : subject.getSubjectCode().toLowerCase();
+        String name = subject.getSubjectName() == null ? "" : subject.getSubjectName().toLowerCase();
+        return isLab(subject)
+                || name.contains("activity")
+                || name.contains("practicum")
+                || code.contains("act");
+    }
+
+    private boolean canCurrentUserGenerateTimetable(User currentUser) {
+        if (currentUser == null) {
+            return false;
+        }
+        boolean adminOrHod = currentUser.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .anyMatch(authority -> authority.equals("ROLE_ADMIN") || authority.equals("ROLE_HOD"));
+        if (adminOrHod) {
+            return true;
+        }
+        boolean faculty = currentUser.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .anyMatch("ROLE_FACULTY"::equals);
+        if (!faculty) {
+            return false;
+        }
+        String configured = normalizeConfiguredGeneratorUsername();
+        if (configured.isEmpty()) {
+            return false;
+        }
+        String username = currentUser.getUsername() == null ? "" : currentUser.getUsername().trim().toLowerCase();
+        String email = currentUser.getEmail() == null ? "" : currentUser.getEmail().trim().toLowerCase();
+        return configured.equals(username) || configured.equals(email);
+    }
+
+    private String normalizeConfiguredGeneratorUsername() {
+        return generatorFacultyUsername == null ? "" : generatorFacultyUsername.trim().toLowerCase();
     }
 
     private Long dailySubjectKey(String day, Long subjectId) {
@@ -442,4 +585,5 @@ public class TimetableService {
     private record RequirementUnit(String section, Subject subject, User facultyUser, int requiredPeriods) { }
     private record SlotKey(String day, int periodIndex, String startTime, String endTime) { }
     private record Assignment(String section, Subject subject, User faculty, SlotKey slotKey) { }
+    private record SlotPair(SlotKey first, SlotKey second) { }
 }

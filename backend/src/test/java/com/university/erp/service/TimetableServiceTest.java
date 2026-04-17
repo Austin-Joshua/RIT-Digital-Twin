@@ -42,6 +42,7 @@ class TimetableServiceTest {
     private User facultyB;
     private FacultySubject fsDs;
     private FacultySubject fsDbms;
+    private User adminUser;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +57,8 @@ class TimetableServiceTest {
 
         FacultyProfile fpA = FacultyProfile.builder().facultyId(501L).user(facultyA).build();
         FacultyProfile fpB = FacultyProfile.builder().facultyId(502L).user(facultyB).build();
+        Role adminRole = Role.builder().roleId(1L).roleName(Role.UserRole.ADMIN).build();
+        adminUser = User.builder().userId(1L).username("admin").email("admin@test.com").role(adminRole).build();
 
         fsDs = FacultySubject.builder().facultySubjectId(1L).faculty(fpA).subject(ds).section("CSE-A").semester(semester).build();
         fsDbms = FacultySubject.builder().facultySubjectId(2L).faculty(fpB).subject(dbms).section("CSE-A").semester(semester).build();
@@ -68,18 +71,18 @@ class TimetableServiceTest {
         request.setSections(List.of("CSE-A"));
         request.setSemesterNumber(3);
         request.setDaysPerWeek(1);
-        request.setPeriodsPerDay(1);
+        request.setPeriodsPerDay(8);
         request.setStrictMode(true);
 
         when(departmentRepository.findById(1L)).thenReturn(Optional.of(dept));
         when(facultySubjectRepository.findBySubject_Department_Id(1L)).thenReturn(List.of(fsDs, fsDbms));
         when(requirementRepository.findByDepartment_IdAndSectionIgnoreCaseAndSemester_SemesterNumber(1L, "CSE-A", 3))
                 .thenReturn(List.of(
-                        TimetableSubjectRequirement.builder().subject(ds).periodsPerWeek(4).section("CSE-A").department(dept).build(),
-                        TimetableSubjectRequirement.builder().subject(dbms).periodsPerWeek(4).section("CSE-A").department(dept).build()
+                        TimetableSubjectRequirement.builder().subject(ds).periodsPerWeek(6).section("CSE-A").department(dept).build(),
+                        TimetableSubjectRequirement.builder().subject(dbms).periodsPerWeek(6).section("CSE-A").department(dept).build()
                 ));
 
-        TimetableGenerationResponseDto response = timetableService.generateWeeklyTimetable(request);
+        TimetableGenerationResponseDto response = timetableService.generateWeeklyTimetable(request, adminUser);
 
         assertFalse(response.isSuccess());
         assertNotNull(response.getValidation());
@@ -106,7 +109,7 @@ class TimetableServiceTest {
                 ));
         when(timetableSlotRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        TimetableGenerationResponseDto response = timetableService.generateWeeklyTimetable(request);
+        TimetableGenerationResponseDto response = timetableService.generateWeeklyTimetable(request, adminUser);
 
         assertNotNull(response.getValidation());
         assertTrue(response.getValidation().isFacultyClashFree());
@@ -126,5 +129,7 @@ class TimetableServiceTest {
             String facultyKey = slot.getFaculty().getUserId() + "|" + slot.getDayOfWeek() + "|" + slot.getStartTime();
             assertTrue(facultyTimeKeys.add(facultyKey), "Faculty clash detected");
         }
+        assertTrue(saved.stream().allMatch(slot -> slot.getStartTime().compareTo("08:00:00") >= 0));
+        assertTrue(saved.stream().allMatch(slot -> slot.getEndTime().compareTo("15:00:00") <= 0));
     }
 }

@@ -273,6 +273,7 @@ const App = () => {
                     <Route path="faculty/upload-marks" element={<RouteRoleGuard allowedRoles={['FACULTY']}><UploadMarks /></RouteRoleGuard>} />
                     <Route path="faculty/academics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAcademics /></RouteRoleGuard>} />
                     <Route path="faculty/timetable" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyTimetable /></RouteRoleGuard>} />
+                    <Route path="faculty/timetable-allocation" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ExamTimetableGeneratorUI /></RouteRoleGuard>} />
                     <Route path="faculty/leaves" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyLeaves /></RouteRoleGuard>} />
                     <Route path="faculty/attendance" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAttendance /></RouteRoleGuard>} />
                     <Route path="faculty/analytics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAnalytics /></RouteRoleGuard>} />

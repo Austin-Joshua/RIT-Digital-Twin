@@ -121,6 +121,7 @@ const InstitutionalLayout = () => {
         { path: '/faculty', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
         { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
         { path: '/faculty/timetable', label: 'My Timetable', icon: <LuCalendar /> },
+        { path: '/faculty/timetable-allocation', label: 'Timetable Allocation', icon: <LuCalendar /> },
         { path: '/faculty/grading', label: 'Performance Grading', icon: <LuAward /> },
         { path: '/faculty/attendance', label: 'Attendance', icon: <LuCalendar /> },
         { path: '/faculty/leaves', label: 'Leaves & Approvals', icon: <LuRefreshCcw /> },

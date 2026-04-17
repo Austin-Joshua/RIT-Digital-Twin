@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { LuFileCode } from 'react-icons/lu';
 import { academicAiApi } from '../../services/enterpriseApi';
 import { useToast } from '../../hooks/ToastContext';
+import { useAuth } from '../../hooks/AuthContext';
 
 const ExamTimetableGeneratorUI = () => {
+    const { user } = useAuth();
+    const userRole = (user?.role || '').replace('ROLE_', '').toUpperCase();
+    const isFacultyMode = userRole === 'FACULTY';
     const [mode, setMode] = useState('EXAM'); // 'EXAM' or 'WEEKLY'
     const [startDate, setStartDate] = useState('');
     const [deptId, setDeptId] = useState('1'); // Generic Default
@@ -15,7 +19,20 @@ const ExamTimetableGeneratorUI = () => {
     const [generating, setGenerating] = useState(false);
     const [timetable, setTimetable] = useState(null);
     const [analysis, setAnalysis] = useState(null);
+    const [generateAccess, setGenerateAccess] = useState({ canGenerate: !isFacultyMode, message: '' });
     const { addToast } = useToast();
+
+    useEffect(() => {
+        if (!isFacultyMode) return;
+        setMode('WEEKLY');
+        academicAiApi.getClassTimetableGenerateAccess()
+            .then((res) => {
+                setGenerateAccess(res.data || { canGenerate: false, message: 'Unable to verify access.' });
+            })
+            .catch(() => {
+                setGenerateAccess({ canGenerate: false, message: 'Unable to verify timetable generation access.' });
+            });
+    }, [isFacultyMode]);
 
     const handleGenerate = async () => {
         if (mode === 'EXAM' && !startDate) {
@@ -39,7 +56,7 @@ const ExamTimetableGeneratorUI = () => {
                     deptId: Number(deptId),
                     sections: [section],
                     semesterNumber: Number(semesterNumber),
-                    periodsPerDay: 6,
+                    periodsPerDay: 8,
                     daysPerWeek: 5,
                     periodDurationMinutes: 50,
                     strictMode
@@ -67,14 +84,26 @@ const ExamTimetableGeneratorUI = () => {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
-                <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>AI Exam Timetable Generator</h1>
-                <p style={{ color: 'var(--text-secondary)' }}>Automated constraint resolution to schedule exams without faculty or room clashes.</p>
+                <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>{isFacultyMode ? 'Faculty Timetable Allocation' : 'AI Exam Timetable Generator'}</h1>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                    {isFacultyMode
+                        ? 'Generate and review clash-free weekly allocation (08:00 to 15:00, 50-minute periods).'
+                        : 'Automated constraint resolution to schedule exams without faculty or room clashes.'}
+                </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-                <button onClick={() => setMode('EXAM')} style={{ padding: '8px 16px', borderRadius: '20px', border: mode === 'EXAM' ? 'none' : '1px solid var(--theme-border)', background: mode === 'EXAM' ? 'var(--color-primary-navy)' : 'transparent', color: mode === 'EXAM' ? 'white' : 'var(--theme-text)', cursor: 'pointer', fontWeight: 'bold' }}>Final Exams</button>
-                <button onClick={() => setMode('WEEKLY')} style={{ padding: '8px 16px', borderRadius: '20px', border: mode === 'WEEKLY' ? 'none' : '1px solid var(--theme-border)', background: mode === 'WEEKLY' ? 'var(--color-primary-navy)' : 'transparent', color: mode === 'WEEKLY' ? 'white' : 'var(--theme-text)', cursor: 'pointer', fontWeight: 'bold' }}>Weekly Class</button>
-            </div>
+            {!isFacultyMode && (
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                    <button onClick={() => setMode('EXAM')} style={{ padding: '8px 16px', borderRadius: '20px', border: mode === 'EXAM' ? 'none' : '1px solid var(--theme-border)', background: mode === 'EXAM' ? 'var(--color-primary-navy)' : 'transparent', color: mode === 'EXAM' ? 'white' : 'var(--theme-text)', cursor: 'pointer', fontWeight: 'bold' }}>Final Exams</button>
+                    <button onClick={() => setMode('WEEKLY')} style={{ padding: '8px 16px', borderRadius: '20px', border: mode === 'WEEKLY' ? 'none' : '1px solid var(--theme-border)', background: mode === 'WEEKLY' ? 'var(--color-primary-navy)' : 'transparent', color: mode === 'WEEKLY' ? 'white' : 'var(--theme-text)', cursor: 'pointer', fontWeight: 'bold' }}>Weekly Class</button>
+                </div>
+            )}
+
+            {isFacultyMode && generateAccess?.message && (
+                <div style={{ marginBottom: '12px', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', background: 'var(--card-bg)', color: generateAccess.canGenerate ? '#166534' : '#b45309' }}>
+                    {generateAccess.message}
+                </div>
+            )}
 
             <div className="exam-gen-controls" style={{
                 background: 'var(--card-bg)',
@@ -132,8 +161,8 @@ const ExamTimetableGeneratorUI = () => {
                 )}
                 <button
                     onClick={handleGenerate}
-                    disabled={generating || (mode === 'EXAM' && !startDate)}
-                    style={{ padding: '13px', borderRadius: '8px', border: 'none', background: generating ? '#ccc' : 'var(--color-primary-navy)', color: 'white', fontWeight: 'bold', cursor: (generating || (mode === 'EXAM' && !startDate)) ? 'wait' : 'pointer' }}
+                    disabled={generating || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)}
+                    style={{ padding: '13px', borderRadius: '8px', border: 'none', background: generating ? '#ccc' : 'var(--color-primary-navy)', color: 'white', fontWeight: 'bold', cursor: (generating || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)) ? 'not-allowed' : 'pointer' }}
                 >
                     {generating ? 'AI Processing...' : 'Generate Optimized Schedule'}
                 </button>

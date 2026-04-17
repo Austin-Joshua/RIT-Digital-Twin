@@ -109,6 +109,41 @@ BEGIN
             VALUES (@user_id, CAST(i AS CHAR), CONCAT('24CSE', RIGHT(CAST(i AS CHAR), 3)), full_name_val, 'CSE-A', '2024-2028', 1, 'active', @cse_id, scholar_type_val, CONCAT(i, '@ritchennai.edu.in'), NOW(), NOW());
             
             UPDATE users SET linked_student_id = LAST_INSERT_ID() WHERE user_id = @user_id;
+        ELSE
+            SET @user_id = (SELECT user_id FROM users WHERE username = CAST(i AS CHAR));
+
+            UPDATE users
+            SET email = CONCAT(i, '@ritchennai.edu.in'),
+                first_name = first_name_val,
+                last_name = last_name_val,
+                role_id = @role_id,
+                dept_id = @cse_id,
+                account_status = 'active',
+                updated_at = NOW()
+            WHERE user_id = @user_id;
+
+            IF EXISTS (SELECT 1 FROM students WHERE register_no = CAST(i AS CHAR)) THEN
+                UPDATE students
+                SET user_id = @user_id,
+                    student_id_number = CONCAT('24CSE', RIGHT(CAST(i AS CHAR), 3)),
+                    student_name = full_name_val,
+                    section = 'CSE-A',
+                    `batch` = '2024-2028',
+                    `year` = 1,
+                    `status` = 'active',
+                    department_id = @cse_id,
+                    scholar_type = scholar_type_val,
+                    email = CONCAT(i, '@ritchennai.edu.in'),
+                    updated_at = NOW()
+                WHERE register_no = CAST(i AS CHAR);
+            ELSE
+                INSERT INTO students (user_id, register_no, student_id_number, student_name, section, `batch`, `year`, `status`, department_id, scholar_type, email, created_at, updated_at)
+                VALUES (@user_id, CAST(i AS CHAR), CONCAT('24CSE', RIGHT(CAST(i AS CHAR), 3)), full_name_val, 'CSE-A', '2024-2028', 1, 'active', @cse_id, scholar_type_val, CONCAT(i, '@ritchennai.edu.in'), NOW(), NOW());
+            END IF;
+
+            UPDATE users
+            SET linked_student_id = (SELECT id FROM students WHERE register_no = CAST(i AS CHAR) LIMIT 1)
+            WHERE user_id = @user_id;
         END IF;
         SET i = i + 1;
     END WHILE;
@@ -202,6 +237,41 @@ BEGIN
             VALUES (@user_id, CAST(i AS CHAR), CONCAT('24CSBS', RIGHT(CAST(i AS CHAR), 3)), full_name_val, 'CSBS-C', '2024-2028', 1, 'active', @csbs_id, scholar_type_val, CONCAT(i, '@ritchennai.edu.in'), NOW(), NOW());
             
             UPDATE users SET linked_student_id = LAST_INSERT_ID() WHERE user_id = @user_id;
+        ELSE
+            SET @user_id = (SELECT user_id FROM users WHERE username = CAST(i AS CHAR));
+
+            UPDATE users
+            SET email = CONCAT(i, '@ritchennai.edu.in'),
+                first_name = first_name_val,
+                last_name = last_name_val,
+                role_id = @role_id,
+                dept_id = @csbs_id,
+                account_status = 'active',
+                updated_at = NOW()
+            WHERE user_id = @user_id;
+
+            IF EXISTS (SELECT 1 FROM students WHERE register_no = CAST(i AS CHAR)) THEN
+                UPDATE students
+                SET user_id = @user_id,
+                    student_id_number = CONCAT('24CSBS', RIGHT(CAST(i AS CHAR), 3)),
+                    student_name = full_name_val,
+                    section = 'CSBS-C',
+                    `batch` = '2024-2028',
+                    `year` = 1,
+                    `status` = 'active',
+                    department_id = @csbs_id,
+                    scholar_type = scholar_type_val,
+                    email = CONCAT(i, '@ritchennai.edu.in'),
+                    updated_at = NOW()
+                WHERE register_no = CAST(i AS CHAR);
+            ELSE
+                INSERT INTO students (user_id, register_no, student_id_number, student_name, section, `batch`, `year`, `status`, department_id, scholar_type, email, created_at, updated_at)
+                VALUES (@user_id, CAST(i AS CHAR), CONCAT('24CSBS', RIGHT(CAST(i AS CHAR), 3)), full_name_val, 'CSBS-C', '2024-2028', 1, 'active', @csbs_id, scholar_type_val, CONCAT(i, '@ritchennai.edu.in'), NOW(), NOW());
+            END IF;
+
+            UPDATE users
+            SET linked_student_id = (SELECT id FROM students WHERE register_no = CAST(i AS CHAR) LIMIT 1)
+            WHERE user_id = @user_id;
         END IF;
         SET i = i + 1;
     END WHILE;
