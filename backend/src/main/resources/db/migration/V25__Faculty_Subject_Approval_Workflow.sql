@@ -48,7 +48,7 @@ SET @sql = IF(@tbl_exists = 1 AND @col_exists = 0,
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 SET @sql = IF(@tbl_exists = 1,
-    'UPDATE faculty_subjects SET approval_status = ''APPROVED'' WHERE approval_status IS NULL OR approval_status = ''''''',
+    'UPDATE faculty_subjects SET approval_status = ''APPROVED'' WHERE approval_status IS NULL OR LENGTH(TRIM(approval_status)) = 0',
     'SELECT 1');
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
