@@ -144,9 +144,9 @@ const FacultyDashboard = () => {
 
             {/* Info Cards Row */}
             <div className="stu-info-row">
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaChalkboardTeacher color="var(--color-primary-navy)" />
+                        <FaChalkboardTeacher color="var(--theme-brand-strong)" />
                         <span style={{ color: 'var(--theme-text)' }}>My Assigned Subjects</span>
                     </div>
                     <div className="info-body">
@@ -201,7 +201,7 @@ const FacultyDashboard = () => {
                     <div className="info-footer">
                         <button
                             className="table-btn"
-                            style={{ width: '100%', background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-700) 100%)', color: 'var(--color-primary-navy)', fontWeight: 'bold', border: 'none' }}
+                            style={{ width: '100%', background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-700) 100%)', color: 'var(--theme-brand-strong)', fontWeight: 'bold', border: 'none' }}
                             onClick={() => navigate('/faculty/leaves')}
                         >
                             Review All Approvals

@@ -5,14 +5,18 @@ import { academicAiApi } from '../../services/enterpriseApi';
 import { useToast } from '../../hooks/ToastContext';
 import { useAuth } from '../../hooks/AuthContext';
 
+const DEFAULT_SECTION_OPTIONS = ['CSE-A', 'CSE-B', 'CSE-C', 'CSE-D', 'CSE-E', 'CSE-F', 'CSE-G'];
+
 const ExamTimetableGeneratorUI = () => {
     const { user } = useAuth();
     const userRole = (user?.role || '').replace('ROLE_', '').toUpperCase();
     const isFacultyMode = userRole === 'FACULTY';
     const [mode, setMode] = useState('EXAM'); // 'EXAM' or 'WEEKLY'
     const [startDate, setStartDate] = useState('');
-    const [deptId, setDeptId] = useState('1'); // Generic Default
-    const [section, setSection] = useState('CSE-A');
+    const [deptId, setDeptId] = useState('');
+    const [sections, setSections] = useState(['CSE-A']);
+    const [availableSections, setAvailableSections] = useState(DEFAULT_SECTION_OPTIONS);
+    const [allSections, setAllSections] = useState(false);
     const [semesterNumber, setSemesterNumber] = useState('3');
     const [strictMode, setStrictMode] = useState(true);
     const [constraints, setConstraints] = useState({ minGap: 1, session: 'BOTH' });
@@ -20,19 +24,28 @@ const ExamTimetableGeneratorUI = () => {
     const [timetable, setTimetable] = useState(null);
     const [analysis, setAnalysis] = useState(null);
     const [generateAccess, setGenerateAccess] = useState({ canGenerate: !isFacultyMode, message: '' });
+    const [supportedModes, setSupportedModes] = useState(['STRICT', 'BEST_EFFORT']);
     const { addToast } = useToast();
 
     useEffect(() => {
-        if (!isFacultyMode) return;
         setMode('WEEKLY');
-        academicAiApi.getClassTimetableGenerateAccess()
+        academicAiApi.getClassTimetableGenerateAccess(Number(semesterNumber))
             .then((res) => {
-                setGenerateAccess(res.data || { canGenerate: false, message: 'Unable to verify access.' });
+                const payload = res.data || { canGenerate: false, message: 'Unable to verify access.' };
+                setGenerateAccess(payload);
+                setDeptId(payload.allowedDepartmentId ? String(payload.allowedDepartmentId) : '');
+                setSupportedModes(payload.supportedModes || ['STRICT', 'BEST_EFFORT']);
+                if (payload.availableSections?.length) {
+                    setAvailableSections(payload.availableSections);
+                    setSections(payload.availableSections);
+                } else {
+                    setAvailableSections(DEFAULT_SECTION_OPTIONS);
+                }
             })
             .catch(() => {
                 setGenerateAccess({ canGenerate: false, message: 'Unable to verify timetable generation access.' });
             });
-    }, [isFacultyMode]);
+    }, [isFacultyMode, semesterNumber]);
 
     const handleGenerate = async () => {
         if (mode === 'EXAM' && !startDate) {
@@ -52,9 +65,15 @@ const ExamTimetableGeneratorUI = () => {
                 });
                 addToast('Exam timetable generated with AI optimization!', 'success');
             } else {
+                const targetSections = allSections ? availableSections : sections;
+                if (!targetSections.length) {
+                    addToast('Please select at least one section.', 'warning');
+                    setGenerating(false);
+                    return;
+                }
                 res = await academicAiApi.generateClassTimetable({
                     deptId: Number(deptId),
-                    sections: [section],
+                    sections: targetSections,
                     semesterNumber: Number(semesterNumber),
                     periodsPerDay: 8,
                     daysPerWeek: 5,
@@ -78,6 +97,44 @@ const ExamTimetableGeneratorUI = () => {
             setAnalysis(null);
         } finally {
             setGenerating(false);
+        }
+    };
+
+    const handlePdfDownload = async () => {
+        try {
+            const targetSections = allSections ? availableSections : sections;
+            if (!targetSections.length) {
+                addToast('Select sections before downloading PDF.', 'warning');
+                return;
+            }
+            const response = await academicAiApi.exportClassTimetablePdf({
+                deptId: Number(deptId),
+                sections: targetSections,
+                semesterNumber: Number(semesterNumber),
+                periodsPerDay: 8,
+                daysPerWeek: 5,
+                periodDurationMinutes: 50,
+                strictMode
+            });
+            if (!response?.data || response.data.size === 0) {
+                addToast('PDF response was empty. Please generate timetable once and retry.', 'warning');
+                return;
+            }
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const modeLabel = strictMode ? 'strict' : 'best-effort';
+            const sectionLabel = allSections ? 'all-sections' : targetSections.join('-').toLowerCase();
+            a.download = `department-timetable-sem${semesterNumber || 'x'}-${sectionLabel}-${modeLabel}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            addToast('Timetable PDF downloaded successfully with full schedule documentation.', 'success');
+        } catch (error) {
+            const apiMessage = error?.response?.data?.message;
+            addToast(apiMessage || 'Failed to download timetable PDF.', 'error');
         }
     };
 
@@ -131,18 +188,45 @@ const ExamTimetableGeneratorUI = () => {
                 ) : (
                     <>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Dept ID</label>
-                            <input type="number" value={deptId} onChange={(e) => setDeptId(e.target.value)}
-                                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }} />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Section</label>
-                            <select value={section} onChange={(e) => setSection(e.target.value)}
-                                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
-                                <option value="CSE-A">CSE-A</option>
-                                <option value="CSE-B">CSE-B</option>
-                                <option value="CSBS-C">CSBS-C</option>
-                            </select>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Sections</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600', color: 'var(--theme-text)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={allSections}
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            setAllSections(checked);
+                                            if (checked) {
+                                                setSections(availableSections);
+                                            } else {
+                                                setSections(availableSections.slice(0, 1));
+                                            }
+                                        }}
+                                    />
+                                    Generate for all available sections
+                                </label>
+                                {!allSections && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '6px' }}>
+                                        {availableSections.map((option) => (
+                                            <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--theme-text)' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={sections.includes(option)}
+                                                    onChange={(e) => {
+                                                        const checked = e.target.checked;
+                                                        setSections((prev) => {
+                                                            if (checked) return [...prev, option];
+                                                            return prev.filter((item) => item !== option);
+                                                        });
+                                                    }}
+                                                />
+                                                {option}
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Semester</label>
@@ -153,25 +237,34 @@ const ExamTimetableGeneratorUI = () => {
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--theme-text-muted)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase' }}>Mode</label>
                             <select value={strictMode ? 'STRICT' : 'BEST_EFFORT'} onChange={(e) => setStrictMode(e.target.value === 'STRICT')}
                                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)' }}>
-                                <option value="STRICT">Strict (fail if unscheduled)</option>
-                                <option value="BEST_EFFORT">Best effort</option>
+                                {supportedModes.includes('STRICT') && <option value="STRICT">Strict (enforce all constraints)</option>}
+                                {supportedModes.includes('BEST_EFFORT') && <option value="BEST_EFFORT">Best effort (always generate optimized schedule)</option>}
                             </select>
                         </div>
                     </>
                 )}
                 <button
                     onClick={handleGenerate}
-                    disabled={generating || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)}
-                    style={{ padding: '13px', borderRadius: '8px', border: 'none', background: generating ? '#ccc' : 'var(--color-primary-navy)', color: 'white', fontWeight: 'bold', cursor: (generating || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)) ? 'not-allowed' : 'pointer' }}
+                    disabled={generating || !deptId || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)}
+                    style={{ padding: '13px', borderRadius: '8px', border: 'none', background: generating ? '#ccc' : 'var(--color-primary-navy)', color: 'white', fontWeight: 'bold', cursor: (generating || !deptId || (mode === 'EXAM' && !startDate) || (isFacultyMode && !generateAccess.canGenerate)) ? 'not-allowed' : 'pointer' }}
                 >
                     {generating ? 'AI Processing...' : 'Generate Optimized Schedule'}
                 </button>
+                {mode === 'WEEKLY' && (
+                    <button
+                        onClick={handlePdfDownload}
+                        disabled={!deptId || (isFacultyMode && !generateAccess.canGenerate)}
+                        style={{ padding: '13px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'transparent', color: 'var(--theme-text)', fontWeight: 'bold', cursor: (!deptId || (isFacultyMode && !generateAccess.canGenerate)) ? 'not-allowed' : 'pointer' }}
+                    >
+                        Download Department PDF
+                    </button>
+                )}
             </div>
 
             {analysis && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px' }}>
                     {[
-                        { label: 'Conflicts Resolved', val: analysis.clashesResolved, color: 'var(--color-primary-navy)' },
+                        { label: 'Conflicts Resolved', val: analysis.clashesResolved, color: 'var(--theme-brand-strong)' },
                         { label: 'Room Utilization', val: analysis.roomUtilization, color: '#ca8a04' },
                         { label: 'Faculty Balance', val: analysis.facultyBalance, color: '#3c8dbc' }
                     ].map(stat => (
@@ -187,7 +280,7 @@ const ExamTimetableGeneratorUI = () => {
                 <div style={{ background: 'rgba(var(--card-bg-rgb, 255, 255, 255), 0.6)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', padding: '24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         <div style={{ padding: '8px', background: 'rgba(11, 44, 107, 0.1)', borderRadius: '10px' }}>
-                            <LuFileCode color="var(--color-primary-navy)" />
+                            <LuFileCode color="var(--theme-brand-strong)" />
                         </div>
                         <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--theme-text)', textTransform: 'uppercase', tracking: '0.5px' }}>Neural Conflict Resolution Report</h3>
                     </div>
@@ -227,7 +320,7 @@ const ExamTimetableGeneratorUI = () => {
                                 <tr key={slot.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                     <td style={{ padding: '12px', color: 'var(--text-primary)' }}>{mode === 'EXAM' ? slot.examDate : slot.dayOfWeek}</td>
                                     <td style={{ padding: '12px', color: 'var(--text-secondary)' }}>{slot.startTime} - {slot.endTime}</td>
-                                    <td style={{ padding: '12px', color: 'var(--color-primary-navy)', fontWeight: 'bold' }}>{slot.subject?.subjectName}</td>
+                                    <td style={{ padding: '12px', color: 'var(--theme-brand-strong)', fontWeight: 'bold' }}>{slot.subject?.subjectName}</td>
                                     <td style={{ padding: '12px', color: 'var(--text-primary)' }}>{mode === 'EXAM' ? slot.room?.roomNumber : slot.section}</td>
                                     <td style={{ padding: '12px', color: 'var(--text-primary)' }}>{slot.invigilator ? `${slot.invigilator.user?.firstName} ${slot.invigilator.user?.lastName}` : (slot.faculty?.user?.firstName || 'Assigned AI')}</td>
                                 </tr>

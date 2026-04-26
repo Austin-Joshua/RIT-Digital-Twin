@@ -33,7 +33,7 @@ const AuditLogViewer = () => {
 
             <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
                 {loading ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-primary-navy)' }}>Loading secure logs...</div>
+                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--theme-brand-strong)' }}>Loading secure logs...</div>
                 ) : (
                     <>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>

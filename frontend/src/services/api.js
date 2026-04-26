@@ -114,7 +114,7 @@ api.interceptors.response.use(
 
       // Only redirect if we're in a browser environment
       if (typeof window !== 'undefined') {
-        window.location.hash = '#/login';
+        window.location.href = '/login';
       }
       return Promise.reject(error);
     }

@@ -379,7 +379,7 @@ const ParentDashboard = () => {
                                         <tr key={`cat-${idx}`}>
                                             <td>{m.subject}</td>
                                             <td style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>CAT</td>
-                                            <td className="text-right font-bold" style={{ color: 'var(--color-primary-navy)' }}>{m.score} / {m.max}</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--theme-brand-strong)' }}>{m.score} / {m.max}</td>
                                         </tr>
                                     ))}
                                     {marks.assignments.map((m, idx) => (
@@ -397,7 +397,7 @@ const ParentDashboard = () => {
 
                 <div className="stu-info-card">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaHandshake color="var(--color-primary-navy)" />
+                        <FaHandshake color="var(--theme-brand-strong)" />
                         Pastoral Communication (Notes to Advisor)
                     </div>
                     <div className="info-body" style={{ padding: '20px' }}>
@@ -449,7 +449,7 @@ const ParentDashboard = () => {
                             {getSemesterResults(primary.user.email, 1).slice(0, 4).map((m, idx) => (
                                 <div key={idx} style={{ padding: '12px', background: 'var(--theme-bg-muted)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ fontSize: '13px', fontWeight: '600' }}>{m.title}</div>
-                                    <div style={{ fontWeight: '900', color: 'var(--color-primary-navy)' }}>{m.grade}</div>
+                                    <div style={{ fontWeight: '900', color: 'var(--theme-brand-strong)' }}>{m.grade}</div>
                                 </div>
                             ))}
                         </div>

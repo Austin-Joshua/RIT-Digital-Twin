@@ -1,7 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
-import { auth, googleProvider } from '../utils/firebase';
-import { signInWithPopup, signOut } from 'firebase/auth';
 
 
 const AuthContext = createContext(null);
@@ -63,11 +61,17 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         setRole(null);
         setIsAuthenticated(false);
-        
-        // Also sign out from Firebase if available
-        if (auth) {
-            signOut(auth).catch(err => console.warn('Firebase signout warning:', err));
-        }
+
+        // Best-effort Firebase sign-out to keep Google account state clean.
+        import('../utils/firebase')
+            .then(async ({ auth }) => {
+                if (!auth) return;
+                const { signOut } = await import('firebase/auth');
+                await signOut(auth);
+            })
+            .catch(() => {
+                // Ignore cleanup failures.
+            });
     };
 
     const login = async (username, password) => {
@@ -125,23 +129,26 @@ export const AuthProvider = ({ children }) => {
 
     const googleLogin = async () => {
         clearSession();
-        if (!auth || !googleProvider) {
-            return {
-                success: false,
-                message: 'Google login is not configured for this environment.'
-            };
-        }
         try {
-            // Trigger Firebase Google Sign-In Popup
+            const [{ auth, googleProvider }, { signInWithPopup }] = await Promise.all([
+                import('../utils/firebase'),
+                import('firebase/auth')
+            ]);
+
+            if (!auth || !googleProvider) {
+                return {
+                    success: false,
+                    message: 'Google login is not configured. Please add Firebase env values.',
+                };
+            }
+
             const result = await signInWithPopup(auth, googleProvider);
             const idToken = await result.user.getIdToken();
-
-            // Send Firebase ID Token to Backend
             const response = await api.post('/auth/google', { token: idToken });
             const { token: jwt, ...userData } = response.data || {};
-            
+
             if (!jwt || !userData) {
-                return { success: false, message: 'Invalid authentication response from server.' };
+                return { success: false, message: 'Invalid Google authentication response from server.' };
             }
 
             localStorage.setItem('token', jwt);
@@ -155,33 +162,22 @@ export const AuthProvider = ({ children }) => {
             setRole(userData.role || null);
             setIsAuthenticated(true);
 
-            return { 
-                success: true, 
+            return {
+                success: true,
                 role: userData.role || null,
                 mustChangePassword: userData.mustChangePassword === true
             };
         } catch (error) {
-            console.error('Firebase Google Login failed', error);
             let errorMessage = 'Google authentication failed.';
-            
-            if (error.code === 'auth/popup-closed-by-user') {
-                errorMessage = 'Login popup was closed before completion.';
-            } else if (error.code === 'auth/unauthorized-domain') {
-                errorMessage = 'This domain is not authorized in Firebase Auth. Add localhost in Firebase -> Authentication -> Settings -> Authorized domains.';
-            } else if (error.code === 'auth/operation-not-allowed') {
-                errorMessage = 'Google sign-in is disabled in Firebase. Enable Google provider in Firebase -> Authentication -> Sign-in method.';
-            } else if (error.code === 'auth/popup-blocked') {
-                errorMessage = 'Popup was blocked by the browser. Allow popups for this site and try again.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                errorMessage = 'Another sign-in popup was already open. Close popups and try again.';
-            } else if (error.code === 'auth/network-request-failed') {
-                errorMessage = 'Network issue while contacting Firebase. Check internet connection and try again.';
-            } else if (error.response?.data?.message) {
+            if (error?.code === 'auth/popup-closed-by-user') {
+                errorMessage = 'Google sign-in popup was closed before completion.';
+            } else if (error?.code === 'auth/unauthorized-domain') {
+                errorMessage = 'This domain is not authorized for Google sign-in.';
+            } else if (error?.response?.data?.message) {
                 errorMessage = error.response.data.message;
-            } else if (error.message) {
+            } else if (error?.message) {
                 errorMessage = `Google authentication failed: ${error.message}`;
             }
-            
             clearSession();
             return { success: false, message: errorMessage };
         }

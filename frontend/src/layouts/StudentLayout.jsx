@@ -57,6 +57,14 @@ const StudentLayout = () => {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
+    useEffect(() => {
+        // Warm up the timetable route chunk so first navigation feels instant.
+        const preloadId = window.setTimeout(() => {
+            import('../pages/student/Timetable');
+        }, 150);
+        return () => window.clearTimeout(preloadId);
+    }, []);
+
     // Close dropdown on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -214,7 +222,7 @@ const StudentLayout = () => {
                                             <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
                                             <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInPrimary}</div>
                                             <div style={{ fontSize: '11px', color: isDarkMode ? '#94a3b8' : '#64748b', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInSecondary}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Admin' : user?.role}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Principal' : user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/student/profile"
@@ -270,9 +278,9 @@ const StudentLayout = () => {
                 {/* Content */}
                 <div className="stu-content">
                     <Suspense fallback={
-                        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
-                            <div style={{ width: '40px', height: '40px', border: '4px solid #ccc', borderTopColor: '#0B2C6B', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
+                            <div className="app-soft-loader" />
+                            Loading page...
                         </div>
                     }>
                         <Outlet />

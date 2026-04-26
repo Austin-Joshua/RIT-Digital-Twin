@@ -23,7 +23,7 @@ const Button = ({ variant = 'primary', children, ...props }) => {
         if (variant === 'primary') {
             return {
                 ...base,
-                backgroundColor: 'var(--color-primary-navy)',
+                backgroundcolor: 'var(--theme-brand-strong)',
                 color: '#ffffff',
             };
         }

@@ -23,8 +23,13 @@ import com.university.erp.repository.AlumniProfileRepository;
 import com.university.erp.repository.AssetInventoryRepository;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
 import com.university.erp.repository.DepartmentRepository;
+import com.university.erp.repository.FacultyProfileRepository;
+import com.university.erp.repository.FacultySubjectRepository;
+import com.university.erp.repository.SemesterRepository;
 import com.university.erp.repository.SubjectRepository;
+import com.university.erp.model.FacultyProfile;
 import com.university.erp.model.Department;
+import com.university.erp.model.Semester;
 import com.university.erp.model.Subject;
 import com.university.erp.service.BruteForceProtectionService;
 import java.time.LocalTime;
@@ -32,6 +37,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -48,6 +55,9 @@ public class DataInitializer implements CommandLineRunner {
         private final AssetInventoryRepository assetRepo;
         private final FacultyLeaveRequestRepository leaveRepo;
         private final DepartmentRepository departmentRepository;
+        private final FacultyProfileRepository facultyProfileRepository;
+        private final FacultySubjectRepository facultySubjectRepository;
+        private final SemesterRepository semesterRepository;
         private final SubjectRepository subjectRepository;
         private final JdbcTemplate jdbcTemplate;
         private final BruteForceProtectionService bruteForceProtectionService;
@@ -56,7 +66,9 @@ public class DataInitializer implements CommandLineRunner {
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
                         BusStopRepository busStopRepository, AlumniProfileRepository alumniRepo,
                         AssetInventoryRepository assetRepo, FacultyLeaveRequestRepository leaveRepo,
-                        DepartmentRepository departmentRepository, SubjectRepository subjectRepository,
+                        DepartmentRepository departmentRepository, FacultyProfileRepository facultyProfileRepository,
+                        FacultySubjectRepository facultySubjectRepository, SemesterRepository semesterRepository,
+                        SubjectRepository subjectRepository,
                         JdbcTemplate jdbcTemplate, BruteForceProtectionService bruteForceProtectionService) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
@@ -67,6 +79,9 @@ public class DataInitializer implements CommandLineRunner {
                 this.assetRepo = assetRepo;
                 this.leaveRepo = leaveRepo;
                 this.departmentRepository = departmentRepository;
+                this.facultyProfileRepository = facultyProfileRepository;
+                this.facultySubjectRepository = facultySubjectRepository;
+                this.semesterRepository = semesterRepository;
                 this.subjectRepository = subjectRepository;
                 this.jdbcTemplate = jdbcTemplate;
                 this.bruteForceProtectionService = bruteForceProtectionService;
@@ -115,9 +130,11 @@ public class DataInitializer implements CommandLineRunner {
                 seedTransportData();
                 seedErpData();
                 seedCsbsData();
+                seedCseSem4CurriculumData();
                 ensureDemoAcademicLinks();
                 seedHodsForAllDepartments();
                 assignFacultyToDepartment();
+                seedCseMockFacultyAndAllocations();
                 assignRegisterNumbersToDemoStudents();
 
                 bruteForceProtectionService.clearAll();
@@ -207,8 +224,102 @@ public class DataInitializer implements CommandLineRunner {
                                         }
                                 });
                         }
+                        Department cseDept = departmentRepository.findByCode("CSE").orElse(null);
+                        if (cseDept != null) {
+                                userRepository.findByUsername("FAC-001").ifPresent(user -> {
+                                        user.setDepartment(cseDept);
+                                        userRepository.save(user);
+                                        log.info("Assigned faculty FAC-001 to department: {}", cseDept.getCode());
+                                });
+                        }
                 } catch (Exception e) {
                         log.debug("Faculty department assignment skipped: {}", e.getMessage());
+                }
+        }
+
+        private void seedCseMockFacultyAndAllocations() {
+                try {
+                        Department cseDept = departmentRepository.findByCode("CSE").orElse(null);
+                        if (cseDept == null) return;
+
+                        User hodUser = userRepository.findByEmail("hod_cse@ritchennai.edu.in")
+                                .or(() -> userRepository.findByEmail("hod@ritchennai.edu.in"))
+                                .orElse(null);
+
+                        List<String> mockFacultyCodes = List.of(
+                                "FAC-CSE-01", "FAC-CSE-02", "FAC-CSE-03", "FAC-CSE-04",
+                                "FAC-CSE-05", "FAC-CSE-06", "FAC-CSE-07", "FAC-CSE-08"
+                        );
+                        List<String> mockSections = List.of("CSE-A", "CSE-B", "CSE-C", "CSE-D", "CSE-E", "CSE-F", "CSE-G");
+                        for (int i = 0; i < mockFacultyCodes.size(); i++) {
+                                String code = mockFacultyCodes.get(i);
+                                String email = "mock" + (i + 1) + ".cse@ritchennai.edu.in";
+                                String first = "Mock";
+                                String last = "Faculty " + String.format("%02d", i + 1);
+                                seedUser(code, email, code, Role.UserRole.FACULTY, first, last);
+                                forceResetUser(code, email, code, Role.UserRole.FACULTY, first, last);
+                                userRepository.findByUsername(code).ifPresent(user -> {
+                                        user.setDepartment(cseDept);
+                                        userRepository.save(user);
+                                        facultyProfileRepository.findByUser_Id(user.getUserId())
+                                                .orElseGet(() -> facultyProfileRepository.save(FacultyProfile.builder()
+                                                        .user(user)
+                                                        .employeeCode(code)
+                                                        .department("CSE")
+                                                        .status("active")
+                                                        .build()));
+                                });
+                        }
+
+                        List<FacultyProfile> profiles = mockFacultyCodes.stream()
+                                .map(userRepository::findByUsername)
+                                .filter(Optional::isPresent)
+                                .map(Optional::get)
+                                .map(user -> facultyProfileRepository.findByUser_Id(user.getUserId()).orElse(null))
+                                .filter(Objects::nonNull)
+                                .toList();
+                        if (profiles.isEmpty()) {
+                                return;
+                        }
+
+                        Semester sem4 = semesterRepository.findBySemesterNumber(4).orElse(null);
+                        List<Subject> cseSubjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(
+                                4, cseDept.getDeptName()
+                        );
+                        if (cseSubjects.isEmpty()) {
+                                cseSubjects = subjectRepository.findByDepartmentId(cseDept.getId());
+                        }
+
+                        int sectionIndex = 0;
+                        for (String section : mockSections) {
+                                for (int subjectIndex = 0; subjectIndex < cseSubjects.size(); subjectIndex++) {
+                                        Subject subject = cseSubjects.get(subjectIndex);
+                                        FacultyProfile profile = profiles.get((subjectIndex + sectionIndex) % profiles.size());
+                                        Long semesterId = subject.getSemester() != null ? subject.getSemester().getSemesterId()
+                                                : (sem4 != null ? sem4.getSemesterId() : null);
+                                        if (semesterId == null) {
+                                                continue;
+                                        }
+                                        try {
+                                                jdbcTemplate.update(
+                                                        "INSERT INTO faculty_subjects (faculty_id, subject_id, section, semester_id, academic_year, approval_status, requested_by_user_id, approved_by_user_id, approved_at, created_at) " +
+                                                                "VALUES (?, ?, ?, ?, ?, 'APPROVED', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                                                        profile.getFacultyId(),
+                                                        subject.getId(),
+                                                        section,
+                                                        semesterId,
+                                                        2026,
+                                                        hodUser != null ? hodUser.getUserId() : null,
+                                                        hodUser != null ? hodUser.getUserId() : null
+                                                );
+                                        } catch (Exception ignored) {
+                                                // Unique constraint protects against duplicates during repeated startups.
+                                        }
+                                }
+                                sectionIndex++;
+                        }
+                } catch (Exception e) {
+                        log.warn("Mock CSE faculty allocation seeding skipped: {}", e.getMessage());
                 }
         }
 
@@ -461,6 +572,35 @@ public class DataInitializer implements CommandLineRunner {
                 seedSubject(csbs, "Business Analytics", "CB23531", 4, "R2023");
         }
 
+        private void seedCseSem4CurriculumData() {
+                Department cse = departmentRepository.findByCode("CSE").orElse(null);
+                if (cse == null) return;
+                Semester sem4 = semesterRepository.findBySemesterNumber(4)
+                        .orElseGet(() -> semesterRepository.save(Semester.builder().semesterNumber(4).build()));
+
+                seedCseSem4Subject(cse, sem4, "CS23411", "Database Management Systems", 3);
+                seedCseSem4Subject(cse, sem4, "CS23412", "Operating Systems", 3);
+                seedCseSem4Subject(cse, sem4, "CS23413", "Theory of Computation", 3);
+                seedCseSem4Subject(cse, sem4, "CS23414", "Software Development Practices", 3);
+                seedCseSem4Subject(cse, sem4, "AL23432", "Machine Learning Techniques", 4);
+                seedCseSem4Subject(cse, sem4, "CS23431", "Design and Analysis of Algorithms", 4);
+                seedCseSem4Subject(cse, sem4, "CS23421", "Database Management Systems Laboratory", 1);
+                seedCseSem4Subject(cse, sem4, "CS23422", "Operating Systems Laboratory", 1);
+                seedCseSem4Subject(cse, sem4, "CS231C2", "Visualization Tools", 1);
+        }
+
+        private void seedCseSem4Subject(Department dept, Semester semester, String code, String name, int credits) {
+                Subject subject = subjectRepository.findBySubjectCode(code).orElseGet(Subject::new);
+                subject.setSubjectCode(code);
+                subject.setSubjectName(name);
+                subject.setCredits(credits);
+                subject.setDepartment(dept);
+                subject.setDepartmentName(dept.getDeptName());
+                subject.setSemester(semester);
+                subject.setRegulation("R2023");
+                subjectRepository.save(subject);
+        }
+
         /**
          * Auto-repair deterministic demo links for end-to-end academic workflows.
          * Ensures faculty profiles, faculty-subject mappings, student-user links, and parent ward link.
@@ -469,13 +609,18 @@ public class DataInitializer implements CommandLineRunner {
                 try {
                         jdbcTemplate.update("""
                                         INSERT IGNORE INTO faculty_profiles (user_id, employee_code, department, status)
-                                        SELECT u.user_id, 'FAC-001', 'CSBS', 'active'
+                                        SELECT u.user_id, 'FAC-001', 'CSE', 'active'
                                         FROM users u
                                         JOIN roles r ON r.role_id = u.role_id
                                         WHERE r.role_name = 'FACULTY' AND u.username = 'FAC-001'
                                           AND NOT EXISTS (
                                             SELECT 1 FROM faculty_profiles fp WHERE fp.employee_code = 'FAC-001'
                                           )
+                                        """);
+                        jdbcTemplate.update("""
+                                        UPDATE faculty_profiles
+                                        SET department = 'CSE'
+                                        WHERE employee_code = 'FAC-001'
                                         """);
 
                         jdbcTemplate.update("""
@@ -499,6 +644,19 @@ public class DataInitializer implements CommandLineRunner {
                                           LIMIT 1
                                         )
                                         WHERE p.linked_student_id IS NULL
+                                        """);
+
+                        jdbcTemplate.update("""
+                                        UPDATE students s
+                                        JOIN users u ON u.user_id = s.user_id
+                                        SET s.dept_id = (SELECT d.id FROM departments d WHERE UPPER(d.code) = 'CSE' LIMIT 1),
+                                            s.current_semester = COALESCE(s.current_semester, 4),
+                                            s.section = CASE
+                                                WHEN s.section IS NULL OR s.section = '' THEN 'CSE-A'
+                                                WHEN UPPER(s.section) NOT LIKE 'CSE-%' THEN CONCAT('CSE-', UPPER(s.section))
+                                                ELSE UPPER(s.section)
+                                            END
+                                        WHERE u.username IN ('student@ritchennai.edu.in', 'student2@ritchennai.edu.in', 'student3@ritchennai.edu.in')
                                         """);
 
                         jdbcTemplate.update("""

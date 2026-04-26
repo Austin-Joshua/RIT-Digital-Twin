@@ -48,6 +48,8 @@
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --card-bg: #ffffff;
+    --theme-brand-strong: #0B2C6B;
+    --theme-link: #0B2C6B;
     /* Labels/section headers - high contrast in both modes */
     --theme-accent: var(--color-primary-navy);
     /* Publish Globally button */
@@ -80,7 +82,8 @@
     --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
 
     /* Transitions */
-    --transition-speed: 300ms;
+    --transition-speed: 260ms;
+    --transition-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Dark Mode Overrides - Optimized AAA Contrast */
@@ -96,6 +99,8 @@
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(255, 255, 255, 0.05);
     --card-bg: #0F172A;
+    --theme-brand-strong: #93C5FD;
+    --theme-link: #BFDBFE;
     --input-bg: #1E293B;
     --input-text: #F8FAFC;
     --input-placeholder: #64748B;
@@ -115,10 +120,23 @@
     --input-border: #E2E8F0;
 }
 
-/* Global Transition Utility */
-* {
-    transition: background-color var(--transition-speed),
-        border-color var(--transition-speed),
-        color var(--transition-speed),
-        box-shadow var(--transition-speed);
+/* Smooth transitions without forcing all elements to animate */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.card,
+.stu-kpi-card,
+.stu-info-card,
+.e-card,
+.tab-btn {
+    transition:
+        background-color var(--transition-speed) var(--transition-ease),
+        border-color var(--transition-speed) var(--transition-ease),
+        color var(--transition-speed) var(--transition-ease),
+        box-shadow var(--transition-speed) var(--transition-ease),
+        transform var(--transition-speed) var(--transition-ease),
+        opacity var(--transition-speed) var(--transition-ease);
 }

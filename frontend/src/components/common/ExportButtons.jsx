@@ -6,6 +6,7 @@ import 'jspdf-autotable';
 
 const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => {
     const { addToast } = useToast();
+    const safeFilename = `${String(filename || 'ExportData').replace(/[\\/:*?"<>|]+/g, '_')}-${Date.now()}`;
 
     const handlePdf = () => {
         if (!data || data.length === 0) {
@@ -41,8 +42,8 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
                 headStyles: { fillStyle: '#0B2C6B', textColor: 255 }
             });
 
-            doc.save(`${filename}.pdf`);
-            addToast(`${filename}.pdf downloaded successfully`, 'success');
+            doc.save(`${safeFilename}.pdf`);
+            addToast(`${safeFilename}.pdf downloaded successfully`, 'success');
         } catch (error) {
             console.error("PDF Export Error:", error);
             addToast("Failed to generate PDF", "error");
@@ -77,11 +78,11 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `${filename}.csv`);
+            link.setAttribute("download", `${safeFilename}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            addToast(`${filename}.csv downloaded successfully`, 'success');
+            addToast(`${safeFilename}.csv downloaded successfully`, 'success');
         } catch (error) {
             console.error("CSV Export Error:", error);
             addToast("Failed to generate CSV", "error");
@@ -98,7 +99,13 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
             const rows = data.map(row =>
                 (headers.length > 0 ? headers : Object.keys(row))
-                    .map(h => row[h] || '').join('\t')
+                    .map(h => {
+                        const normalizedHeader = h.toLowerCase().replace(/\s+/g, '');
+                        const rowKey = Object.keys(row).find(k =>
+                            k === h || k.toLowerCase() === h.toLowerCase() || k.toLowerCase() === normalizedHeader
+                        );
+                        return rowKey ? row[rowKey] : '';
+                    }).join('\t')
             );
             const textToCopy = [tableHeaders.join('\t'), ...rows].join('\n');
             navigator.clipboard.writeText(textToCopy);

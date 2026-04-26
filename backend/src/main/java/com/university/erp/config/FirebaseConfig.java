@@ -43,13 +43,31 @@ public class FirebaseConfig {
                     serviceAccount = new FileInputStream(credentialsPath.toFile());
                     System.out.println("Firebase Auth: Loaded service account from file path");
                 }
-                // 3. Fall back to classpath file
+                // 3. Fall back to common local file locations
                 else {
-                    serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
-                    if (serviceAccount == null) {
-                        throw new IOException("Could not find Firebase credentials in env, file path, or classpath.");
+                    Path[] localCandidates = new Path[] {
+                            Path.of("backend", "secrets", "firebase-service-account.json"),
+                            Path.of("secrets", "firebase-service-account.json")
+                    };
+                    InputStream resolved = null;
+                    for (Path candidate : localCandidates) {
+                        if (Files.exists(candidate)) {
+                            resolved = new FileInputStream(candidate.toFile());
+                            System.out.println("Firebase Auth: Loaded service account from local file: " + candidate);
+                            break;
+                        }
                     }
-                    System.out.println("Firebase Auth: Loaded service account from local resource file");
+                    if (resolved == null) {
+                        // 4. Final fallback to classpath file
+                        resolved = getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
+                        if (resolved != null) {
+                            System.out.println("Firebase Auth: Loaded service account from classpath resource.");
+                        }
+                    }
+                    if (resolved == null) {
+                        throw new IOException("Could not find Firebase credentials in env, file path, local secrets, or classpath.");
+                    }
+                    serviceAccount = resolved;
                 }
 
                 FirebaseOptions options = FirebaseOptions.builder()

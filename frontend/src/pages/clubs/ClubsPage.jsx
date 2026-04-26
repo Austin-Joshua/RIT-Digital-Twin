@@ -304,7 +304,7 @@ const ClubsPage = () => {
 
     return (
         <div className="stu-dashboard" style={{ display: 'grid', gap: '18px' }}>
-            <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+            <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
                 <div className="info-header">Club Management</div>
                 <div className="info-body">
                     <div style={{ color: 'var(--theme-text-muted)', fontSize: '14px' }}>
@@ -316,7 +316,7 @@ const ClubsPage = () => {
 
             {canManageClubs && (
                 <div className="stu-info-card" style={{ borderTopColor: '#7c3aed' }}>
-                    <div className="info-header">Admin Management Panel</div>
+                    <div className="info-header">Principal Management Panel</div>
                     <div className="info-body">
                         <form onSubmit={handleCreateClub} style={{ display: 'grid', gap: '10px' }}>
                             <input value={newClub.clubName} onChange={(e) => setNewClub({ ...newClub, clubName: e.target.value })} placeholder="Club Name" required />

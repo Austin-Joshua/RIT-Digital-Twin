@@ -12,4 +12,10 @@ public interface TimetableSubjectRequirementRepository extends JpaRepository<Tim
 
     @EntityGraph(attributePaths = { "department", "semester", "subject", "subject.department", "subject.semester" })
     List<TimetableSubjectRequirement> findByDepartment_IdAndSectionIgnoreCaseAndSemester_SemesterNumber(Long departmentId, String section, Integer semesterNumber);
+
+    @EntityGraph(attributePaths = { "department", "semester", "subject", "subject.department", "subject.semester" })
+    List<TimetableSubjectRequirement> findByDepartment_Id(Long departmentId);
+
+    @EntityGraph(attributePaths = { "department", "semester", "subject", "subject.department", "subject.semester" })
+    List<TimetableSubjectRequirement> findByDepartment_IdAndSemester_SemesterNumber(Long departmentId, Integer semesterNumber);
 }

@@ -96,7 +96,7 @@ const PredictionPage = () => {
 
             <div className="stu-info-row">
                 {/* Forecast Chart */}
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
                     <div className="info-header">6-Month Forecast Trend</div>
                     <div className="info-body">
                         <div style={{ height: '350px' }}>
@@ -104,8 +104,8 @@ const PredictionPage = () => {
                                 <AreaChart data={forecast?.forecastData}>
                                     <defs>
                                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="var(--color-primary-navy)" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="var(--color-primary-navy)" stopOpacity={0} />
+                                            <stop offset="5%" stopcolor="var(--theme-brand-strong)" stopOpacity={0.3} />
+                                            <stop offset="95%" stopcolor="var(--theme-brand-strong)" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--theme-border)" />

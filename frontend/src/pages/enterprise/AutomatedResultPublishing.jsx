@@ -71,7 +71,7 @@ const AutomatedResultPublishing = () => {
             {/* Department List */}
             <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', margin: '0 -4px' }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <LuActivity color="var(--color-primary-navy)" />
+                    <LuActivity color="var(--theme-brand-strong)" />
                     <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>Departmental Upload Status</span>
                 </div>
                 <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>

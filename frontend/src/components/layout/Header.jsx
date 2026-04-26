@@ -92,8 +92,8 @@ const Header = ({
                             >
                                 <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                     <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Institutional Profile</div>
-                                    <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'admin@ritchennai.edu.in'}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--color-primary-navy)', marginTop: '4px', fontWeight: '900', letterSpacing: '0.05em' }}>{displaySub}</div>
+                                    <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'principal@ritchennai.edu.in'}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--theme-brand-strong)', marginTop: '4px', fontWeight: '900', letterSpacing: '0.05em' }}>{displaySub}</div>
                                 </div>
                                 <NavLink
                                     to="/change-password"

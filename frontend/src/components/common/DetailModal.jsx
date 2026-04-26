@@ -31,6 +31,7 @@ const DetailModal = ({ isOpen, onClose, title, children }) => {
                     initial={{ scale: 0.9, y: 20, opacity: 0 }}
                     animate={{ scale: 1, y: 0, opacity: 1 }}
                     exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
                     style={{
                         background: 'var(--card-bg)',
                         border: '1px solid var(--theme-border)',
@@ -56,7 +57,7 @@ const DetailModal = ({ isOpen, onClose, title, children }) => {
                         <h2 style={{
                             fontSize: '1.5rem',
                             fontWeight: '700',
-                            color: 'var(--color-accent-gold)',
+                            color: 'var(--theme-text)',
                             margin: 0
                         }}>
                             {title}
@@ -66,7 +67,7 @@ const DetailModal = ({ isOpen, onClose, title, children }) => {
                             style={{
                                 background: 'transparent',
                                 border: 'none',
-                                color: 'var(--theme-text-muted)',
+                                color: 'var(--theme-text)',
                                 cursor: 'pointer',
                                 fontSize: '1.5rem',
                                 display: 'flex',

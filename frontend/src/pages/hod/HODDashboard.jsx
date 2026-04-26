@@ -156,7 +156,7 @@ const HODDashboard = () => {
     <div className="space-y-6" style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
       <div className="dashboard-welcome-banner" style={{ 
           background: 'linear-gradient(135deg, var(--color-accent-gold) 0%, #b45309 100%)',
-          color: 'var(--color-primary-navy)',
+          color: 'var(--theme-brand-strong)',
           padding: '24px',
           borderRadius: '16px',
           marginBottom: '24px',
@@ -215,14 +215,14 @@ const HODDashboard = () => {
           }}
         >
           <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-            <FaChalkboardTeacher size={28} style={{ color: 'var(--color-primary-navy)', marginBottom: '8px' }} />
+            <FaChalkboardTeacher size={28} style={{ color: 'var(--theme-brand-strong)', marginBottom: '8px' }} />
             <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--theme-text)' }}>
               {stats?.totalFaculty ?? 0}
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>Total Faculty</div>
           </div>
           <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-            <FaUserGraduate size={28} style={{ color: 'var(--color-primary-navy)', marginBottom: '8px' }} />
+            <FaUserGraduate size={28} style={{ color: 'var(--theme-brand-strong)', marginBottom: '8px' }} />
             <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--theme-text)' }}>
               {stats?.totalStudents ?? 0}
             </div>
@@ -429,7 +429,7 @@ const HODDashboard = () => {
               {students.map((s, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid var(--theme-border)' }}>
                   <td style={{ padding: '12px', color: 'var(--theme-text)' }}>
-                    <Link to={`/hod/student/${s.studentId}`} style={{ color: 'var(--color-primary-navy)', fontWeight: '600' }}>
+                    <Link to={`/hod/student/${s.studentId}`} style={{ color: 'var(--theme-brand-strong)', fontWeight: '600' }}>
                       {s.studentIdNumber}
                     </Link>
                   </td>

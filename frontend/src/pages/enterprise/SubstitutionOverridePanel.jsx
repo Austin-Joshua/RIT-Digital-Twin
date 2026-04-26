@@ -74,7 +74,7 @@ const SubstitutionOverridePanel = () => {
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
                                         <div style={{ fontSize: '12px', fontWeight: '800', color: '#16a34a' }}>{sub.match}% Match</div>
-                                        <button onClick={handleNotify} style={{ marginTop: '4px', background: 'transparent', border: 'none', color: 'var(--color-primary-navy)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <button onClick={handleNotify} style={{ marginTop: '4px', background: 'transparent', border: 'none', color: 'var(--theme-brand-strong)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                             <LuUserPlus size={14} /> {notifying ? 'Sending...' : 'Assign'}
                                         </button>
                                     </div>

@@ -48,6 +48,7 @@ const KPIDetailsModal = ({ isOpen, onClose, title, value, label, description, ic
                     initial={{ scale: 0.9, y: 20, opacity: 0 }}
                     animate={{ scale: 1, y: 0, opacity: 1 }}
                     exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
                     className="border border-gray-100 dark:border-navy-700 rounded-[32px] w-full max-w-[500px] overflow-hidden shadow-2xl relative"
                     style={{ background: 'var(--card-bg)' }}
                     onClick={e => e.stopPropagation()}
@@ -75,7 +76,7 @@ const KPIDetailsModal = ({ isOpen, onClose, title, value, label, description, ic
                         <h2 className="text-3xl font-black mb-1" style={{ color: 'var(--theme-text)' }}>
                             {value}
                         </h2>
-                        <p className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: 'var(--theme-text-muted)' }}>
+                        <p className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>
                             {label}
                         </p>
 

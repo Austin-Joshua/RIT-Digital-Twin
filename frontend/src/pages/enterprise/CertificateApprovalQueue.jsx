@@ -37,7 +37,7 @@ const CertificateApprovalQueue = () => {
                         )}
                     </AnimatePresence>
                     <button style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid var(--theme-border)', background: 'var(--card-bg)', color: 'var(--theme-text)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <LuPenTool color="var(--color-primary-navy)" /> Manual Override
+                        <LuPenTool color="var(--theme-brand-strong)" /> Manual Override
                     </button>
                 </div>
             </div>

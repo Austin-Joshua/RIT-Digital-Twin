@@ -69,7 +69,7 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
                 <div className="flex items-center justify-between mb-6 relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl border shadow-inner" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
-                            <FaBrain style={{ color: 'var(--color-primary-navy)' }} />
+                            <FaBrain style={{ color: 'var(--theme-brand-strong)' }} />
                         </div>
                         <div>
                             <h3 className="text-lg font-black tracking-tight leading-none" style={{ color: 'var(--theme-text)' }}>RIT AI Wisdom</h3>

@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import api from '../../services/api';
 import Skeleton from '../../components/common/Skeleton';
 
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
+let timetableMemoryCache = null;
+let timetableLastFetchedAt = 0;
+const TIMETABLE_CACHE_TTL_MS = 60 * 1000;
 
 const Timetable = () => {
-    const cacheRef = useRef(null);
-    const [timetable, setTimetable] = useState(cacheRef.current || []);
-    const [loading, setLoading] = useState(!cacheRef.current);
+    const hasWarmCache = Array.isArray(timetableMemoryCache) && timetableMemoryCache.length >= 0;
+    const [timetable, setTimetable] = useState(hasWarmCache ? timetableMemoryCache : []);
+    const [loading, setLoading] = useState(!hasWarmCache);
 
     useEffect(() => {
         let isMounted = true;
@@ -16,7 +19,8 @@ const Timetable = () => {
             try {
                 const res = await api.get('/academic/student/timetable');
                 const data = res.data || [];
-                cacheRef.current = data;
+                timetableMemoryCache = data;
+                timetableLastFetchedAt = Date.now();
                 if (opts.setState && isMounted) {
                     setTimetable(data);
                     setLoading(false);
@@ -24,17 +28,19 @@ const Timetable = () => {
             } catch (err) {
                 console.error("Timetable Fetch Error:", err);
                 if (opts.setState && isMounted) {
-                    setTimetable([]);
+                    setTimetable(timetableMemoryCache || []);
                     setLoading(false);
                 }
             }
         };
 
-        // If we don't have cached data yet, load and show skeleton
-        if (!cacheRef.current) {
+        const hasRecentCache = timetableMemoryCache && (Date.now() - timetableLastFetchedAt < TIMETABLE_CACHE_TTL_MS);
+        if (!hasRecentCache) {
             fetchTimetable({ setState: true });
         } else {
-            // We already rendered from cache; refresh silently in background
+            // Render immediately from cache and refresh in background.
+            setTimetable(timetableMemoryCache || []);
+            setLoading(false);
             fetchTimetable({ setState: false });
         }
 
@@ -43,11 +49,18 @@ const Timetable = () => {
         };
     }, []);
 
-    const getSlot = (day, timePrefix) => {
-        return timetable.find(t => t.dayOfWeek === day && t.startTime.startsWith(timePrefix));
-    };
-
-    const alignTimes = [...new Set((timetable || []).map(slot => slot.startTime))].sort();
+    const alignTimes = useMemo(
+        () => [...new Set((timetable || []).map(slot => slot.startTime))].sort(),
+        [timetable]
+    );
+    const slotMap = useMemo(() => {
+        const map = new Map();
+        (timetable || []).forEach((slot) => {
+            const key = `${slot.dayOfWeek}|${String(slot.startTime || '').substring(0, 5)}`;
+            map.set(key, slot);
+        });
+        return map;
+    }, [timetable]);
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton height="400px" /></div>;
 
@@ -56,7 +69,7 @@ const Timetable = () => {
             <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
                 <h2 style={{ marginBottom: '16px', color: 'var(--theme-text)' }}>My Weekly Time Table</h2>
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '18px', color: 'var(--theme-text-muted)' }}>
-                    Timetable is not generated for your class yet. Please contact admin/faculty coordinator.
+                    Timetable is not generated for your class yet. Please contact principal/faculty coordinator.
                 </div>
             </div>
         );
@@ -85,7 +98,7 @@ const Timetable = () => {
                                     {day}
                                 </td>
                                 {alignTimes.map(time => {
-                                    const slot = getSlot(day, time.substring(0, 5));
+                                    const slot = slotMap.get(`${day}|${time.substring(0, 5)}`);
                                     return (
                                         <td key={time} style={{ padding: '12px', borderRight: '1px solid var(--theme-border)', height: '70px', verticalAlign: 'middle', background: 'var(--card-bg)' }}>
                                             {slot ? (

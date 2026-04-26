@@ -354,6 +354,16 @@ public class AuthService {
                     log.info("Found existing user by student register mapping for Google login {}", email);
                 }
             }
+            if (studentRecord.isEmpty()) {
+                studentRecord = resolveStudentByEmailPattern(email);
+                if (studentRecord.isPresent()) {
+                    registerNo = studentRecord.get().getRegisterNo();
+                    log.info("Resolved student by email suffix pattern for Google login {} -> registerNo={}", email, registerNo);
+                    if (userOpt.isEmpty() && studentRecord.get().getUser() != null) {
+                        userOpt = Optional.of(studentRecord.get().getUser());
+                    }
+                }
+            }
             if (userOpt.isEmpty()) {
                 studentRecord = studentRecord.isPresent() ? studentRecord : studentRepository.findByEmailIgnoreCase(email);
                 if (studentRecord.isPresent() && studentRecord.get().getUser() != null) {
@@ -556,6 +566,11 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
 
+    @Transactional
+    public void revokeRefreshTokens(Long userId) {
+        refreshTokenService.deleteByUserId(userId);
+    }
+
     // ═══════════════════════════════════════════════════════════
     //  Auth Response Builder
     // ═══════════════════════════════════════════════════════════
@@ -665,6 +680,12 @@ public class AuthService {
                 return found;
             }
         }
+        for (String suffix : deriveRegisterNoSuffixCandidates(identifierHint != null ? identifierHint : user.getEmail())) {
+            List<Student> matches = studentRepository.findAllByRegisterNoEndingWith(suffix);
+            if (matches.size() == 1) {
+                return Optional.of(matches.get(0));
+            }
+        }
         return Optional.empty();
     }
 
@@ -757,6 +778,19 @@ public class AuthService {
             return trailingDigits;
         }
         return null;
+    }
+
+    private Optional<Student> resolveStudentByEmailPattern(String email) {
+        if (email == null || email.isBlank()) {
+            return Optional.empty();
+        }
+        for (String suffix : deriveRegisterNoSuffixCandidates(email)) {
+            List<Student> matches = studentRepository.findAllByRegisterNoEndingWith(suffix);
+            if (matches.size() == 1) {
+                return Optional.of(matches.get(0));
+            }
+        }
+        return Optional.empty();
     }
 
     private String extractTrailingDigits(String text) {

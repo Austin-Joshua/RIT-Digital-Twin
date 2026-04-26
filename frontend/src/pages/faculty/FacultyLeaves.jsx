@@ -115,14 +115,14 @@ const FacultyLeaves = () => {
                                 {requests.map((req) => (
                                     <div key={req.id} style={{ background: 'var(--card-bg)', padding: '16px', display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr 120px 140px', alignItems: 'center', gap: '15px', borderBottom: '1px solid var(--theme-border)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--theme-bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary-navy)' }}><FaUserAlt size={16} /></div>
+                                            <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--theme-bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-brand-strong)' }}><FaUserAlt size={16} /></div>
                                             <div>
                                                 <div style={{ fontSize: '13px', fontWeight: '800' }}>{req.studentName}</div>
                                                 <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>{req.reg}</div>
                                             </div>
                                         </div>
                                         <div style={{ fontSize: '12px' }}>
-                                            <div style={{ fontWeight: '800', color: 'var(--color-primary-navy)' }}>{req.type}</div>
+                                            <div style={{ fontWeight: '800', color: 'var(--theme-brand-strong)' }}>{req.type}</div>
                                             <div style={{ color: 'var(--theme-text-muted)' }}>{req.startDate} → {req.endDate}</div>
                                         </div>
                                         <div>

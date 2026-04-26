@@ -73,7 +73,7 @@ const SubjectRegistration = () => {
                                     <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{subject.name}</h3>
                                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>{subject.code}</div>
                                 </div>
-                                <FaBookOpen style={{ color: 'var(--color-primary-navy)', fontSize: '1.5rem', opacity: 0.2 }} />
+                                <FaBookOpen style={{ color: 'var(--theme-brand-strong)', fontSize: '1.5rem', opacity: 0.2 }} />
                             </div>
 
                             <div style={{ marginBottom: '20px', flex: 1 }}>

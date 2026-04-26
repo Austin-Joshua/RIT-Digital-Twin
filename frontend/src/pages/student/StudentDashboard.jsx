@@ -175,9 +175,9 @@ const StudentDashboard = () => {
             />
 
             <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                <div className="stu-info-card" style={{ borderTopColor: 'var(--theme-brand-strong)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', borderBottom: '1px solid var(--theme-border)' }}>
-                        <FaFileAlt color="var(--color-primary-navy)" />
+                        <FaFileAlt color="var(--theme-brand-strong)" />
                         Recent Assessments (CAT & ASSG)
                     </div>
                     <div className="info-body">
@@ -195,7 +195,7 @@ const StudentDashboard = () => {
                                         <tr key={`cat-${idx}`}>
                                             <td>{m.subject}</td>
                                             <td style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>CAT</td>
-                                            <td className="text-right font-bold" style={{ color: 'var(--color-primary-navy)' }}>{m.score}/50</td>
+                                            <td className="text-right font-bold" style={{ color: 'var(--theme-brand-strong)' }}>{m.score}/50</td>
                                         </tr>
                                     ))}
                                     {marks.assignments.map((m, idx) => (
@@ -210,7 +210,7 @@ const StudentDashboard = () => {
                         </div>
                     </div>
                     <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}>
-                        <Link to="/student/gradebook" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--color-primary-navy)', fontWeight: '800' }}>View Full Gradebook</Link>
+                        <Link to="/student/gradebook" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--theme-link)', fontWeight: '800' }}>View Full Gradebook</Link>
                     </div>
                 </div>
 

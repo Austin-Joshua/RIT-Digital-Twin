@@ -93,7 +93,7 @@ const AcademicFee = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Detailed Breakdown Card */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                    <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
                         <div className="info-header" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div className="flex items-center gap-3">
                                 <FaReceipt className="text-lg text-slate-400" />

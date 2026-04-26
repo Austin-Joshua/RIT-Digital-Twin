@@ -114,7 +114,7 @@ const TransportPage = () => {
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '10px', background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', color: 'var(--theme-text)', fontSize: '13px', fontWeight: '600' }}>
-                        <LuBus color="var(--color-primary-navy)" />
+                        <LuBus color="var(--theme-brand-strong)" />
                         {routes.length} Active Routes
                     </div>
                 </div>
@@ -136,7 +136,7 @@ const TransportPage = () => {
                             autoComplete="off"
                         />
                     </div>
-                    <button type="submit" disabled={searching} className="w-full sm:w-auto px-6 py-3 sm:py-[13px] rounded-lg border-none cursor-pointer text-[var(--color-primary-navy)] font-bold text-sm shadow-md transition-all hover:opacity-90 active:scale-95 flex-shrink-0 whitespace-nowrap" style={{ background: '#D4AF37' }}>
+                    <button type="submit" disabled={searching} className="w-full sm:w-auto px-6 py-3 sm:py-[13px] rounded-lg border-none cursor-pointer text-[var(--theme-brand-strong)] font-bold text-sm shadow-md transition-all hover:opacity-90 active:scale-95 flex-shrink-0 whitespace-nowrap" style={{ background: '#D4AF37' }}>
                         {searching ? 'Searching...' : 'Search Route'}
                     </button>
                 </form>
@@ -163,8 +163,8 @@ const TransportPage = () => {
                                 onClick={() => viewRouteDetails(route)}
                                 style={{
                                     background: selectedRoute?.id === route.id ? 'rgba(11,44,107,0.1)' : 'var(--card-bg)',
-                                    border: `1.5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : 'var(--theme-border)'}`,
-                                    borderLeft: `5px solid ${selectedRoute?.id === route.id ? 'var(--color-primary-navy)' : '#D4AF37'}`,
+                                    border: `1.5px solid ${selectedRoute?.id === route.id ? 'var(--theme-brand-strong)' : 'var(--theme-border)'}`,
+                                    borderLeft: `5px solid ${selectedRoute?.id === route.id ? 'var(--theme-brand-strong)' : '#D4AF37'}`,
                                     borderRadius: '10px',
                                     padding: '14px',
                                     cursor: 'pointer',
@@ -173,8 +173,8 @@ const TransportPage = () => {
                                 }}
                             >
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                    <span style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{route.routeNumber}</span>
-                                    <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', background: 'var(--color-primary-navy)', color: 'white', letterSpacing: '0.5px' }}>{route.busNumber}</span>
+                                    <span style={{ fontSize: '20px', fontWeight: '900', fontStyle: 'italic', color: 'var(--theme-brand-strong)' }}>{route.routeNumber}</span>
+                                    <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', background: 'var(--theme-brand-strong)', color: 'var(--card-bg)', letterSpacing: '0.5px' }}>{route.busNumber}</span>
                                 </div>
                                 <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-text)', marginBottom: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{route.routeName}</div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--theme-text-muted)' }}>
@@ -211,7 +211,7 @@ const TransportPage = () => {
                             <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', borderTop: '4px solid var(--color-primary-navy)', padding: '20px 24px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
                                     <div>
-                                        <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '900', fontStyle: 'italic', color: 'var(--color-primary-navy)' }}>{selectedRoute.routeNumber} — {selectedRoute.routeName}</h2>
+                                        <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '900', fontStyle: 'italic', color: 'var(--theme-brand-strong)' }}>{selectedRoute.routeNumber} — {selectedRoute.routeName}</h2>
                                         <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--theme-text-muted)' }}>{selectedRoute.startPoint} → RIT Campus</p>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>
@@ -226,7 +226,7 @@ const TransportPage = () => {
                                         { icon: <LuBus />, label: 'Bus Details', value: selectedRoute.busNumber, sub: 'Compliant with University Standards' },
                                     ].map((item, i) => (
                                         <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'rgba(11,44,107,0.05)', borderRadius: '10px', border: '1px solid var(--theme-border)' }}>
-                                            <div style={{ padding: '10px', borderRadius: '8px', background: 'var(--card-bg)', color: 'var(--color-primary-navy)', fontSize: '16px', display: 'flex', flexShrink: 0 }}>{item.icon}</div>
+                                            <div style={{ padding: '10px', borderRadius: '8px', background: 'var(--card-bg)', color: 'var(--theme-brand-strong)', fontSize: '16px', display: 'flex', flexShrink: 0 }}>{item.icon}</div>
                                             <div>
                                                 <div style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--theme-text-muted)', letterSpacing: '0.5px' }}>{item.label}</div>
                                                 <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--theme-text)' }}>{item.value}</div>
@@ -240,13 +240,13 @@ const TransportPage = () => {
                             {/* Stops Timeline */}
                             <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '20px 24px' }}>
                                 <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <LuClock color="var(--color-primary-navy)" /> Boarding Points & Timings
+                                    <LuClock color="var(--theme-brand-strong)" /> Boarding Points & Timings
                                 </h3>
 
                                 <div style={{ position: 'relative', paddingLeft: '32px', borderLeft: '2px solid var(--theme-border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                     {stops.length > 0 ? stops.map((stop, idx) => (
                                         <div key={stop.id} style={{ position: 'relative' }}>
-                                            <div style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--color-primary-navy)' }} />
+                                            <div style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--theme-brand-strong)' }} />
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--theme-border)', transition: 'background 0.2s' }}
                                                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(11,44,107,0.05)'}
                                                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -254,7 +254,7 @@ const TransportPage = () => {
                                                     <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--theme-text)' }}>{stop.stopName}</div>
                                                     {stop.landmark && <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', fontStyle: 'italic' }}>{stop.landmark}</div>}
                                                 </div>
-                                                <div style={{ padding: '5px 12px', borderRadius: '8px', background: 'var(--color-primary-navy)', color: 'white', fontSize: '13px', fontWeight: '800', fontStyle: 'italic', letterSpacing: '0.5px', flexShrink: 0 }}>
+                                                <div style={{ padding: '5px 12px', borderRadius: '8px', background: 'var(--theme-brand-strong)', color: 'var(--card-bg)', fontSize: '13px', fontWeight: '800', fontStyle: 'italic', letterSpacing: '0.5px', flexShrink: 0 }}>
                                                     {stop.pickupTime ? stop.pickupTime.substring(0, 5) : '--:--'} AM
                                                 </div>
                                             </div>
@@ -270,7 +270,7 @@ const TransportPage = () => {
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ fontWeight: '900', fontSize: '15px', textTransform: 'uppercase', color: 'var(--theme-text)', letterSpacing: '0.5px' }}>🏫 RIT Campus</div>
-                                            <div style={{ fontWeight: '700', color: 'var(--color-primary-navy)', borderBottom: '2px solid var(--color-primary-navy)', fontSize: '13px' }}>Reach On-Time</div>
+                                            <div style={{ fontWeight: '700', color: 'var(--theme-brand-strong)', borderBottom: '2px solid var(--theme-brand-strong)', fontSize: '13px' }}>Reach On-Time</div>
                                         </div>
                                     </div>
                                 </div>
@@ -279,7 +279,7 @@ const TransportPage = () => {
                             {/* Map */}
                             <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden' }}>
                                 <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <LuNavigation color="var(--color-primary-navy)" />
+                                    <LuNavigation color="var(--theme-brand-strong)" />
                                     <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>Route Map</span>
                                 </div>
                                 <iframe

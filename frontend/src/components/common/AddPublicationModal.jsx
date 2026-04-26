@@ -45,9 +45,9 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                     >
                         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                             <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                                <FaBook className="text-[var(--color-primary-navy)]" /> Add New Publication
+                                <FaBook className="text-[var(--theme-brand-strong)]" /> Add New Publication
                             </h2>
-                            <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5" style={{ color: 'var(--theme-text-muted)' }}>
+                            <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5" style={{ color: 'var(--theme-text)' }}>
                                 <FaTimes />
                             </button>
                         </div>
@@ -55,18 +55,18 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Paper Title</label>
+                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Paper Title</label>
                                     <input
                                         type="text" required name="title" value={formData.title} onChange={handleChange}
                                         className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
-                                        style={{ background: 'var(--body-bg)', borderColor: 'var(--theme-border)', color: 'var(--theme-text)', focusRingColor: 'var(--color-primary-navy)' }}
+                                        style={{ background: 'var(--body-bg)', borderColor: 'var(--theme-border)', color: 'var(--theme-text)', focusRingcolor: 'var(--theme-brand-strong)' }}
                                         placeholder="e.g. Deep Learning in Healthcare..."
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Type</label>
+                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Type</label>
                                         <select
                                             name="type" value={formData.type} onChange={handleChange}
                                             className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -79,7 +79,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider tooltip" style={{ color: 'var(--theme-text-muted)' }}>Publisher / Venue</label>
+                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider tooltip" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Publisher / Venue</label>
                                         <input
                                             type="text" required name="publisher" value={formData.publisher} onChange={handleChange}
                                             className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -91,7 +91,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--theme-text-muted)' }}><FaCalendarAlt /> Date Published</label>
+                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--theme-text)', opacity: 0.9 }}><FaCalendarAlt /> Date Published</label>
                                         <input
                                             type="month" required name="date" value={formData.date} onChange={handleChange}
                                             className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -99,7 +99,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider tooltip" style={{ color: 'var(--theme-text-muted)' }}>Status</label>
+                                        <label className="block text-sm font-bold mb-1 uppercase tracking-wider tooltip" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Status</label>
                                         <select
                                             name="status" value={formData.status} onChange={handleChange}
                                             className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -113,7 +113,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Authors</label>
+                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Authors</label>
                                     <input
                                         type="text" required name="authors" value={formData.authors} onChange={handleChange}
                                         className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -123,7 +123,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--theme-text-muted)' }}><FaLink /> DOI / Link</label>
+                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--theme-text)', opacity: 0.9 }}><FaLink /> DOI / Link</label>
                                     <input
                                         type="text" name="doi" value={formData.doi} onChange={handleChange}
                                         className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -133,7 +133,7 @@ const AddPublicationModal = ({ isOpen, onClose, onSave }) => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Abstract</label>
+                                    <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Abstract</label>
                                     <textarea
                                         rows="3" required name="abstract" value={formData.abstract} onChange={handleChange}
                                         className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all custom-scrollbar"

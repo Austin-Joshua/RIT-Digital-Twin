@@ -78,6 +78,33 @@ public class AuthController {
                 .build());
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshAlias(
+            @Valid @RequestBody com.university.erp.dto.TokenRefreshRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verifyToken() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        boolean valid = authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
+        return ResponseEntity.ok(Map.of("valid", valid));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            authService.revokeRefreshTokens(user.getUserId());
+        }
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
     @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()

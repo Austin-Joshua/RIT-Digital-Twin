@@ -96,7 +96,7 @@ const Certificates = () => {
                                         </td>
                                         <td style={{ textAlign: 'right', padding: '12px' }}>
                                             {req.status === 'APPROVED' && req.pdfUrl ? (
-                                                <a href={req.pdfUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary-navy)', fontWeight: 'bold', textDecoration: 'none' }}>Download PDF</a>
+                                                <a href={req.pdfUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--theme-brand-strong)', fontWeight: 'bold', textDecoration: 'none' }}>Download PDF</a>
                                             ) : (
                                                 <span style={{ color: 'var(--text-secondary)' }}>-</span>
                                             )}

@@ -45,8 +45,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", 
-            "An unexpected institutional engine error occurred. Please contact administrator.", request);
+        String message = ex.getMessage() == null || ex.getMessage().isBlank()
+                ? "An unexpected institutional engine error occurred. Please contact administrator."
+                : ex.getMessage();
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", message, request);
     }
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String error, String message, WebRequest request) {

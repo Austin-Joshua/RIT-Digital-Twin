@@ -39,16 +39,16 @@ const UploadMaterialModal = ({ isOpen, onClose, onUpload }) => {
                     >
                         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                             <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                                <FaCloudUploadAlt className="text-[var(--color-primary-navy)]" /> Upload Material
+                                <FaCloudUploadAlt className="text-[var(--theme-brand-strong)]" /> Upload Material
                             </h2>
-                            <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5" style={{ color: 'var(--theme-text-muted)' }}>
+                            <button onClick={onClose} className="p-2 rounded-full hover:bg-black/5" style={{ color: 'var(--theme-text)' }}>
                                 <FaTimes />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
-                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Material Title</label>
+                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Material Title</label>
                                 <input
                                     type="text" required name="title" value={formData.title} onChange={handleChange}
                                     className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -58,7 +58,7 @@ const UploadMaterialModal = ({ isOpen, onClose, onUpload }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Subject</label>
+                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>Subject</label>
                                 <select
                                     name="subject" value={formData.subject} onChange={handleChange}
                                     className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"
@@ -71,7 +71,7 @@ const UploadMaterialModal = ({ isOpen, onClose, onUpload }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>File Type</label>
+                                <label className="block text-sm font-bold mb-1 uppercase tracking-wider" style={{ color: 'var(--theme-text)', opacity: 0.9 }}>File Type</label>
                                 <select
                                     name="type" value={formData.type} onChange={handleChange}
                                     className="w-full p-3 rounded-xl border focus:ring-2 focus:outline-none transition-all"

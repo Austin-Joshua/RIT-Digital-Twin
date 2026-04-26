@@ -106,7 +106,7 @@ const FacultyAcademics = () => {
                             </div>
                             <span style={{ 
                                 background: 'rgba(11, 44, 107, 0.08)', 
-                                color: 'var(--color-primary-navy)', 
+                                color: 'var(--theme-brand-strong)', 
                                 padding: '4px 10px', 
                                 borderRadius: '6px', 
                                 fontSize: '11px', 
@@ -135,7 +135,7 @@ const FacultyAcademics = () => {
 
             <Card style={{ padding: '20px' }}>
                 <h3 style={{ margin: '0 0 20px 0', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <FaBook style={{ color: 'var(--color-primary-navy)' }} /> Recent Uploaded Materials
+                    <FaBook style={{ color: 'var(--theme-brand-strong)' }} /> Recent Uploaded Materials
                 </h3>
                 <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--theme-border)' }}>
                     <table className="stu-data-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
@@ -162,7 +162,7 @@ const FacultyAcademics = () => {
                                     <td style={{ padding: '16px', color: 'var(--theme-text-muted)', fontSize: '13px' }}>{mat.date}</td>
                                     <td style={{ padding: '16px', color: 'var(--theme-text-muted)', fontSize: '13px' }}>{mat.size}</td>
                                     <td style={{ padding: '16px', textAlign: 'right' }}>
-                                        <button style={{ background: 'transparent', border: 'none', color: 'var(--color-primary-navy)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontWeight: 'bold', fontSize: '13px' }}>
+                                        <button style={{ background: 'transparent', border: 'none', color: 'var(--theme-brand-strong)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginLeft: 'auto', fontWeight: 'bold', fontSize: '13px' }}>
                                             <FaDownload /> Download
                                         </button>
                                     </td>

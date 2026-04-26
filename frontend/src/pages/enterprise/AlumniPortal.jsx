@@ -55,7 +55,7 @@ const AlumniPortal = () => {
                         <FaEnvelope /> Bulk Email
                     </button>
                     <button className="px-4 py-2 font-bold rounded-lg transition-all active:scale-95 shadow-lg hover:opacity-90"
-                        style={{ background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)' }}>
+                        style={{ background: 'var(--color-accent-gold)', color: 'var(--theme-brand-strong)' }}>
                         Organize Event
                     </button>
                 </div>

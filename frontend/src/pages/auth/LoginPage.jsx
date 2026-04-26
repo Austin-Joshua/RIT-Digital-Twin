@@ -9,6 +9,8 @@ import { ThemeContext } from '../../hooks/ThemeContext';
 import { getBackendRootURL } from '../../services/api';
 import { FaGoogle } from 'react-icons/fa';
 
+const AUTH_PRIMARY_BLUE = '#123D8A';
+
 const LoginPage = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -217,7 +219,7 @@ const LoginPage = () => {
                                 padding: '8px 16px',
                                 fontSize: '0.95rem',
                                 borderRadius: '8px',
-                                backgroundColor: 'var(--color-primary-navy)',
+                                backgroundColor: AUTH_PRIMARY_BLUE,
                                 color: '#ffffff',
                                 border: 'none',
                                 fontWeight: '700'

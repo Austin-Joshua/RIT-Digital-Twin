@@ -116,7 +116,7 @@ const EnergyPage = () => {
                 {/* Usage Chart */}
                 <div className="stu-info-card">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaBolt color="var(--color-primary-navy)" />
+                        <FaBolt color="var(--theme-brand-strong)" />
                         <span style={{ color: 'var(--theme-text)' }}>Energy Consumption Pattern</span>
                         {connected && <span style={{ textShadow: 'none', background: 'var(--color-error)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: '900', marginLeft: 'auto', animation: 'pulse 2s infinite' }}>LIVE</span>}
                     </div>

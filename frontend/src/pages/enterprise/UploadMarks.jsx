@@ -141,7 +141,7 @@ const UploadMarks = () => {
                 </div>
                 <button
                     onClick={downloadTemplate}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', background: 'var(--theme-bg-muted)', color: 'var(--color-primary-navy)', border: '1px solid var(--theme-border)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', background: 'var(--theme-bg-muted)', color: 'var(--theme-brand-strong)', border: '1px solid var(--theme-border)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}
                 >
                     <FaDownload /> Download Template
                 </button>
@@ -226,7 +226,7 @@ const UploadMarks = () => {
                             <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <FaFileExcel color="#10B981" /> Extracted Preview
                             </h3>
-                            <span style={{ padding: '6px 14px', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', borderRadius: '20px', fontSize: '12px', fontWeight: '800' }}>
+                            <span style={{ padding: '6px 14px', background: 'var(--color-accent-gold)', color: 'var(--theme-brand-strong)', borderRadius: '20px', fontSize: '12px', fontWeight: '800' }}>
                                 {marksData.length} records detected
                             </span>
                         </div>
@@ -251,7 +251,7 @@ const UploadMarks = () => {
                                             <td style={{ padding: '14px', textAlign: 'center' }}>{row.CAT2 ?? '-'}</td>
                                             <td style={{ padding: '14px', textAlign: 'center' }}>{row.CAT3 ?? '-'}</td>
                                             <td style={{ padding: '14px', textAlign: 'center' }}>{row.Assignment ?? '-'}</td>
-                                            <td style={{ padding: '14px', textAlign: 'center', fontWeight: '800', color: 'var(--color-primary-navy)' }}>{row.SemesterGrade || '-'}</td>
+                                            <td style={{ padding: '14px', textAlign: 'center', fontWeight: '800', color: 'var(--theme-brand-strong)' }}>{row.SemesterGrade || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>

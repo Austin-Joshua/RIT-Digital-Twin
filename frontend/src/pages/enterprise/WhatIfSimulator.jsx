@@ -138,7 +138,7 @@ const WhatIfSimulator = () => {
                             <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)' }}>Upcoming Subjects</h3>
                             <button onClick={addSubject} style={{
                                 background: 'var(--color-accent-gold)', border: 'none', borderRadius: '8px',
-                                padding: '7px 14px', cursor: 'pointer', color: 'var(--color-primary-navy)', fontWeight: '700',
+                                padding: '7px 14px', cursor: 'pointer', color: 'var(--theme-brand-strong)', fontWeight: '700',
                                 fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px',
                                 boxShadow: '0 2px 8px rgba(255, 193, 7, 0.2)'
                             }} className="hover:opacity-90">

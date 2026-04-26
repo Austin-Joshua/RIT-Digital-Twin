@@ -17,7 +17,11 @@ import {
 import Skeleton from '../components/common/Skeleton';
 
 const LayoutLoader = () => (
-    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.2s ease-out' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
+            <div className="app-soft-loader" />
+            Loading your workspace...
+        </div>
         <Skeleton height="40px" width="300px" />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
             <Skeleton height="120px" />
@@ -83,18 +87,23 @@ const InstitutionalLayout = () => {
     const handleSetSidebarOpen = useCallback((val) => setSidebarOpen(val), []);
     const handleSetUserMenuOpen = useCallback((val) => setUserMenuOpen(val), []);
 
-    const displayName = user?.firstName && user?.lastName
-        ? (user.role === 'HOD' 
-            ? `HOD. ${user.lastName}` 
-            : user.role === 'FACULTY' 
-                ? `PROF. ${user.lastName}` 
-                : `${user.firstName} ${user.lastName}`
-          ).toUpperCase()
-        : (user?.username || user?.role || 'User').toUpperCase();
+    const normalizedRole = String(user?.role || '').replace('ROLE_', '').toUpperCase();
+    const roleLabel = normalizedRole === 'ADMIN' ? 'PRINCIPAL' : normalizedRole;
+    const isAcademicLeader = ['FACULTY', 'HOD', 'ADMIN'].includes(normalizedRole);
 
-    const displaySub = user?.department 
-        ? `${user.role === 'HOD' ? 'Department Head' : user.role} • ${user.department}` 
-        : (user?.role || 'Institutional User');
+    const displayName = user?.firstName && user?.lastName
+        ? (isAcademicLeader
+            ? `PROF. ${user.lastName}`
+            : `${user.firstName} ${user.lastName}`
+          ).toUpperCase()
+        : (isAcademicLeader
+            ? `PROF. ${roleLabel}`
+            : (user?.username || roleLabel || 'User')
+          ).toUpperCase();
+
+    const displaySub = user?.department
+        ? `${isAcademicLeader ? `PROF. ${roleLabel}` : roleLabel} • ${user.department}`
+        : (isAcademicLeader ? `PROF. ${roleLabel}` : (roleLabel || 'Institutional User'));
 
     const adminNavItems = [
         { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },

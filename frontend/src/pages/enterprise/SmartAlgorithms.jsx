@@ -41,7 +41,7 @@ const SmartAlgorithms = () => {
     return (
         <div className="p-6 space-y-8 animate-in fade-in duration-500">
             <header>
-                <h1 className="text-3xl font-black italic tracking-tight" style={{ color: 'var(--color-primary-navy)' }}>
+                <h1 className="text-3xl font-black italic tracking-tight" style={{ color: 'var(--theme-brand-strong)' }}>
                     Intelligence & Smart Algorithms
                 </h1>
                 <p className="text-gray-500 mt-2">Centralized monitoring of RIT Smart Campus Digital Twin engines</p>

@@ -126,7 +126,7 @@ const ParentLayout = () => {
                                         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                             <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold' }}>Signed in as</div>
                                             <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800' }}>{user?.email || 'parent@ritchennai.edu.in'}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Admin' : user?.role}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Principal' : user?.role}</div>
                                         </div>
                                         <NavLink
                                             to="/parent/profile"
@@ -163,7 +163,12 @@ const ParentLayout = () => {
                 </header>
 
                 <div className="stu-content">
-                    <Suspense fallback={<div>Loading...</div>}>
+                    <Suspense fallback={
+                        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
+                            <div className="app-soft-loader" />
+                            Loading page...
+                        </div>
+                    }>
                         <Outlet />
                     </Suspense>
                 </div>

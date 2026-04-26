@@ -157,7 +157,7 @@ const FacultyAttendance = () => {
                             onClick={() => setMarkingMode(true)}
                             className="bg-primary-navy text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md hover:scale-105 active:scale-95"
                             style={{
-                                backgroundColor: 'var(--color-primary-navy)',
+                                backgroundcolor: 'var(--theme-brand-strong)',
                                 color: '#ffffff',
                                 border: '1px solid rgba(255,255,255,0.1)'
                             }}
@@ -188,7 +188,7 @@ const FacultyAttendance = () => {
                         <div className="text-2xl md:text-4xl font-black" style={{ color: 'var(--theme-text)' }}>84.5%</div>
                     </div>
                     <div className="w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center self-end md:self-auto" style={{ background: 'var(--color-primary-100)' }}>
-                        <FaChartPie className="text-lg md:text-3xl" style={{ color: 'var(--color-primary-navy)' }} />
+                        <FaChartPie className="text-lg md:text-3xl" style={{ color: 'var(--theme-brand-strong)' }} />
                     </div>
                 </div>
                 <div className="p-4 md:p-6 rounded-xl shadow-sm border flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0" style={{ background: 'var(--color-error-100)', borderColor: 'var(--color-error)' }}>

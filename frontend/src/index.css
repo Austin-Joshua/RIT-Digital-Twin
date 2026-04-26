@@ -12,7 +12,7 @@ body {
     font-family: var(--font-primary);
     margin: 0;
     padding: 0;
-    transition: background-color var(--transition-speed);
+    transition: background-color var(--transition-speed) var(--transition-ease), color var(--transition-speed) var(--transition-ease);
 }
 
 /* Touch targets: min 44px for mobile */
@@ -46,8 +46,10 @@ button:active,
 .stu-kpi-card, .stu-info-card, .card {
     cursor: pointer;
     will-change: transform, box-shadow;
-    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.18s var(--transition-ease), 
+                box-shadow 0.18s var(--transition-ease),
+                border-color 0.18s var(--transition-ease),
+                background-color 0.18s var(--transition-ease);
 }
 
 .stu-kpi-card:active, .stu-info-card:active, .card:active {
@@ -188,6 +190,42 @@ button {
 a:focus-visible,
 button:focus-visible {
     text-decoration: underline;
+}
+
+/* Shared accessibility + smoothness utilities for modal/card UIs */
+.app-high-contrast-title {
+    color: var(--theme-text);
+    letter-spacing: 0.01em;
+}
+
+.app-high-contrast-muted {
+    color: var(--theme-text);
+    opacity: 0.9;
+}
+
+/* Theme-safe strong text helper for score/value emphasis */
+.app-theme-strong-text {
+    color: var(--theme-brand-strong) !important;
+}
+
+.app-modal-surface {
+    background: var(--card-bg);
+    border: 1px solid var(--theme-border);
+    box-shadow: 0 22px 60px rgba(2, 6, 23, 0.28);
+}
+
+.app-soft-loader {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 3px solid rgba(148, 163, 184, 0.35);
+    border-top-color: var(--color-primary-navy);
+    animation: appSpin 0.75s linear infinite;
+}
+
+@keyframes appSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Logout option - red text and icon in ALL themes (overrides theme/layout inheritance) */

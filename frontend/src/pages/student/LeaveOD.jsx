@@ -176,7 +176,7 @@ const LeaveOD = () => {
                     <motion.div key="apply" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '28px', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
                             <h3 style={{ margin: '0 0 24px', fontSize: '16px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <LuFileText color="var(--color-primary-navy)" /> New Application
+                                <LuFileText color="var(--theme-brand-strong)" /> New Application
                             </h3>
                             <form onSubmit={handleSubmit} style={{
                                 display: 'grid',
@@ -259,7 +259,7 @@ const LeaveOD = () => {
                     <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
                             <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <LuClipboardList color="var(--color-primary-navy)" />
+                                <LuClipboardList color="var(--theme-brand-strong)" />
                                 <span style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '16px' }}>Application History</span>
                             </div>
                             {applications.length === 0 ? (
@@ -295,7 +295,7 @@ const LeaveOD = () => {
                                                     {app.status === 'APPROVED' && isHosteller && (
                                                         <button
                                                             onClick={() => alert("Digital Outpass Generated. Show this at the Gate.")}
-                                                            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', border: 'none', padding: '4px 10px', borderRadius: '6px', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
+                                                            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--color-accent-gold)', color: 'var(--theme-brand-strong)', border: 'none', padding: '4px 10px', borderRadius: '6px', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
                                                             <LuTicket /> OUTPASS
                                                         </button>
                                                     )}
@@ -310,7 +310,7 @@ const LeaveOD = () => {
                                         <thead>
                                             <tr style={{ background: 'rgba(11,44,107,0.07)' }}>
                                                 {['Type', 'Start Date', 'End Date', 'Reason', 'Status'].map(h => (
-                                                    <th key={h} style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-primary-navy)', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                                                    <th key={h} style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-brand-strong)', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
                                                 ))}
                                             </tr>
                                         </thead>
@@ -337,7 +337,7 @@ const LeaveOD = () => {
                                                                 {app.status === 'APPROVED' && isHosteller && (
                                                                     <button
                                                                         onClick={() => alert("Digital Outpass Generated. Show this at the Gate.")}
-                                                                        style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--color-accent-gold)', color: 'var(--color-primary-navy)', border: 'none', padding: '5px 12px', borderRadius: '8px', fontWeight: '800', fontSize: '11px', cursor: 'pointer', transition: '0.2s' }}
+                                                                        style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--color-accent-gold)', color: 'var(--theme-brand-strong)', border: 'none', padding: '5px 12px', borderRadius: '8px', fontWeight: '800', fontSize: '11px', cursor: 'pointer', transition: '0.2s' }}
                                                                         className="hover:scale-105 active:scale-95"
                                                                     >
                                                                         <LuTicket /> DIGITAL OUTPASS

@@ -79,7 +79,7 @@ const ClassroomPage = () => {
 
             <div className="stu-info-row">
                 {/* Allocation Logic */}
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--color-primary-navy)' }}>
+                <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
                     <div className="info-header">Allocation Simulation</div>
                     <div className="info-body">
                         <form onSubmit={handleSubmit} className="space-y-4">

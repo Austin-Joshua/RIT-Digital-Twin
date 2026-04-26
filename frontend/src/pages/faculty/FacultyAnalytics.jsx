@@ -41,7 +41,7 @@ const FacultyAnalytics = () => {
 
                 <Card style={{ padding: '20px' }}>
                     <h4 style={{ margin: '0 0 15px 0', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <FaChartLine style={{ color: 'var(--color-primary-navy)' }} /> Risk Demographics
+                        <FaChartLine style={{ color: 'var(--theme-brand-strong)' }} /> Risk Demographics
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {riskDemographics.map((item, i) => (

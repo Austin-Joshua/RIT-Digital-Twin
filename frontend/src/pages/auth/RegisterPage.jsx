@@ -6,6 +6,8 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { ThemeContext } from '../../hooks/ThemeContext';
 
+const AUTH_PRIMARY_BLUE = '#123D8A';
+
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
         username: '',
@@ -52,12 +54,11 @@ const RegisterPage = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 style={{
-                    background: 'var(--glass-bg)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid var(--glass-border)',
+                    background: 'var(--card-bg)',
+                    border: '1.5px solid var(--theme-border)',
                     padding: 'clamp(16px, 3vw, 32px)',
                     borderRadius: '20px',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.08)',
                     width: '100%'
                 }}
             >
@@ -133,7 +134,7 @@ const RegisterPage = () => {
                             padding: '8px',
                             fontSize: '0.95rem',
                             borderRadius: '8px',
-                            backgroundColor: 'var(--color-primary-navy)',
+                            backgroundColor: AUTH_PRIMARY_BLUE,
                             color: '#ffffff',
                             fontWeight: '700'
                         }}

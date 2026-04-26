@@ -63,7 +63,7 @@ const ResearchTracker = () => {
                 </div>
                 <div className="p-3 md:p-5 rounded-xl border shadow-sm flex flex-col justify-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div className="text-[10px] md:text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>Total Citations</div>
-                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--color-primary-navy)' }}>{totalCitations}</div>
+                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--theme-brand-strong)' }}>{totalCitations}</div>
                 </div>
                 <div className="p-3 md:p-5 rounded-xl border shadow-sm flex flex-col justify-center" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                     <div className="text-[10px] md:text-sm uppercase font-bold tracking-wider mb-1" style={{ color: 'var(--theme-text-muted)' }}>h-index</div>
@@ -98,7 +98,7 @@ const ResearchTracker = () => {
                             <div className="col-span-5 mb-2 md:mb-0">
                                 <span className="md:hidden text-xs font-bold uppercase text-gray-500 block mb-1">Paper Title</span>
                                 <div className="font-bold flex items-start gap-2 max-w-full" style={{ color: 'var(--theme-text)' }}>
-                                    <FaBookOpen className="mt-1 flex-shrink-0 text-[var(--color-primary-navy)]" />
+                                    <FaBookOpen className="mt-1 flex-shrink-0 text-[var(--theme-brand-strong)]" />
                                     <span style={{ wordBreak: 'break-word', whiteSpace: 'normal', display: 'block' }}>{p.title}</span>
                                 </div>
                             </div>
@@ -160,7 +160,7 @@ const ResearchTracker = () => {
                             </div>
                             <div className="p-4 rounded-xl border flex flex-col justify-center" style={{ borderColor: 'var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                 <p className="text-xs uppercase font-bold text-gray-500 mb-1">Citations</p>
-                                <p className="font-bold text-xl" style={{ color: 'var(--color-primary-navy)' }}>{selectedPaper.citations}</p>
+                                <p className="font-bold text-xl" style={{ color: 'var(--theme-brand-strong)' }}>{selectedPaper.citations}</p>
                             </div>
                             <div className="p-4 rounded-xl border flex flex-col justify-center" style={{ borderColor: 'var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                                 <p className="text-xs uppercase font-bold text-gray-500 mb-1"><FaCalendarAlt className="inline mr-1" /> Date</p>

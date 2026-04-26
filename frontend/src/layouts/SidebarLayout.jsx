@@ -70,7 +70,7 @@ const SidebarLayout = () => {
                         <FaUserCircle className="text-3xl text-gray-300 mr-3" />
                         <div className="overflow-hidden">
                             <p className="text-sm font-semibold truncate">{user?.username || 'User'}</p>
-                            <p className="text-xs text-gray-400 capitalize">{(user?.role === 'ADMIN' ? 'Admin' : user?.role) || 'Guest'}</p>
+                            <p className="text-xs text-gray-400 capitalize">{(user?.role === 'ADMIN' ? 'Principal' : user?.role) || 'Guest'}</p>
                         </div>
                     </div>
                     <button

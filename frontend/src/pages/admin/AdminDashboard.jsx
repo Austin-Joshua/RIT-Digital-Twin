@@ -35,7 +35,7 @@ const AdminDashboard = () => {
         }));
 
         setAuditLogs(logs.length > 0 ? logs.slice(0, 5) : [
-            { event: 'SYSTEM_UP', user: 'Root Admin', timestamp: new Date().toISOString(), details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
+            { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: new Date().toISOString(), details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
             { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: new Date().toISOString(), details: 'All 15,400 user sessions verified. 0 anomalies detected.' }
         ]);
         
@@ -75,7 +75,7 @@ const AdminDashboard = () => {
             {/* Quick Broadcast Command Center (Institutional Scale Feature) */}
             <div style={{ background: 'var(--card-bg)', padding: '20px', borderRadius: '16px', border: '1.5px solid var(--theme-border)' }}>
                 <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FaBullhorn style={{ color: 'var(--color-primary-navy)' }} /> Institutional Broadcast System
+                    <FaBullhorn style={{ color: 'var(--theme-brand-strong)' }} /> Principal Broadcast System
                 </h3>
                 <form onSubmit={triggerBroadcast} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr auto', gap: '12px', alignItems: 'end' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '24px' }}>
                 <div className="stu-info-card" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaMagic color="var(--color-primary-navy)" />
+                        <FaMagic color="var(--theme-brand-strong)" />
                         <span>Institutional AI Insights</span>
                     </div>
                     <div className="info-body" style={{ padding: '0' }}>
@@ -148,7 +148,7 @@ const AdminDashboard = () => {
                                         <span style={{ fontSize: '10px', color: 'var(--theme-text-muted)' }}>{new Date(log.timestamp).toLocaleTimeString()}</span>
                                     </div>
                                     <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>{log.details}</div>
-                                    <div style={{ fontSize: '10px', marginTop: '4px', fontWeight: '700', color: 'var(--color-primary-navy)' }}>Source: {log.user}</div>
+                                    <div style={{ fontSize: '10px', marginTop: '4px', fontWeight: '700', color: 'var(--theme-brand-strong)' }}>Source: {log.user}</div>
                                 </div>
                             ))}
                          </div>
@@ -160,7 +160,7 @@ const AdminDashboard = () => {
                 
                 <div className="stu-info-card" style={{ flex: 1 }}>
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaCalendarCheck color="var(--color-primary-navy)" />
+                        <FaCalendarCheck color="var(--theme-brand-strong)" />
                         <span>Institutional Calendar</span>
                     </div>
                     <div className="info-body" style={{ padding: '0' }}>

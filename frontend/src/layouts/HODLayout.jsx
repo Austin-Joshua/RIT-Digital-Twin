@@ -12,7 +12,11 @@ import Sidebar from '../components/Sidebar';
 import Skeleton from '../components/common/Skeleton';
 
 const LayoutLoader = () => (
-  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.2s ease-out' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
+      <div className="app-soft-loader" />
+      Loading your workspace...
+    </div>
     <Skeleton height="40px" width="300px" />
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
       <Skeleton height="120px" />
@@ -64,9 +68,9 @@ const HODLayout = () => {
     navigate('/login', { replace: true });
   };
 
-  const displayName = user?.firstName && user?.lastName
-    ? `${user.firstName} ${user.lastName}`.toUpperCase()
-    : (user?.username || 'HOD').toUpperCase();
+  const displayName = user?.lastName
+    ? `PROF. ${user.lastName}`.toUpperCase()
+    : 'PROF. HOD';
 
   return (
     <div className="stu-layout">
@@ -137,7 +141,7 @@ const HODLayout = () => {
                     <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)' }}>
                       <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Signed in as</div>
                       <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || 'hod@ritchennai.edu.in'}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>HOD</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>PROF. HOD</div>
                     </div>
                     <NavLink to="/hod/change-password" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', textDecoration: 'none', color: 'var(--theme-text)', fontSize: '14px', borderBottom: '1px solid var(--theme-border)', transition: '0.2s' }} onClick={() => setUserMenuOpen(false)}>
                       <LuKey /> <span>Change Password</span>
