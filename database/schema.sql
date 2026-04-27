@@ -1,6 +1,12 @@
 -- Digital Twin Smart Campus - Database Schema
 -- Aligned with Hibernate entity definitions and Flyway migrations
 
+-- Create application user with least-privilege access
+-- Run this as root ONCE before starting the app
+CREATE USER IF NOT EXISTS 'ritapp'@'%' IDENTIFIED BY 'CHANGE_ME_in_env_file';
+GRANT SELECT, INSERT, UPDATE, DELETE ON rit_digital_twin.* TO 'ritapp'@'%';
+FLUSH PRIVILEGES;
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 1. Roles Table

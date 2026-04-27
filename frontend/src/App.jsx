@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/AuthContext';
 import { ThemeProvider } from './hooks/ThemeContext';
 import { ToastProvider } from './hooks/ToastContext';
@@ -168,11 +168,10 @@ const App = () => {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Router>
-          <AuthProvider>
-            <WebSocketProvider>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
+        <AuthProvider>
+          <WebSocketProvider>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
                   {/* Auth Routes */}
                   <Route element={<AuthLayout />}>
                     <Route path="/login" element={<LoginPage />} />
@@ -294,11 +293,10 @@ const App = () => {
                     <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-            </WebSocketProvider>
-          </AuthProvider>
-        </Router>
+              </Routes>
+            </Suspense>
+          </WebSocketProvider>
+        </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
   );

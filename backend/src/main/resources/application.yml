@@ -6,13 +6,13 @@ app:
     credentials: ${APP_FIREBASE_CREDENTIALS:}
     credentials-file: ${APP_FIREBASE_CREDENTIALS_FILE:}
   jwt:
-    secret: ${APP_JWT_SECRET:${JWT_SECRET:RITDigitalTwinSuperSecretKeyForLocalDevelopmentOnly2024XYZ}}
-    expiration-ms: ${APP_JWT_EXPIRATION_MS:900000}
-    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000}
+    secret: ${APP_JWT_SECRET:${JWT_SECRET}}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:${JWT_EXPIRATION:86400000}}
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:${JWT_REFRESH_EXPIRATION:604800000}}
   google:
     client-id: ${GOOGLE_AUTH_CLIENT_ID:YOUR_GOOGLE_CLIENT_ID}
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://*.up.railway.app,https://*.railway.app,https://*.ngrok-free.app,https://*.ngrok-free.dev,https://*.ngrok.io}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}}
   timetable:
     generator-faculty-username: ${APP_TIMETABLE_GENERATOR_FACULTY_USERNAME:}
   security:
@@ -56,9 +56,9 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/rit_digital_twin?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&rewriteBatchedStatements=true}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:rit_digital_twin}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&rewriteBatchedStatements=true}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:ritapp}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD}}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL:10}
@@ -89,7 +89,7 @@ spring:
     include-message: always
 
 server:
-  port: ${PORT:8080}
+  port: ${BACKEND_PORT:${PORT:8080}}
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
@@ -105,10 +105,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,info
   endpoint:
     health:
-      show-details: never
+      show-details: when-authorized
 
 ---
 spring:

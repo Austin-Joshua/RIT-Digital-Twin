@@ -42,3 +42,7 @@ logging:
     com.university.erp: WARN
     org.springframework: WARN
     org.flywaydb: INFO
+server:
+  error:
+    include-message: never
+    include-stacktrace: never

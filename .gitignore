@@ -1,41 +1,57 @@
-# Maven
+# ─── Environment (NEVER commit real .env files) ───────────────
+.env
+.env.*
+!.env.example
+*.env
+secrets/
+**/*secret*
+**/*password*
+**/*credential*
+
+# ─── Java / Maven ────────────────────────────────────────────
 target/
 *.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
 
-# Node
+# ─── Node / Frontend ─────────────────────────────────────────
 node_modules/
 dist/
+build/
 .next/
 coverage/
+*.tsbuildinfo
 
-# IDEs
+# ─── IDEs ────────────────────────────────────────────────────
 .idea/
 *.iml
 .vscode/
+*.swp
+*.swo
 
-# Environment
-.env
-.env.local
-.env.*
-!.env.example
-*.json.service
-firebase-service-account.json
-backend/secrets/*.json
-**/firebase-service-account*.json
+# ─── OS ──────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
+# ─── Logs ────────────────────────────────────────────────────
 *.log
-*.txt
 npm-debug.log*
-yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-frontend/dist/
-frontend/build/
-backend/target/
-
-# Docker volumes (local)
+# ─── Docker ──────────────────────────────────────────────────
 mysql-data/
+
+# ─── Debug / scratch files (never commit these) ──────────────
+Check*.java
+copy_*.py
+fix_*.py
+debug_*.ps1
+troubleshoot*.ps1
+
+# ─── AI session notes (don't commit these) ───────────────────
+FINAL_VALIDATION_REPORT.md
+IMPROVEMENTS_REPORT.md
+START_FROM_FIRST.md

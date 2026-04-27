@@ -32,6 +32,10 @@ class TimetableServiceTest {
     private FacultySubjectRepository facultySubjectRepository;
     @Mock
     private TimetableSubjectRequirementRepository requirementRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private SubjectRepository subjectRepository;
 
     @InjectMocks
     private TimetableService timetableService;
@@ -63,6 +67,11 @@ class TimetableServiceTest {
 
         fsDs = FacultySubject.builder().facultySubjectId(1L).faculty(fpA).subject(ds).section("CSE-A").semester(semester).build();
         fsDbms = FacultySubject.builder().facultySubjectId(2L).faculty(fpB).subject(dbms).section("CSE-A").semester(semester).build();
+        lenient().when(userRepository.findByRole_RoleNameAndDepartment_Id(eq(Role.UserRole.FACULTY), anyLong()))
+                .thenReturn(List.of(facultyA, facultyB));
+        lenient().when(subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(anyInt(), anyString()))
+                .thenReturn(List.of(ds, dbms));
+        lenient().when(subjectRepository.findByDepartmentId(anyLong())).thenReturn(List.of(ds, dbms));
     }
 
     @Test
