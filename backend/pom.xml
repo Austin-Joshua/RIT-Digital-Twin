@@ -25,7 +25,7 @@
         <ide.sync.timestamp>2026-03-05T11:40</ide.sync.timestamp>
         <jjwt.version>0.12.5</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
     </properties>
 
     <dependencies>
