@@ -10,7 +10,6 @@ import {
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
-import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -169,7 +168,6 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            <ChatbotWidget />
         </div>
     );
 };

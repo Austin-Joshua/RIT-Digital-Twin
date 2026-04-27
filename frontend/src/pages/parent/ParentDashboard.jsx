@@ -5,7 +5,6 @@ import api from '../../services/api';
 import { FaChild, FaCalendarAlt, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt, FaMagic, FaMedal, FaTrophy, FaStar, FaHandshake, FaChartLine as FaChartIcon } from 'react-icons/fa';
 import { useToast } from '../../hooks/ToastContext';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
-import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
 
 // Simple Modal reused for standard details
 const DetailModal = ({ detail, onClose }) => {
@@ -227,6 +226,7 @@ const ParentDashboard = () => {
     const [parentNote, setParentNote] = useState('');
     const [lastSavedNote, setLastSavedNote] = useState('');
     const [realMarks, setRealMarks] = useState({ cat: [], assignments: [] });
+    const [wardTimetable, setWardTimetable] = useState([]);
 
     useEffect(() => {
         const fetchLinkedStudents = async () => {
@@ -258,6 +258,18 @@ const ParentDashboard = () => {
             setLoading(false);
         };
         fetchLinkedStudents();
+    }, []);
+
+    useEffect(() => {
+        const fetchWardTimetable = async () => {
+            try {
+                const res = await api.get('/parent/student/timetable');
+                setWardTimetable(Array.isArray(res.data) ? res.data : []);
+            } catch (_err) {
+                setWardTimetable([]);
+            }
+        };
+        fetchWardTimetable();
     }, []);
 
     useEffect(() => {
@@ -457,7 +469,41 @@ const ParentDashboard = () => {
                 </div>
             </div>
 
-            <ChatbotWidget />
+            <div className="stu-info-row">
+                <div className="stu-info-card" style={{ borderTop: '4px solid #3b82f6' }}>
+                    <div className="info-header">Ward Timetable Snapshot</div>
+                    <div className="info-body" style={{ padding: '14px' }}>
+                        {wardTimetable.length === 0 ? (
+                            <div style={{ color: 'var(--theme-text-muted)', fontSize: '13px' }}>
+                                Timetable not published yet for your ward.
+                            </div>
+                        ) : (
+                            <div style={{ display: 'grid', gap: '8px' }}>
+                                {wardTimetable.slice(0, 8).map((slot) => (
+                                    <div
+                                        key={slot.id}
+                                        style={{
+                                            background: 'var(--theme-bg-muted)',
+                                            border: '1px solid var(--theme-border)',
+                                            borderRadius: '8px',
+                                            padding: '8px 10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            gap: '10px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        <span style={{ fontWeight: 700 }}>{slot.dayOfWeek} {String(slot.startTime || '').slice(0, 5)}</span>
+                                        <span>{slot.subject?.subjectCode || slot.subject?.subjectName || 'Class'}</span>
+                                        <span style={{ color: 'var(--theme-text-muted)' }}>{slot.section || '-'}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
         </div>
     );
 };

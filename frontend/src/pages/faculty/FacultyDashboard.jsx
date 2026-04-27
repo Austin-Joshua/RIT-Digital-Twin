@@ -7,7 +7,6 @@ import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaE
 import ClassRiskHeatmap from '../../features/ai/components/ClassRiskHeatmap';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
-import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
 
 const FacultyDashboard = () => {
     const { user: _user } = useAuth();
@@ -222,7 +221,6 @@ const FacultyDashboard = () => {
 
             {/* Academic Calendar */}
             <MiniCalendar />
-            <ChatbotWidget />
         </div>
     );
 };

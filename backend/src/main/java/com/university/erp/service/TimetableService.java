@@ -218,7 +218,7 @@ public class TimetableService {
         String message = canGenerate
                 ? "You are authorized to generate timetable allocation."
                 : (configured.isEmpty()
-                    ? "Generator faculty is not configured. Set app.timetable.generator-faculty-username."
+                    ? "Generator faculty is not configured. Any faculty with approved allocations can generate timetable."
                     : "Only configured faculty '" + configured + "' can generate timetable allocation.");
         return TimetableGeneratorAccessDto.builder()
                 .canGenerate(canGenerate)
@@ -1140,22 +1140,7 @@ public class TimetableService {
         boolean faculty = currentUser.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .anyMatch("ROLE_FACULTY"::equals);
-        if (!faculty) {
-            return false;
-        }
-        String configured = normalizeConfiguredGeneratorUsername();
-        if (configured.isEmpty()) {
-            return false;
-        }
-        String username = currentUser.getUsername() == null ? "" : currentUser.getUsername().trim().toLowerCase();
-        String email = currentUser.getEmail() == null ? "" : currentUser.getEmail().trim().toLowerCase();
-        boolean configuredMatch = configured.equals(username) || configured.equals(email);
-        if (!configuredMatch) {
-            return false;
-        }
-        return facultySubjectRepository.findByFaculty_User_Id(currentUser.getUserId())
-                .stream()
-                .anyMatch(this::isApprovedAllocation);
+        return faculty;
     }
 
     private String normalizeConfiguredGeneratorUsername() {

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaChartBar, FaSearch, FaMicrophone } from 'react-icons/fa';
+import { createPortal } from 'react-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
 
@@ -45,6 +46,13 @@ const ChatbotWidget = ({ studentId }) => {
         return { top: Math.max(80, window.innerHeight - 620), left: Math.max(20, window.innerWidth - 430) };
     });
     const dragRef = useRef({ active: false, dx: 0, dy: 0 });
+    const clampDesktopPosition = (pos) => {
+        if (typeof window === 'undefined') return pos;
+        return {
+            left: Math.max(8, Math.min(window.innerWidth - 90, pos.left)),
+            top: Math.max(8, Math.min(window.innerHeight - 90, pos.top))
+        };
+    };
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
     const panelWidth = isMobile ? 'calc(100vw - 16px)' : 'min(415px, calc(100vw - 40px))';
@@ -87,6 +95,15 @@ const ChatbotWidget = ({ studentId }) => {
             window.removeEventListener('mouseup', onUp);
         };
     }, [desktopPos, isMobile]);
+
+    useEffect(() => {
+        if (isMobile) return;
+        const corrected = clampDesktopPosition(desktopPos);
+        if (corrected.left !== desktopPos.left || corrected.top !== desktopPos.top) {
+            setDesktopPos(corrected);
+            localStorage.setItem('rit_chatbot_position', JSON.stringify(corrected));
+        }
+    }, [isMobile, desktopPos.left, desktopPos.top]);
 
     const toggleVoice = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -177,7 +194,7 @@ const ChatbotWidget = ({ studentId }) => {
         }
     };
 
-    return (
+    const widget = (
         <div style={widgetContainerStyle}>
             <AnimatePresence>
                 {isOpen && (
@@ -409,6 +426,11 @@ const ChatbotWidget = ({ studentId }) => {
             </motion.button>
         </div>
     );
+
+    if (typeof document !== 'undefined') {
+        return createPortal(widget, document.body);
+    }
+    return widget;
 };
 
 export default ChatbotWidget;

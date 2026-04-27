@@ -12,7 +12,6 @@ import {
 } from 'recharts';
 import { academicAiApi } from '../../services/enterpriseApi';
 import { motion, AnimatePresence } from 'framer-motion';
-import ChatbotWidget from '../../features/ai/components/ChatbotWidget';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import Card from '../../components/common/Card';
 import MiniCalendar from '../../components/common/MiniCalendar';
