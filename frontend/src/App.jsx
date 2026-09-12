@@ -1,11 +1,9 @@
-import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/AuthContext';
 import { ThemeProvider } from './hooks/ThemeContext';
 import { ToastProvider } from './hooks/ToastContext';
 import { WebSocketProvider } from './hooks/WebSocketContext';
-import Skeleton from './components/common/Skeleton';
-
 /* Layouts */
 import InstitutionalLayout from './layouts/InstitutionalLayout';
 import StudentLayout from './layouts/StudentLayout';
@@ -13,9 +11,8 @@ import ParentLayout from './layouts/ParentLayout';
 import HODLayout from './layouts/HODLayout';
 import AuthLayout from './layouts/AuthLayout';
 
-/* Lazy Loaded Auth Pages */
-const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
 /* Lazy Loaded Admin Pages */
 const Dashboard = lazy(() => import('./pages/admin/DashboardWrapper'));
@@ -95,19 +92,8 @@ const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage'));
 const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
 
 const PageLoader = () => (
-  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.2s ease-out' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
-      <div className="app-soft-loader" />
-      Loading your workspace...
-    </div>
-    <Skeleton height="40px" width="300px" />
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <Skeleton height="120px" />
-      <Skeleton height="120px" />
-      <Skeleton height="120px" />
-      <Skeleton height="120px" />
-    </div>
-    <Skeleton height="400px" />
+  <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--theme-bg, #F8FAFC)', color: 'var(--theme-text, #0F172A)' }}>
+    <div className="app-soft-loader" aria-label="Loading" />
   </div>
 );
 
@@ -166,19 +152,21 @@ const InstitutionalIndexRoute = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    document.getElementById('boot')?.remove();
+  }, []);
+
   return (
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
           <WebSocketProvider>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                  {/* Auth Routes */}
+            <Routes>
                   <Route element={<AuthLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                   </Route>
-
+                  <Route element={<Suspense fallback={<PageLoader />}><Outlet /></Suspense>}>
                   {/* Student Mode */}
                   <Route path="/student" element={
                     <ProtectedRoute requiredRole="STUDENT"><StudentLayout /></ProtectedRoute>
@@ -296,8 +284,8 @@ const App = () => {
                     <Route path="settings" element={<ThemeSettingsPage />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
+                  </Route>
+            </Routes>
           </WebSocketProvider>
         </AuthProvider>
       </ToastProvider>

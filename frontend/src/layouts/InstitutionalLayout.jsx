@@ -14,23 +14,11 @@ import {
     LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuShieldAlert,
     LuLayoutGrid, LuFlame
 } from 'react-icons/lu';
-import Skeleton from '../components/common/Skeleton';
 import './student-layout.css';
 
 const LayoutLoader = () => (
-    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.2s ease-out' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
-            <div className="app-soft-loader" />
-            Loading your workspace...
-        </div>
-        <Skeleton height="40px" width="300px" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-            <Skeleton height="120px" />
-            <Skeleton height="120px" />
-            <Skeleton height="120px" />
-            <Skeleton height="120px" />
-        </div>
-        <Skeleton height="400px" />
+    <div style={{ minHeight: '40vh', display: 'grid', placeItems: 'center', color: 'var(--theme-text)' }}>
+        <div className="app-soft-loader" aria-label="Loading" />
     </div>
 );
 

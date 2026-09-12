@@ -196,7 +196,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/AuthContext';
 import { getAcademicStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
-import { academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
+import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
 import RingStat from '../../components/common/RingStat';
 
 function noteForStudent(studentId) {
@@ -317,6 +317,12 @@ const ParentDashboard = () => {
     const attendance = Math.round(Number(primary?.attendance || stats?.attendance || 0));
     const arrears = Number(stats?.arrears || 0);
     const feesPending = pendingAcademicFees();
+    const academicTotal = academicFees
+        .filter((fee) => fee.type === 'ACADEMIC')
+        .reduce((sum, fee) => sum + fee.amount, 0);
+    const feesPaidShare = academicTotal === 0
+        ? 100
+        : Math.round(((academicTotal - feesPending) / academicTotal) * 100);
 
     return (
         <div className="stu-dashboard">
@@ -341,7 +347,7 @@ const ParentDashboard = () => {
                     <RingStat label="Arrears" value={String(arrears)} center={String(arrears)} percent={arrears === 0 ? 0 : Math.min(100, arrears * 25)} color="#dc3545" />
                 </div>
                 <div onClick={() => navigate('/parent/fees')} style={{ cursor: 'pointer' }}>
-                    <RingStat label="Fees Pending" value={`₹${feesPending.toLocaleString('en-IN')}`} center={feesPending === 0 ? '100% Paid' : 'Due'} sub={`AY ${academicYearLabel()}`} percent={feesPending === 0 ? 100 : 0} color="#f0ad4e" />
+                    <RingStat label="Fees Pending" value={`₹${feesPending.toLocaleString('en-IN')}`} center={feesPending === 0 ? '100% Paid' : 'Due'} sub={`AY ${academicYearLabel()}`} percent={feesPaidShare} color="#f0ad4e" />
                 </div>
             </div>
             <div className="stu-kpi-row" style={{ marginTop: 16 }}>

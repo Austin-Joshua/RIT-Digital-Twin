@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaMicrophone, FaExpand, FaCompress } from 'react-icons/fa';
 import { createPortal } from 'react-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
-import { ThemeContext } from '../../../hooks/ThemeContext';
 import { getAcademicStats } from '../../../utils/MockDataGenerator';
 import { pendingAcademicFees, pendingExamFees } from '../../../utils/studentFees';
+import './chatbot.css';
 
 // Render bot text with newlines so answers are readable and high-contrast
 const MessageContent = ({ text }) => {
@@ -53,8 +53,6 @@ function localAnswer(query, role, email) {
 
 const ChatbotWidget = ({ studentId }) => {
     const { user } = useAuth();
-    const theme = useContext(ThemeContext) || {};
-    const isDarkMode = Boolean(theme.isDarkMode);
     const [isOpen, setIsOpen] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [viewport, setViewport] = useState(() => ({
@@ -198,15 +196,15 @@ const ChatbotWidget = ({ studentId }) => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 40, filter: 'blur(10px)' }}
+                        className="rit-chat-panel"
+                        initial={{ opacity: 0, scale: 0.96, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, scale: 0.9, y: 40, filter: 'blur(10px)' }}
+                        exit={{ opacity: 0, scale: 0.96, y: 16 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         style={{
                             width: panelWidth,
                             height: panelHeight,
                             borderRadius: isMobile ? '20px' : '28px',
-                            boxShadow: '0 25px 80px rgba(0,0,0,0.4)',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
@@ -214,17 +212,10 @@ const ChatbotWidget = ({ studentId }) => {
                             transformOrigin: 'bottom right',
                             maxWidth: 'calc(100vw - 16px)',
                             maxHeight: `calc(100vh - ${isMobile ? 96 : 108}px)`,
-                            background: isDarkMode ? 'var(--card-bg)' : 'rgba(255, 255, 255, 0.96)',
-                            backdropFilter: 'blur(16px)',
-                            border: '1px solid var(--theme-border)',
-                            color: 'var(--theme-text)',
                             zIndex: 1001
                         }}
                     >
-                        {/* Premium Header */}
-                        <div style={{ 
-                            background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', 
-                            color: 'white', 
+                        <div className="rit-chat-header" style={{
                             padding: isMobile ? '14px 16px' : '20px', 
                             display: 'flex', 
                             justifyContent: 'space-between', 
@@ -264,7 +255,7 @@ const ChatbotWidget = ({ studentId }) => {
                         </div>
 
                         {/* Messages Area */}
-                        <div style={{ flex: 1, minHeight: 0, padding: isMobile ? '12px' : '18px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div className="rit-chat-messages" style={{ flex: 1, minHeight: 0, padding: isMobile ? '12px' : '18px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {messages.map((msg, i) => (
                                 <motion.div 
                                     key={i} 
@@ -273,17 +264,13 @@ const ChatbotWidget = ({ studentId }) => {
                                     style={{ alignSelf: msg.isBot ? 'flex-start' : 'flex-end', maxWidth: isMobile ? '96%' : '88%' }}
                                 >
                                     <div
+                                        className={msg.isBot ? 'rit-chat-bot' : 'rit-chat-user'}
                                         style={{
                                             padding: isMobile ? '10px 12px' : '14px 16px',
-                                            borderRadius: msg.isBot ? '4px 24px 24px 24px' : '24px 24px 4px 24px',
-                                            fontSize: isMobile ? '0.87rem' : '0.95rem',
-                                            fontWeight: '500',
-                                            lineHeight: 1.6,
-                                            boxShadow: msg.isBot ? '0 4px 15px rgba(0,0,0,0.05)' : '0 10px 25px rgba(11,44,107,0.2)',
-                                            ...(msg.isBot
-                                                ? { background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', color: 'var(--theme-text)', border: '1px solid var(--theme-border)' }
-                                                : { background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: '#ffffff' }
-                                            )
+                                            borderRadius: msg.isBot ? '4px 18px 18px 18px' : '18px 18px 4px 18px',
+                                            fontSize: isMobile ? '0.9rem' : '0.95rem',
+                                            fontWeight: 500,
+                                            lineHeight: 1.55,
                                         }}
                                     >
                                         {msg.isBot ? <MessageContent text={msg.text} /> : msg.text}
@@ -307,7 +294,7 @@ const ChatbotWidget = ({ studentId }) => {
                                 </motion.div>
                             ))}
                             {isTyping && (
-                                <div style={{ alignSelf: 'flex-start', background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', padding: '16px 20px', borderRadius: '4px 24px 24px 24px', border: '1px solid var(--theme-border)' }}>
+                                <div className="rit-chat-bot" style={{ alignSelf: 'flex-start', padding: '16px 20px', borderRadius: '4px 18px 18px 18px' }}>
                                     <div style={{ display: 'flex', gap: 6 }}>
                                         {[0, 1, 2].map(j => (
                                             <motion.div
@@ -324,20 +311,17 @@ const ChatbotWidget = ({ studentId }) => {
 
                         {/* Suggestions Layer (auto-hide after first interaction) */}
                         {!hasInteracted && (
-                        <div style={{ padding: isMobile ? '0 12px 10px' : '0 18px 12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div className="rit-chat-suggestions" style={{ padding: isMobile ? '0 12px 10px' : '0 18px 12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                             {getSuggestions().map(sug => (
                                 <motion.button
                                     key={sug}
-                                    whileHover={{ scale: 1.05, background: 'rgba(11, 44, 107, 0.08)' }}
-                                    whileTap={{ scale: 0.95 }}
+                                    className="rit-chat-chip"
                                     onClick={() => handleSend(sug)}
                                     style={{
                                         padding: isMobile ? '8px 12px' : '9px 14px', borderRadius: '25px',
                                         fontSize: isMobile ? '12px' : '13px',
-                                        fontWeight: '700', cursor: 'pointer', transition: '0.3s',
+                                        fontWeight: 600, cursor: 'pointer',
                                         display: 'flex', alignItems: 'center', gap: '8px',
-                                        background: isDarkMode ? 'var(--theme-bg-muted)' : 'rgba(255,255,255,0.9)', color: isDarkMode ? 'var(--theme-text)' : '#0B2C6B', border: '1px solid var(--theme-border)',
-                                        boxShadow: '0 4px 10px rgba(0,0,0,0.03)'
                                     }}
                                 >
                                     <FaBolt size={10} className="text-amber-500" /> {sug}
@@ -347,18 +331,15 @@ const ChatbotWidget = ({ studentId }) => {
                         )}
 
                         {/* Footer Controls */}
-                        <div style={{ padding: isMobile ? '10px 12px' : '14px 16px', background: isDarkMode ? 'var(--theme-bg)' : 'rgba(255,255,255,0.7)', borderTop: '1px solid var(--theme-border)', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div className="rit-chat-footer" style={{ padding: isMobile ? '10px 12px' : '14px 16px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                             <div style={{ flex: 1, position: 'relative' }}>
                                 <input
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                                     placeholder="Ask your assistant..."
-                                    style={{
-                                        width: '100%', borderRadius: '16px', padding: isMobile ? '10px 12px' : '12px 14px', outline: 'none', fontSize: isMobile ? '14px' : '15px', fontWeight: '600',
-                                        background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', transition: 'border-color 0.2s',
-                                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
-                                    }}
+                                    className="rit-chat-input"
+                                    style={{ padding: isMobile ? '10px 12px' : '12px 14px', fontSize: isMobile ? '14px' : '15px' }}
                                 />
                             </div>
                             
@@ -366,18 +347,14 @@ const ChatbotWidget = ({ studentId }) => {
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={toggleVoice} 
+                                className={isListening ? 'rit-chat-mic is-listening' : 'rit-chat-mic'}
                                 style={{ 
-                                    background: isListening ? '#ef4444' : '#f8fafc', 
-                                    color: isListening ? '#ffffff' : '#64748b', 
-                                    border: '2px solid',
-                                    borderColor: isListening ? '#ef4444' : '#e2e8f0', 
                                     borderRadius: '14px', 
                                     width: isMobile ? '42px' : '48px', height: isMobile ? '42px' : '48px',
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center', 
-                                    cursor: 'pointer', 
-                                    boxShadow: isListening ? '0 0 25px rgba(239, 68, 68, 0.4)' : '0 4px 12px rgba(0,0,0,0.05)'
+                                    cursor: 'pointer'
                                 }}
                             >
                                 {isListening ? (
