@@ -38,6 +38,9 @@ desktop.ini
 
 # ─── Logs ────────────────────────────────────────────────────
 *.log
+.mvn_log
+.mvn_log_*
+backend/.mvn_log*
 npm-debug.log*
 yarn-error.log*
 
