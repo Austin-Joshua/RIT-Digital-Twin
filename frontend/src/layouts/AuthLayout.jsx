@@ -47,45 +47,45 @@ const AuthLayout = () => {
                     color: '#ffffff'
                 }}>
                     <AnimatedWaveBackground />
-                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
-                        <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
-                            <img
-                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                                alt="RIT Institutional Logo"
-                                style={{ height: '75px', width: 'auto' }}
-                            />
-                        </div>
+                    <div className="brand-copy" style={{ position: 'relative', zIndex: 1, width: 'min(420px, 100%)' }}>
+                        <img
+                            src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                            alt="RIT Institutional Logo"
+                            style={{ height: '72px', width: 'auto', display: 'block', marginBottom: '22px' }}
+                        />
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
-                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '8px', lineHeight: '1.2', color: '#ffffff' }}>
+                                <h1 style={{ fontSize: '2.6rem', fontWeight: 650, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'left' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
+                                <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'left' }}>
                                     Smart Campus Intelligence Platform
                                 </p>
 
                                 <div className="brand-description" style={{
                                     fontSize: '0.95rem',
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.65)',
-                                    lineHeight: '1.7',
-                                    marginBottom: '40px',
-                                    padding: '16px',
-                                    background: 'rgba(0,0,0,0.1)',
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.78)' : 'rgba(255, 255, 255, 0.78)',
+                                    lineHeight: 1.65,
+                                    margin: '0 0 22px',
+                                    padding: '14px 16px',
+                                    background: 'rgba(0,0,0,0.12)',
                                     borderRadius: '12px',
-                                    borderLeft: `2px solid ${isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}`
+                                    borderLeft: '3px solid var(--color-accent-gold)',
+                                    textAlign: 'left'
                                 }}>
                                     Rajalakshmi Institute of Technology is an engineering college in Chennai, Tamil Nadu, India.
                                     RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>&apos;A++&apos; Grade in NAAC</strong>.
                                 </div>
 
                                 <div className="brand-tagline" style={{
-                                    fontSize: '1rem',
+                                    fontSize: '0.98rem',
                                     fontStyle: 'italic',
                                     color: 'var(--color-accent-gold)',
-                                    fontWeight: '500',
-                                    marginTop: '60px',
+                                    fontWeight: 500,
+                                    margin: 0,
                                     borderLeft: '3px solid var(--color-accent-gold)',
-                                    paddingLeft: '16px'
+                                    paddingLeft: '14px',
+                                    textAlign: 'left'
                                 }}>
                                     &quot;Innovation through data, excellence in education.&quot;
                                 </div>
@@ -135,7 +135,7 @@ const AuthLayout = () => {
                     }
                     .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
                     .brand-panel p, .brand-description, .brand-tagline { display: none !important; }
-                    .brand-panel img { height: 60px !important; }
+                    .brand-panel img { height: 60px !important; margin-left: auto; margin-right: auto; }
                     .form-panel { 
                         padding: 40px 20px !important; 
                         height: auto !important; 

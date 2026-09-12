@@ -124,33 +124,38 @@ const LoginPage = () => {
                         zIndex: 2
                     }}
                 >
-                    <div style={{ marginBottom: '16px', textAlign: 'center', position: 'relative' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '18px' }}>
+                        <div style={{ minWidth: 0, flex: 1, paddingTop: '2px' }}>
+                            <h2 style={{
+                                fontSize: '1.45rem', fontWeight: 650,
+                                color: isDarkMode ? '#FFD700' : '#B8860B',
+                                margin: 0,
+                                lineHeight: 1.2,
+                                letterSpacing: '0.01em'
+                            }}>Login</h2>
+                            <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: 500, lineHeight: 1.4, margin: '6px 0 0' }}>
+                                Sign in with your IMS user ID and password
+                            </p>
+                        </div>
                         <div style={{
-                            position: 'absolute', top: '-10px', right: '-10px',
-                            display: 'flex', alignItems: 'center', gap: '4px',
-                            padding: '4px 8px', borderRadius: '12px',
-                            background: backendStatus === 'online' ? 'rgba(22, 163, 74, 0.1)' :
-                                backendStatus === 'checking' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+                            flexShrink: 0,
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            height: '26px', padding: '0 10px', borderRadius: '999px',
+                            background: backendStatus === 'online' ? 'rgba(22, 163, 74, 0.12)' :
+                                backendStatus === 'checking' ? 'rgba(59, 130, 246, 0.12)' : 'rgba(220, 38, 38, 0.12)',
                             border: `1px solid ${backendStatus === 'online' ? 'var(--color-success)' :
                                 backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'}`,
-                            fontSize: '10px', fontWeight: 'bold', color: backendStatus === 'online' ? 'var(--color-success)' :
+                            fontSize: '11px', fontWeight: 650, letterSpacing: '0.04em',
+                            color: backendStatus === 'online' ? 'var(--color-success)' :
                                 backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'
                         }}>
-                            <div style={{
-                                width: '6px', height: '6px', borderRadius: '50%',
+                            <span style={{
+                                width: '7px', height: '7px', borderRadius: '50%',
                                 background: 'currentColor',
                                 animation: backendStatus === 'checking' ? 'pulse 1.5s infinite' : 'none'
                             }} />
-                            {backendStatus === 'checking' ? 'WAKING UP...' : backendStatus.toUpperCase()}
+                            {backendStatus === 'checking' ? 'CHECKING' : backendStatus.toUpperCase()}
                         </div>
-                        <h2 style={{
-                            fontSize: '1.7rem', fontWeight: '600',
-                            color: isDarkMode ? '#FFD700' : '#B8860B', // Darker gold for better contrast
-                            marginBottom: '4px',
-                            textShadow: isDarkMode ? '0 0 10px rgba(255, 215, 0, 0.2)' : 'none',
-                            letterSpacing: '0.02em'
-                        }}>Login</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Sign in with your IMS user ID and password</p>
                     </div>
 
                     {error && (
