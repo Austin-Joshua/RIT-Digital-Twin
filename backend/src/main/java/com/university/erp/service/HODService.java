@@ -50,7 +50,7 @@ public class HODService {
     }
 
     private Set<Long> getStudentIdsUnderHod(Long departmentId) {
-        return getStudentsUnderHod(departmentId).stream().map(Student::getId).collect(Collectors.toSet());
+        return getStudentsUnderHod(departmentId).stream().map(student -> student.getId()).collect(Collectors.toSet());
     }
 
     @Cacheable(value = "dept_stats", key = "#departmentId")
@@ -58,7 +58,7 @@ public class HODService {
         ensureDepartmentExists(departmentId);
         Map<String, Object> stats = new LinkedHashMap<>();
         stats.put("departmentId", departmentId);
-        stats.put("departmentCode", departmentRepository.findById(departmentId).map(Department::getCode).orElse(null));
+        stats.put("departmentCode", departmentRepository.findById(departmentId).map(department -> department.getCode()).orElse(null));
         stats.put("isHandS", isHandSDepartment(departmentId));
         stats.put("totalFaculty", userRepository.countByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId));
 
@@ -163,7 +163,7 @@ public class HODService {
                 .filter(s -> s.getYear() != null && s.getSection() != null)
                 .collect(Collectors.groupingBy(s -> s.getYear() + "-" + s.getSection(), LinkedHashMap::new, Collectors.toList()));
 
-        Set<Long> studentIds = students.stream().map(Student::getId).collect(Collectors.toSet());
+        Set<Long> studentIds = students.stream().map(student -> student.getId()).collect(Collectors.toSet());
         List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
         List<Attendance> deptAttendance = attendanceRepository.findByStudent_IdIn(studentIds);
 
@@ -174,7 +174,7 @@ public class HODService {
         for (Map.Entry<String, List<Student>> e : byClass.entrySet()) {
             String classKey = e.getKey();
             List<Student> classStudents = e.getValue();
-            List<Long> ids = classStudents.stream().map(Student::getId).collect(Collectors.toList());
+            List<Long> ids = classStudents.stream().map(student -> student.getId()).collect(Collectors.toList());
 
             BigDecimal totalScoreSum = BigDecimal.ZERO;
             int totalScoreCount = 0;
@@ -311,7 +311,7 @@ public class HODService {
         for (Map.Entry<String, Map<String, List<BigDecimal>>> e : subjectClassScores.entrySet()) {
             for (Map.Entry<String, List<BigDecimal>> ce : e.getValue().entrySet()) {
                 if (ce.getValue().isEmpty()) continue;
-                BigDecimal avg = ce.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(ce.getValue().size()), 2, RoundingMode.HALF_UP);
+                BigDecimal avg = ce.getValue().stream().reduce(BigDecimal.ZERO, (total, value) -> total.add(value)).divide(BigDecimal.valueOf(ce.getValue().size()), 2, RoundingMode.HALF_UP);
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("subject", e.getKey());
                 row.put("class", ce.getKey());
@@ -335,7 +335,7 @@ public class HODService {
         List<Map<String, Object>> weak = new ArrayList<>();
         for (Map.Entry<Long, List<Marks>> e : bySubject.entrySet()) {
             List<Marks> list = e.getValue();
-            BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(Marks::getTotalScore).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(mark -> mark.getTotalScore()).reduce(BigDecimal.ZERO, (total, value) -> total.add(value));
             int count = (int) list.stream().filter(m -> m.getTotalScore() != null).count();
             if (count == 0) continue;
             avg = avg.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
@@ -370,7 +370,7 @@ public class HODService {
         }
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<String, List<BigDecimal>> e : groupScores.entrySet()) {
-            BigDecimal avg = e.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
+            BigDecimal avg = e.getValue().stream().reduce(BigDecimal.ZERO, (total, value) -> total.add(value)).divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
             Map<String, Object> row = new LinkedHashMap<>();
             row.put(byYear ? "year" : "semester", e.getKey());
             row.put("averageScore", avg);

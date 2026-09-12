@@ -110,7 +110,7 @@ public class AdaptiveDefenseFilter extends OncePerRequestFilter implements Order
             defenseLevelManager.recordAnomaly();
             riskScoringService.recordAnomaly(ctx.getClientKey(), anomalyResult.getSeverity());
             String anomalyTypes = anomalyResult.getAnomalies().stream()
-                    .map(Enum::name)
+                    .map(type -> type.name())
                     .reduce((a, b) -> a + "," + b)
                     .orElse("unknown");
             telemetry.logAnomaly(SecurityTelemetryService.hashForLog(ctx.getClientKey()), anomalyTypes, anomalyResult.getSeverity());

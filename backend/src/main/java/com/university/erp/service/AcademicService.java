@@ -69,10 +69,10 @@ public class AcademicService {
 
         // Collect all identifiers for bulk lookup
         Set<String> studentIdentifiers = payload.stream()
-                .map(MarksUploadRequestDto::getStudentIdentifier)
+                .map(request -> request.getStudentIdentifier())
                 .collect(Collectors.toSet());
         Set<String> subjectCodes = payload.stream()
-                .map(MarksUploadRequestDto::getSubjectCode)
+                .map(request -> request.getSubjectCode())
                 .collect(Collectors.toSet());
 
         // Bulk lookup students and subjects (O(N) instead of O(N^2))
@@ -86,7 +86,7 @@ public class AcademicService {
                 ));
 
         Map<String, Subject> subjectMap = subjectRepository.findAllBySubjectCodeIn(subjectCodes).stream()
-                .collect(Collectors.toMap(Subject::getSubjectCode, s -> s));
+                .collect(Collectors.toMap(subject -> subject.getSubjectCode(), s -> s));
 
         List<Marks> marksToSave = new ArrayList<>();
         Set<Long> affectedStudentIds = new HashSet<>();

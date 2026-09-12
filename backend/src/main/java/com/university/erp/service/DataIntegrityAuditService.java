@@ -57,7 +57,7 @@ public class DataIntegrityAuditService {
 
         boolean tamperingDetected = auditRepository
                 .findTopByEntityTypeAndEntityIdAndStageOrderByCreatedAtDesc(entityType, entityId, STAGE_AFTER)
-                .map(DataChangeAuditLog::getChecksumAfter)
+                .map(log -> log.getChecksumAfter())
                 .filter(previousChecksum -> previousChecksum != null && !previousChecksum.equals(beforeChecksum))
                 .isPresent();
 
@@ -141,7 +141,7 @@ public class DataIntegrityAuditService {
 
     public Optional<Map<String, Object>> latestBeforeSnapshot(String entityType, String entityId) {
         return auditRepository.findTopByEntityTypeAndEntityIdAndStageOrderByCreatedAtDesc(entityType, entityId, STAGE_BEFORE)
-                .map(DataChangeAuditLog::getOldValue)
+                .map(log -> log.getOldValue())
                 .flatMap(this::fromJsonMap);
     }
 

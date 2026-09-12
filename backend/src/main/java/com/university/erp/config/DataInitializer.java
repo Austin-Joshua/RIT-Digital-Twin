@@ -31,7 +31,7 @@ import com.university.erp.model.FacultyProfile;
 import com.university.erp.model.Department;
 import com.university.erp.model.Semester;
 import com.university.erp.model.Subject;
-import com.university.erp.service.BruteForceProtectionService;
+import com.university.erp.security.OneTimeTokens;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -60,7 +60,6 @@ public class DataInitializer implements CommandLineRunner {
         private final SemesterRepository semesterRepository;
         private final SubjectRepository subjectRepository;
         private final JdbcTemplate jdbcTemplate;
-        private final BruteForceProtectionService bruteForceProtectionService;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
@@ -69,7 +68,7 @@ public class DataInitializer implements CommandLineRunner {
                         DepartmentRepository departmentRepository, FacultyProfileRepository facultyProfileRepository,
                         FacultySubjectRepository facultySubjectRepository, SemesterRepository semesterRepository,
                         SubjectRepository subjectRepository,
-                        JdbcTemplate jdbcTemplate, BruteForceProtectionService bruteForceProtectionService) {
+                        JdbcTemplate jdbcTemplate) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
@@ -84,7 +83,6 @@ public class DataInitializer implements CommandLineRunner {
                 this.semesterRepository = semesterRepository;
                 this.subjectRepository = subjectRepository;
                 this.jdbcTemplate = jdbcTemplate;
-                this.bruteForceProtectionService = bruteForceProtectionService;
         }
 
         @Override
@@ -92,14 +90,6 @@ public class DataInitializer implements CommandLineRunner {
                 try {
                 log.info("RIT Digital Twin: Starting Institutional Data Initialization...");
                 
-                // 0. Global Identity Unlock (Wipe Lockouts)
-                try {
-                    jdbcTemplate.execute("UPDATE users SET account_status = 'active', failed_login_attempts = 0 WHERE account_status = 'locked'");
-                    log.info("Institutional identities globally unlocked.");
-                } catch (Exception e) {
-                    log.warn("Global unlock skipped: {}", e.getMessage());
-                }
-
                 // 1. Initialize Roles
                 for (Role.UserRole roleEnum : Role.UserRole.values()) {
                         if (roleRepository.findByRoleName(roleEnum).isEmpty()) {
@@ -110,19 +100,11 @@ public class DataInitializer implements CommandLineRunner {
                         }
                 }
 
-                // 2. Initialize Default Users
-                seedUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
-                seedUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
-                seedUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
-
-                // Parent Seed
-                seedUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
-
-                // 3. Forced Identity Reset (ADM/FAC/STUDENT/PARENT)
-                forceResetUser("ADM-001", "admin@ritchennai.edu.in", "ADM-001", Role.UserRole.ADMIN, "System", "Admin");
-                forceResetUser("FAC-001", "faculty@ritchennai.edu.in", "FAC-001", Role.UserRole.FACULTY, "John", "Faculty");
-                forceResetUser("student@ritchennai.edu.in", "student@ritchennai.edu.in", "student123", Role.UserRole.STUDENT, "Jane", "Student");
-                forceResetUser("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", "parent123", Role.UserRole.PARENT, "Ram", "Parent");
+                // 2. Create missing demo accounts only. Never overwrite an existing password.
+                seedUserIfAbsent("ADM-001", "admin@ritchennai.edu.in", Role.UserRole.ADMIN, "System", "Admin");
+                seedUserIfAbsent("FAC-001", "faculty@ritchennai.edu.in", Role.UserRole.FACULTY, "John", "Faculty");
+                seedUserIfAbsent("student@ritchennai.edu.in", "student@ritchennai.edu.in", Role.UserRole.STUDENT, "Jane", "Student");
+                seedUserIfAbsent("parent@ritchennai.edu.in", "parent@ritchennai.edu.in", Role.UserRole.PARENT, "Ram", "Parent");
 
                 // 4. Institutional Platform Activation
                 migrateLegacyRolesToAdmin();
@@ -137,9 +119,7 @@ public class DataInitializer implements CommandLineRunner {
                 seedCseMockFacultyAndAllocations();
                 assignRegisterNumbersToDemoStudents();
 
-                bruteForceProtectionService.clearAll();
-                log.info("Cleared login attempt blocks for all accounts.");
-                log.info("RIT Digital Twin: FULL PLATFORM ACTIVATION COMPLETE.");
+                log.info("RIT Digital Twin: data initialization complete.");
                 } catch (Exception e) {
                         log.error("DataInitializer encountered an error - application will continue: {}", e.getMessage());
                         log.debug("DataInitializer stack trace:", e);
@@ -173,18 +153,15 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        /** One HOD per department: default pattern (hod_<code>@ritchennai.edu.in / hod<code>123) */
+        /** One HOD record per department. Existing passwords are never rewritten. */
         private void seedHodsForAllDepartments() {
                 try {
                         List<String> codes = List.of("CSE", "AIML", "CCE", "ECE", "MECH", "VLSI", "AIDS", "CSBS", "BT", "MEVLSI", "SANDH");
                         for (String code : codes) {
                                 String email = "hod_" + code.toLowerCase() + "@ritchennai.edu.in";
-                                String password = "hod" + code.toLowerCase() + "123";
                                 String firstName = "HOD";
                                 String lastName = code;
-                                seedUser(email, email, password, Role.UserRole.HOD, firstName, lastName);
-                                // Force-reset HOD password to guarantee login works after every deploy
-                                forceResetUser(email, email, password, Role.UserRole.HOD, firstName, lastName);
+                                seedUserIfAbsent(email, email, Role.UserRole.HOD, firstName, lastName);
                                 departmentRepository.findByCode(code).ifPresent(dept ->
                                         userRepository.findByEmail(email).ifPresent(user -> {
                                                 if (user.getDepartment() == null) {
@@ -195,9 +172,7 @@ public class DataInitializer implements CommandLineRunner {
                                         }));
                         }
 
-                        // Legacy single HOD (redirect to CSBS if still used)
-                        seedUser("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
-                        forceResetUser("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", "hod123", Role.UserRole.HOD, "HOD", "Department");
+                        seedUserIfAbsent("hod@ritchennai.edu.in", "hod@ritchennai.edu.in", Role.UserRole.HOD, "HOD", "Department");
                         departmentRepository.findByCode("CSBS").ifPresent(dept ->
                                 userRepository.findByEmail("hod@ritchennai.edu.in").ifPresent(user -> {
                                         if (user.getDepartment() == null) {
@@ -256,8 +231,7 @@ public class DataInitializer implements CommandLineRunner {
                                 String email = "mock" + (i + 1) + ".cse@ritchennai.edu.in";
                                 String first = "Mock";
                                 String last = "Faculty " + String.format("%02d", i + 1);
-                                seedUser(code, email, code, Role.UserRole.FACULTY, first, last);
-                                forceResetUser(code, email, code, Role.UserRole.FACULTY, first, last);
+                                seedUserIfAbsent(code, email, Role.UserRole.FACULTY, first, last);
                                 userRepository.findByUsername(code).ifPresent(user -> {
                                         user.setDepartment(cseDept);
                                         userRepository.save(user);
@@ -273,8 +247,8 @@ public class DataInitializer implements CommandLineRunner {
 
                         List<FacultyProfile> profiles = mockFacultyCodes.stream()
                                 .map(userRepository::findByUsername)
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
+                                .filter(found -> found.isPresent())
+                                .map(found -> found.get())
                                 .map(user -> facultyProfileRepository.findByUser_Id(user.getUserId()).orElse(null))
                                 .filter(Objects::nonNull)
                                 .toList();
@@ -327,7 +301,7 @@ public class DataInitializer implements CommandLineRunner {
         private void migrateLegacyRolesToAdmin() {
                 try {
                         Long adminId = roleRepository.findByRoleName(Role.UserRole.ADMIN)
-                                        .map(Role::getRoleId)
+                                        .map(role -> role.getRoleId())
                                         .orElse(null);
                         if (adminId == null) return;
 
@@ -356,30 +330,29 @@ public class DataInitializer implements CommandLineRunner {
                 }
         }
 
-        private void seedUser(String username, String email, String password, Role.UserRole roleEnum, String first, String last) {
-                if (userRepository.findByUsername(username).isPresent()) return;
-                forceResetUser(username, email, password, roleEnum, first, last);
-        }
-
-        private void forceResetUser(String username, String email, String password, Role.UserRole roleName, String first, String last) {
+        /**
+         * Creates a missing account with an unguessable password that is not logged.
+         * Never updates an existing user's password, status, or lockout counters.
+         */
+        private void seedUserIfAbsent(String username, String email, Role.UserRole roleName, String first, String last) {
+                if (userRepository.findByUsername(username).isPresent()) {
+                        return;
+                }
                 Role role = roleRepository.findByRoleName(roleName)
                                 .orElseGet(() -> roleRepository.save(Role.builder().roleName(roleName).build()));
 
-                User user = userRepository.findByUsername(username)
-                                .orElse(new User());
-
+                User user = new User();
                 user.setUsername(username);
                 user.setEmail(email);
-                user.setPassword(passwordEncoder.encode(password));
+                user.setPassword(passwordEncoder.encode(OneTimeTokens.generate()));
                 user.setRole(role);
                 user.setFirstName(first);
                 user.setLastName(last);
                 user.setAccountStatus("active");
                 user.setFailedLoginAttempts(0);
                 user.setMustChangePassword(true);
-
                 userRepository.saveAndFlush(user);
-                log.info("Force-reset institutional identity: {}", username);
+                log.info("Created account {} with a random password. An administrator must issue a password before it can be used.", username);
         }
 
         private void seedErpData() {

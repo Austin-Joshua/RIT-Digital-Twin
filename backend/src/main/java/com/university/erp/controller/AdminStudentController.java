@@ -40,8 +40,10 @@ public class AdminStudentController {
 
     @PostMapping("/{studentId}/reset-password")
     public ResponseEntity<Map<String, String>> resetPassword(@PathVariable Long studentId) {
-        onboardingService.resetStudentPassword(studentId);
-        return ResponseEntity.ok(Map.of("message", "Password reset to register number and force change enabled"));
+        String temporaryPassword = onboardingService.resetStudentPassword(studentId);
+        return ResponseEntity.ok(Map.of(
+                "message", "Temporary password issued once. The user must change it at next login.",
+                "temporaryPassword", temporaryPassword));
     }
 
     @PostMapping("/{studentId}/rollback-last-change")

@@ -27,7 +27,7 @@ public class AnalyticsService {
         stats.put("totalStudents", students.size());
         BigDecimal totalCgpa = students.stream()
                 .map(s -> s.getCurrentCgpa() != null ? s.getCurrentCgpa() : java.math.BigDecimal.ZERO)
-                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+                .reduce(java.math.BigDecimal.ZERO, (total, value) -> total.add(value));
 
         java.math.BigDecimal averageCgpa = students.isEmpty() ? java.math.BigDecimal.ZERO
                 : totalCgpa.divide(java.math.BigDecimal.valueOf(students.size()), 2, java.math.RoundingMode.HALF_UP);

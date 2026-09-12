@@ -70,9 +70,8 @@ public class AuthService {
         this.securityAlertService = securityAlertService;
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    //  LOGIN — Three-phase: Standard Auth → Institutional Rescue → Fail
-    // ═══════════════════════════════════════════════════════════════════
+    // Login accepts only a stored password hash via Spring Security.
+    // Known default passwords and login-time account creation are not valid credentials.
     @Transactional
     public AuthResponse login(AuthRequest request, String clientIp, String deviceInfo, String location) {
         String username = request.getUsername().trim();
@@ -80,18 +79,6 @@ public class AuthService {
 
         log.info("Attempting login for user: {}", username);
 
-        // ─── Phase 0: Ensure User Record Exists (auto-register students) ───
-        boolean isRegisterNo = username.matches("^\\d{12,14}$")
-                || (username.startsWith("2117") && username.length() >= 12);
-
-        Optional<User> existingUser = resolveUserByAnyIdentity(username);
-
-        if (existingUser.isEmpty() && isRegisterNo) {
-            log.info("RESCUE: Auto-registering student for register number: {}", username);
-            existingUser = autoRegisterStudent(username, password);
-        }
-
-        // ─── Phase 1: Try Standard Spring Security Auth ───
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
@@ -104,7 +91,7 @@ public class AuthService {
                 throw new RuntimeException("Account " + user.getAccountStatus() + ". Please contact admin.");
             }
 
-            log.info("Standard auth successful for user: {}", username);
+            log.info("Authentication successful for user: {}", username);
             user.setFailedLoginAttempts(0);
             user.setLastLogin(java.time.LocalDateTime.now());
             userRepository.save(user);
@@ -115,54 +102,19 @@ public class AuthService {
             return generateAuthResponse(user, false);
 
         } catch (org.springframework.security.core.AuthenticationException e) {
-            log.warn("Standard auth failed for {}: {}. Trying institutional rescue...", username, e.getMessage());
+            log.warn("Authentication failed for {}", username);
         }
 
-        // ─── Phase 2: Universal Institutional Rescue ───
-        // Handles ALL default credential patterns including HOD (where password != username)
-        Optional<User> rescueUser = resolveUserByAnyIdentity(username);
-
-        // Deep search: student table directly
-        if (rescueUser.isEmpty() && isRegisterNo) {
-            Optional<Student> s = studentRepository.findByRegisterNo(username);
-            if (s.isPresent() && s.get().getUser() != null) {
-                rescueUser = Optional.of(s.get().getUser());
-            } else if (s.isPresent()) {
-                rescueUser = autoRegisterStudent(username, password);
-            }
+        Optional<User> existingUser = resolveUserByAnyIdentity(username);
+        if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
+            existingUser = studentRepository.findByRegisterNo(username)
+                    .map(Student::getUser)
+                    .filter(java.util.Objects::nonNull);
         }
 
-        if (rescueUser.isPresent()) {
-            User user = rescueUser.get();
-            syncStudentIdentityFromMaster(user, username);
-            boolean isDefaultCredential = isDefaultCredentialMatch(user, username, password);
-            boolean passwordMatches = passwordEncoder.matches(password, user.getPassword());
-
-            if (passwordMatches || isDefaultCredential) {
-                log.info("RESCUE: Institutional rescue login for {}. passwordMatch={}, defaultCred={}",
-                        username, passwordMatches, isDefaultCredential);
-
-                // Force-fix: re-encode the password and unlock
-                user.setPassword(passwordEncoder.encode(password));
-                user.setAccountStatus("active");
-                user.setFailedLoginAttempts(0);
-                user.setLastLogin(java.time.LocalDateTime.now());
-                userRepository.saveAndFlush(user);
-
-                bruteForceProtectionService.loginSucceeded(username);
-                recordLoginLog(user, username, clientIp, deviceInfo, location, "SUCCESS_RESCUE", "Institutional rescue");
-                requestSecurityMonitoringService.trackSuccessfulLogin(user.getUserId(), user.getUsername(), clientIp, safeLocation(location), safeDevice(deviceInfo));
-                return generateAuthResponse(user, false);
-            }
-        }
-
-        // ─── Phase 3: Failure — increment counters and report ───
         String diagnosticMessage = "Invalid username or password.";
-
-        if (rescueUser.isEmpty()) {
-            diagnosticMessage = "Identity '" + username + "' not found. Check your register number or email.";
-        } else {
-            User user = rescueUser.get();
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
             int attempts = user.getFailedLoginAttempts() + 1;
             user.setFailedLoginAttempts(attempts);
             if (attempts >= 5) {
@@ -170,11 +122,12 @@ public class AuthService {
                 diagnosticMessage = "Account locked due to 5 failed attempts. Contact admin.";
                 log.warn("User account {} locked.", username);
             } else {
-                diagnosticMessage = "Password mismatch. " + (5 - attempts) + " attempts remaining.";
+                diagnosticMessage = "Invalid username or password. " + (5 - attempts) + " attempts remaining.";
             }
             userRepository.save(user);
             recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Invalid credentials");
-            long recentFailures = loginLogRepository.countByIpAddressAndStatusAndLoginTimeAfter(clientIp, "FAILURE", java.time.LocalDateTime.now().minusMinutes(10));
+            long recentFailures = loginLogRepository.countByIpAddressAndStatusAndLoginTimeAfter(
+                    clientIp, "FAILURE", java.time.LocalDateTime.now().minusMinutes(10));
             if (recentFailures >= 8) {
                 securityAlertService.raiseAlert(
                         "CRITICAL",
@@ -190,117 +143,6 @@ public class AuthService {
 
         bruteForceProtectionService.loginFailed(username);
         throw new RuntimeException(diagnosticMessage);
-    }
-
-    /**
-     * Checks whether the provided credentials match the known default pattern for
-     * this user's role.
-     * This is the KEY FIX: HOD passwords like "hodcse123" don't equal their
-     * username (hod_cse@ritchennai.edu.in),
-     * so the old username==password bypass never triggered for HODs.
-     */
-    private boolean isDefaultCredentialMatch(User user, String username, String password) {
-        if (user.getRole() == null || user.getRole().getRoleName() == null)
-            return false;
-
-        String roleName = user.getRole().getRoleName().name();
-
-        switch (roleName) {
-            case "ADMIN":
-                // ADM-001 / ADM-001
-                return username.equalsIgnoreCase("ADM-001") && password.equals("ADM-001");
-
-            case "FACULTY":
-                // FAC-001 / FAC-001
-                return username.equalsIgnoreCase(password) && username.toUpperCase().startsWith("FAC-");
-
-            case "STUDENT":
-                // Register number is the password
-                return username.equals(password) && username.matches("^\\d{10,14}$");
-
-            case "HOD":
-                // hod_<code>@ritchennai.edu.in / hod<code>123
-                if (username.toLowerCase().startsWith("hod_") && username.contains("@")) {
-                    String code = username.split("@")[0].replace("hod_", "");
-                    return password.equals("hod" + code + "123");
-                }
-                // Legacy: hod@ritchennai.edu.in / hod123
-                if (username.equalsIgnoreCase("hod@ritchennai.edu.in")) {
-                    return password.equals("hod123");
-                }
-                // Also allow hod_<code> without @domain
-                if (username.toLowerCase().startsWith("hod_") && !username.contains("@")) {
-                    String code = username.replace("hod_", "").replace("HOD_", "");
-                    return password.equals("hod" + code.toLowerCase() + "123");
-                }
-                return false;
-
-            case "PARENT":
-                // parent@ritchennai.edu.in / parent123 or P-<regNo> / password123
-                if (username.equalsIgnoreCase("parent@ritchennai.edu.in")) {
-                    return password.equals("parent123");
-                }
-                if (username.startsWith("P-")) {
-                    return password.equals("password123");
-                }
-                return false;
-
-            default:
-                return username.equals(password); // Fallback
-        }
-    }
-
-    /**
-     * Auto-register a student from register number, creating User + Student
-     * records.
-     */
-    private Optional<User> autoRegisterStudent(String regNo, String password) {
-        try {
-            Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
-                    .orElseThrow(() -> new RuntimeException("STUDENT role not configured"));
-
-            Optional<Student> existingStudent = studentRepository.findByRegisterNo(regNo);
-
-            User newUser = User.builder()
-                    .username(regNo)
-                    .password(passwordEncoder.encode(password))
-                    .email(regNo + "@ritchennai.edu.in")
-                    .firstName(existingStudent.map(s -> {
-                        String name = s.getStudentName();
-                        return name != null ? name.split(" ")[0] : "Student";
-                    }).orElse("Student"))
-                    .lastName(regNo)
-                    .role(studentRole)
-                    .accountStatus("active")
-                    .mustChangePassword(true)
-                    .build();
-
-            newUser = userRepository.saveAndFlush(newUser);
-
-            Student student;
-            if (existingStudent.isPresent()) {
-                student = existingStudent.get();
-                student.setUser(newUser);
-                studentRepository.saveAndFlush(student);
-            } else {
-                student = Student.builder()
-                        .user(newUser)
-                        .registerNo(regNo)
-                        .studentIdNumber("S-" + regNo)
-                        .studentName("Student " + regNo)
-                        .status("active")
-                        .build();
-                studentRepository.saveAndFlush(student);
-            }
-
-            newUser.setLinkedStudent(student);
-            userRepository.saveAndFlush(newUser);
-            log.info("Auto-registered student user for: {}", regNo);
-            return Optional.of(newUser);
-        } catch (Exception ex) {
-            log.error("Auto-registration failed for {}: {}", regNo, ex.getMessage());
-            return Optional.empty();
-        }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -430,7 +272,7 @@ public class AuthService {
                         .googleId(googleId)
                         .firstName(firstName)
                         .lastName(lastName)
-                        .password(passwordEncoder.encode("FIREBASE_USER_" + googleId))
+                        .password(passwordEncoder.encode(com.university.erp.security.OneTimeTokens.generate()))
                         .role(studentRole)
                         .accountStatus("active")
                         .mustChangePassword(false)

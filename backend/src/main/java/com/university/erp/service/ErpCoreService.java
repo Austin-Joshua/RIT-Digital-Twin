@@ -400,7 +400,7 @@ public class ErpCoreService {
         Student s = studentRepository.findByUser_Id(userId).orElseThrow();
         int sem = Optional.ofNullable(s.getCurrentSemester()).orElse(1);
         return studentSubjectRepository.findByStudent_IdAndSemester_SemesterNumberAndStatusIgnoreCase(s.getId(), sem, "active")
-                .stream().map(StudentSubject::getSubject).toList();
+                .stream().map(enrollment -> enrollment.getSubject()).toList();
     }
 
     private void recalcGpaCgpa(Long studentId) {
@@ -436,7 +436,7 @@ public class ErpCoreService {
     private BigDecimal computeAttendanceMarks(Long userId, Long subjectId) {
         List<Map<String, Object>> summary = attendanceSummaryForStudent(userId);
         double pct = summary.stream()
-                .filter(m -> Objects.equals(m.get("subjectCode"), subjectRepository.findById(subjectId).map(Subject::getSubjectCode).orElse("")))
+                .filter(m -> Objects.equals(m.get("subjectCode"), subjectRepository.findById(subjectId).map(subject -> subject.getSubjectCode()).orElse("")))
                 .findFirst().map(m -> ((BigDecimal) m.get("percentage")).doubleValue()).orElse(0.0);
         if (pct >= 95) return BigDecimal.valueOf(5);
         if (pct >= 90) return BigDecimal.valueOf(4);

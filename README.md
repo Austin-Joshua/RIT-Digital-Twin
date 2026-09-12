@@ -26,13 +26,9 @@ cp frontend/.env.example frontend/.env
 - Backend: `cd backend && ./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"`
 - Frontend: `cd frontend && npm run dev`
 
-## Default Credentials
+## Accounts
 
-- Admin: `ADM-001 / ADM-001`
-- Faculty: `FAC-001 / FAC-001`
-- HOD: `hod_cse@ritchennai.edu.in / hodcse123`
-- Student: `student@ritchennai.edu.in / student123`
-- Parent: `parent@ritchennai.edu.in / parent123`
+There are no default passwords. Startup seeding does not create or reset accounts with a known password. Provision users through an administrator, and change any previously seeded account (`ADM-001`, faculty, HOD, student, or parent) before using a reachable database. Those old passwords are not valid login credentials.
 
 ## Major Features
 

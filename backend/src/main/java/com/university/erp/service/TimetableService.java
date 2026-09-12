@@ -84,7 +84,7 @@ public class TimetableService {
         }
         return timetableSlotRepository.findByDepartmentIdAndSection(student.getDepartment().getId(), student.getSection())
                 .stream()
-                .sorted(Comparator.comparing(TimetableSlot::getDayOfWeek).thenComparing(TimetableSlot::getStartTime))
+                .sorted(Comparator.comparing((TimetableSlot slot) -> slot.getDayOfWeek()).thenComparing(slot -> slot.getStartTime()))
                 .toList();
     }
 
@@ -102,7 +102,7 @@ public class TimetableService {
                 .filter(slot -> slot.getFaculty() != null
                         && slot.getFaculty().getUserId() != null
                         && slot.getFaculty().getUserId().equals(facultyUserId))
-                .sorted(Comparator.comparing(TimetableSlot::getDayOfWeek).thenComparing(TimetableSlot::getStartTime))
+                .sorted(Comparator.comparing((TimetableSlot slot) -> slot.getDayOfWeek()).thenComparing(slot -> slot.getStartTime()))
                 .toList();
     }
 
@@ -135,9 +135,9 @@ public class TimetableService {
         }
         List<TimetableSlot> slots = getAdminTimetable(deptId, section);
         List<TimetableSlot> sortedByClass = slots.stream()
-                .sorted(Comparator.comparing(TimetableSlot::getSection, Comparator.nullsLast(String::compareTo))
+                .sorted(Comparator.comparing((TimetableSlot slot) -> slot.getSection(), Comparator.nullsLast((left, right) -> left.compareTo(right)))
                         .thenComparing(this::dayRank)
-                        .thenComparing(TimetableSlot::getStartTime))
+                        .thenComparing(slot -> slot.getStartTime()))
                 .toList();
 
         Map<String, List<String>> classWise = new TreeMap<>();
@@ -150,8 +150,8 @@ public class TimetableService {
         List<TimetableSlot> sortedByFaculty = slots.stream()
                 .sorted(Comparator.comparing((TimetableSlot slot) -> facultyLabel(slot.getFaculty()))
                         .thenComparing(this::dayRank)
-                        .thenComparing(TimetableSlot::getStartTime)
-                        .thenComparing(TimetableSlot::getSection, Comparator.nullsLast(String::compareTo)))
+                        .thenComparing(slot -> slot.getStartTime())
+                        .thenComparing(slot -> slot.getSection(), Comparator.nullsLast((left, right) -> left.compareTo(right))))
                 .toList();
         Map<String, List<String>> facultyWise = new TreeMap<>();
         for (TimetableSlot slot : sortedByFaculty) {
@@ -209,7 +209,7 @@ public class TimetableService {
         String deptCode = null;
         try {
             if (allowedDeptId != null) {
-                deptCode = departmentRepository.findById(allowedDeptId).map(Department::getCode).orElse(null);
+                deptCode = departmentRepository.findById(allowedDeptId).map(department -> department.getCode()).orElse(null);
             }
         } catch (Exception ignored) {
             deptCode = null;
@@ -281,7 +281,7 @@ public class TimetableService {
         requirementUnits = mergeRequirementUnits(requirementUnits, fallbackUnits);
         List<User> operationalFacultyPool = buildOperationalFacultyPool(dept, allocations, currentUser);
         int minimumHealthyDemand = sections.size() * Math.max(4, periodsPerDay);
-        int mergedDemand = requirementUnits.stream().mapToInt(RequirementUnit::requiredPeriods).sum();
+        int mergedDemand = requirementUnits.stream().mapToInt(unit -> unit.requiredPeriods()).sum();
         if (mergedDemand < minimumHealthyDemand && !fallbackUnits.isEmpty()) {
             // Sparse allocation mapping found; prefer curriculum-backed demand for full department generation.
             requirementUnits = fallbackUnits;
@@ -318,7 +318,7 @@ public class TimetableService {
                     .facultyWiseTimetable(emptyMatrices.facultyWise())
                     .build();
         }
-        int totalDemand = requirementUnits.stream().mapToInt(RequirementUnit::requiredPeriods).sum();
+        int totalDemand = requirementUnits.stream().mapToInt(unit -> unit.requiredPeriods()).sum();
 
         List<SlotKey> slotKeys = buildSlotKeys(days, periodsPerDay, periodDurationMinutes);
         Map<SlotKey, List<Assignment>> assignmentsBySlot = new LinkedHashMap<>();
@@ -329,7 +329,7 @@ public class TimetableService {
         Map<RequirementUnit, Integer> scheduledCount = new LinkedHashMap<>();
         List<TimetableUnscheduledItemDto> unscheduledItems = new ArrayList<>();
 
-        requirementUnits.sort(Comparator.comparingInt(RequirementUnit::requiredPeriods).reversed());
+        requirementUnits.sort(Comparator.comparingInt((RequirementUnit unit) -> unit.requiredPeriods()).reversed());
         for (RequirementUnit unit : requirementUnits) {
             if (isLabOrActivity(unit.subject())) {
                 int pairedTarget = unit.requiredPeriods() / 2;
@@ -452,9 +452,9 @@ public class TimetableService {
                         ? "Timetable generated successfully."
                         : "Timetable generated with unresolved requirements.")
                 .slots(persistedSlots.stream()
-                        .sorted(Comparator.comparing(TimetableSlot::getSection)
-                                .thenComparing(TimetableSlot::getDayOfWeek)
-                                .thenComparing(TimetableSlot::getStartTime))
+                        .sorted(Comparator.comparing((TimetableSlot slot) -> slot.getSection())
+                                .thenComparing(slot -> slot.getDayOfWeek())
+                                .thenComparing(slot -> slot.getStartTime()))
                         .map(this::toResponseSafeSlot)
                         .toList())
                 .validation(report)
@@ -490,9 +490,9 @@ public class TimetableService {
                 .forEach(user -> pool.put(user.getUserId(), user));
         if (allocations != null) {
             allocations.stream()
-                    .map(FacultySubject::getFaculty)
-                    .filter(Objects::nonNull)
-                    .map(FacultyProfile::getUser)
+                    .map(allocation -> allocation.getFaculty())
+                    .filter(profile -> profile != null)
+                    .map(profile -> profile.getUser())
                     .filter(Objects::nonNull)
                     .filter(user -> "active".equalsIgnoreCase(user.getAccountStatus()) || user.getAccountStatus() == null)
                     .forEach(user -> pool.put(user.getUserId(), user));
@@ -600,7 +600,7 @@ public class TimetableService {
     }
 
     private void doneByUnit(Map<RequirementUnit, Integer> scheduledCount, RequirementUnit unit, int delta) {
-        scheduledCount.merge(unit, delta, Integer::sum);
+        scheduledCount.merge(unit, delta, (left, right) -> left + right);
     }
 
     private void placeAssignment(
@@ -618,10 +618,10 @@ public class TimetableService {
         facultyOccupied.computeIfAbsent(unit.facultyUser().getUserId(), key -> new HashSet<>()).add(slot);
         sectionDailySubjectCount
                 .computeIfAbsent(unit.section(), key -> new HashMap<>())
-                .merge(dailySubjectKey(slot.day(), unit.subject().getId()), 1, Integer::sum);
+                .merge(dailySubjectKey(slot.day(), unit.subject().getId()), 1, (left, right) -> left + right);
         facultyDailyLoad
                 .computeIfAbsent(unit.facultyUser().getUserId(), key -> new HashMap<>())
-                .merge(slot.day(), 1, Integer::sum);
+                .merge(slot.day(), 1, (left, right) -> left + right);
     }
 
     private List<RequirementUnit> buildRequirementUnits(
@@ -678,9 +678,9 @@ public class TimetableService {
                 .toList();
         if (candidateAllocations != null && !candidateAllocations.isEmpty()) {
             List<User> allocationUsers = candidateAllocations.stream()
-                    .map(FacultySubject::getFaculty)
-                    .filter(Objects::nonNull)
-                    .map(FacultyProfile::getUser)
+                    .map(allocation -> allocation.getFaculty())
+                    .filter(profile -> profile != null)
+                    .map(profile -> profile.getUser())
                     .filter(Objects::nonNull)
                     .filter(user -> "active".equalsIgnoreCase(user.getAccountStatus()) || user.getAccountStatus() == null)
                     .toList();
@@ -862,7 +862,7 @@ public class TimetableService {
             List<SlotKey> validKeys,
             List<String> sections
     ) {
-        int scheduled = scheduledCount.values().stream().mapToInt(Integer::intValue).sum();
+        int scheduled = scheduledCount.values().stream().mapToInt(count -> count.intValue()).sum();
         int unscheduledPeriods = Math.max(totalDemand - scheduled, 0);
 
         int facultyClashes = 0;
@@ -891,8 +891,8 @@ public class TimetableService {
         for (Map.Entry<SlotKey, List<Assignment>> entry : assignmentsBySlot.entrySet()) {
             for (Assignment assignment : entry.getValue()) {
                 String key = assignment.section() + "-" + entry.getKey().day();
-                dailyLoadBySection.merge(key, 1, Integer::sum);
-                sectionScheduledCounts.merge(assignment.section(), 1, Integer::sum);
+                dailyLoadBySection.merge(key, 1, (left, right) -> left + right);
+                sectionScheduledCounts.merge(assignment.section(), 1, (left, right) -> left + right);
             }
         }
         boolean fullyFilled = sections.stream()
@@ -1060,7 +1060,7 @@ public class TimetableService {
             if (cse != null) {
                 return cse.getId();
             }
-            return departmentRepository.findAll().stream().findFirst().map(Department::getId).orElse(null);
+            return departmentRepository.findAll().stream().findFirst().map(department -> department.getId()).orElse(null);
         }
         Long scopedDeptId = currentUser.getDepartment() != null ? currentUser.getDepartment().getId() : null;
         if (scopedDeptId == null) {

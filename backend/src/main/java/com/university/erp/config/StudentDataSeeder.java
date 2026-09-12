@@ -2,6 +2,7 @@ package com.university.erp.config;
 
 import com.university.erp.model.*;
 import com.university.erp.repository.*;
+import com.university.erp.security.OneTimeTokens;
 import com.university.erp.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -328,7 +329,7 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (user == null) {
                 user = User.builder()
                         .username(info.regNo)
-                        .password(passwordEncoder.encode(info.regNo)) 
+                        .password(passwordEncoder.encode(OneTimeTokens.generate()))
                         .email(info.regNo + "@ritchennai.edu.in")
                         .role(role)
                         .build();
@@ -389,9 +390,10 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (parentRole == null) return;
             parentUser = User.builder()
                 .username(parentUsername)
-                .password(passwordEncoder.encode("password123"))
+                .password(passwordEncoder.encode(OneTimeTokens.generate()))
                 .email(student.getRegisterNo() + "_parent@ritchennai.edu.in")
                 .role(parentRole)
+                .mustChangePassword(true)
                 .build();
         }
         

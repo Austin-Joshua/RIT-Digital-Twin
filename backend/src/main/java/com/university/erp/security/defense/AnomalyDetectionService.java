@@ -58,7 +58,7 @@ public class AnomalyDetectionService {
 
         return AnomalyResult.builder()
                 .anomalies(anomalies)
-                .severity(anomalies.isEmpty() ? 0 : anomalies.stream().mapToInt(AnomalyType::getSeverity).max().orElse(0))
+                .severity(anomalies.isEmpty() ? 0 : anomalies.stream().mapToInt(type -> type.getSeverity()).max().orElse(0))
                 .build();
     }
 

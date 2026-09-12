@@ -57,7 +57,7 @@ public class TransportService {
         }
 
         return stopRepository.findByStopNameContainingIgnoreCase(normalized).stream()
-                .map(BusStop::getRoute)
+                .map(stop -> stop.getRoute())
                 .distinct()
                 .toList();
     }

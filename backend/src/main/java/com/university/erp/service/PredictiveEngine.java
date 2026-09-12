@@ -21,7 +21,7 @@ public class PredictiveEngine {
                 .limit(50)
                 .toList();
         
-        double avgDensity = historical.stream().mapToDouble(DigitalTwinMetrics::getValue).average().orElse(0.45);
+        double avgDensity = historical.stream().mapToDouble(metric -> metric.getValue()).average().orElse(0.45);
         
         return Map.of(
             "trend", "STABLE",

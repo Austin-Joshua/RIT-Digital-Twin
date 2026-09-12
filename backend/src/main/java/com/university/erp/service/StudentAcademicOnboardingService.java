@@ -1,6 +1,7 @@
 package com.university.erp.service;
 
 import com.university.erp.dto.CseAStudentImportDto;
+import com.university.erp.security.OneTimeTokens;
 import com.university.erp.model.*;
 import com.university.erp.util.ErpException;
 import com.university.erp.repository.*;
@@ -96,7 +97,7 @@ public class StudentAcademicOnboardingService {
             user.setAccountStatus("active");
             user.setMustChangePassword(true);
             if (isNewUser) {
-                user.setPassword(passwordEncoder.encode(registerNo)); // first login credential
+                user.setPassword(passwordEncoder.encode(OneTimeTokens.generate()));
             }
             user = userRepository.save(user);
 
@@ -123,13 +124,15 @@ public class StudentAcademicOnboardingService {
     }
 
     @Transactional
-    public void resetStudentPassword(Long studentId) {
+    public String resetStudentPassword(Long studentId) {
         User user = userRepository.findByLinkedStudent_Id(studentId)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Student user account not found"));
-        String registerNo = user.getLinkedStudent() != null ? user.getLinkedStudent().getRegisterNo() : user.getUsername();
-        user.setPassword(passwordEncoder.encode(registerNo));
+        String temporaryPassword = OneTimeTokens.generate();
+        user.setPassword(passwordEncoder.encode(temporaryPassword));
         user.setMustChangePassword(true);
+        user.setFailedLoginAttempts(0);
         userRepository.save(user);
+        return temporaryPassword;
     }
 
     @Transactional(readOnly = true)
