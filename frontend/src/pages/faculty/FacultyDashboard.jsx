@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/AuthContext';
 import Skeleton from '../../components/common/Skeleton';
-import { FaChalkboardTeacher, FaCalendarCheck, FaTasks, FaBook, FaUserClock, FaExclamationTriangle, FaFileAlt, FaUsers, FaFlask, FaBus } from 'react-icons/fa';
+import RingStat from '../../components/common/RingStat';
+import { FaChalkboardTeacher, FaTasks } from 'react-icons/fa';
 import ClassRiskHeatmap from '../../features/ai/components/ClassRiskHeatmap';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
@@ -48,71 +49,32 @@ const FacultyDashboard = () => {
             {/* Dashboard header removed as per user request */}
 
             {/* KPI Cards Placeholder - Matching Student Style */}
-            <div className="stu-kpi-row">
-                <div className="stu-kpi-card green" onClick={() => navigate('/faculty/academics')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">{subjects.length}</div>
-                        <div className="kpi-label">Courses</div>
-                    </div>
-                    <FaBook className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+            <div className="ims-stat-row">
+                <div onClick={() => navigate('/faculty/academics')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Courses" value={String(subjects.length)} center={String(subjects.length)} sub="Assigned to you" percent={subjects.length ? 100 : 0} color="#2ecc71" />
                 </div>
-                <div className="stu-kpi-card teal" onClick={() => navigate('/faculty/leaves')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">4</div>
-                        <div className="kpi-label">Pending Requests</div>
-                    </div>
-                    <FaCalendarCheck className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+                <div onClick={() => navigate('/faculty/leaves')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Pending" value="4" center="4" sub="Leave and OD" percent={40} color="#f0ad4e" />
                 </div>
-                <div className="stu-kpi-card yellow" onClick={() => navigate('/faculty/attendance')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">92%</div>
-                        <div className="kpi-label">Avg Attendance</div>
-                    </div>
-                    <FaUserClock className="kpi-icon" />
-                    <div className="kpi-more">View Register →</div>
+                <div onClick={() => navigate('/faculty/attendance')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Attendance" value="92%" center="92%" sub="Average this semester" percent={92} color="#17a2b8" />
                 </div>
-                <div className="stu-kpi-card red" onClick={() => navigate('/faculty/analytics')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">2</div>
-                        <div className="kpi-label">At Risk Students</div>
-                    </div>
-                    <FaExclamationTriangle className="kpi-icon" />
-                    <div className="kpi-more">View Analytics →</div>
+                <div onClick={() => navigate('/faculty/analytics')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="At risk" value="2" center="2" sub="Students to review" percent={25} color="#dc3545" />
                 </div>
-                <div className="stu-kpi-card purple" onClick={() => navigate('/faculty/assignments')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">3</div>
-                        <div className="kpi-label">Assignments to Grade</div>
-                    </div>
-                    <FaFileAlt className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+            </div>
+            <div className="ims-stat-row">
+                <div onClick={() => navigate('/faculty/assignments')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Assignments" value="3" center="3" sub="Waiting to grade" percent={30} color="#8b5cf6" />
                 </div>
-                <div className="stu-kpi-card blue" onClick={() => navigate('/faculty/proctor')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">12</div>
-                        <div className="kpi-label">Proctor Wards</div>
-                    </div>
-                    <FaUsers className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+                <div onClick={() => navigate('/faculty/proctor')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Proctor wards" value="12" center="12" sub="Students you mentor" percent={80} color="#3b82f6" />
                 </div>
-                <div className="stu-kpi-card orange" onClick={() => navigate('/faculty/research')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">2</div>
-                        <div className="kpi-label">New Publications</div>
-                    </div>
-                    <FaFlask className="kpi-icon" />
-                    <div className="kpi-more">More info →</div>
+                <div onClick={() => navigate('/faculty/research')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Publications" value="2" center="2" sub="New this term" percent={20} color="#f39c12" />
                 </div>
-                {/* Transport card updated to indigo as per user request */}
-                <div className="stu-kpi-card indigo" onClick={() => navigate('/transport')}>
-                    <div className="kpi-main">
-                        <div className="kpi-value">RIT</div>
-                        <div className="kpi-label">Transport Routes</div>
-                    </div>
-                    <FaBus className="kpi-icon" />
-                    <div className="kpi-more">View Directory →</div>
+                <div onClick={() => navigate('/transport')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Transport" value="Open" center="RIT" sub="Route directory" percent={100} color="#0B2C6B" />
                 </div>
             </div>
 

@@ -33,6 +33,7 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
     const [liveCgpa, setLiveCgpa] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [expanded, setExpanded] = useState(false);
+    const [customSize, setCustomSize] = useState(null);
     const [viewport, setViewport] = useState(() => ({
         w: typeof window === 'undefined' ? 1280 : window.innerWidth,
         h: typeof window === 'undefined' ? 800 : window.innerHeight,
@@ -66,24 +67,32 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
     }, [user?.id, user?.role]);
 
     const isMobile = viewport.w <= 768;
-    const panelWidth = isMobile
-        ? Math.max(280, viewport.w - 16)
-        : Math.min(expanded ? 480 : 360, viewport.w - 40);
-    const chrome = isMobile ? 112 : 124;
-    const maxPanel = Math.max(280, viewport.h - chrome);
-    const panelHeight = Math.min(expanded ? maxPanel : (isMobile ? Math.round(viewport.h * 0.62) : 480), maxPanel);
+    const margin = 16;
+    const launcher = isMobile ? 52 : 58;
+    const gap = 10;
+    const maxWidth = Math.max(280, viewport.w - margin * 2);
+    const openBudget = Math.max(280, viewport.h - margin * 2 - launcher - gap);
+    const panelWidth = expanded
+        ? maxWidth
+        : Math.min(customSize?.w || Math.min(380, maxWidth), maxWidth);
+    const panelHeight = expanded
+        ? Math.max(280, viewport.h - margin * 2)
+        : Math.min(customSize?.h || Math.min(520, openBudget), openBudget);
     const widgetContainerStyle = useMemo(() => ({
         position: 'fixed',
-        right: isMobile ? 8 : 20,
-        bottom: isMobile ? 'max(12px, env(safe-area-inset-bottom))' : 20,
+        right: margin,
+        bottom: margin,
         zIndex: 1200,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
-        gap: 10,
-        maxWidth: 'calc(100vw - 16px)',
+        justifyContent: 'flex-end',
+        gap,
+        width: expanded ? panelWidth : 'auto',
+        maxWidth: 'calc(100vw - 32px)',
+        maxHeight: 'calc(100vh - 32px)',
         pointerEvents: 'auto'
-    }), [isMobile]);
+    }), [expanded, panelWidth]);
 
     const toggleVoice = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -121,6 +130,30 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
             console.error(e);
             setIsListening(false);
         }
+    };
+
+    const startResize = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startW = panelWidth;
+        const startH = panelHeight;
+        const limitW = Math.max(300, viewport.w - 32);
+        const limitH = Math.max(280, viewport.h - 32 - launcher - gap);
+        const onMove = (moveEvent) => {
+            setExpanded(false);
+            setCustomSize({
+                w: Math.max(300, Math.min(limitW, startW + (startX - moveEvent.clientX))),
+                h: Math.max(320, Math.min(limitH, startH + (startY - moveEvent.clientY))),
+            });
+        };
+        const onUp = () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+        };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
     };
 
 
@@ -163,19 +196,21 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
                         exit={{ opacity: 0, scale: 0.96, y: 16 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         style={{
-                            width: panelWidth,
+                            width: expanded ? '100%' : panelWidth,
                             height: panelHeight,
+                            position: 'relative',
                             borderRadius: isMobile ? '20px' : '28px',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
                             marginBottom: 0,
                             transformOrigin: 'bottom right',
-                            maxWidth: 'calc(100vw - 16px)',
-                            maxHeight: `calc(100vh - ${isMobile ? 96 : 108}px)`,
+                            maxWidth: '100%',
+                            maxHeight: '100%',
                             zIndex: 1001
                         }}
                     >
+                        <button type="button" className="rit-chat-resize" aria-label="Resize chat" onPointerDown={startResize} />
                         <div className="rit-chat-header" style={{
                             padding: isMobile ? '14px 16px' : '20px', 
                             display: 'flex', 
@@ -204,11 +239,9 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', gap: '14px', position: 'relative', zIndex: 1 }}>
-                                {!isMobile && (
-                                    <button type="button" aria-label={expanded ? 'Restore chat size' : 'Enlarge chat'} onClick={() => setExpanded((value) => !value)} style={{ background: 'transparent', border: 0, color: 'white', cursor: 'pointer' }}>
+                                <button type="button" aria-label={expanded ? 'Restore chat size' : 'Enlarge chat'} onClick={() => setExpanded((value) => !value)} style={{ background: 'transparent', border: 0, color: 'white', cursor: 'pointer' }}>
                                         {expanded ? <FaCompress /> : <FaExpand />}
                                     </button>
-                                )}
                                 <button type="button" aria-label="Close chat" onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 0, color: 'white', cursor: 'pointer' }}>
                                     <FaMinus />
                                 </button>
@@ -350,6 +383,7 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
             </AnimatePresence>
 
             {/* Float Button */}
+            {!expanded && (
             <motion.button
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -366,7 +400,8 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    position: 'relative'
+                    position: 'relative',
+                    flexShrink: 0
                 }}
             >
                 <>
@@ -374,6 +409,7 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
                     <div style={{ position: 'absolute', top: '-5px', right: '-5px', width: '14px', height: '14px', background: '#22c55e', borderRadius: '50%', border: '2px solid white' }}></div>
                 </>
             </motion.button>
+            )}
         </div>
     );
 

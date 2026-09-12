@@ -14,6 +14,7 @@ import { FaChalkboardTeacher, FaUserGraduate, FaChartLine, FaExclamationTriangle
 
 import { getDepartmentStats } from '../../utils/MockDataGenerator';
 import { useAuth } from '../../hooks/AuthContext';
+import RingStat from '../../components/common/RingStat';
 
 const HODDashboard = () => {
   const { user } = useAuth();
@@ -207,6 +208,12 @@ const HODDashboard = () => {
           Department Overview
           {isHandS && <span style={{ fontSize: '0.7em', fontWeight: 'normal', color: 'var(--theme-text-muted)', marginLeft: '8px' }}>First year from all branches (reported under H&S)</span>}
         </h2>
+        <div className="ims-stat-row" style={{ marginBottom: 16 }}>
+          <RingStat label="Faculty" value={String(stats?.totalFaculty ?? 0)} center={String(stats?.totalFaculty ?? 0)} sub="Department strength" percent={Math.min(100, Math.round(((stats?.totalFaculty || 0) / 40) * 100))} color="#2ecc71" />
+          <RingStat label="Students" value={String(stats?.totalStudents ?? 0)} center={String(stats?.totalStudents ?? 0)} sub={isHandS ? 'First year, all branches' : 'Department roll'} percent={Math.min(100, Math.round(((stats?.totalStudents || 0) / 600) * 100))} color="#17a2b8" />
+          <RingStat label="Attendance" value={`${analytics?.totalAttendance ?? 0}%`} center={`${analytics?.totalAttendance ?? 0}%`} sub="Average this semester" percent={Number(analytics?.totalAttendance || 0)} color="#f0ad4e" />
+          <RingStat label="Pass" value={`${stats?.passPercentage ?? 0}%`} center={`${stats?.avgMarks ?? 0}`} sub="Average marks" percent={Number(stats?.passPercentage || 0)} color="#dc3545" />
+        </div>
         <div
           style={{
             display: 'grid',

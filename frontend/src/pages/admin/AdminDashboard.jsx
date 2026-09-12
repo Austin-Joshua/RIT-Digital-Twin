@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    FaUniversity, FaUsers, FaGraduationCap, FaChartLine, 
-    FaLightbulb, FaBus, FaShieldAlt, FaCogs, FaCheckCircle, FaClock,
-    FaClipboardList, FaUserGraduate, FaMagic, FaCalendarCheck, FaBullhorn
-} from 'react-icons/fa';
+import { FaUniversity, FaMagic, FaCalendarCheck, FaBullhorn } from 'react-icons/fa';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
+import RingStat from '../../components/common/RingStat';
 
 const FALLBACK_AUDIT_LOGS = [
     { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: '2026-01-01T00:00:00.000Z', details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
@@ -43,13 +40,6 @@ const AdminDashboard = () => {
         window.addEventListener('storage', onStorage);
         return () => window.removeEventListener('storage', onStorage);
     }, []);
-
-    const adminKpis = [
-        { label: 'Total Students', value: stats?.totalStudents || 0, icon: <FaUsers />, color: 'blue', link: '/management/users' },
-        { label: 'Faculty Strength', value: stats?.totalFaculty || 0, icon: <FaUniversity />, color: 'green', link: '/faculty/academics' },
-        { label: 'Placement Rate', value: `${stats?.placementRate || 0}%`, icon: <FaGraduationCap />, color: 'teal', link: '/analytics/placement' },
-        { label: 'Pending Approvals', value: stats?.pendingApprovals || 0, icon: <FaClock />, color: 'yellow', link: '/faculty/leaves' },
-    ];
 
     const triggerBroadcast = (e) => {
         e.preventDefault();
@@ -95,17 +85,19 @@ const AdminDashboard = () => {
             </div>
 
             {/* KPI Row */}
-            <div className="stu-kpi-row">
-                {adminKpis.map((kpi, idx) => (
-                    <div key={idx} className={`stu-kpi-card ${kpi.color}`} onClick={() => navigate(kpi.link)} style={{ cursor: 'pointer' }}>
-                        <div className="kpi-main">
-                            <h3 className="kpi-value">{kpi.value}</h3>
-                            <p className="kpi-label">{kpi.label}</p>
-                        </div>
-                        <div className="kpi-icon">{kpi.icon}</div>
-                        <div className="kpi-more">Manage Module →</div>
-                    </div>
-                ))}
+            <div className="ims-stat-row">
+                <div onClick={() => navigate('/management/users')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Students" value={String(stats.totalStudents)} center={String(stats.totalStudents)} sub="Enrolled accounts" percent={100} color="#17a2b8" />
+                </div>
+                <div onClick={() => navigate('/faculty/academics')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Faculty" value={String(stats.totalFaculty)} center={String(stats.totalFaculty)} sub="Teaching strength" percent={Math.min(100, Math.round((stats.totalFaculty / 300) * 100))} color="#2ecc71" />
+                </div>
+                <div onClick={() => navigate('/analytics/placement')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Placement" value={`${stats.placementRate}%`} center={`${stats.placementRate}%`} sub="Offer rate" percent={stats.placementRate} color="#f0ad4e" />
+                </div>
+                <div onClick={() => navigate('/faculty/leaves')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Approvals" value={String(stats.pendingApprovals)} center={String(stats.pendingApprovals)} sub="Waiting on you" percent={stats.pendingApprovals ? Math.min(100, stats.pendingApprovals * 10) : 0} color="#dc3545" />
+                </div>
             </div>
 
             {/* AI Insights & Analytics Row */}

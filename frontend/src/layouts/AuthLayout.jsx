@@ -47,26 +47,26 @@ const AuthLayout = () => {
                     color: '#ffffff'
                 }}>
                     <AnimatedWaveBackground />
-                    <div className="brand-copy" style={{ position: 'relative', zIndex: 1, width: 'min(420px, 100%)' }}>
+                    <div className="brand-copy" style={{ position: 'relative', zIndex: 1, width: 'min(440px, 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <img
                             src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
                             alt="RIT Institutional Logo"
-                            style={{ height: '72px', width: 'auto', display: 'block', marginBottom: '22px' }}
+                            style={{ height: '72px', width: 'auto', display: 'block', margin: '0 auto 18px' }}
                         />
                         <AnimatePresence mode="wait">
-                            <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
-                                <h1 style={{ fontSize: '2.6rem', fontWeight: 650, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'left' }}>
+                            <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants} style={{ width: '100%' }}>
+                                <h1 style={{ fontSize: '2.6rem', fontWeight: 650, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'left' }}>
+                                <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'center' }}>
                                     Smart Campus Intelligence Platform
                                 </p>
 
                                 <div className="brand-description" style={{
                                     fontSize: '0.95rem',
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.78)' : 'rgba(255, 255, 255, 0.78)',
+                                    color: 'rgba(255, 255, 255, 0.82)',
                                     lineHeight: 1.65,
-                                    margin: '0 0 22px',
+                                    margin: '0 0 18px',
                                     padding: '14px 16px',
                                     background: 'rgba(0,0,0,0.12)',
                                     borderRadius: '12px',
