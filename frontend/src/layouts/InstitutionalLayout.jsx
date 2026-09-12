@@ -15,6 +15,7 @@ import {
     LuLayoutGrid, LuFlame
 } from 'react-icons/lu';
 import Skeleton from '../components/common/Skeleton';
+import './student-layout.css';
 
 const LayoutLoader = () => (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.2s ease-out' }}>

@@ -129,9 +129,9 @@ const AttendanceReport = () => {
                                 <th style={{ padding: '16px', textAlign: 'center' }}>Subject Code</th>
                                 <th style={{ padding: '16px', textAlign: 'left' }}>Subject Name</th>
                                 <th style={{ padding: '16px', textAlign: 'left' }}>Faculty Name</th>
-                                <th style={{ padding: '16px', textAlign: 'center' }}>Attended</th>
-                                <th style={{ padding: '16px', textAlign: 'center' }}>Total</th>
-                                <th style={{ padding: '16px', textAlign: 'center' }}>%</th>
+                                <th style={{ padding: '16px', textAlign: 'center' }}>No Of Periods Attended</th>
+                                <th style={{ padding: '16px', textAlign: 'center' }}>Total No Of Periods</th>
+                                <th style={{ padding: '16px', textAlign: 'center' }}>Attendance Percentage</th>
                                 <th style={{ padding: '16px', textAlign: 'center' }}>Action</th>
                             </tr>
                         </thead>

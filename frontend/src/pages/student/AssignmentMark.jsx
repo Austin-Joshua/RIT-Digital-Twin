@@ -1,22 +1,42 @@
-import React from 'react';
+import { useAuth } from '../../hooks/AuthContext';
+import { getInternalMarks } from '../../utils/MockDataGenerator';
+import ImsReportTable from '../../components/common/ImsReportTable';
 
-const AssignmentMark = () => (
-    <div className="stu-report-page">
-        <div className="stu-info-card" style={{ marginTop: '20px' }}>
-            <div style={{
-                padding: '15px',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                borderBottom: '1px solid var(--theme-border)'
-            }}>
-                Assignment Marks
-            </div>
-            <div style={{ padding: '30px', textAlign: 'center', fontSize: '14px', opacity: 0.8 }}>
-                NO Exam Result Available
-            </div>
-        </div>
-    </div>
-);
+const SUBJECTS = [
+    ['CS3401', 'Algorithms and Data Structures'],
+    ['CS3402', 'Operating Systems'],
+    ['CS3403', 'Computer Networks'],
+    ['CS3404', 'Database Management'],
+    ['GE3401', 'Professional Ethics'],
+];
+
+const AssignmentMark = () => {
+    const { user } = useAuth();
+    const marks = getInternalMarks(user?.email || 'guest@ritchennai.edu.in');
+    const headers = [
+        'Subject Code',
+        'Subject Name',
+        'Faculty Name',
+        'Assignment Mark-1 (10-Marks)',
+        'Assignment Mark-2 (10-Marks)',
+        'Total (50 -Marks)',
+    ];
+    const rows = SUBJECTS.map(([code, name], index) => {
+        const score = marks.assignments[index]?.score ?? 0;
+        const first = Math.min(10, Math.round(score / 2));
+        const second = Math.min(10, Math.max(0, Math.round(score) - first));
+        return {
+            key: code,
+            'Subject Code': code,
+            'Subject Name': name,
+            'Faculty Name': 'Assigned Faculty',
+            'Assignment Mark-1 (10-Marks)': first,
+            'Assignment Mark-2 (10-Marks)': second,
+            'Total (50 -Marks)': first + second,
+        };
+    });
+
+    return <ImsReportTable title="Assignment Mark" headers={headers} rows={rows} />;
+};
 
 export default AssignmentMark;

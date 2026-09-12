@@ -162,12 +162,14 @@ const StudentDashboard = () => {
                                     const outside = date && (date < semester.start || date > semester.end);
                                     const holiday = index === 0;
                                     const noOrder = index === 6;
+                                    const hasClass = Boolean(day) && !outside && !holiday && !noOrder;
                                     const className = [
                                         'cal-day',
                                         isToday ? 'is-today' : '',
                                         holiday ? 'holiday' : '',
                                         noOrder ? 'no-order' : '',
                                         outside ? 'out-of-range' : '',
+                                        hasClass ? 'has-class' : '',
                                         !day ? 'empty' : '',
                                     ].filter(Boolean).join(' ');
                                     return (

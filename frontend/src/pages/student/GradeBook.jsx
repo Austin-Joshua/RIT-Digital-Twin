@@ -107,7 +107,7 @@ const GradeBook = () => {
                         </select>
                     </div>
                     <button type="submit" className="table-btn" style={{ background: 'var(--color-primary-navy)', color: 'white', border: 'none', height: '40px', padding: '0 32px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(11, 44, 107, 0.2)', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                        View Records
+                        Submit
                     </button>
                 </form>
             </div>

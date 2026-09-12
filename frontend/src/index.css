@@ -4,6 +4,11 @@
 /* Mobile-first: safe area and native app feel */
 html {
     min-height: 100%;
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
 }
 
 body {
@@ -12,7 +17,23 @@ body {
     font-family: var(--font-primary);
     margin: 0;
     padding: 0;
-    transition: background-color var(--transition-speed) var(--transition-ease), color var(--transition-speed) var(--transition-ease);
+}
+
+body,
+.stu-content,
+.card,
+.stu-info-card,
+.ims-stat-card,
+.ims-calendar-card,
+.ims-page-head,
+.stu-nav-item,
+.ims-pay-btn,
+.table-btn {
+    transition:
+        background-color 180ms var(--transition-ease),
+        color 180ms var(--transition-ease),
+        border-color 180ms var(--transition-ease),
+        box-shadow 180ms var(--transition-ease);
 }
 
 /* Touch targets: min 44px for mobile */
@@ -43,13 +64,17 @@ button:active,
     filter: brightness(0.9);
 }
 
-.stu-kpi-card, .stu-info-card, .card {
-    cursor: pointer;
-    will-change: transform, box-shadow;
-    transition: transform 0.18s var(--transition-ease), 
-                box-shadow 0.18s var(--transition-ease),
-                border-color 0.18s var(--transition-ease),
-                background-color 0.18s var(--transition-ease);
+.stu-kpi-card, .stu-info-card, .card, .ims-stat-card, .ims-calendar-card {
+    box-shadow: var(--shadow-soft);
+}
+
+.stu-kpi-card, .stu-info-card, .card, .ims-stat-card {
+    transition:
+        transform 160ms var(--transition-ease),
+        box-shadow 160ms var(--transition-ease),
+        border-color 160ms var(--transition-ease),
+        background-color 180ms var(--transition-ease),
+        color 180ms var(--transition-ease);
 }
 
 .stu-kpi-card:active, .stu-info-card:active, .card:active {
@@ -59,8 +84,57 @@ button:active,
 
 /* Ensure smooth hover for non-touch devices */
 @media (hover: hover) {
-    .stu-kpi-card:hover, .stu-info-card:hover, .card:hover {
+    .stu-kpi-card:hover, .stu-info-card:hover, .card:hover, .ims-stat-card:hover {
         transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+    html.dark .stu-kpi-card:hover,
+    html.dark .stu-info-card:hover,
+    html.dark .card:hover,
+    html.dark .ims-stat-card:hover {
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+    .stu-data-table tbody tr:hover,
+    .ims-report-table tbody tr:hover {
+        background: color-mix(in srgb, var(--color-primary-navy) 6%, var(--card-bg));
+    }
+    button:not(:disabled):hover,
+    .table-btn:hover,
+    .ims-pay-btn:hover {
+        filter: brightness(1.05);
+    }
+}
+
+.ims-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.ims-report-table th,
+.ims-report-table td {
+    border: 1px solid var(--theme-border);
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.ims-report-table th {
+    background: #dbeafe;
+    color: #1e3a8a;
+    font-weight: 700;
+}
+
+html.dark .ims-report-table th {
+    background: #1e3a5f;
+    color: #dbeafe;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
 

@@ -1922,6 +1922,7 @@ div.app-logout,
     border-radius: 8px;
     padding: 16px;
     min-height: 118px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .ims-ring {
@@ -2044,6 +2045,17 @@ div.app-logout,
 .cal-day.is-today { background: #17a2b8; color: #fff; }
 .cal-day.out-of-range { opacity: 0.4; }
 .cal-day.empty { cursor: default; }
+.cal-day {
+    transition: background-color 150ms ease, color 150ms ease;
+}
+.cal-day.has-class:hover {
+    background: #d9f4f8;
+    color: #0f172a;
+}
+.cal-day:not(.has-class):not(.holiday):not(.out-of-range):not(.empty):hover {
+    background: #f1f3f5;
+    color: #0f172a;
+}
 
 .ims-day-panel { margin-top: 16px; }
 

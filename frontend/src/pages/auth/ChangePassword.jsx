@@ -88,7 +88,7 @@ const ChangePassword = () => {
                         className="px-6 py-2 rounded-lg font-bold text-white transition-all hover:scale-105 active:scale-95 w-full md:w-auto"
                         style={{ background: 'var(--color-primary-navy)', boxShadow: '0 4px 15px rgba(11, 44, 107, 0.3)' }}
                     >
-                        Save Password
+                        Save
                     </button>
                 </form>
             </div>
