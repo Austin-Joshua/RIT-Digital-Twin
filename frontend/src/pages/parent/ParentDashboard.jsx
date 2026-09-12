@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 import api from '../../services/api';
-import { FaChild, FaCalendarAlt, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt, FaMagic, FaMedal, FaTrophy, FaStar, FaHandshake, FaChartLine as FaChartIcon } from 'react-icons/fa';
+import { FaChild, FaExclamationTriangle, FaFileAlt, FaTimes, FaChalkboardTeacher, FaClock, FaRupeeSign, FaFileInvoice, FaShieldAlt, FaMagic, FaMedal, FaTrophy, FaStar, FaHandshake } from 'react-icons/fa';
 import { useToast } from '../../hooks/ToastContext';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 
@@ -196,6 +196,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/AuthContext';
 import { getAcademicStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
+import { academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
+import RingStat from '../../components/common/RingStat';
 
 function noteForStudent(studentId) {
     if (!studentId) return '';
@@ -311,12 +313,10 @@ const ParentDashboard = () => {
     const stats = getAcademicStats(primary.user?.email || 'guest@ritchennai.edu.in');
     const marks = realMarks.cat.length > 0 || realMarks.assignments.length > 0 ? realMarks : getInternalMarks(primary.user?.email || 'guest@ritchennai.edu.in');
 
-    const kpis = [
-        { id: 'cgpa', label: 'Current CGPA', value: (primary?.currentCgpa || stats?.cgpa || 0).toFixed(2), color: 'green', icon: <FaChartIcon />, link: '/parent/grades' },
-        { id: 'attendance', label: 'Overall Attendance', value: `${(primary?.attendance || stats?.attendance || 0).toFixed(1)}%`, color: 'teal', icon: <FaCalendarAlt />, link: '/parent/attendance' },
-        { id: 'fees', label: 'Academic Fees', value: '₹45,000 Due', color: 'red', icon: <FaRupeeSign />, link: '/parent/fees' },
-        { id: 'wellbeing', label: 'Wellbeing Index', value: 'High', color: 'purple', icon: <FaChild />, link: '#' },
-    ];
+    const cgpa = Number(primary?.currentCgpa || stats?.cgpa || 0);
+    const attendance = Math.round(Number(primary?.attendance || stats?.attendance || 0));
+    const arrears = Number(stats?.arrears || 0);
+    const feesPending = pendingAcademicFees();
 
     return (
         <div className="stu-dashboard">
@@ -330,28 +330,21 @@ const ParentDashboard = () => {
             </div>
 
             {/* Unified KPI Row (3x2 in Tablet, 4+2 in Desktop) */}
-            <div className="stu-kpi-row">
-                {kpis.map((kpi) => (
-                    <div
-                        key={kpi.id}
-                        className={`stu-kpi-card ${kpi.color}`}
-                        onClick={() => navigate(kpi.link)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <div className="kpi-main">
-                            <h3 className="kpi-value">{kpi.value}</h3>
-                            <p className="kpi-label">{kpi.label}</p>
-                        </div>
-                        <div className="kpi-icon">
-                            {kpi.icon}
-                        </div>
-                        <div className="kpi-more">
-                            View {kpi.label} Details
-                        </div>
-                    </div>
-                ))}
-
-                {/* Twin Insight Cards for perfect 6-card alignment */}
+            <div className="ims-stat-row">
+                <div onClick={() => navigate('/parent/grades')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="CGPA" value={`${cgpa.toFixed(2)} / 10`} center={cgpa.toFixed(2)} sub="Overall performance" percent={(cgpa / 10) * 100} color="#2ecc71" />
+                </div>
+                <div onClick={() => navigate('/parent/attendance')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Attendance" value={`${attendance}%`} center={`${attendance}%`} sub="Average this semester" percent={attendance} color="#17a2b8" />
+                </div>
+                <div onClick={() => navigate('/parent/grades')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Arrears" value={String(arrears)} center={String(arrears)} percent={arrears === 0 ? 0 : Math.min(100, arrears * 25)} color="#dc3545" />
+                </div>
+                <div onClick={() => navigate('/parent/fees')} style={{ cursor: 'pointer' }}>
+                    <RingStat label="Fees Pending" value={`₹${feesPending.toLocaleString('en-IN')}`} center={feesPending === 0 ? '100% Paid' : 'Due'} sub={`AY ${academicYearLabel()}`} percent={feesPending === 0 ? 100 : 0} color="#f0ad4e" />
+                </div>
+            </div>
+            <div className="stu-kpi-row" style={{ marginTop: 16 }}>
                 <div className="stu-kpi-card gold" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
                     <div className="kpi-main">
                         <h3 className="kpi-value" style={{ fontSize: '18px' }}>85% Capacity</h3>

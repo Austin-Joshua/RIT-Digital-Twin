@@ -15,8 +15,31 @@ body {
     background-color: var(--theme-bg);
     color: var(--theme-text);
     font-family: var(--font-primary);
+    font-weight: 450;
+    line-height: 1.55;
+    letter-spacing: -0.011em;
     margin: 0;
     padding: 0;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+h1, h2, h3, h4,
+.font-black,
+.font-extrabold {
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.font-bold,
+.font-semibold,
+strong {
+    font-weight: 600;
 }
 
 body,
@@ -84,9 +107,13 @@ button:active,
 
 /* Ensure smooth hover for non-touch devices */
 @media (hover: hover) {
-    .stu-kpi-card:hover, .stu-info-card:hover, .card:hover, .ims-stat-card:hover {
+    .stu-kpi-card:hover, .stu-info-card:hover, .card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+    .ims-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
     }
     html.dark .stu-kpi-card:hover,
     html.dark .stu-info-card:hover,

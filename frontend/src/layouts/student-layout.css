@@ -1918,52 +1918,78 @@ div.app-logout,
     align-items: center;
     gap: 14px;
     background: var(--card-bg, #fff);
-    border: 1px solid var(--theme-border, #e5e7eb);
-    border-radius: 8px;
-    padding: 16px;
+    border: 0;
+    border-radius: 18px;
+    padding: 18px 16px;
     min-height: 118px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
 .ims-ring {
-    width: 78px;
-    height: 78px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: conic-gradient(var(--ring, #17a2b8) var(--pct, 70%), #e9ecef 0);
-    flex-shrink: 0;
+    flex: 0 0 84px;
+    background: conic-gradient(var(--ring, #17a2b8) var(--pct, 0%), #eef1f3 0);
 }
 
 .ims-ring span {
-    width: 58px;
-    height: 58px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: var(--card-bg, #fff);
     display: grid;
     place-items: center;
     text-align: center;
-    font-size: 12px;
-    font-weight: 800;
+    font-size: 1.05rem;
+    font-weight: 650;
     color: var(--theme-text, #1f2937);
-    line-height: 1.15;
+    line-height: 1.05;
+}
+
+.ims-ring span.is-paid {
+    font-size: 0.85rem;
+    line-height: 1.1;
 }
 
 .ims-stat-label {
-    font-size: 13px;
-    color: var(--theme-text-muted, #6b7280);
-    font-weight: 700;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .ims-stat-value {
-    font-size: 22px;
-    font-weight: 800;
+    font-size: 1.3rem;
+    font-weight: 650;
     color: var(--theme-text, #111827);
+    line-height: 1.2;
 }
 
 .ims-stat-sub {
-    font-size: 12px;
-    color: var(--theme-text-muted, #6b7280);
+    font-size: 0.8rem;
+    color: #9aa0a6;
+    font-weight: 500;
+}
+
+html.dark .ims-stat-card {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+html.dark .ims-ring {
+    background: conic-gradient(var(--ring, #17a2b8) var(--pct, 0%), #334155 0);
+}
+
+html.dark .ims-stat-label {
+    color: #94a3b8;
+}
+
+html.dark .ims-stat-sub {
+    color: #64748b;
 }
 
 .ims-calendar-card,
@@ -2028,6 +2054,12 @@ div.app-logout,
     background: #dbeafe;
     color: #1e3a8a;
     height: 40px;
+    font-weight: 600;
+}
+
+html.dark .ims-cal-table th {
+    background: #1e3a5f;
+    color: #dbeafe;
 }
 
 .cal-day {
@@ -2037,7 +2069,7 @@ div.app-logout,
     background: transparent;
     cursor: pointer;
     color: var(--theme-text, #111827);
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .cal-day.holiday { background: #ffd5d6; }

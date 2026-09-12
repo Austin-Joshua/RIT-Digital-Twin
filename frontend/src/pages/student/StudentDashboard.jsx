@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/AuthContext';
 import { getAcademicStats } from '../../utils/MockDataGenerator';
-import { academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
+import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
+import RingStat from '../../components/common/RingStat';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
@@ -24,22 +25,6 @@ function formatDay(date) {
     return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function RingStat({ label, value, center, sub, percent, color }) {
-    const safe = Math.max(0, Math.min(100, percent));
-    return (
-        <article className="ims-stat-card">
-            <div className="ims-ring" style={{ '--ring': color, '--pct': `${safe}%` }}>
-                <span>{center}</span>
-            </div>
-            <div>
-                <div className="ims-stat-label">{label}</div>
-                <div className="ims-stat-value">{value}</div>
-                {sub ? <div className="ims-stat-sub">{sub}</div> : null}
-            </div>
-        </article>
-    );
-}
-
 const StudentDashboard = () => {
     const { user } = useAuth();
     const email = user?.email || 'guest@ritchennai.edu.in';
@@ -56,7 +41,15 @@ const StudentDashboard = () => {
     const [timetable, setTimetable] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const feesPending = pendingAcademicFees();
-    const feesPaidShare = feesPending === 0 ? 100 : 18;
+    const academicTotal = academicFees
+        .filter((fee) => fee.type === 'ACADEMIC')
+        .reduce((sum, fee) => sum + fee.amount, 0);
+    const feesPaidShare = academicTotal === 0
+        ? 100
+        : Math.round(((academicTotal - feesPending) / academicTotal) * 100);
+    const cgpa = Number(kpiData.cgpa || 0);
+    const attendance = Math.round(Number(kpiData.attendance || 0));
+    const arrears = Number(kpiData.arrear || 0);
 
     useEffect(() => {
         api.get('/academic/student/cgpa')
@@ -105,26 +98,26 @@ const StudentDashboard = () => {
             <div className="ims-stat-row">
                 <RingStat
                     label="CGPA"
-                    value={`${Number(kpiData.cgpa || 0).toFixed(2)} / 10`}
-                    center={Number(kpiData.cgpa || 0).toFixed(2)}
+                    value={`${cgpa.toFixed(2)} / 10`}
+                    center={cgpa.toFixed(2)}
                     sub="Overall performance"
-                    percent={(Number(kpiData.cgpa || 0) / 10) * 100}
+                    percent={(cgpa / 10) * 100}
                     color="#2ecc71"
                 />
                 <RingStat
                     label="Attendance"
-                    value={`${Number(kpiData.attendance || 0).toFixed(0)}%`}
-                    center={`${Number(kpiData.attendance || 0).toFixed(0)}%`}
+                    value={`${attendance}%`}
+                    center={`${attendance}%`}
                     sub="Average this semester"
-                    percent={Number(kpiData.attendance || 0)}
+                    percent={attendance}
                     color="#17a2b8"
                 />
                 <RingStat
                     label="Arrears"
-                    value={String(kpiData.arrear || 0)}
-                    center={String(kpiData.arrear || 0)}
-                    percent={kpiData.arrear ? 25 : 100}
-                    color={kpiData.arrear ? '#e63946' : '#2ecc71'}
+                    value={String(arrears)}
+                    center={String(arrears)}
+                    percent={arrears === 0 ? 0 : Math.min(100, arrears * 25)}
+                    color="#dc3545"
                 />
                 <RingStat
                     label="Fees Pending"
@@ -132,7 +125,7 @@ const StudentDashboard = () => {
                     center={feesPending === 0 ? '100% Paid' : 'Due'}
                     sub={`AY ${yearLabel}`}
                     percent={feesPaidShare}
-                    color={feesPending === 0 ? '#2ecc71' : '#f4a261'}
+                    color="#f0ad4e"
                 />
             </div>
 

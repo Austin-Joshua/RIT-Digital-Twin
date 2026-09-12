@@ -144,7 +144,7 @@ const LoginPage = () => {
                             {backendStatus === 'checking' ? 'WAKING UP...' : backendStatus.toUpperCase()}
                         </div>
                         <h2 style={{
-                            fontSize: '1.6rem', fontWeight: '900',
+                            fontSize: '1.7rem', fontWeight: '600',
                             color: isDarkMode ? '#FFD700' : '#B8860B', // Darker gold for better contrast
                             marginBottom: '4px',
                             textShadow: isDarkMode ? '0 0 10px rgba(255, 215, 0, 0.2)' : 'none',
