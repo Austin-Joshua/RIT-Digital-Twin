@@ -14,10 +14,10 @@ jobs:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
-            echo "Error: RENDER_DEPLOY_HOOK_URL secret is not set."
-            echo "Add it under Settings → Secrets and variables → Actions."
-            echo "Use the deploy hook URL from the Render service (https://api.render.com/deploy/...)."
-            exit 1
+            echo "RENDER_DEPLOY_HOOK_URL is not set. Skipping the hook."
+            echo "Render still deploys from the GitHub connection on push to main."
+            echo "Add the secret only if you want this job to call https://api.render.com/deploy/..."
+            exit 0
           fi
           curl --fail --silent --show-error --request POST "$RENDER_DEPLOY_HOOK_URL"
 
