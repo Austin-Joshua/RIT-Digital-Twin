@@ -15,9 +15,11 @@ import './student-layout.css';
 
 const parentNav = [
     { path: '/parent', label: 'Parent Dashboard', icon: <LuLayoutDashboard />, end: true },
+    { path: '/parent/profile', label: 'My Profile', icon: <LuUser /> },
     { path: '/parent/grades', label: 'Academic Grades', icon: <LuAward /> },
     { path: '/parent/attendance', label: 'Attendance Feed', icon: <LuCalendarCheck2 /> },
-    { path: '/parent/fees', label: 'Fee Payments', icon: <LuBanknote /> },
+    { path: '/parent/fees', label: 'Academic Fee', icon: <LuBanknote /> },
+    { path: '/parent/exam-fee', label: 'Exam Fee', icon: <LuBanknote /> },
     { path: '/parent/clubs', label: 'Club Participation', icon: <LuUsers /> },
     { path: '/parent/change-password', label: 'Change Password', icon: <LuKey /> },
 ];

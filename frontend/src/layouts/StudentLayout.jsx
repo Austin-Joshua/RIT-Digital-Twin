@@ -29,6 +29,7 @@ const studentNav = [
     { path: '/student/assignment', label: 'Assignment Mark', icon: <LuClipboardList /> },
     { path: '/student/gradebook', label: 'Grade Book', icon: <LuBook /> },
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
+    { path: '/student/exam-fee', label: 'Exam Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
     { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
     { path: '/student/clubs', label: 'Club Management', icon: <LuUsers /> },
@@ -106,6 +107,7 @@ const StudentLayout = () => {
                 { path: '/student/committee/minutes', label: 'Minutes of Meeting', icon: <LuFileText /> },
             ]
         },
+        { path: '/student/profile', label: 'My Profile', icon: <LuUser /> },
         { path: '/student/nodue', label: 'No Due Request', icon: <LuFileCheck /> },
         { path: '/student/messages', label: 'Messages', icon: <LuMail /> },
         { path: '/student/change-password', label: 'Change Password', icon: <LuKey /> },

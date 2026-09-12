@@ -76,6 +76,7 @@ const LABMark = lazy(() => import('./pages/student/LABMark'));
 const AssignmentMark = lazy(() => import('./pages/student/AssignmentMark'));
 const GradeBook = lazy(() => import('./pages/student/GradeBook'));
 const AcademicFee = lazy(() => import('./pages/student/AcademicFee'));
+const ExamFee = lazy(() => import('./pages/student/ExamFee'));
 const Feedbacks = lazy(() => import('./pages/student/Feedbacks'));
 const CommitteeSchedule = lazy(() => import('./pages/student/CommitteeSchedule'));
 const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
@@ -193,6 +194,7 @@ const App = () => {
                     <Route path="assignment" element={<AssignmentMark />} />
                     <Route path="gradebook" element={<GradeBook />} />
                     <Route path="fee" element={<AcademicFee />} />
+                    <Route path="exam-fee" element={<ExamFee />} />
                     <Route path="feedbacks" element={<Feedbacks />} />
                     <Route path="committee/schedule" element={<CommitteeSchedule />} />
                     <Route path="committee/minutes" element={<CommitteeMinutes />} />
@@ -221,6 +223,7 @@ const App = () => {
                     <Route path="grades" element={<GradeBook />} />
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="fees" element={<AcademicFee />} />
+                    <Route path="exam-fee" element={<ExamFee />} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="clubs" element={<ClubsPage />} />
                   </Route>

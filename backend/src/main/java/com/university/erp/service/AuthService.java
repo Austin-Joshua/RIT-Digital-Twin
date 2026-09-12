@@ -108,8 +108,8 @@ public class AuthService {
         Optional<User> existingUser = resolveUserByAnyIdentity(username);
         if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
             existingUser = studentRepository.findByRegisterNo(username)
-                    .map(Student::getUser)
-                    .filter(java.util.Objects::nonNull);
+                    .map(student -> student.getUser())
+                    .filter(user -> user != null);
         }
 
         String diagnosticMessage = "Invalid username or password.";
@@ -403,7 +403,7 @@ public class AuthService {
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(com.university.erp.model.RefreshToken::getUser)
+                .map(token -> token.getUser())
                 .map(user -> generateAuthResponse(user, false))
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }

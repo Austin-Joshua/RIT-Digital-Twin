@@ -149,8 +149,8 @@ const LoginPage = () => {
                             marginBottom: '4px',
                             textShadow: isDarkMode ? '0 0 10px rgba(255, 215, 0, 0.2)' : 'none',
                             letterSpacing: '0.02em'
-                        }}>Institutional Access</h2>
-                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Authenticate to access the Smart Campus platform</p>
+                        }}>Login</h2>
+                        <p style={{ color: 'var(--theme-text-muted)', fontSize: '0.9rem', fontWeight: '500', lineHeight: '1.4' }}>Sign in with your IMS user ID and password</p>
                     </div>
 
                     {error && (
@@ -173,12 +173,12 @@ const LoginPage = () => {
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <Input
-                            label="Email or username"
+                            label="User ID"
                             type="text"
                             name="username"
                             value={credentials.username}
                             onChange={handleChange}
-                            placeholder="Enter your username or email"
+                            placeholder="User ID"
                             required
                         />
 

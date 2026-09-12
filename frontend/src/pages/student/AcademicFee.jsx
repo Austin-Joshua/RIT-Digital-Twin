@@ -7,6 +7,7 @@ import {
 import { useToast } from '../../hooks/ToastContext';
 import { useAuth } from '../../hooks/AuthContext';
 import Card from '../../components/common/Card';
+import { academicFees, academicYearLabel } from '../../utils/studentFees';
 
 const AcademicFee = () => {
     const { addToast } = useToast();
@@ -23,12 +24,7 @@ const AcademicFee = () => {
         }
     }, [isParent]);
 
-    const feeDetails = [
-        { id: 1, label: 'Tuition Fee', amount: 85000, deadline: '2025-06-30', status: 'UNPAID', type: 'ACADEMIC' },
-        { id: 2, label: 'Library & AU Fee', amount: 5000, deadline: '2025-06-30', status: 'UNPAID', type: 'ACADEMIC' },
-        { id: 3, label: 'Special Equipment Fee', amount: 3000, deadline: '2025-06-30', status: 'UNPAID', type: 'ACADEMIC' },
-        { id: 4, label: 'Hostel Fee (Optional)', amount: 45000, deadline: '2025-07-15', status: 'PENDING', type: 'HOSTELLER' },
-    ];
+    const feeDetails = academicFees;
 
     const paymentHistory = [
         { id: 'TXN001', date: '2024-12-15', amount: 85000, method: 'UPI', status: 'SUCCESS' },
@@ -72,7 +68,7 @@ const AcademicFee = () => {
                 </div>
                 <div className="bg-[var(--theme-bg-muted)] p-4 rounded-xl border border-[var(--theme-border)] text-right">
                     <span className="text-[10px] uppercase tracking-[4px] text-[var(--theme-text-muted)] font-bold block mb-1">Academic Year</span>
-                    <span className="text-xl font-black text-[var(--theme-text)]">2024 - 2025</span>
+                    <span className="text-xl font-black text-[var(--theme-text)]">{academicYearLabel().replace('-', ' - ')}</span>
                 </div>
             </div>
 

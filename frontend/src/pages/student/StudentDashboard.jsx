@@ -1,257 +1,224 @@
-import React, { useState, useEffect } from 'react';
-import {
-    FaChartBar, FaFileAlt, FaPercentage, FaShoppingBag,
-    FaArrowCircleRight
-} from 'react-icons/fa';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import {
-    ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-    CartesianGrid, Tooltip
-} from 'recharts';
-import { academicAiApi } from '../../services/enterpriseApi';
-import { motion, AnimatePresence } from 'framer-motion';
-import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
-import Card from '../../components/common/Card';
-import MiniCalendar from '../../components/common/MiniCalendar';
-import DetailedReportModal from '../../components/common/DetailedReportModal';
-import twinService from '../../services/twinService';
-import analyticsService from '../../services/analyticsService';
-import { getAcademicStats, getInternalMarks, getDepartmentStats } from '../../utils/MockDataGenerator';
+import { getAcademicStats } from '../../utils/MockDataGenerator';
+import { academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
 
-const performanceDataStatic = [
-    { name: 'Jan', gpa: 7.8, attendance: 82 },
-    { name: 'Feb', gpa: 8.1, attendance: 85 },
-    { name: 'Mar', gpa: 8.3, attendance: 88 },
-    { name: 'Apr', gpa: 8.5, attendance: 92 },
-    { name: 'May', gpa: 8.4, attendance: 90 },
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
 ];
+const DAY_NAMES = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+function semesterWindow(date = new Date()) {
+    const year = date.getFullYear();
+    if (date.getMonth() >= 5) {
+        return { start: new Date(year, 5, 8), end: new Date(year, 10, 30) };
+    }
+    return { start: new Date(year, 0, 6), end: new Date(year, 4, 15) };
+}
+
+function formatDay(date) {
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function RingStat({ label, value, center, sub, percent, color }) {
+    const safe = Math.max(0, Math.min(100, percent));
+    return (
+        <article className="ims-stat-card">
+            <div className="ims-ring" style={{ '--ring': color, '--pct': `${safe}%` }}>
+                <span>{center}</span>
+            </div>
+            <div>
+                <div className="ims-stat-label">{label}</div>
+                <div className="ims-stat-value">{value}</div>
+                {sub ? <div className="ims-stat-sub">{sub}</div> : null}
+            </div>
+        </article>
+    );
+}
 
 const StudentDashboard = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
-    
     const email = user?.email || 'guest@ritchennai.edu.in';
     const initialStats = getAcademicStats(email);
-    const initialMarks = getInternalMarks(email);
+    const now = new Date();
+    const yearLabel = academicYearLabel(now);
+    const semester = semesterWindow(now);
 
     const [kpiData, setKpiData] = useState({
         cgpa: initialStats.cgpa,
         attendance: initialStats.attendance,
         arrear: initialStats.arrears,
-        leave: initialStats.leave
     });
-    const [performanceData, setPerformanceData] = useState(initialStats.trend);
-    const [marks, setMarks] = useState(initialMarks);
-    
-    const [selectedModal, setSelectedModal] = useState(null);
-    const [clubInvolvement, setClubInvolvement] = useState([]);
-    const [clubLoading, setClubLoading] = useState(true);
-    const [twinStatus, setTwinStatus] = useState({ crowd: 'Normal', energy: 'Balanced' });
-    const [ranking, setRanking] = useState(null);
+    const [timetable, setTimetable] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const feesPending = pendingAcademicFees();
+    const feesPaidShare = feesPending === 0 ? 100 : 18;
 
     useEffect(() => {
-        const fetchTwinData = async () => {
-            try {
-                const crowd = await twinService.getCongestionPrediction();
-                const energy = await twinService.getEnergyPrediction();
-                setTwinStatus({
-                    crowd: crowd.data.trend,
-                    energy: energy.data.peakRiskLevel
-                });
-            } catch (err) {
-                console.error("Twin fetch failed:", err);
-            }
-        };
-        fetchTwinData();
-    }, []);
-
-    useEffect(() => {
-        const fetchKpis = async () => {
-            try {
-                const cgpaRes = await api.get('/academic/student/cgpa').catch(() => ({ data: [] }));
-                let apiCgpa = 0;
+        api.get('/academic/student/cgpa')
+            .then((cgpaRes) => {
                 if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
-                    apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
+                    const apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
+                    if (apiCgpa > 0) setKpiData((prev) => ({ ...prev, cgpa: apiCgpa }));
                 }
-                if (apiCgpa > 0) {
-                    setKpiData(prev => ({ ...prev, cgpa: apiCgpa }));
-                }
-            } catch (err) {
-                console.error("KPI sync silent fail:", err);
-            }
-        };
-        fetchKpis();
+            })
+            .catch(() => {});
+        api.get('/academic/student/timetable')
+            .then((res) => setTimetable(Array.isArray(res.data) ? res.data : []))
+            .catch(() => setTimetable([]));
     }, [user]);
 
-    useEffect(() => {
-        const fetchClubInvolvement = async () => {
-            try {
-                setClubLoading(true);
-                const res = await api.get('/clubs/student/me/involvement');
-                setClubInvolvement(Array.isArray(res.data) ? res.data : []);
-            } catch (e) {
-                setClubInvolvement([]);
-            } finally {
-                setClubLoading(false);
-            }
-        };
-        fetchClubInvolvement();
-    }, [user]);
+    const calendar = useMemo(() => {
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const first = new Date(year, month, 1).getDay();
+        const days = new Date(year, month + 1, 0).getDate();
+        const cells = Array(first).fill(null);
+        for (let day = 1; day <= days; day += 1) cells.push(day);
+        while (cells.length % 7 !== 0) cells.push(null);
+        return { year, month, cells };
+    }, [now]);
 
-    const kpis = [
-        { id: 'cgpa', label: 'CGPA', value: (kpiData?.cgpa || 0).toFixed(2), color: 'green', icon: <FaChartBar />, link: '/student/gradebook' },
-        { id: 'arrears', label: 'Arrears In Hand', value: kpiData?.arrear || 0, color: 'yellow', icon: <FaFileAlt />, link: '/student/gradebook' },
-        { id: 'attendance', label: 'Average Attendance', value: `${(kpiData?.attendance || 0).toFixed(1)}%`, color: 'teal', icon: <FaPercentage />, link: '/student/attendance' },
-        { id: 'leave', label: 'Taken Leave', value: kpiData?.leave || 0, color: 'red', icon: <FaShoppingBag />, link: '/student/leave' },
-    ];
+    const daySlots = useMemo(() => {
+        if (!selectedDate) return [];
+        const name = DAY_NAMES[selectedDate.getDay()];
+        return timetable
+            .filter((slot) => String(slot.dayOfWeek || '').toUpperCase() === name)
+            .slice()
+            .sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
+    }, [selectedDate, timetable]);
 
-    useEffect(() => {
-        const fetchStudentMarks = async () => {
-            if (!user?.studentId) return;
-            try {
-                const res = await api.get(`/academic/marks/student/${user.studentId}`);
-                if (Array.isArray(res.data) && res.data.length > 0) {
-                    const apiMarks = res.data;
-                    const catMarks = apiMarks.filter(m => m.type === 'CAT').map(m => ({
-                        subject: m.subjectName || m.subject?.subjectName,
-                        score: m.score,
-                        max: 50
-                    }));
-                    const assignmentMarks = apiMarks.filter(m => m.type === 'ASSIGNMENT').map(m => ({
-                        subject: m.subjectName || m.subject?.subjectName,
-                        score: m.score,
-                        max: 20
-                    }));
-                    if (catMarks.length > 0 || assignmentMarks.length > 0) {
-                        setMarks({
-                            cat: catMarks.length > 0 ? catMarks : initialMarks.cat,
-                            assignments: assignmentMarks.length > 0 ? assignmentMarks : initialMarks.assignments
-                        });
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to sync marks from API:", err);
-            }
-        };
-        fetchStudentMarks();
-    }, [user?.studentId]);
+    const openDay = (day) => {
+        if (!day) return;
+        const date = new Date(calendar.year, calendar.month, day);
+        if (date.getDay() === 0 || date.getDay() === 6) return;
+        if (date < semester.start || date > semester.end) return;
+        setSelectedDate(date);
+    };
 
     return (
         <div className="stu-dashboard">
-            <div className="stu-kpi-row">
-                {kpis.map((kpi) => (
-                    <div
-                        key={kpi.id}
-                        className={`stu-kpi-card ${kpi.color}`}
-                        onClick={() => setSelectedModal(kpi)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <div className="kpi-main">
-                            <h3 className="kpi-value">{kpi.value}</h3>
-                            <p className="kpi-label">{kpi.label}</p>
-                        </div>
-                        <div className="kpi-icon">
-                            {kpi.icon}
-                        </div>
-                        <div className="kpi-more" onClick={(e) => { e.stopPropagation(); navigate(kpi.link); }}>
-                            More info <FaArrowCircleRight style={{ marginLeft: '5px' }} />
-                        </div>
-                    </div>
-                ))}
-                
-
+            <div className="ims-stat-row">
+                <RingStat
+                    label="CGPA"
+                    value={`${Number(kpiData.cgpa || 0).toFixed(2)} / 10`}
+                    center={Number(kpiData.cgpa || 0).toFixed(2)}
+                    sub="Overall performance"
+                    percent={(Number(kpiData.cgpa || 0) / 10) * 100}
+                    color="#2ecc71"
+                />
+                <RingStat
+                    label="Attendance"
+                    value={`${Number(kpiData.attendance || 0).toFixed(0)}%`}
+                    center={`${Number(kpiData.attendance || 0).toFixed(0)}%`}
+                    sub="Average this semester"
+                    percent={Number(kpiData.attendance || 0)}
+                    color="#17a2b8"
+                />
+                <RingStat
+                    label="Arrears"
+                    value={String(kpiData.arrear || 0)}
+                    center={String(kpiData.arrear || 0)}
+                    percent={kpiData.arrear ? 25 : 100}
+                    color={kpiData.arrear ? '#e63946' : '#2ecc71'}
+                />
+                <RingStat
+                    label="Fees Pending"
+                    value={`₹${feesPending.toLocaleString('en-IN')}`}
+                    center={feesPending === 0 ? '100% Paid' : 'Due'}
+                    sub={`AY ${yearLabel}`}
+                    percent={feesPaidShare}
+                    color={feesPending === 0 ? '#2ecc71' : '#f4a261'}
+                />
             </div>
 
-            <DetailedReportModal
-                isOpen={!!selectedModal}
-                onClose={() => setSelectedModal(null)}
-                title={selectedModal?.label}
-                value={selectedModal?.value}
-                label={selectedModal?.label}
-                icon={selectedModal?.icon}
-            />
+            <section className="ims-calendar-card">
+                <div className="ims-cal-legend">
+                    <strong>{MONTHS[calendar.month]} {calendar.year}</strong>
+                    <span><i className="swatch holiday" /> Holiday</span>
+                    <span><i className="swatch no-order" /> No order Day</span>
+                    <span><i className="swatch today" /> Today</span>
+                </div>
+                <p className="ims-cal-note">
+                    Semester period: {formatDay(semester.start)} – {formatDay(semester.end)}
+                </p>
+                <p className="ims-cal-note">Click any weekday within the semester period to view that day's period-wise timetable.</p>
+                <table className="ims-cal-table">
+                    <thead>
+                        <tr>
+                            {WEEKDAYS.map((day) => <th key={day}>{day}</th>)}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Array.from({ length: calendar.cells.length / 7 }, (_, week) => (
+                            <tr key={week}>
+                                {calendar.cells.slice(week * 7, week * 7 + 7).map((day, index) => {
+                                    const date = day ? new Date(calendar.year, calendar.month, day) : null;
+                                    const isToday = date && date.toDateString() === now.toDateString();
+                                    const outside = date && (date < semester.start || date > semester.end);
+                                    const holiday = index === 0;
+                                    const noOrder = index === 6;
+                                    const className = [
+                                        'cal-day',
+                                        isToday ? 'is-today' : '',
+                                        holiday ? 'holiday' : '',
+                                        noOrder ? 'no-order' : '',
+                                        outside ? 'out-of-range' : '',
+                                        !day ? 'empty' : '',
+                                    ].filter(Boolean).join(' ');
+                                    return (
+                                        <td key={`${week}-${index}`}>
+                                            <button type="button" className={className} onClick={() => openDay(day)} disabled={!day}>
+                                                {day || ''}
+                                            </button>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </section>
 
-            <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-                <div className="stu-info-card" style={{ borderTopColor: 'var(--theme-brand-strong)' }}>
-                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '15px', borderBottom: '1px solid var(--theme-border)' }}>
-                        <FaFileAlt color="var(--theme-brand-strong)" />
-                        Recent Assessments (CAT & ASSG)
+            {selectedDate && (
+                <section className="stu-info-card ims-day-panel">
+                    <div className="info-header">
+                        {selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'short', year: 'numeric' })}
                     </div>
                     <div className="info-body">
-                        <div className="stu-data-table-wrapper" style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                        {daySlots.length === 0 ? (
+                            <p>No periods are scheduled for this day.</p>
+                        ) : (
                             <table className="stu-data-table">
                                 <thead>
                                     <tr>
+                                        <th>Period</th>
                                         <th>Subject</th>
-                                        <th>Type</th>
-                                        <th>Score</th>
+                                        <th>Faculty</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {marks.cat.map((m, idx) => (
-                                        <tr key={`cat-${idx}`}>
-                                            <td>{m.subject}</td>
-                                            <td style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>CAT</td>
-                                            <td className="text-right font-bold" style={{ color: 'var(--theme-brand-strong)' }}>{m.score}/50</td>
-                                        </tr>
-                                    ))}
-                                    {marks.assignments.map((m, idx) => (
-                                        <tr key={`assg-${idx}`}>
-                                            <td>{m.subject}</td>
-                                            <td style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-muted)' }}>ASSG</td>
-                                            <td className="text-right font-bold" style={{ color: 'var(--color-success)' }}>{m.score}/20</td>
+                                    {daySlots.map((slot, index) => (
+                                        <tr key={`${slot.startTime}-${index}`}>
+                                            <td>{String(slot.startTime || '').substring(0, 5) || index + 1}</td>
+                                            <td>{slot.subject?.subjectName || slot.subject?.subjectCode || 'Class'}</td>
+                                            <td>{slot.faculty?.user?.firstName || '—'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                    <div className="info-footer" style={{ padding: '10px 15px', textAlign: 'right', borderTop: '1px solid var(--theme-border)' }}>
-                        <Link to="/student/gradebook" style={{ textDecoration: 'none', fontSize: '13px', color: 'var(--theme-link)', fontWeight: '800' }}>View Full Gradebook</Link>
-                    </div>
-                </div>
-
-                <div className="stu-info-card" style={{ borderTopColor: '#7c3aed' }}>
-                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>
-                        Club & EC Involvement
-                    </div>
-                    <div className="info-body" style={{ padding: '15px', minHeight: '120px', color: 'var(--theme-text-muted)' }}>
-                        {clubLoading ? (
-                            <div>Loading your clubs...</div>
-                        ) : clubInvolvement.length === 0 ? (
-                            <div style={{ padding: '10px', textAlign: 'center' }}>
-                                <p style={{ fontSize: '13px' }}>You are not currently enrolled in any clubs.</p>
-                                <Link to="/student/clubs" className="table-btn" style={{ background: '#7c3aed', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', display: 'inline-block', marginTop: '8px' }}>Explore Clubs</Link>
-                            </div>
-                        ) : (
-                            <div style={{ display: 'grid', gap: '8px' }}>
-                                {clubInvolvement.slice(0, 2).map((club) => (
-                                    <div key={club.membershipId} style={{ border: '1px solid var(--theme-border)', borderRadius: '8px', padding: '8px', background: 'var(--theme-bg-muted)' }}>
-                                        <div style={{ fontWeight: 700, color: 'var(--theme-text)', fontSize: '14px' }}>{club.clubName}</div>
-                                        <div style={{ fontSize: '11px' }}>Role: <strong>{club.roleType}</strong></div>
-                                    </div>
-                                ))}
-                            </div>
                         )}
                     </div>
-                </div>
-
-                <div className="stu-info-card">
-                    <div className="info-header" style={{ padding: '15px', fontSize: '18px', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)' }}>Campus Bulletins</div>
-                    <div className="info-body" style={{ padding: '15px', minHeight: '100px', color: 'var(--theme-text-muted)' }}>
-                        <div style={{ padding: '10px', background: 'rgba(234, 179, 8, 0.1)', borderLeft: '4px solid #eab308', borderRadius: '4px', marginBottom: '10px' }}>
-                            <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--theme-text)' }}>End Semester Timetable</div>
-                            <div style={{ fontSize: '12px' }}>The November 2025 exam schedule is now available in the Timetable section.</div>
-                        </div>
+                    <div className="info-footer">
+                        <Link to="/student/timetable">Open full timetable</Link>
+                        <Link to="/student/fee">Open academic fee</Link>
                     </div>
-                </div>
-            </div>
-
-
-
-            <MiniCalendar />
+                </section>
+            )}
         </div>
     );
 };
