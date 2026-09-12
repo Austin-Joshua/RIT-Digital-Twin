@@ -52,6 +52,10 @@ const PAGES = [
     { roles: ['FACULTY'], label: 'Class Risk Heatmap', path: '/faculty/risk-heatmap', keys: ['risk', 'heatmap'], about: 'Students who may be at academic risk.' },
     { roles: ['FACULTY'], label: 'Research Tracker', path: '/faculty/research', keys: ['research', 'paper', 'publication'], about: 'Your research and publication tracker.' },
     { roles: ['FACULTY'], label: 'Club Management', path: '/faculty/clubs', keys: ['club'], about: 'Clubs you advise.' },
+    { roles: ['FACULTY'], label: 'Assignment Grading', path: '/faculty/assignments', keys: ['assignment grading', 'grade assignment'], about: 'Grade submitted assignments.' },
+    { roles: ['FACULTY', 'ADMIN'], label: 'My Profile', path: '/profile', keys: ['profile', 'my account'], about: 'Your staff profile.' },
+    { roles: ['FACULTY', 'ADMIN'], label: 'Theme Settings', path: '/settings', keys: ['theme', 'dark mode', 'light mode', 'settings'], about: 'Light, dark, or system theme.' },
+    { roles: ['FACULTY', 'HOD', 'ADMIN'], label: 'Classroom Allocation', path: '/classrooms/allocation', keys: ['classroom allocation', 'room allocation', 'allocate room'], about: 'Assign rooms to classes.' },
     { roles: ['FACULTY'], label: 'Change Password', path: '/change-password', keys: ['password'], about: 'Change this faculty login’s password.' },
 
     { roles: ['HOD'], label: 'HOD Dashboard', path: '/hod', keys: ['dashboard', 'department', 'performance'], about: 'Department overview for the head of department.' },
@@ -84,7 +88,6 @@ const PAGES = [
     { roles: ['ADMIN'], label: 'Alumni', path: '/management/alumni', keys: ['alumni'], about: 'Alumni portal.' },
     { roles: ['ADMIN'], label: 'Campus Map', path: '/map', keys: ['map', 'campus map'], about: 'Campus map.' },
     { roles: ['ADMIN'], label: 'Change Password', path: '/change-password', keys: ['password'], about: 'Change this admin login’s password.' },
-    { roles: ['ADMIN'], label: 'Theme Settings', path: '/settings', keys: ['theme', 'dark mode', 'settings'], about: 'Light, dark, or system theme.' },
 ];
 
 const ROLE_BLURB = {
@@ -153,17 +156,54 @@ function feeLines() {
     return { academic, exams };
 }
 
+function scorePage(query, page) {
+    const words = query.split(/[^a-z0-9]+/).filter((word) => word.length > 2);
+    return page.keys.reduce((sum, key) => {
+        if (query.includes(key)) return sum + key.length + 4;
+        const hits = key.split(' ').filter((part) => words.includes(part)).length;
+        return sum + hits;
+    }, 0) + (query.includes(page.label.toLowerCase()) ? 8 : 0);
+}
+
 function bestPage(query, role) {
     let best = null;
     let bestScore = 0;
     pagesFor(role).forEach((page) => {
-        const score = page.keys.reduce((sum, key) => (query.includes(key) ? sum + key.length : sum), 0);
+        const score = scorePage(query, page);
         if (score > bestScore) {
             best = page;
             bestScore = score;
         }
     });
-    return bestScore > 0 ? best : null;
+    return bestScore > 2 ? best : null;
+}
+
+function personalBrief(user, live) {
+    const role = roleOf(user);
+    const name = displayName(user);
+    if (role === 'STUDENT') {
+        const snap = studentSnapshot(user, live);
+        return `${name}${user?.registerNo ? ` (${user.registerNo})` : ''}: CGPA ${snap.cgpa.toFixed(2)} / 10, attendance ${snap.attendance}%, arrears ${snap.arrears}, academic fees pending ${money(snap.academicDue)}, exam fees pending ${money(snap.examDue)}.`;
+    }
+    if (role === 'PARENT') {
+        const ward = parentWard();
+        return `${name}, parent login. Linked student ${ward.name} (${ward.registerNo}): CGPA ${ward.cgpa.toFixed(2)} / 10, attendance ${ward.attendance}%, arrears ${ward.arrears}, academic fees pending ${money(ward.academicDue)}.`;
+    }
+    if (role === 'FACULTY' || role === 'HOD') {
+        const dept = getDepartmentStats(user?.department || 'CSE');
+        return `${name}, ${role.toLowerCase()} login${user?.department ? ` in ${user.department}` : ''}. Department view: ${dept.totalStudents} students, ${dept.totalFaculty} faculty, attendance ${dept.averageAttendance}%, pass ${dept.passPercentage}%.`;
+    }
+    return `${name}, admin login${user?.email ? ` (${user.email})` : ''}. You can open accounts, exams, results, certificates, placements, and the campus simulations.`;
+}
+
+function allLoginsReply(user, live) {
+    const current = roleOf(user);
+    const others = Object.entries(ROLE_BLURB)
+        .map(([role, blurb]) => `${role === current ? '• Current' : '•'} ${role}: ${blurb}`)
+        .join('\n');
+    return {
+        text: `${personalBrief(user, live)}\n\nEvery login on this website:\n${others}\n\nI answer with this account’s numbers. I will not open another login’s pages from here.`,
+    };
 }
 
 function openReply(page, lead) {
@@ -180,19 +220,6 @@ function menuReply(user) {
     return {
         text: `${displayName(user)}, this ${role.toLowerCase()} login can open:\n\n${lines}\n\nAsk for any of these by name, for example “open attendance” or “what is my CGPA?”.`,
     };
-}
-
-function identityReply(user) {
-    const role = roleOf(user);
-    const bits = [
-        `You are signed in as ${displayName(user)}.`,
-        `Login: ${role}.`,
-        user?.registerNo ? `Register number: ${user.registerNo}.` : null,
-        user?.email ? `Email: ${user.email}.` : null,
-        user?.department ? `Department: ${user.department}.` : null,
-        ROLE_BLURB[role] || 'This login only sees its own pages.',
-    ].filter(Boolean);
-    return { text: bits.join('\n') };
 }
 
 function otherLoginReply(user, askedRole) {
@@ -294,10 +321,8 @@ function facultyFacts(query, user) {
     return null;
 }
 
-export function greetingFor(user) {
-    const role = roleOf(user);
-    const name = displayName(user);
-    return `Hello ${name}. You are on the ${role.toLowerCase()} login.\n\nI answer only from this portal and this account. Ask for a page, your CGPA, attendance, fees, or “what can I open?”.`;
+export function greetingFor(user, live) {
+    return `Hello ${displayName(user)}.\n\n${personalBrief(user, live)}\n\nI only use this website and this login. Ask for a page, your numbers, or “all logins”.`;
 }
 
 export function suggestionsFor(user) {
@@ -319,10 +344,18 @@ export function answerForUser(query, user, extras = {}) {
         return { text: `Opening ${page?.label || 'that page'}.`, path: extras.lastPath, label: `Open ${page?.label || 'page'}` };
     }
 
+    if (/\b(this page|where am i|current page)\b/.test(text)) {
+        const here = pagesFor(role).find((page) => page.path === extras.here);
+        if (here) return openReply(here, `${displayName(user)}, you are on ${here.label}.`);
+    }
+
     const wantsPage = /^(open|go to|show|take me)\b/.test(text);
-    if (!wantsPage && /\b(who am i|my login|my account|which login)\b/.test(text)) return identityReply(user);
+    if (/\b(all logins|every login|other logins|which logins|logins)\b/.test(text)) return allLoginsReply(user, extras.live);
+    if (!wantsPage && /\b(who am i|my login|my account|which login|my summary|how am i)\b/.test(text)) {
+        return { text: personalBrief(user, extras.live) };
+    }
     if (!wantsPage && /\b(what can i|which pages|menu|help|what do you know|everything)\b/.test(text)) return menuReply(user);
-    if (!wantsPage && /^(hi|hello|hey|good morning|good evening)\b/.test(text)) return { text: greetingFor(user) };
+    if (!wantsPage && /^(hi|hello|hey|good morning|good evening)\b/.test(text)) return { text: greetingFor(user, extras.live) };
 
     if (/\bfaculty login\b|\bas a faculty\b|\bfaculty pages\b/.test(text)) return otherLoginReply(user, 'FACULTY');
     if (/\bparent login\b|\bas a parent\b|\bparent pages\b/.test(text)) return otherLoginReply(user, 'PARENT');
@@ -347,9 +380,11 @@ export function answerForUser(query, user, extras = {}) {
     const foreign = PAGES.find((item) => !item.roles.includes(role) && item.keys.some((key) => key.length > 3 && text.includes(key)));
     if (foreign) {
         return {
-            text: `${displayName(user)}, “${foreign.label}” belongs to the ${foreign.roles[0].toLowerCase()} login, not this ${role.toLowerCase()} account.\n\n${ROLE_BLURB[foreign.roles[0]]}`,
+            text: `${displayName(user)}, “${foreign.label}” is on the ${foreign.roles[0].toLowerCase()} login, not this ${role.toLowerCase()} account.\n\n${ROLE_BLURB[foreign.roles[0]]}\n\nYour account: ${personalBrief(user, extras.live)}`,
         };
     }
 
-    return menuReply(user);
+    return {
+        text: `${personalBrief(user, extras.live)}\n\nI don’t have a matching page for that on this login. Ask “what can I open?” or name a page, such as attendance, fees, timetable, or clubs.`,
+    };
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaMicrophone, FaExpand, FaCompress } from 'react-icons/fa';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
 import { answerForUser, greetingFor, suggestionsFor } from '../campusGuide';
@@ -28,6 +28,7 @@ const MessageContent = ({ text }) => {
 const ChatbotWidget = ({ studentId: _studentId }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const lastPath = useRef(null);
     const [liveCgpa, setLiveCgpa] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +39,7 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
     }));
     const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState(() => [
-        { text: greetingFor(user), isBot: true }
+        { text: greetingFor(user, null), isBot: true }
     ]);
     const [input, setInput] = useState('');
     const [isListening, setIsListening] = useState(false);
@@ -134,7 +135,11 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
         setInput('');
         setIsTyping(true);
 
-        const reply = answerForUser(textToSend, user, { live: liveCgpa ? { cgpa: liveCgpa } : null, lastPath: lastPath.current });
+        const reply = answerForUser(textToSend, user, {
+            live: liveCgpa ? { cgpa: liveCgpa } : null,
+            lastPath: lastPath.current,
+            here: location.pathname,
+        });
         if (reply.path) lastPath.current = reply.path;
 
         window.setTimeout(() => {
