@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaMicrophone, FaExpand, FaCompress } from 'react-icons/fa';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
-import { getAcademicStats } from '../../../utils/MockDataGenerator';
-import { pendingAcademicFees, pendingExamFees } from '../../../utils/studentFees';
+import { answerForUser, greetingFor, suggestionsFor } from './campusGuide';
 import './chatbot.css';
 
 // Render bot text with newlines so answers are readable and high-contrast
@@ -25,34 +25,11 @@ const MessageContent = ({ text }) => {
     );
 };
 
-function localAnswer(query, role, email) {
-    const q = (query || '').toLowerCase();
-    const stats = getAcademicStats(email || 'guest@ritchennai.edu.in');
-    const fees = pendingAcademicFees();
-    const examFees = pendingExamFees();
-    if (q.includes('attendance')) {
-        return `Attendance on your dashboard ring is ${Math.round(stats.attendance)}%.\n\nOpen Attendance for subject-wise periods. Keep it above 75%.`;
-    }
-    if (q.includes('cgpa') || q.includes('gpa') || q.includes('grade')) {
-        return `CGPA on your dashboard ring is ${stats.cgpa.toFixed(2)} / 10.\n\nOpen Grade Book for semester grades, or CGPA Simulator for a what-if.`;
-    }
-    if (q.includes('fee') || q.includes('due') || q.includes('pay')) {
-        return `Academic fees pending: ₹${fees.toLocaleString('en-IN')}.\nExam fees pending: ₹${examFees.toLocaleString('en-IN')}.\n\nOpen Academic Fee or Exam Fee to review the breakdown.`;
-    }
-    if (q.includes('exam') || q.includes('timetable') || q.includes('schedule')) {
-        return 'Open My Time Table for the weekly grid, or the dashboard calendar and click a weekday for that day’s periods.';
-    }
-    if (q.includes('bus') || q.includes('transport') || q.includes('route')) {
-        return 'Open Transport Directory in the sidebar for route numbers and timings.';
-    }
-    if (q.includes('hello') || q.includes('hi') || q.includes('hey')) {
-        return `Hello. I can answer from your campus data for ${role.toLowerCase()} pages: attendance, CGPA, fees, timetable, and transport.`;
-    }
-    return 'I can help with attendance, CGPA, fees, timetable, and transport. Try “What is my CGPA?” or use a quick action.';
-}
-
-const ChatbotWidget = ({ studentId }) => {
+const ChatbotWidget = ({ studentId: _studentId }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const lastPath = useRef(null);
+    const [liveCgpa, setLiveCgpa] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [viewport, setViewport] = useState(() => ({
@@ -60,8 +37,8 @@ const ChatbotWidget = ({ studentId }) => {
         h: typeof window === 'undefined' ? 800 : window.innerHeight,
     }));
     const [isTyping, setIsTyping] = useState(false);
-    const [messages, setMessages] = useState([
-        { text: `Hello ${user?.firstName || 'there'}! I'm your RIT AI Assistant. Ask about attendance, grades, exams, transport, library, or outpass — or use the quick actions below.`, isBot: true }
+    const [messages, setMessages] = useState(() => [
+        { text: greetingFor(user), isBot: true }
     ]);
     const [input, setInput] = useState('');
     const [isListening, setIsListening] = useState(false);
@@ -72,6 +49,20 @@ const ChatbotWidget = ({ studentId }) => {
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
+
+    useEffect(() => {
+        const role = String(user?.role || '').replace(/^ROLE_/, '').toUpperCase();
+        if (role !== 'STUDENT') return undefined;
+        let cancelled = false;
+        api.get('/academic/student/cgpa')
+            .then((res) => {
+                if (cancelled || !Array.isArray(res.data) || res.data.length === 0) return;
+                const average = res.data.reduce((sum, row) => sum + Number(row.gpa || 0), 0) / res.data.length;
+                if (average > 0) setLiveCgpa(average);
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
+    }, [user?.id, user?.role]);
 
     const isMobile = viewport.w <= 768;
     const panelWidth = isMobile
@@ -132,63 +123,28 @@ const ChatbotWidget = ({ studentId }) => {
     };
 
 
-    const getSuggestions = () => {
-        const role = user?.role || 'STUDENT';
-        if (role === 'FACULTY' || role === 'HOD') {
-            const facultySugs = ["Pending grading", "Leave approvals", "Proctor wards", "Department performance"];
-            if (role === 'HOD') facultySugs.push("Faculty load allocation");
-            return facultySugs;
-        }
-        if (role === 'PARENT') {
-            return ["Ward attendance", "Fee dues", "Schedule meeting", "Academic forecast"];
-        }
-        if (role === 'ADMIN') {
-            return ["Energy audit", "Broadcast alert", "System health", "Campus overview"];
-        }
-        return ["My attendance", "CGPA / grades", "Exam schedule", "Transport routes", "Library / Outpass"];
-    };
+    const getSuggestions = () => suggestionsFor(user);
 
-    const handleSend = async (queryText = input) => {
+    const handleSend = (queryText = input) => {
         const textToSend = queryText || input;
         if (!textToSend.trim()) return;
         if (!hasInteracted) setHasInteracted(true);
 
-        const userMsg = { text: textToSend, isBot: false };
-        setMessages(prev => [...prev, userMsg]);
+        setMessages((prev) => [...prev, { text: textToSend, isBot: false }]);
         setInput('');
         setIsTyping(true);
 
-        const campusText = localAnswer(textToSend, user?.role || 'STUDENT', user?.email);
-        const asksCampusData = /attendance|cgpa|gpa|grade|fee|due|pay|exam|timetable|schedule|bus|transport|route/.test(textToSend.toLowerCase());
-        if (asksCampusData) {
-            setTimeout(() => {
-                setMessages(prev => [...prev, { text: campusText, isBot: true }]);
-                setIsTyping(false);
-            }, 250);
-            return;
-        }
+        const reply = answerForUser(textToSend, user, { live: liveCgpa ? { cgpa: liveCgpa } : null, lastPath: lastPath.current });
+        if (reply.path) lastPath.current = reply.path;
 
-        try {
-            const res = await api.post(`/ai/chatbot/query?studentId=${studentId || user?.id || 1}&role=${user?.role || 'STUDENT'}`, { query: textToSend });
-            const botMsg = { text: res.data?.response || campusText, isBot: true };
-
-            // Check for potential action triggers (mock logic for demo)
-            if (textToSend.toLowerCase().includes('energy') || textToSend.toLowerCase().includes('audit')) {
-                botMsg.action = { label: "Run Energy Audit", color: "#f39c12" };
-            } else if (textToSend.toLowerCase().includes('forecast') || textToSend.toLowerCase().includes('budget') || textToSend.toLowerCase().includes('growth')) {
-                botMsg.action = { label: "Generate Strategic Report", color: "#3c8dbc" };
-            } else if (textToSend.toLowerCase().includes('security') || textToSend.toLowerCase().includes('risk')) {
-                botMsg.action = { label: "Initiate System Scan", color: "#e74c3c" };
-            }
-
-            setTimeout(() => {
-                setMessages(prev => [...prev, botMsg]);
-                setIsTyping(false);
-            }, 400);
-        } catch (_err) {
+        window.setTimeout(() => {
+            setMessages((prev) => [...prev, {
+                text: reply.text,
+                isBot: true,
+                action: reply.path ? { label: reply.label || 'Open page', path: reply.path } : null,
+            }]);
             setIsTyping(false);
-            setMessages(prev => [...prev, { text: campusText, isBot: true }]);
-        }
+        }, 220);
     };
 
     const widget = (
@@ -277,15 +233,19 @@ const ChatbotWidget = ({ studentId }) => {
                                     </div>
                                     {msg.action && (
                                         <motion.button 
+                                            type="button"
                                             whileHover={{ scale: 1.02, y: -2 }}
                                             whileTap={{ scale: 0.98 }}
+                                            onClick={() => {
+                                                if (!msg.action?.path) return;
+                                                navigate(msg.action.path);
+                                                setIsOpen(false);
+                                            }}
                                             style={{
                                                 marginTop: '10px', width: '100%', padding: '12px', borderRadius: '14px',
-                                                background: msg.action.color, color: 'white', border: 'none',
-                                                fontWeight: '800', fontSize: '12px', textTransform: 'uppercase',
-                                                letterSpacing: '1px',
-                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                                boxShadow: `0 8px 20px ${msg.action.color}44`
+                                                background: '#0B2C6B', color: 'white', border: 'none',
+                                                fontWeight: 650, fontSize: '12px',
+                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
                                             }}
                                         >
                                             <FaBolt size={12} /> {msg.action.label}
