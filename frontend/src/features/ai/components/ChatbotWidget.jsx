@@ -1,9 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaChartBar, FaSearch, FaMicrophone } from 'react-icons/fa';
+import { FaRobot, FaPaperPlane, FaMinus, FaBolt, FaMicrophone, FaExpand, FaCompress } from 'react-icons/fa';
 import { createPortal } from 'react-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
+import { ThemeContext } from '../../../hooks/ThemeContext';
+import { getAcademicStats } from '../../../utils/MockDataGenerator';
+import { pendingAcademicFees, pendingExamFees } from '../../../utils/studentFees';
 
 // Render bot text with newlines so answers are readable and high-contrast
 const MessageContent = ({ text }) => {
@@ -22,17 +25,42 @@ const MessageContent = ({ text }) => {
     );
 };
 
-function clampDesktopPosition(pos) {
-    if (typeof window === 'undefined') return pos;
-    return {
-        left: Math.max(8, Math.min(window.innerWidth - 90, pos.left)),
-        top: Math.max(8, Math.min(window.innerHeight - 90, pos.top))
-    };
+function localAnswer(query, role, email) {
+    const q = (query || '').toLowerCase();
+    const stats = getAcademicStats(email || 'guest@ritchennai.edu.in');
+    const fees = pendingAcademicFees();
+    const examFees = pendingExamFees();
+    if (q.includes('attendance')) {
+        return `Attendance on your dashboard ring is ${Math.round(stats.attendance)}%.\n\nOpen Attendance for subject-wise periods. Keep it above 75%.`;
+    }
+    if (q.includes('cgpa') || q.includes('gpa') || q.includes('grade')) {
+        return `CGPA on your dashboard ring is ${stats.cgpa.toFixed(2)} / 10.\n\nOpen Grade Book for semester grades, or CGPA Simulator for a what-if.`;
+    }
+    if (q.includes('fee') || q.includes('due') || q.includes('pay')) {
+        return `Academic fees pending: ₹${fees.toLocaleString('en-IN')}.\nExam fees pending: ₹${examFees.toLocaleString('en-IN')}.\n\nOpen Academic Fee or Exam Fee to review the breakdown.`;
+    }
+    if (q.includes('exam') || q.includes('timetable') || q.includes('schedule')) {
+        return 'Open My Time Table for the weekly grid, or the dashboard calendar and click a weekday for that day’s periods.';
+    }
+    if (q.includes('bus') || q.includes('transport') || q.includes('route')) {
+        return 'Open Transport Directory in the sidebar for route numbers and timings.';
+    }
+    if (q.includes('hello') || q.includes('hi') || q.includes('hey')) {
+        return `Hello. I can answer from your campus data for ${role.toLowerCase()} pages: attendance, CGPA, fees, timetable, and transport.`;
+    }
+    return 'I can help with attendance, CGPA, fees, timetable, and transport. Try “What is my CGPA?” or use a quick action.';
 }
 
 const ChatbotWidget = ({ studentId }) => {
     const { user } = useAuth();
+    const theme = useContext(ThemeContext) || {};
+    const isDarkMode = Boolean(theme.isDarkMode);
     const [isOpen, setIsOpen] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const [viewport, setViewport] = useState(() => ({
+        w: typeof window === 'undefined' ? 1280 : window.innerWidth,
+        h: typeof window === 'undefined' ? 800 : window.innerHeight,
+    }));
     const [isTyping, setIsTyping] = useState(false);
     const [messages, setMessages] = useState([
         { text: `Hello ${user?.firstName || 'there'}! I'm your RIT AI Assistant. Ask about attendance, grades, exams, transport, library, or outpass — or use the quick actions below.`, isBot: true }
@@ -40,62 +68,32 @@ const ChatbotWidget = ({ studentId }) => {
     const [input, setInput] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
-    const [desktopPos, setDesktopPos] = useState(() => {
-        if (typeof window === 'undefined') return { top: 120, left: 0 };
-        const saved = localStorage.getItem('rit_chatbot_position');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (typeof parsed?.top === 'number' && typeof parsed?.left === 'number') return clampDesktopPosition(parsed);
-            } catch (_e) {
-                // no-op
-            }
-        }
-        return clampDesktopPosition({ top: Math.max(80, window.innerHeight - 620), left: Math.max(20, window.innerWidth - 430) });
-    });
-    const dragRef = useRef({ active: false, dx: 0, dy: 0 });
+    useEffect(() => {
+        try { localStorage.removeItem('rit_chatbot_position'); } catch (_e) { /* ignore */ }
+        const onResize = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    const panelWidth = isMobile ? 'calc(100vw - 16px)' : 'min(415px, calc(100vw - 40px))';
-    const panelHeight = isMobile ? 'min(78vh, 635px)' : 'min(645px, calc(100vh - 120px))';
+    const isMobile = viewport.w <= 768;
+    const panelWidth = isMobile
+        ? Math.max(280, viewport.w - 16)
+        : Math.min(expanded ? 480 : 360, viewport.w - 40);
+    const chrome = isMobile ? 112 : 124;
+    const maxPanel = Math.max(280, viewport.h - chrome);
+    const panelHeight = Math.min(expanded ? maxPanel : (isMobile ? Math.round(viewport.h * 0.62) : 480), maxPanel);
     const widgetContainerStyle = useMemo(() => ({
         position: 'fixed',
-        bottom: isMobile ? 'max(8px, env(safe-area-inset-bottom))' : 'auto',
-        right: isMobile ? '8px' : 'auto',
-        left: isMobile ? '8px' : `${desktopPos.left}px`,
-        top: isMobile ? 'auto' : `${desktopPos.top}px`,
-        zIndex: 1100,
-        pointerEvents: 'auto',
-        touchAction: 'none'
-    }), [isMobile, desktopPos.left, desktopPos.top]);
-
-    const startDrag = (clientX, clientY) => {
-        if (isMobile) return;
-        dragRef.current.active = true;
-        dragRef.current.dx = clientX - desktopPos.left;
-        dragRef.current.dy = clientY - desktopPos.top;
-    };
-
-    useEffect(() => {
-        if (isMobile) return undefined;
-        const onMove = (event) => {
-            if (!dragRef.current.active) return;
-            const x = Math.max(8, Math.min(window.innerWidth - 90, event.clientX - dragRef.current.dx));
-            const y = Math.max(8, Math.min(window.innerHeight - 90, event.clientY - dragRef.current.dy));
-            setDesktopPos({ top: y, left: x });
-        };
-        const onUp = () => {
-            if (!dragRef.current.active) return;
-            dragRef.current.active = false;
-            localStorage.setItem('rit_chatbot_position', JSON.stringify(desktopPos));
-        };
-        window.addEventListener('mousemove', onMove);
-        window.addEventListener('mouseup', onUp);
-        return () => {
-            window.removeEventListener('mousemove', onMove);
-            window.removeEventListener('mouseup', onUp);
-        };
-    }, [desktopPos, isMobile]);
+        right: isMobile ? 8 : 20,
+        bottom: isMobile ? 'max(12px, env(safe-area-inset-bottom))' : 20,
+        zIndex: 1200,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: 10,
+        maxWidth: 'calc(100vw - 16px)',
+        pointerEvents: 'auto'
+    }), [isMobile]);
 
     const toggleVoice = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -162,10 +160,19 @@ const ChatbotWidget = ({ studentId }) => {
         setInput('');
         setIsTyping(true);
 
+        const campusText = localAnswer(textToSend, user?.role || 'STUDENT', user?.email);
+        const asksCampusData = /attendance|cgpa|gpa|grade|fee|due|pay|exam|timetable|schedule|bus|transport|route/.test(textToSend.toLowerCase());
+        if (asksCampusData) {
+            setTimeout(() => {
+                setMessages(prev => [...prev, { text: campusText, isBot: true }]);
+                setIsTyping(false);
+            }, 250);
+            return;
+        }
+
         try {
-            // Context-aware AI query
             const res = await api.post(`/ai/chatbot/query?studentId=${studentId || user?.id || 1}&role=${user?.role || 'STUDENT'}`, { query: textToSend });
-            const botMsg = { text: res.data.response, isBot: true };
+            const botMsg = { text: res.data?.response || campusText, isBot: true };
 
             // Check for potential action triggers (mock logic for demo)
             if (textToSend.toLowerCase().includes('energy') || textToSend.toLowerCase().includes('audit')) {
@@ -179,10 +186,10 @@ const ChatbotWidget = ({ studentId }) => {
             setTimeout(() => {
                 setMessages(prev => [...prev, botMsg]);
                 setIsTyping(false);
-            }, 600);
+            }, 400);
         } catch (_err) {
             setIsTyping(false);
-            setMessages(prev => [...prev, { text: "I'm optimizing my processing engines. Please try again in a moment.", isBot: true }]);
+            setMessages(prev => [...prev, { text: campusText, isBot: true }]);
         }
     };
 
@@ -203,10 +210,14 @@ const ChatbotWidget = ({ studentId }) => {
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
-                            marginBottom: isMobile ? '10px' : '14px',
-                            background: 'rgba(255, 255, 255, 0.85)',
-                            backdropFilter: 'blur(20px)',
-                            border: '1px solid rgba(255, 255, 255, 0.4)',
+                            marginBottom: 0,
+                            transformOrigin: 'bottom right',
+                            maxWidth: 'calc(100vw - 16px)',
+                            maxHeight: `calc(100vh - ${isMobile ? 96 : 108}px)`,
+                            background: isDarkMode ? 'var(--card-bg)' : 'rgba(255, 255, 255, 0.96)',
+                            backdropFilter: 'blur(16px)',
+                            border: '1px solid var(--theme-border)',
+                            color: 'var(--theme-text)',
                             zIndex: 1001
                         }}
                     >
@@ -220,9 +231,8 @@ const ChatbotWidget = ({ studentId }) => {
                             alignItems: 'center',
                             position: 'relative',
                             overflow: 'hidden',
-                            cursor: isMobile ? 'default' : 'move'
-                        }}
-                        onMouseDown={(e) => startDrag(e.clientX, e.clientY)}>
+                            cursor: 'default'
+                        }}>
                             <div style={{ position: 'absolute', top: '-50%', right: '-10%', width: '150px', height: '150px', background: 'rgba(251, 191, 36, 0.1)', borderRadius: '50%', blur: '40px' }}></div>
                             
                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', position: 'relative', zIndex: 1 }}>
@@ -234,20 +244,27 @@ const ChatbotWidget = ({ studentId }) => {
                                     <FaRobot color="#fbbf24" size={isMobile ? 20 : 24} />
                                 </motion.div>
                                 <div>
-                                    <span style={{ fontWeight: '900', fontSize: isMobile ? '15px' : '18px', display: 'block', letterSpacing: '-0.5px' }}>RIT Intellect</span>
+                                    <span style={{ fontWeight: 650, fontSize: isMobile ? '15px' : '17px', display: 'block', letterSpacing: '-0.3px' }}>RIT Assistant</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <div style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 10px #22c55e' }}></div>
-                                        <span style={{ fontSize: '10px', opacity: 0.8, fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Neural Engine Active</span>
+                                        <span style={{ fontSize: '10px', opacity: 0.85, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Campus answers</span>
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '18px', cursor: 'pointer', opacity: 0.8, position: 'relative', zIndex: 1 }}>
-                                <FaMinus onClick={() => setIsOpen(false)} style={{ transition: '0.2s' }} />
+                            <div style={{ display: 'flex', gap: '14px', position: 'relative', zIndex: 1 }}>
+                                {!isMobile && (
+                                    <button type="button" aria-label={expanded ? 'Restore chat size' : 'Enlarge chat'} onClick={() => setExpanded((value) => !value)} style={{ background: 'transparent', border: 0, color: 'white', cursor: 'pointer' }}>
+                                        {expanded ? <FaCompress /> : <FaExpand />}
+                                    </button>
+                                )}
+                                <button type="button" aria-label="Close chat" onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 0, color: 'white', cursor: 'pointer' }}>
+                                    <FaMinus />
+                                </button>
                             </div>
                         </div>
 
                         {/* Messages Area */}
-                        <div style={{ flex: 1, padding: isMobile ? '12px' : '18px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ flex: 1, minHeight: 0, padding: isMobile ? '12px' : '18px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {messages.map((msg, i) => (
                                 <motion.div 
                                     key={i} 
@@ -264,7 +281,7 @@ const ChatbotWidget = ({ studentId }) => {
                                             lineHeight: 1.6,
                                             boxShadow: msg.isBot ? '0 4px 15px rgba(0,0,0,0.05)' : '0 10px 25px rgba(11,44,107,0.2)',
                                             ...(msg.isBot
-                                                ? { background: '#ffffff', color: '#1a202c', border: '1px solid #e2e8f0' }
+                                                ? { background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', color: 'var(--theme-text)', border: '1px solid var(--theme-border)' }
                                                 : { background: 'linear-gradient(135deg, #0B2C6B 0%, #1e3a8a 100%)', color: '#ffffff' }
                                             )
                                         }}
@@ -290,7 +307,7 @@ const ChatbotWidget = ({ studentId }) => {
                                 </motion.div>
                             ))}
                             {isTyping && (
-                                <div style={{ alignSelf: 'flex-start', background: '#ffffff', padding: '16px 20px', borderRadius: '4px 24px 24px 24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                                <div style={{ alignSelf: 'flex-start', background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', padding: '16px 20px', borderRadius: '4px 24px 24px 24px', border: '1px solid var(--theme-border)' }}>
                                     <div style={{ display: 'flex', gap: 6 }}>
                                         {[0, 1, 2].map(j => (
                                             <motion.div
@@ -319,7 +336,7 @@ const ChatbotWidget = ({ studentId }) => {
                                         fontSize: isMobile ? '12px' : '13px',
                                         fontWeight: '700', cursor: 'pointer', transition: '0.3s',
                                         display: 'flex', alignItems: 'center', gap: '8px',
-                                        background: 'rgba(255,255,255,0.8)', color: '#0B2C6B', border: '1px solid rgba(11, 44, 107, 0.2)',
+                                        background: isDarkMode ? 'var(--theme-bg-muted)' : 'rgba(255,255,255,0.9)', color: isDarkMode ? 'var(--theme-text)' : '#0B2C6B', border: '1px solid var(--theme-border)',
                                         boxShadow: '0 4px 10px rgba(0,0,0,0.03)'
                                     }}
                                 >
@@ -330,7 +347,7 @@ const ChatbotWidget = ({ studentId }) => {
                         )}
 
                         {/* Footer Controls */}
-                        <div style={{ padding: isMobile ? '10px 12px' : '14px 16px', background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(226, 232, 240, 0.8)', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{ padding: isMobile ? '10px 12px' : '14px 16px', background: isDarkMode ? 'var(--theme-bg)' : 'rgba(255,255,255,0.7)', borderTop: '1px solid var(--theme-border)', display: 'flex', gap: '8px', alignItems: 'center' }}>
                             <div style={{ flex: 1, position: 'relative' }}>
                                 <input
                                     value={input}
@@ -339,7 +356,7 @@ const ChatbotWidget = ({ studentId }) => {
                                     placeholder="Ask your assistant..."
                                     style={{
                                         width: '100%', borderRadius: '16px', padding: isMobile ? '10px 12px' : '12px 14px', outline: 'none', fontSize: isMobile ? '14px' : '15px', fontWeight: '600',
-                                        background: '#ffffff', color: '#1a202c', border: '2px solid #e2e8f0', transition: 'border-color 0.3s',
+                                        background: isDarkMode ? 'var(--theme-bg-muted)' : '#ffffff', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', transition: 'border-color 0.2s',
                                         boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
                                     }}
                                 />
@@ -395,7 +412,6 @@ const ChatbotWidget = ({ studentId }) => {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
-                onMouseDown={(e) => startDrag(e.clientX, e.clientY)}
                 style={{
                     width: isMobile ? '49px' : '55px',
                     height: isMobile ? '49px' : '55px',

@@ -112,16 +112,16 @@ public class ChatbotController {
 
         // Common / Student
         if (query.contains("attendance")) {
-            return "Your attendance is currently at 87.5%.\n\nKeep it above 75% to avoid academic risk. Check Dashboard for details.";
+            return "Your attendance is the Attendance ring on the dashboard.\n\nKeep it above 75% to avoid academic risk. Open Attendance for subject-wise periods.";
         }
         if (query.contains("gpa") || query.contains("cgpa") || query.contains("grade")) {
-            return "Current CGPA: 8.42.\n\nYou can maintain 8.5+ with good performance in upcoming internals. Use CGPA Simulator for what‑if scenarios.";
+            return "Your CGPA is the first dashboard ring, shown as a score out of 10.\n\nOpen Grade Book for semester grades, or CGPA Simulator for a what-if.";
         }
         if (query.contains("exam") || query.contains("schedule") || query.contains("timetable") || query.contains("hall")) {
             return "Next exam: Internal Assessment 2 from the 15th of next month.\n\nCheck Time Table for dates and exam hall details.";
         }
         if (query.contains("fee") || query.contains("due") || query.contains("pay")) {
-            return "No pending fee dues for the current semester.\n\nPast receipts: Fee Details section.";
+            return "Fee amounts are on Academic Fee and Exam Fee.\n\nThe Fees Pending ring on the dashboard uses the same unpaid total.";
         }
         if (query.contains("holiday") || query.contains("vacation")) {
             return "Next public holiday: 26th.\n\nView the dashboard calendar for all non-instructional days.";
