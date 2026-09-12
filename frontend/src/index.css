@@ -32,14 +32,17 @@ textarea {
 h1, h2, h3, h4,
 .font-black,
 .font-extrabold {
-    font-weight: 650;
+    font-weight: 800;
     letter-spacing: -0.02em;
 }
 
 .font-bold,
-.font-semibold,
 strong {
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.font-semibold {
+    font-weight: 650;
 }
 
 body,

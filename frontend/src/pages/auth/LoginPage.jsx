@@ -127,7 +127,7 @@ const LoginPage = () => {
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '18px' }}>
                         <div style={{ minWidth: 0, flex: 1, paddingTop: '2px' }}>
                             <h2 style={{
-                                fontSize: '1.45rem', fontWeight: 650,
+                                fontSize: '1.45rem', fontWeight: 800,
                                 color: isDarkMode ? '#FFD700' : '#B8860B',
                                 margin: 0,
                                 lineHeight: 1.2,

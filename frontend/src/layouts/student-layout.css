@@ -1944,7 +1944,7 @@ div.app-logout,
     place-items: center;
     text-align: center;
     font-size: 1.05rem;
-    font-weight: 650;
+    font-weight: 800;
     color: var(--theme-text, #1f2937);
     line-height: 1.05;
 }
@@ -1957,7 +1957,7 @@ div.app-logout,
 .ims-stat-label {
     font-size: 0.85rem;
     color: #6c757d;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 2px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -1965,7 +1965,7 @@ div.app-logout,
 
 .ims-stat-value {
     font-size: 1.3rem;
-    font-weight: 650;
+    font-weight: 800;
     color: var(--theme-text, #111827);
     line-height: 1.2;
 }

@@ -231,7 +231,7 @@ const ChatbotWidget = ({ studentId: _studentId }) => {
                                     <FaRobot color="#fbbf24" size={isMobile ? 20 : 24} />
                                 </motion.div>
                                 <div>
-                                    <span style={{ fontWeight: 650, fontSize: isMobile ? '15px' : '17px', display: 'block', letterSpacing: '-0.3px' }}>RIT Assistant</span>
+                                    <span style={{ fontWeight: 800, fontSize: isMobile ? '15px' : '17px', display: 'block', letterSpacing: '-0.3px' }}>RIT Assistant</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <div style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 10px #22c55e' }}></div>
                                         <span style={{ fontSize: '10px', opacity: 0.85, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Campus answers</span>

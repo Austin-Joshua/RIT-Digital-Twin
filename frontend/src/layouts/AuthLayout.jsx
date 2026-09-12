@@ -55,7 +55,7 @@ const AuthLayout = () => {
                         />
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants} style={{ width: '100%' }}>
-                                <h1 style={{ fontSize: '2.6rem', fontWeight: 650, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
+                                <h1 style={{ fontSize: '2.6rem', fontWeight: 800, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
                                 <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'center' }}>
