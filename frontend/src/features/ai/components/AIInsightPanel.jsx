@@ -37,7 +37,7 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
                 const response = await api.get('/intelligence/insights');
                 const data = category ? response.data.filter(i => i.category === category) : response.data;
                 setInsights(data.length > 0 ? data : (MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT));
-            } catch (error) {
+            } catch {
                 setInsights(MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT);
             } finally {
                 setLoading(false);

@@ -75,7 +75,7 @@ const UploadMarks = () => {
                 }
 
                 const firstRow = jsonData[0];
-                const hasStudentId = firstRow.hasOwnProperty('StudentData') || firstRow.hasOwnProperty('RegNo') || firstRow.hasOwnProperty('Email');
+                const hasStudentId = Object.hasOwn(firstRow, 'StudentData') || Object.hasOwn(firstRow, 'RegNo') || Object.hasOwn(firstRow, 'Email');
                 if (!hasStudentId) {
                     addToast('Missing required column: "StudentData", "RegNo", or "Email"', 'error');
                     return;
@@ -83,7 +83,7 @@ const UploadMarks = () => {
 
                 setMarksData(jsonData);
                 addToast(`${jsonData.length} records parsed successfully`, 'success');
-            } catch (err) {
+            } catch {
                 addToast('Failed to parse file. Ensure it\'s a valid spreadsheet.', 'error');
             }
         };
@@ -102,7 +102,7 @@ const UploadMarks = () => {
             return;
         }
 
-        if (!subjectCode && !marksData[0].hasOwnProperty('SubjectCode')) {
+        if (!subjectCode && !Object.hasOwn(marksData[0], 'SubjectCode')) {
             addToast("Subject Code is required (either in file or field).", "warning");
             return;
         }

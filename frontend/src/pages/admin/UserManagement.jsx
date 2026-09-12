@@ -30,7 +30,7 @@ const UserManagement = () => {
             await api.post(`/admin/users/${userId}/unlock`);
             addToast('User account unlocked successfully', 'success');
             fetchUsers();
-        } catch (error) {
+        } catch {
             addToast('Failed to unlock user', 'error');
         }
     };
@@ -41,7 +41,7 @@ const UserManagement = () => {
             await api.post(`/admin/users/${userId}/deactivate`);
             addToast('User account deactivated', 'success');
             fetchUsers();
-        } catch (error) {
+        } catch {
             addToast('Failed to deactivate user', 'error');
         }
     };
@@ -52,7 +52,7 @@ const UserManagement = () => {
         try {
             await api.post(`/admin/users/${userId}/reset-password`, { newPassword });
             addToast('Password reset. User must change it on next login.', 'success');
-        } catch (error) {
+        } catch {
             addToast('Failed to reset password', 'error');
         }
     };

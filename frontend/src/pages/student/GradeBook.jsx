@@ -45,7 +45,7 @@ const GradeBook = () => {
                 } else {
                     setGrades([]);
                 }
-            } catch (err) {
+            } catch {
                 setGrades([]);
             } finally {
                 setLoading(false);

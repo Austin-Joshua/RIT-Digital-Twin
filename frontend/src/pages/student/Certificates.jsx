@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { workflowApi } from '../../services/enterpriseApi';
 import { useAuth } from '../../hooks/AuthContext';
 import { useToast } from '../../hooks/ToastContext';
@@ -7,7 +6,6 @@ import { useToast } from '../../hooks/ToastContext';
 const Certificates = () => {
     const { user } = useAuth();
     const [requests, setRequests] = useState([]);
-    const [search, setSearch] = useState('');
     const [type, setType] = useState('BONAFIDE');
     const [submitting, setSubmitting] = useState(false);
     const { addToast } = useToast();
@@ -18,7 +16,9 @@ const Certificates = () => {
                 const studentId = user?.id || 1;
                 const res = await workflowApi.getCertificates(studentId);
                 setRequests(res.data || []);
-            } catch (err) { }
+            } catch {
+                setRequests([]);
+            }
         };
         fetchReqs();
     }, [user]);

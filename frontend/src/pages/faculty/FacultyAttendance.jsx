@@ -234,7 +234,7 @@ const FacultyAttendance = () => {
                                 <th className="p-4 font-bold">Student Name</th>
                                 <th className="p-4 font-bold text-center">History (Att/Tot)</th>
                                 <th className="p-4 font-bold text-center">Aggr. %</th>
-                                {markingMode && <th className="p-4 font-bold text-center bg-blue-50/50 dark:bg-blue-900/20">Today's Status</th>}
+                                {markingMode && <th className="p-4 font-bold text-center bg-blue-50/50 dark:bg-blue-900/20">Today&apos;s Status</th>}
                             </tr>
                         </thead>
                         <tbody className="text-sm">

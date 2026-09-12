@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
     FaCreditCard, FaHistory, FaFileInvoice, FaShieldAlt, 
@@ -12,17 +12,9 @@ import { academicFees, academicYearLabel } from '../../utils/studentFees';
 const AcademicFee = () => {
     const { addToast } = useToast();
     const { user } = useAuth();
-    const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, success
-    const [studentName, setStudentName] = useState('');
-    
     const isParent = user?.role === 'PARENT' || user?.role === 'ROLE_PARENT';
-
-    useEffect(() => {
-        if (isParent) {
-            // In a real app, we'd fetch the linked student's profile
-            setStudentName('Ram Kumar'); 
-        }
-    }, [isParent]);
+    const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, success
+    const studentName = isParent ? 'Ram Kumar' : '';
 
     const feeDetails = academicFees;
 

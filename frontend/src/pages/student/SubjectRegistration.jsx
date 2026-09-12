@@ -40,7 +40,7 @@ const SubjectRegistration = () => {
             const res = await workflowApi.registerSubject(studentId, subjectId);
             setRegistrations([...registrations, res.data]);
             setMessage({ type: 'success', text: 'Successfully registered for subject!' });
-        } catch (err) {
+        } catch {
             setMessage({ type: 'error', text: 'Registration could not be completed. The subject may be at capacity or you may already be enrolled.' });
         }
     };

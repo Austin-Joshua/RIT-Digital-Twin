@@ -5,30 +5,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const GlobalSearch = ({ navItems = [], placeholder = "Search" }) => {
     const [query, setQuery] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [results, setResults] = useState([]);
+    const [queryClosed, setQueryClosed] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [trackedQuery, setTrackedQuery] = useState('');
     const searchRef = useRef(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (query.trim().length > 0) {
-            const filtered = navItems.filter(item =>
-                item.label.toLowerCase().includes(query.toLowerCase())
-            );
-            setResults(filtered);
-            setIsOpen(true);
-            setSelectedIndex(0);
-        } else {
-            setResults([]);
-            setIsOpen(false);
-        }
-    }, [query, navItems]);
+    const results = query.trim()
+        ? navItems.filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
+        : [];
+
+    if (query !== trackedQuery) {
+        setTrackedQuery(query);
+        setQueryClosed(false);
+        setSelectedIndex(0);
+    }
+
+    const isOpen = query.trim().length > 0 && !queryClosed;
 
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (searchRef.current && !searchRef.current.contains(e.target)) {
-                setIsOpen(false);
+                setQueryClosed(true);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -43,14 +41,14 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search" }) => {
         } else if (e.key === 'Enter' && results.length > 0) {
             handleNavigate(results[selectedIndex].path);
         } else if (e.key === 'Escape') {
-            setIsOpen(false);
+            setQueryClosed(true);
             setQuery('');
         }
     };
 
     const handleNavigate = (path) => {
         navigate(path);
-        setIsOpen(false);
+        setQueryClosed(true);
         setQuery('');
     };
 
@@ -75,7 +73,7 @@ const GlobalSearch = ({ navItems = [], placeholder = "Search" }) => {
                         transition: 'all 0.2s',
                         outline: 'none'
                     }}
-                    onFocus={() => query.length > 0 && setIsOpen(true)}
+                    onFocus={() => query.length > 0 && setQueryClosed(false)}
                 />
                 {query && (
                     <LuX

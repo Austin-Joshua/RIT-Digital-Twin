@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getSockJsEndpoint } from '../utils/websocketUrls';
@@ -19,7 +19,7 @@ export const useWebSocket = () => {
 const getWebSocketURL = () => getSockJsEndpoint('/ws');
 
 export const WebSocketProvider = ({ children }) => {
-    const [stompClient, setStompClient] = useState(null);
+    const clientRef = useRef(null);
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export const WebSocketProvider = ({ children }) => {
         };
 
         client.activate();
-        setStompClient(client);
+        clientRef.current = client;
 
         return () => {
             if (client) {
@@ -73,8 +73,8 @@ export const WebSocketProvider = ({ children }) => {
     }, []);
 
     const publish = (destination, message) => {
-        if (stompClient && connected) {
-            stompClient.publish({
+        if (clientRef.current && connected) {
+            clientRef.current.publish({
                 destination,
                 body: JSON.stringify(message),
             });
@@ -84,8 +84,8 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     const subscribe = (destination, callback) => {
-        if (stompClient && connected) {
-            return stompClient.subscribe(destination, (message) => {
+        if (clientRef.current && connected) {
+            return clientRef.current.subscribe(destination, (message) => {
                 callback(JSON.parse(message.body));
             });
         } else {
@@ -95,7 +95,7 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     return (
-        <WebSocketContext.Provider value={{ stompClient, connected, publish, subscribe }}>
+        <WebSocketContext.Provider value={{ connected, publish, subscribe }}>
             {children}
         </WebSocketContext.Provider>
     );

@@ -244,7 +244,7 @@ const TransportPage = () => {
                                 </h3>
 
                                 <div style={{ position: 'relative', paddingLeft: '32px', borderLeft: '2px solid var(--theme-border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                    {stops.length > 0 ? stops.map((stop, idx) => (
+                                    {stops.length > 0 ? stops.map((stop, _idx) => (
                                         <div key={stop.id} style={{ position: 'relative' }}>
                                             <div style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--theme-brand-strong)' }} />
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--theme-border)', transition: 'background 0.2s' }}

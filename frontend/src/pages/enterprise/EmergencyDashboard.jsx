@@ -6,22 +6,24 @@ import Card from '../../components/common/Card';
 
 const EmergencyDashboard = () => {
     const [riskScores, setRiskScores] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
     const [simulationResult, setSimulationResult] = useState(null);
 
     useEffect(() => {
-        fetchData();
+        let active = true;
+        api.get('/campus/safety/risk-scores')
+            .then((response) => {
+                if (!active) return;
+                setRiskScores(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Risk score fetch failed", error);
+            });
+        return () => {
+            active = false;
+        };
     }, []);
-
-    const fetchData = async () => {
-        try {
-            const response = await api.get('/campus/safety/risk-scores');
-            setRiskScores(response.data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Risk score fetch failed", error);
-        }
-    };
 
     const runSimulation = async (buildingId, type) => {
         try {
@@ -91,7 +93,7 @@ const EmergencyDashboard = () => {
                             <div className="p-6 bg-red-500/20 border border-red-500/50 rounded-2xl text-center">
                                 <p className="text-sm font-bold uppercase tracking-widest text-red-400">Est. Evacuation Time</p>
                                 <h2 className="text-5xl font-black mt-2">{simulationResult.estimatedEvacuationTimeMinutes.toFixed(1)}m</h2>
-                                <p className="text-xs mt-3 text-red-300 italic">"Congestion likely at Block B main stairs"</p>
+                                <p className="text-xs mt-3 text-red-300 italic">&quot;Congestion likely at Block B main stairs&quot;</p>
                             </div>
                             <button onClick={() => setSimulationResult(null)} className="w-full py-3 bg-white/10 hover:bg-white/20 transition-colors rounded-xl font-bold">
                                 Clear Simulation

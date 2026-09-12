@@ -6,7 +6,7 @@ import api from '../../services/api';
 const InventoryAssets = () => {
     const { addToast } = useToast();
     const [assets, setAssets] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAssets = async () => {

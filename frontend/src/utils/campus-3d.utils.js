@@ -100,7 +100,7 @@ export function createTree(x, z) {
   trunk.castShadow = true;
   group.add(trunk);
 
-  [[0, 5], [3.5, 9], [7, 13]].forEach(([yOffset, radius], idx) => {
+  [[0, 5], [3.5, 9], [7, 13]].forEach(([yOffset], idx) => {
     const foliage = new THREE.Mesh(
       new THREE.ConeGeometry(8 - idx * 2, 9, 8),
       new THREE.MeshLambertMaterial({ color: idx === 0 ? "#2E7D32" : "#388E3C" })

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
-import { useAuth } from '../../hooks/AuthContext';
 import { 
     FaUniversity, FaUsers, FaGraduationCap, FaChartLine, 
     FaLightbulb, FaBus, FaShieldAlt, FaCogs, FaCheckCircle, FaClock,
@@ -11,40 +9,39 @@ import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
 
+const FALLBACK_AUDIT_LOGS = [
+    { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: '2026-01-01T00:00:00.000Z', details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
+    { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: '2026-01-01T00:00:00.000Z', details: 'All 15,400 user sessions verified. 0 anomalies detected.' }
+];
+
+function readAdminSnapshot() {
+    const leaves = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
+    const logs = JSON.parse(localStorage.getItem('rit_system_audit_logs') || '[]');
+    return {
+        pendingApprovals: Array.isArray(leaves) ? leaves.filter((item) => item.status === 'PENDING').length : 0,
+        auditLogs: Array.isArray(logs) && logs.length > 0 ? logs.slice(0, 5) : FALLBACK_AUDIT_LOGS,
+    };
+}
+
 const AdminDashboard = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
-    const [stats, setStats] = useState({
+    const [stats, setStats] = useState(() => ({
         totalStudents: 4520,
         totalFaculty: 254,
         placementRate: 94.2,
         activeResearch: 12,
-        pendingApprovals: 0
-    });
-    const [auditLogs, setAuditLogs] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    const syncData = () => {
-        const leaves = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-        const logs = JSON.parse(localStorage.getItem('rit_system_audit_logs') || '[]');
-        
-        setStats(prev => ({
-            ...prev,
-            pendingApprovals: leaves.filter(r => r.status === 'PENDING').length
-        }));
-
-        setAuditLogs(logs.length > 0 ? logs.slice(0, 5) : [
-            { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: new Date().toISOString(), details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
-            { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: new Date().toISOString(), details: 'All 15,400 user sessions verified. 0 anomalies detected.' }
-        ]);
-        
-        setLoading(false);
-    };
+        pendingApprovals: readAdminSnapshot().pendingApprovals
+    }));
+    const [auditLogs, setAuditLogs] = useState(() => readAdminSnapshot().auditLogs);
 
     useEffect(() => {
-        syncData();
-        window.addEventListener('storage', syncData);
-        return () => window.removeEventListener('storage', syncData);
+        const onStorage = () => {
+            const snapshot = readAdminSnapshot();
+            setStats((prev) => ({ ...prev, pendingApprovals: snapshot.pendingApprovals }));
+            setAuditLogs(snapshot.auditLogs);
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
     }, []);
 
     const adminKpis = [

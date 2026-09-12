@@ -147,7 +147,7 @@ const ResearchTracker = () => {
 
                             <h4 className="font-bold mb-1 flex items-center gap-2" style={{ color: 'var(--theme-text)' }}><FaQuoteRight size={12} className="text-gray-400" /> Abstract</h4>
                             <p className="italic text-sm leading-relaxed" style={{ color: 'var(--theme-text-muted)' }}>
-                                "{selectedPaper.abstract}"
+                                &quot;{selectedPaper.abstract}&quot;
                             </p>
                         </div>
 

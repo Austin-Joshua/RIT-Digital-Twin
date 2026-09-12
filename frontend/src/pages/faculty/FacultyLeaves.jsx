@@ -4,36 +4,37 @@ import { FaCalendarCheck, FaCheck, FaTimes, FaUserAlt, FaClock, FaClipboardList,
 import api from '../../services/api';
 import { useToast } from '../../hooks/ToastContext';
 
+const DEFAULT_LEAVE_REQUESTS = [
+    { id: 'm1', studentName: 'Sachin S', reg: '2117240080119', dept: 'CSE', type: 'LEAVE', startDate: '2026-04-10', endDate: '2026-04-12', reason: 'Common cold and medical rest.', status: 'PENDING', appliedDate: '07/04/2026' },
+    { id: 'm2', studentName: 'Sanjana M', reg: '2117240080121', dept: 'CSE', type: 'OD', startDate: '2026-04-15', endDate: '2026-04-15', reason: 'Inter-college Hackathon participation.', status: 'PENDING', appliedDate: '07/04/2026' }
+];
+
+function readLeaveSnapshot() {
+    let syncReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
+    if (!Array.isArray(syncReqs) || syncReqs.length === 0) {
+        syncReqs = DEFAULT_LEAVE_REQUESTS;
+        localStorage.setItem('rit_global_leave_requests', JSON.stringify(syncReqs));
+    }
+    const notes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
+    return { requests: syncReqs, notes };
+}
+
 const FacultyLeaves = () => {
-    const [requests, setRequests] = useState([]);
-    const [parentNotes, setParentNotes] = useState({});
-    const [loading, setLoading] = useState(true);
+    const initial = readLeaveSnapshot();
+    const [requests, setRequests] = useState(initial.requests);
+    const [parentNotes, setParentNotes] = useState(initial.notes);
+    const [loading, setLoading] = useState(false);
     const { addToast } = useToast();
 
-    const fetchData = async () => {
-        setLoading(true);
-        // Load Leaves
-        let syncReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-        if (syncReqs.length === 0) {
-            syncReqs = [
-                { id: 'm1', studentName: 'Sachin S', reg: '2117240080119', dept: 'CSE', type: 'LEAVE', startDate: '2026-04-10', endDate: '2026-04-12', reason: 'Common cold and medical rest.', status: 'PENDING', appliedDate: '07/04/2026' },
-                { id: 'm2', studentName: 'Sanjana M', reg: '2117240080121', dept: 'CSE', type: 'OD', startDate: '2026-04-15', endDate: '2026-04-15', reason: 'Inter-college Hackathon participation.', status: 'PENDING', appliedDate: '07/04/2026' }
-            ];
-            localStorage.setItem('rit_global_leave_requests', JSON.stringify(syncReqs));
-        }
-        setRequests(syncReqs);
-
-        // Load Parent Notes
-        const notes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
-        setParentNotes(notes);
-
-        setLoading(false);
-    };
-
     useEffect(() => {
-        fetchData();
-        window.addEventListener('storage', fetchData);
-        return () => window.removeEventListener('storage', fetchData);
+        const onStorage = () => {
+            const snapshot = readLeaveSnapshot();
+            setRequests(snapshot.requests);
+            setParentNotes(snapshot.notes);
+            setLoading(false);
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
     }, []);
 
     const handleAction = async (id, action) => {
@@ -47,7 +48,7 @@ const FacultyLeaves = () => {
             addToast(`Request ${action} successfully!`, 'success');
             
             api.put(`/faculty/leaves/${id}/status`, { status: action.toUpperCase() }).catch(() => null);
-        } catch (error) {
+        } catch {
             addToast('Action failed. Please try again.', 'error');
         }
     };
@@ -154,7 +155,7 @@ const FacultyLeaves = () => {
                                 {Object.entries(parentNotes).map(([studentId, note]) => (
                                     <div key={studentId} style={{ padding: '12px', background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.2)', borderRadius: '10px' }}>
                                         <div style={{ fontSize: '12px', fontWeight: '800', color: '#7c3aed', marginBottom: '6px' }}>Student: {studentId}</div>
-                                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text)', fontStyle: 'italic', lineHeight: '1.4' }}>"{note}"</p>
+                                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text)', fontStyle: 'italic', lineHeight: '1.4' }}>&quot;{note}&quot;</p>
                                     </div>
                                 ))}
                             </div>

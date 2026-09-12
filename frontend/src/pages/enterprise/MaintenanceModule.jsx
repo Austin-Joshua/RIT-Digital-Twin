@@ -6,7 +6,7 @@ import Card from '../../components/common/Card';
 const MaintenanceModule = () => {
     const [assets, setAssets] = useState([]);
     const [criticalAssets, setCriticalAssets] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {

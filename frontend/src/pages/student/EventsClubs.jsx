@@ -131,7 +131,7 @@ const EventsClubs = () => {
             {/* Quick Policy Note */}
             <div className="bg-blue-50 dark:bg-navy-900/40 p-4 rounded-xl text-xs text-blue-800 dark:text-blue-300 border border-blue-100 dark:border-navy-800 flex gap-3">
                 <FaInfoCircle className="text-lg shrink-0" />
-                <p>Registering for an event automatically marks you as 'On Duty' (OD) for the respective hours if it conflicts with scheduled academic classes, pending HOD approval.</p>
+                <p>Registering for an event automatically marks you as &apos;On Duty&apos; (OD) for the respective hours if it conflicts with scheduled academic classes, pending HOD approval.</p>
             </div>
         </div>
     );

@@ -36,7 +36,7 @@ const LoginPage = () => {
                 });
                 if (response.ok) setBackendStatus('online');
                 else setBackendStatus('offline');
-            } catch (err) {
+            } catch {
                 setBackendStatus('offline');
             } finally {
                 clearTimeout(timeoutId);
@@ -100,7 +100,7 @@ const LoginPage = () => {
             } else {
                 setError(result.message);
             }
-        } catch (err) {
+        } catch {
             setError('Google sign-in failed.');
         } finally {
             setLoading(false);

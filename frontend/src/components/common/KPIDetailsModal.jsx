@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoClose, IoInformationCircleOutline } from 'react-icons/io5';
 
-const KPIDetailsModal = ({ isOpen, onClose, title, value, label, description, icon: Icon, image, colorClass = 'blue' }) => {
+const KPIDetailsModal = ({ isOpen, onClose, title: _title, value, label, description, icon: Icon, image, colorClass = 'blue' }) => {
     if (!isOpen) return null;
 
     const colorMap = {

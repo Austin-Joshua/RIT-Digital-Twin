@@ -38,7 +38,7 @@ const SubstitutionOverridePanel = () => {
                 {/* Absent Faculty List */}
                 <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden' }}>
                     <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <LuUserMinus color="#dc2626" /> Today's Absent Faculty
+                        <LuUserMinus color="#dc2626" /> Today&apos;s Absent Faculty
                     </div>
                     <div style={{ padding: '12px' }}>
                         {ABSENT_FACULTY.map((f, i) => (

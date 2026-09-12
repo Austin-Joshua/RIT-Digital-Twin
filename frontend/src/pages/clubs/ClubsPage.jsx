@@ -33,7 +33,7 @@ const ClubsPage = () => {
         joinedDate: new Date().toISOString().slice(0, 10),
         status: 'active'
     });
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [newClub, setNewClub] = useState({
@@ -74,7 +74,7 @@ const ClubsPage = () => {
             }
             if (canViewAnalytics) setAnalytics(analyticsRes?.data || null);
             if (clubsData.length > 0 && !selectedClubId) setSelectedClubId(String(clubsData[0].clubId));
-        } catch (e) {
+        } catch {
             setError('Unable to load clubs right now.');
         } finally {
             setLoading(false);
@@ -97,7 +97,7 @@ const ClubsPage = () => {
                     editState[m.membershipId] = { roleType: m.roleType, status: m.status };
                 });
                 setMemberEdits(editState);
-            } catch (e) {
+            } catch {
                 setClubMembers([]);
             }
         };
@@ -151,7 +151,7 @@ const ClubsPage = () => {
                 status: 'active'
             });
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Could not create club.');
         } finally {
             setSaving(false);
@@ -164,7 +164,7 @@ const ClubsPage = () => {
                 status: club.status === 'active' ? 'inactive' : 'active'
             });
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Status update failed.');
         }
     };
@@ -174,7 +174,7 @@ const ClubsPage = () => {
             setSaving(true);
             await api.patch(`/clubs/${clubId}/coordinator`, { facultyUserId });
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Coordinator assignment failed.');
         } finally {
             setSaving(false);
@@ -197,7 +197,7 @@ const ClubsPage = () => {
                 status: 'active'
             });
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Unable to submit join request.');
         } finally {
             setSaving(false);
@@ -226,7 +226,7 @@ const ClubsPage = () => {
             const res = await api.get(`/clubs/${selectedClubId}/members`);
             setClubMembers(Array.isArray(res.data) ? res.data : []);
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Membership update failed.');
         } finally {
             setSaving(false);
@@ -240,7 +240,7 @@ const ClubsPage = () => {
             const res = await api.get(`/clubs/${selectedClubId}/members`);
             setClubMembers(Array.isArray(res.data) ? res.data : []);
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Could not deactivate membership.');
         } finally {
             setSaving(false);
@@ -260,7 +260,7 @@ const ClubsPage = () => {
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
-        } catch (e) {
+        } catch {
             setError('CSV export failed.');
         }
     };
@@ -294,7 +294,7 @@ const ClubsPage = () => {
             const res = await api.get(`/clubs/${selectedClubId}/members`);
             setClubMembers(Array.isArray(res.data) ? res.data : []);
             await loadData();
-        } catch (e) {
+        } catch {
             setError('Could not add membership. Check student ID and role permissions.');
         } finally {
             setSaving(false);

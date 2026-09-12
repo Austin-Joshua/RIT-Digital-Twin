@@ -3,7 +3,7 @@ import { useToast } from '../../hooks/ToastContext';
 import { FaUserPlus, FaUsers, FaBriefcase, FaFileInvoice, FaCheck, FaTimes, FaFilter } from 'react-icons/fa';
 
 const RecruitmentHR = () => {
-    const { addToast } = useToast();
+    const { addToast: _addToast } = useToast();
     const [activeTab, setActiveTab] = useState('recruitment'); // recruitment, payroll
 
     const applicants = [

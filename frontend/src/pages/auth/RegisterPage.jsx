@@ -18,7 +18,7 @@ const RegisterPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { isDarkMode } = useContext(ThemeContext);
+    const { isDarkMode: _isDarkMode } = useContext(ThemeContext);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -38,9 +38,6 @@ const Timetable = () => {
         if (!hasRecentCache) {
             fetchTimetable({ setState: true });
         } else {
-            // Render immediately from cache and refresh in background.
-            setTimetable(timetableMemoryCache || []);
-            setLoading(false);
             fetchTimetable({ setState: false });
         }
 
@@ -92,7 +89,7 @@ const Timetable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {DAYS.map((day, rowIndex) => (
+                        {DAYS.map((day) => (
                             <tr key={day} style={{ borderBottom: '1px solid var(--theme-border)' }}>
                                 <td style={{ padding: '16px', fontWeight: 'bold', borderRight: '1px solid var(--theme-border)', color: 'var(--theme-text)', background: 'var(--theme-bg-muted)' }}>
                                     {day}

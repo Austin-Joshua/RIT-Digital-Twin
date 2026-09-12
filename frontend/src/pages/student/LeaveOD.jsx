@@ -96,7 +96,7 @@ const LeaveOD = () => {
             showToast('Application submitted successfully!');
             setFormData({ startDate: '', endDate: '', reason: '', type: 'LEAVE', wardenLetter: null });
             setActiveTab('history');
-        } catch (err) {
+        } catch {
             showToast('Could not submit application. Please try again.', 'error');
         } finally {
             setLoading(false);

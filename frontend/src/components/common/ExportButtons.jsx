@@ -6,7 +6,7 @@ import 'jspdf-autotable';
 
 const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => {
     const { addToast } = useToast();
-    const safeFilename = `${String(filename || 'ExportData').replace(/[\\/:*?"<>|]+/g, '_')}-${Date.now()}`;
+    const safeFilename = () => `${String(filename || 'ExportData').replace(/[\\/:*?"<>|]+/g, '_')}-${Date.now()}`;
 
     const handlePdf = () => {
         if (!data || data.length === 0) {
@@ -42,8 +42,9 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
                 headStyles: { fillStyle: '#0B2C6B', textColor: 255 }
             });
 
-            doc.save(`${safeFilename}.pdf`);
-            addToast(`${safeFilename}.pdf downloaded successfully`, 'success');
+            const downloadName = safeFilename();
+            doc.save(`${downloadName}.pdf`);
+            addToast(`${downloadName}.pdf downloaded successfully`, 'success');
         } catch (error) {
             console.error("PDF Export Error:", error);
             addToast("Failed to generate PDF", "error");
@@ -78,11 +79,12 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `${safeFilename}.csv`);
+            const downloadName = safeFilename();
+            link.setAttribute("download", `${downloadName}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            addToast(`${safeFilename}.csv downloaded successfully`, 'success');
+            addToast(`${downloadName}.csv downloaded successfully`, 'success');
         } catch (error) {
             console.error("CSV Export Error:", error);
             addToast("Failed to generate CSV", "error");
@@ -110,7 +112,7 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
             const textToCopy = [tableHeaders.join('\t'), ...rows].join('\n');
             navigator.clipboard.writeText(textToCopy);
             addToast("Data copied to clipboard", 'success');
-        } catch (err) {
+        } catch {
             addToast("Failed to copy data", 'error');
         }
     };

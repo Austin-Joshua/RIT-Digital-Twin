@@ -6,7 +6,7 @@ import api from '../../services/api';
 
 const AttendanceReport = () => {
     const [search, setSearch] = useState('');
-    const { addToast } = useToast();
+    const { addToast: _addToast } = useToast();
     const [selectedRows, setSelectedRows] = useState([]);
     const [attendanceRecords, setAttendanceRecords] = useState([
         { slNo: 1, code: 'CS3401', name: 'Algorithms and Data Structures', faculty: 'Dr. Sarah Smith', attended: 42, total: 45, percent: 93.3 },

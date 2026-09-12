@@ -14,9 +14,6 @@ const COLORS = ['var(--color-primary-navy)', 'var(--color-accent-gold)', 'var(--
 
 function TransportPage() {
     const { user } = useAuth();
-    if (user?.role !== 'ADMIN') {
-        return <Navigate to="/transport" replace />;
-    }
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState(null);
@@ -29,6 +26,10 @@ function TransportPage() {
         includeEvScenario: true
     });
     const [modal, setModal] = useState({ isOpen: false, title: '', value: '', label: '', description: '', icon: null, colorClass: 'blue' });
+
+    if (user?.role !== 'ADMIN') {
+        return <Navigate to="/transport" replace />;
+    }
 
     const openModal = (title, value, label, description, icon, colorClass, view) => {
         setModal({ isOpen: true, title, value, label, description, icon, colorClass });
@@ -215,7 +216,7 @@ function TransportPage() {
                                     <div className="mt-4 text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>Network Efficiency Rating</div>
                                 </div>
                             </div>
-                            {data.summary && <div className="results-insight p-6 rounded-r-xl" style={{ background: 'var(--theme-bg-muted)', borderLeft: '4px solid var(--color-primary-navy)' }}><p className="font-medium italic" style={{ color: 'var(--theme-text)' }}>"{data.summary}"</p></div>}
+                            {data.summary && <div className="results-insight p-6 rounded-r-xl" style={{ background: 'var(--theme-bg-muted)', borderLeft: '4px solid var(--color-primary-navy)' }}><p className="font-medium italic" style={{ color: 'var(--theme-text)' }}>&quot;{data.summary}&quot;</p></div>}
                         </div>
                     )}
 

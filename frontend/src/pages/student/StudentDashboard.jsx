@@ -44,7 +44,7 @@ const StudentDashboard = () => {
     const { user } = useAuth();
     const email = user?.email || 'guest@ritchennai.edu.in';
     const initialStats = getAcademicStats(email);
-    const now = new Date();
+    const now = useMemo(() => new Date(), []);
     const yearLabel = academicYearLabel(now);
     const semester = semesterWindow(now);
 
@@ -146,7 +146,7 @@ const StudentDashboard = () => {
                 <p className="ims-cal-note">
                     Semester period: {formatDay(semester.start)} – {formatDay(semester.end)}
                 </p>
-                <p className="ims-cal-note">Click any weekday within the semester period to view that day's period-wise timetable.</p>
+                <p className="ims-cal-note">Click any weekday within the semester period to view that day&apos;s period-wise timetable.</p>
                 <table className="ims-cal-table">
                     <thead>
                         <tr>

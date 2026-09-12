@@ -197,9 +197,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/AuthContext';
 import { getAcademicStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
 
+function noteForStudent(studentId) {
+    if (!studentId) return '';
+    try {
+        const notesObj = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
+        return notesObj[studentId] || '';
+    } catch {
+        return '';
+    }
+}
+
 const ParentDashboard = () => {
     const navigate = useNavigate();
-    const { user: parentUser } = useAuth();
+    const { user: _parentUser } = useAuth();
     const { addToast } = useToast();
 
     // Instant data hydration from deterministic generator
@@ -217,14 +227,13 @@ const ParentDashboard = () => {
 
     const initialStudents = generateMockStudents();
     const initialPrimary = initialStudents[0];
-    const initialStats = getAcademicStats(initialPrimary.user.email);
-    const initialMarks = getInternalMarks(initialPrimary.user.email);
+    const _initialStats = getAcademicStats(initialPrimary.user.email);
+    const _initialMarks = getInternalMarks(initialPrimary.user.email);
 
     const [students, setStudents] = useState(initialStudents);
-    const [loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
-    const [parentNote, setParentNote] = useState('');
-    const [lastSavedNote, setLastSavedNote] = useState('');
+    const [parentNote, setParentNote] = useState(() => noteForStudent(initialPrimary.studentIdNumber));
+    const [lastSavedNote, setLastSavedNote] = useState(() => noteForStudent(initialPrimary.studentIdNumber));
     const [realMarks, setRealMarks] = useState({ cat: [], assignments: [] });
     const [wardTimetable, setWardTimetable] = useState([]);
 
@@ -234,6 +243,11 @@ const ParentDashboard = () => {
                 const res = await api.get('/parent/students');
                 if (res.data && res.data.length > 0) {
                     setStudents(res.data);
+                    const savedNote = noteForStudent(res.data[0].studentIdNumber);
+                    if (savedNote) {
+                        setParentNote(savedNote);
+                        setLastSavedNote(savedNote);
+                    }
                     // Fetch real marks for the first student
                     const studentId = res.data[0].id;
                     const marksRes = await api.get(`/academic/marks/student/${studentId}`);
@@ -252,10 +266,9 @@ const ParentDashboard = () => {
                         setRealMarks({ cat, assignments: assg });
                     }
                 }
-            } catch (err) {
-                console.warn('Parent student fetch failed:', err);
+            } catch {
+                console.warn('Parent student fetch failed');
             }
-            setLoading(false);
         };
         fetchLinkedStudents();
     }, []);
@@ -271,20 +284,6 @@ const ParentDashboard = () => {
         };
         fetchWardTimetable();
     }, []);
-
-    useEffect(() => {
-        if (students.length > 0) {
-            const storedNotes = localStorage.getItem('rit_parent_faculty_notes');
-            if (storedNotes) {
-                const notesObj = JSON.parse(storedNotes);
-                const primaryId = students[0].studentIdNumber;
-                if (notesObj[primaryId]) {
-                    setParentNote(notesObj[primaryId]);
-                    setLastSavedNote(notesObj[primaryId]);
-                }
-            }
-        }
-    }, [students]);
 
     const handleSaveNote = () => {
         const primaryId = students[0]?.studentIdNumber || 'RIT2021001';
@@ -304,7 +303,7 @@ const ParentDashboard = () => {
         localStorage.setItem('rit_system_audit_logs', JSON.stringify(auditLogs.slice(0, 50)));
     };
 
-    const handleCardClick = (title, content) => {
+    const _handleCardClick = (title, content) => {
         setSelectedDetail({ title, content });
     };
 

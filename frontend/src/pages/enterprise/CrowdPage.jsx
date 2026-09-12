@@ -5,7 +5,7 @@ const CrowdPage = () => {
     const [buildingId, setBuildingId] = useState('1');
     const [occupancy, setOccupancy] = useState(500);
     const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [_loading, setLoading] = useState(false);
 
     const handleSimulate = async () => {
         setLoading(true);

@@ -1,15 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronDown, FaChevronRight, FaUser, FaInfoCircle, FaHome, FaGraduationCap, FaFileAlt, FaMapMarkerAlt, FaDownload } from 'react-icons/fa';
 import { useAuth } from '../../hooks/AuthContext';
-import { useTheme } from '../../hooks/useTheme';
 import { useToast } from '../../hooks/ToastContext';
-import { useRef } from 'react';
 import api from '../../services/api';
+
+const ProfileFieldsContext = createContext(null);
+
+function SectionHeader({ id, title, icon }) {
+    const { toggleSection, cardBg, borderColor, accentColor, openSections } = useContext(ProfileFieldsContext);
+    return (
+        <div
+            onClick={() => toggleSection(id)}
+            style={{
+                background: cardBg,
+                padding: '12px 20px',
+                border: `1px solid ${borderColor}`,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                cursor: 'pointer',
+                marginBottom: '10px',
+                borderRadius: '8px',
+                transition: 'background 0.3s, border-color 0.3s'
+            }}
+        >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: accentColor, fontWeight: 'bold' }}>
+                {icon}
+                <span>{title}</span>
+            </div>
+            {openSections[id] ? <FaChevronDown color={accentColor} /> : <FaChevronRight color={accentColor} />}
+        </div>
+    );
+}
+
+function InfoRow({ label, value, field, type = 'text' }) {
+    const { isEditing, editableData, setEditableData, rowBorder, subText, textColor } = useContext(ProfileFieldsContext);
+    const isFieldEditable = ['mobile', 'phone', 'address', 'bloodGroup'].includes(field);
+
+    return (
+        <div style={{ padding: '10px 0', borderBottom: `1px solid ${rowBorder}` }}>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', color: subText, marginBottom: '4px' }}>{label}</div>
+            {isEditing && isFieldEditable ? (
+                <input
+                    type={type}
+                    value={editableData[field] || ''}
+                    onChange={(e) => setEditableData(prev => ({ ...prev, [field]: e.target.value }))}
+                    style={{
+                        width: '100%',
+                        padding: '6px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--theme-border)',
+                        background: 'var(--theme-bg-muted)',
+                        color: 'var(--theme-text)',
+                        fontSize: '14px'
+                    }}
+                />
+            ) : (
+                <div style={{ fontSize: '14px', color: textColor }}>{value || '-'}</div>
+            )}
+        </div>
+    );
+}
 
 const Profile = () => {
     const { user, googleLogin } = useAuth();
-    const { isDarkMode } = useTheme();
     const { addToast } = useToast();
     const fileInputRef = useRef(null);
     const [isLinking, setIsLinking] = useState(false);
@@ -57,7 +112,7 @@ const Profile = () => {
             // Simulated update
             addToast('Profile details updated successfully!', 'success');
             setIsEditing(false);
-        } catch (err) {
+        } catch {
             addToast('Failed to update profile.', 'error');
         }
     };
@@ -83,58 +138,6 @@ const Profile = () => {
     const accentColor = 'var(--color-primary-navy)';
     const rowBorder = 'var(--theme-border)';
 
-    const SectionHeader = ({ id, title, icon }) => (
-        <div
-            onClick={() => toggleSection(id)}
-            style={{
-                background: cardBg,
-                padding: '12px 20px',
-                border: `1px solid ${borderColor}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: 'pointer',
-                marginBottom: '10px',
-                borderRadius: '8px',
-                transition: 'background 0.3s, border-color 0.3s'
-            }}
-        >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: accentColor, fontWeight: 'bold' }}>
-                {icon}
-                <span>{title}</span>
-            </div>
-            {openSections[id] ? <FaChevronDown color={accentColor} /> : <FaChevronRight color={accentColor} />}
-        </div>
-    );
-
-    const InfoRow = ({ label, value, field, type = "text" }) => {
-        const isFieldEditable = ['mobile', 'phone', 'address', 'bloodGroup'].includes(field);
-        
-        return (
-            <div style={{ padding: '10px 0', borderBottom: `1px solid ${rowBorder}` }}>
-                <div style={{ fontSize: '12px', fontWeight: 'bold', color: subText, marginBottom: '4px' }}>{label}</div>
-                {isEditing && isFieldEditable ? (
-                    <input 
-                        type={type}
-                        value={editableData[field] || ''}
-                        onChange={(e) => setEditableData(prev => ({ ...prev, [field]: e.target.value }))}
-                        style={{ 
-                            width: '100%', 
-                            padding: '6px 10px', 
-                            borderRadius: '4px', 
-                            border: '1px solid var(--theme-border)',
-                            background: 'var(--theme-bg-muted)',
-                            color: 'var(--theme-text)',
-                            fontSize: '14px'
-                        }}
-                    />
-                ) : (
-                    <div style={{ fontSize: '14px', color: textColor }}>{value || '-'}</div>
-                )}
-            </div>
-        );
-    };
-
     const sectionBodyStyle = {
         overflow: 'hidden',
         background: cardBg,
@@ -147,6 +150,7 @@ const Profile = () => {
     };
 
     return (
+        <ProfileFieldsContext.Provider value={{ toggleSection, cardBg, borderColor, accentColor, openSections, isEditing, editableData, setEditableData, rowBorder, subText, textColor }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
             {/* Top Cards */}
             <div className="profile-top-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 300px) 1fr', gap: '20px', marginBottom: '20px' }}>
@@ -428,6 +432,7 @@ const Profile = () => {
                 }
             `}</style>
         </div>
+        </ProfileFieldsContext.Provider>
     );
 };
 

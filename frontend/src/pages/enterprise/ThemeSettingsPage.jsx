@@ -15,7 +15,7 @@ const ThemeSettingsPage = () => {
             <h2 style={{ marginBottom: '8px', color: 'var(--theme-text)' }}>Theme Settings</h2>
             <p style={{ color: 'var(--theme-text-muted)', marginBottom: '28px', fontSize: '14px' }}>
                 Choose your preferred appearance. The <strong>System Default</strong> option automatically adapts
-                to your device's light or dark mode setting.
+                to your device&apos;s light or dark mode setting.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

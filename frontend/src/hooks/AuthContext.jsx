@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(initialState.token);
     const [role, setRole] = useState(initialState.role);
     const [isAuthenticated, setIsAuthenticated] = useState(initialState.isAuthenticated);
-    const [loading, setLoading] = useState(false); // Immediate ready
+    const [loading, _setLoading] = useState(false); // Immediate ready
 
     // Session heartbeat still useful for background sync
     useEffect(() => {

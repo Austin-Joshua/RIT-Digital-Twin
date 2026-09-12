@@ -22,6 +22,14 @@ const MessageContent = ({ text }) => {
     );
 };
 
+function clampDesktopPosition(pos) {
+    if (typeof window === 'undefined') return pos;
+    return {
+        left: Math.max(8, Math.min(window.innerWidth - 90, pos.left)),
+        top: Math.max(8, Math.min(window.innerHeight - 90, pos.top))
+    };
+}
+
 const ChatbotWidget = ({ studentId }) => {
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
@@ -38,21 +46,14 @@ const ChatbotWidget = ({ studentId }) => {
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                if (typeof parsed?.top === 'number' && typeof parsed?.left === 'number') return parsed;
+                if (typeof parsed?.top === 'number' && typeof parsed?.left === 'number') return clampDesktopPosition(parsed);
             } catch (_e) {
                 // no-op
             }
         }
-        return { top: Math.max(80, window.innerHeight - 620), left: Math.max(20, window.innerWidth - 430) };
+        return clampDesktopPosition({ top: Math.max(80, window.innerHeight - 620), left: Math.max(20, window.innerWidth - 430) });
     });
     const dragRef = useRef({ active: false, dx: 0, dy: 0 });
-    const clampDesktopPosition = (pos) => {
-        if (typeof window === 'undefined') return pos;
-        return {
-            left: Math.max(8, Math.min(window.innerWidth - 90, pos.left)),
-            top: Math.max(8, Math.min(window.innerHeight - 90, pos.top))
-        };
-    };
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
     const panelWidth = isMobile ? 'calc(100vw - 16px)' : 'min(415px, calc(100vw - 40px))';
@@ -95,15 +96,6 @@ const ChatbotWidget = ({ studentId }) => {
             window.removeEventListener('mouseup', onUp);
         };
     }, [desktopPos, isMobile]);
-
-    useEffect(() => {
-        if (isMobile) return;
-        const corrected = clampDesktopPosition(desktopPos);
-        if (corrected.left !== desktopPos.left || corrected.top !== desktopPos.top) {
-            setDesktopPos(corrected);
-            localStorage.setItem('rit_chatbot_position', JSON.stringify(corrected));
-        }
-    }, [isMobile, desktopPos.left, desktopPos.top]);
 
     const toggleVoice = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;

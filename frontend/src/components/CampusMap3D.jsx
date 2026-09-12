@@ -60,7 +60,7 @@ export default function CampusMap3D() {
   const treeRefs = useRef({ trunk: null, foliage: [] });
   const visibilityRef = useRef({ hidden: false });
   const animStateRef = useRef({ cursor: 0, lastTick: 0 });
-  const perfRef = useRef({ lastTs: performance.now(), frames: 0 });
+  const perfRef = useRef({ lastTs: 0, frames: 0 });
 
   const [iotData, setIotData] = useState(mockIoT);
   const [viewMode, setViewMode] = useState("occupancy");
@@ -285,7 +285,7 @@ export default function CampusMap3D() {
       })
       .catch(() => setOsmLoaded(false));
 
-    setLoading(false);
+    requestAnimationFrame(() => setLoading(false));
 
     let dragging = false;
     let prevMouse = { x: 0, y: 0 };
@@ -386,6 +386,9 @@ export default function CampusMap3D() {
       }
 
       renderer.render(scene, camera);
+      if (!perfRef.current.lastTs) {
+        perfRef.current.lastTs = now;
+      }
       perfRef.current.frames += 1;
       if (now - perfRef.current.lastTs > 1000) {
         setStats({
@@ -466,18 +469,15 @@ export default function CampusMap3D() {
   }, [selected]);
 
   useEffect(() => {
-    loadIoTData();
+    const kick = setTimeout(() => {
+      loadIoTData();
+    }, 0);
     const timer = setInterval(loadIoTData, 30000);
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(kick);
+      clearInterval(timer);
+    };
   }, [loadIoTData]);
-
-  useEffect(() => {
-    if (!selected?.id) return;
-    setSelected((prev) => {
-      if (!prev?.id) return prev;
-      return { ...prev, iot: iotData[prev.id] || prev.iot };
-    });
-  }, [iotData, selected?.id]);
 
   const formatSensor = (key, val) => {
     const meta = RIT_CAMPUS.SENSOR_LABELS[key];
@@ -603,7 +603,7 @@ export default function CampusMap3D() {
 
           <div className="space-y-2.5">
             {selected.iotSensors.map((key) => {
-              const sensor = formatSensor(key, selected.iot?.[key]);
+              const sensor = formatSensor(key, (iotData[selected.id] || selected.iot)?.[key]);
               if (!sensor) return null;
               return (
                 <div key={key}>

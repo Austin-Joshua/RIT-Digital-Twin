@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
-const ClassRiskHeatmap = () => {
-    // In a real scenario, this would fetch all students for the faculty's classes
-    // Here we'll mock a 10x5 grid of students
-    const [students, setStudents] = useState([]);
+const MOCK_STUDENTS = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Student ${i + 1}`,
+    risk: Math.random() > 0.8 ? 'HIGH' : (Math.random() > 0.6 ? 'MEDIUM' : 'LOW')
+}));
 
-    useEffect(() => {
-        // Mocking students with random risk levels for the heatmap
-        const mockStudents = Array.from({ length: 50 }, (_, i) => ({
-            id: i + 1,
-            name: `Student ${i + 1}`,
-            risk: Math.random() > 0.8 ? 'HIGH' : (Math.random() > 0.6 ? 'MEDIUM' : 'LOW')
-        }));
-        setStudents(mockStudents);
-    }, []);
+const ClassRiskHeatmap = () => {
+    const students = MOCK_STUDENTS;
 
     const getColor = (risk) => {
         if (risk === 'HIGH') return '#EF4444';

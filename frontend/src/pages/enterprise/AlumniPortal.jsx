@@ -4,7 +4,7 @@ import api from '../../services/api';
 
 const AlumniPortal = () => {
     const [alumni, setAlumni] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAlumni = async () => {

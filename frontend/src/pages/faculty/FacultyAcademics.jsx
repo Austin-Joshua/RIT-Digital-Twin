@@ -4,7 +4,7 @@ import { FaBook, FaFileAlt, FaVideo, FaDownload } from 'react-icons/fa';
 import UploadMaterialModal from '../../components/common/UploadMaterialModal';
 
 const FacultyAcademics = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [_isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
 
     useEffect(() => {
