@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
-import { answerForUser, greetingFor, suggestionsFor } from './campusGuide';
+import { answerForUser, greetingFor, suggestionsFor } from '../campusGuide';
 import './chatbot.css';
 
 // Render bot text with newlines so answers are readable and high-contrast
