@@ -22,7 +22,7 @@ const getAPIBaseURL = () => {
   if (typeof window !== 'undefined' && (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))) {
     return 'http://localhost:8080/api';
   }
-  return 'http://localhost:8080/api';
+  return 'https://rit-backend-0zvm.onrender.com/api';
 };
 
 /** Backend root URL (no /api) for health checks etc. */

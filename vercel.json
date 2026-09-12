@@ -22,9 +22,5 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
-  ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url",
-    "VITE_GOOGLE_MAPS_API_KEY": "@vite_google_maps_api_key"
-  }
+  ]
 }
