@@ -16,8 +16,8 @@ const Analytics = () => {
             {data && (
                 <div className="rit-card">
                     <h3>Strategic Forecasts</h3>
-                    <p><strong>Next Semester Infrastructure Demand:</strong> {data.nextSemesterDemand}</p>
-                    <p><strong>Predicted Energy Growth:</strong> {data.predictedEnergyGrowth}</p>
+                    <p><strong>Next Semester Infrastructure Demand:</strong> {data.nextSemesterDemand || 'No prediction available'}</p>
+                    <p><strong>Predicted Energy Growth:</strong> {data.predictedEnergyGrowth || 'No prediction available'}</p>
                 </div>
             )}
         </div>

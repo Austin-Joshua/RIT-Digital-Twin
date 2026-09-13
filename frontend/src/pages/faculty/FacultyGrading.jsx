@@ -13,13 +13,8 @@ const FacultyGrading = () => {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const [students, setStudents] = useState([
-        { reg: '211520104001', name: 'Aakash S', currentGrade: 'A+', cat1Marks: 18, cat2Marks: 17, cat3Marks: 16, assignmentMarks: 18, examMarks: 72 },
-        { reg: '211520104002', name: 'Balaji K', currentGrade: 'A', cat1Marks: 16, cat2Marks: 17, cat3Marks: 15, assignmentMarks: 17, examMarks: 68 },
-        { reg: '211520104003', name: 'Chandini R', currentGrade: 'O', cat1Marks: 20, cat2Marks: 20, cat3Marks: 19, assignmentMarks: 20, examMarks: 76 },
-        { reg: '211520104004', name: 'Dinesh M', currentGrade: 'B+', cat1Marks: 14, cat2Marks: 13, cat3Marks: 12, assignmentMarks: 14, examMarks: 60 },
-        { reg: '211520104005', name: 'Elango P', currentGrade: 'A', cat1Marks: 17, cat2Marks: 18, cat3Marks: 16, assignmentMarks: 17, examMarks: 70 },
-    ]);
+    const [students, setStudents] = useState([]);
+    const [rosterNote, setRosterNote] = useState('Choose a stored subject to load its roster.');
 
     React.useEffect(() => {
         const loadAssignments = async () => {
@@ -32,7 +27,7 @@ const FacultyGrading = () => {
                     setSemester(String(rows[0].semester));
                 }
             } catch {
-                addToast('Using local grading data. Faculty assignment API unavailable.', 'warning');
+                setRosterNote('Assigned subjects could not be read. No local roster is substituted.');
             }
         };
         loadAssignments();
@@ -63,7 +58,8 @@ const FacultyGrading = () => {
                     })));
                 }
             } catch {
-                addToast('Unable to fetch roster from server. You can still edit local draft.', 'warning');
+                setStudents([]);
+                setRosterNote('The roster could not be read. No local marks are substituted.');
             } finally {
                 setLoading(false);
             }
@@ -154,10 +150,7 @@ const FacultyGrading = () => {
                                 {a.subjectCode} - {a.subjectName} / {a.section}
                             </option>
                         )) : (
-                            <>
-                                <option>CS8651 - Internet Programming</option>
-                                <option>CS8691 - Artificial Intelligence</option>
-                            </>
+                            <option value="">No assigned subject stored</option>
                         )}
                     </select>
                 </div>
@@ -174,10 +167,7 @@ const FacultyGrading = () => {
                                 <option key={s} value={s}>{s}</option>
                             ))
                         ) : (
-                            <>
-                                <option>VI</option>
-                                <option>VIII</option>
-                            </>
+                            <option value="">No semester stored</option>
                         )}
                     </select>
                 </div>
@@ -197,6 +187,7 @@ const FacultyGrading = () => {
                 </div>
             </div>
 
+            <p style={{ color: 'var(--theme-text-muted)', marginBottom: 12 }}>{students.length ? 'Roster loaded from stored assignments.' : rosterNote}</p>
             <div className="rounded-xl border overflow-x-auto shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                 <table className="w-full border-collapse min-w-[700px]">
                     <thead>

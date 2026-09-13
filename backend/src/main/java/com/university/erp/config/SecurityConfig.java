@@ -125,15 +125,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/assets/**", "/api/alumni/**").hasRole("ADMIN")
+                        .requestMatchers("/api/assets/**", "/api/alumni/**").hasAnyRole("ADMIN", "HOD")
                         .requestMatchers("/api/hod/**").hasAnyRole("HOD", "ADMIN")
+                        .requestMatchers("/api/faculty/leaves", "/api/faculty/leaves/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
                         .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "ADMIN")
                         .requestMatchers("/api/parent/**").hasAnyRole("PARENT", "ADMIN")
+                        // Method annotations decide the role. Do not lock these tighter than @PreAuthorize.
                         .requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**")
-                        .hasRole("ADMIN")
+                        .authenticated()
                         .requestMatchers("/api/placement/apply").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers("/api/placement/**").hasRole("ADMIN")
                         .requestMatchers("/api/academic/student/**", "/api/academics/student/**").hasAnyRole("STUDENT", "ADMIN")

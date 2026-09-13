@@ -119,29 +119,21 @@ public class AiService {
     }
 
     public Map<String, Object> predictAnalytics() {
-        return Map.of(
-                "nextSemesterDemand", "Lab infrastructure demand +14%",
-                "predictedEnergyGrowth", "Energy load expected to grow by 9.2%",
-                "clusterMultiplicationIndex", "1.34x mobility cluster intensity in morning windows",
-                "algorithmStatus", "Adaptive optimization active"
-        );
+        Map<String, Object> out = new java.util.LinkedHashMap<>();
+        out.put("available", false);
+        out.put("nextSemesterDemand", null);
+        out.put("predictedEnergyGrowth", null);
+        out.put("clusterMultiplicationIndex", null);
+        out.put("algorithmStatus", "No prediction available");
+        return out;
     }
 
     public String predictAcademicRisk(Long studentId) {
-        // Mock logic: 0-9 ending in 3 or 7 are high risk
-        long lastDigit = studentId % 10;
-        if (lastDigit == 3 || lastDigit == 7) return "HIGH_RISK";
-        if (lastDigit == 1 || lastDigit == 5) return "MODERATE_RISK";
-        return "LOW_RISK";
+        return null;
     }
 
     public List<String> recommendCareer(Long studentId) {
-        return List.of(
-                "Full Stack Web Development (React/Spring Boot)",
-                "AI/ML Engineer (Predictive Analytics)",
-                "Cloud Solutions Architect (AWS/GCP)",
-                "Cybersecurity Specialist (Zero-Trust Infrastructure)"
-        );
+        return List.of();
     }
 
     private static Map<String, Object> cluster(String zone, String area, double km, String route, int students) {

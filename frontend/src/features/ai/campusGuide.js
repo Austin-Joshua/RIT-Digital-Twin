@@ -1,4 +1,3 @@
-import { getAcademicStats, getDepartmentStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
 import { academicFees, academicYearLabel, examFees, pendingAcademicFees, pendingExamFees } from '../../utils/studentFees';
 
 const PAGES = [
@@ -73,12 +72,9 @@ const PAGES = [
     { roles: ['ADMIN'], label: 'Club Management', path: '/management/clubs', keys: ['club'], about: 'College-wide clubs.' },
     { roles: ['ADMIN'], label: 'Class Substitutions', path: '/management/substitutions', keys: ['substitution', 'substitute'], about: 'Cover a class when faculty are unavailable.' },
     { roles: ['ADMIN'], label: 'Certificates', path: '/management/certificates', keys: ['certificate', 'approval'], about: 'Approve student certificate requests.' },
-    { roles: ['ADMIN'], label: 'Classroom Allocation', path: '/simulations/classroom', keys: ['classroom', 'room allocation'], about: 'Digital twin classroom allocation.' },
-    { roles: ['ADMIN'], label: 'Energy Optimization', path: '/simulations/energy', keys: ['energy', 'power', 'audit'], about: 'Building energy view and optimization.' },
-    { roles: ['ADMIN'], label: 'Transport Simulation', path: '/simulations/transport', keys: ['transport simulation', 'route flow'], about: 'Route flow visualization.' },
+    { roles: ['ADMIN'], label: 'Simulation lab', path: '/simulations', keys: ['simulation', 'what-if', 'scenario', 'classroom', 'crowd', 'energy scenario'], about: 'Compare simulated intake, rooms, timetable load, HVAC formula, and bus seats. Results are not campus state.' },
+    { roles: ['ADMIN'], label: 'Energy formula', path: '/simulations/energy', keys: ['energy', 'power'], about: 'Stored energy formula. Not a meter.' },
     { roles: ['ADMIN'], label: 'Transport Directory', path: '/transport', keys: ['bus', 'transport directory', 'route'], about: 'Campus bus directory.' },
-    { roles: ['ADMIN'], label: 'Crowd Flow', path: '/simulations/crowd', keys: ['crowd', 'congestion'], about: 'Crowd movement on campus.' },
-    { roles: ['ADMIN'], label: 'Sustainability', path: '/simulations/sustainability', keys: ['sustainability', 'carbon'], about: 'Sustainability dashboard.' },
     { roles: ['ADMIN'], label: 'Predictive Analysis', path: '/predictions', keys: ['predict', 'forecast'], about: 'Campus predictive analysis.' },
     { roles: ['ADMIN'], label: 'Smart Algorithms', path: '/management/algorithms', keys: ['algorithm', 'smart'], about: 'Allocation and optimization algorithms.' },
     { roles: ['ADMIN'], label: 'Safety', path: '/management/safety', keys: ['safety', 'emergency'], about: 'Emergency and safety dashboard.' },
@@ -112,47 +108,31 @@ function pagesFor(role) {
 }
 
 function money(amount) {
-    return `₹${Number(amount || 0).toLocaleString('en-IN')}`;
+    if (amount == null || Number.isNaN(Number(amount))) return 'Not stored';
+    return `₹${Number(amount).toLocaleString('en-IN')}`;
 }
 
-function studentSnapshot(user, live) {
-    const email = user?.email || 'guest@ritchennai.edu.in';
-    const stats = getAcademicStats(email);
-    const marks = getInternalMarks(email);
-    const results = getSemesterResults(email, 3);
-    const cgpa = Number(live?.cgpa || stats.cgpa || 0);
+function studentSnapshot(_user, live) {
+    const cgpa = live?.cgpa == null ? null : Number(live.cgpa);
     return {
-        cgpa,
-        attendance: Math.round(Number(stats.attendance || 0)),
-        arrears: Number(stats.arrears || 0),
-        leave: Number(stats.leave || 0),
-        marks,
-        results,
-        academicDue: pendingAcademicFees(),
-        examDue: pendingExamFees(),
-    };
-}
-
-function parentWard() {
-    return {
-        name: 'Ram Kumar',
-        registerNo: 'RIT2021001',
-        cgpa: 8.5,
-        attendance: 92,
-        arrears: getAcademicStats('ram.kumar@cse.ritchennai.edu.in').arrears,
+        cgpa: Number.isNaN(cgpa) ? null : cgpa,
+        attendance: live?.attendance == null ? null : Math.round(Number(live.attendance)),
+        arrears: live?.arrears == null ? null : Number(live.arrears),
+        leave: live?.leave == null ? null : Number(live.leave),
+        marks: live?.marks || null,
+        results: live?.results || [],
         academicDue: pendingAcademicFees(),
         examDue: pendingExamFees(),
     };
 }
 
 function feeLines() {
-    const academic = academicFees
-        .filter((fee) => fee.type === 'ACADEMIC')
-        .map((fee) => `${fee.label}: ${money(fee.amount)} (${fee.status.toLowerCase()}, due ${fee.deadline})`)
-        .join('\n');
-    const exams = examFees
-        .map((fee) => `${fee.label}: ${money(fee.amount)} (${fee.status.toLowerCase()})`)
-        .join('\n');
+    const academic = academicFees.length
+        ? academicFees.map((fee) => `${fee.label}: ${money(fee.amount)}`).join('\n')
+        : 'No academic fee ledger is stored for this login. The official IMS fields are tuition, hostel, other, AU / library, fine and breakage.';
+    const exams = examFees.length
+        ? examFees.map((fee) => `${fee.label}: ${money(fee.amount)}`).join('\n')
+        : 'No exam-fee row is stored. Official rows are semester, exam month and year, and amount.';
     return { academic, exams };
 }
 
@@ -183,15 +163,13 @@ function personalBrief(user, live) {
     const name = displayName(user);
     if (role === 'STUDENT') {
         const snap = studentSnapshot(user, live);
-        return `${name}${user?.registerNo ? ` (${user.registerNo})` : ''}: CGPA ${snap.cgpa.toFixed(2)} / 10, attendance ${snap.attendance}%, arrears ${snap.arrears}, academic fees pending ${money(snap.academicDue)}, exam fees pending ${money(snap.examDue)}.`;
+        return `${name}${user?.registerNo ? ` (${user.registerNo})` : ''}: CGPA ${snap.cgpa == null ? 'Not stored' : snap.cgpa.toFixed(2)}, attendance ${snap.attendance == null ? 'Not stored' : `${snap.attendance}%`}, arrears ${snap.arrears == null ? 'Not stored' : snap.arrears}, academic fees pending ${money(snap.academicDue)}, exam fees pending ${money(snap.examDue)}.`;
     }
     if (role === 'PARENT') {
-        const ward = parentWard();
-        return `${name}, parent login. Linked student ${ward.name} (${ward.registerNo}): CGPA ${ward.cgpa.toFixed(2)} / 10, attendance ${ward.attendance}%, arrears ${ward.arrears}, academic fees pending ${money(ward.academicDue)}.`;
+        return `${name}, parent login. No linked student record is available to this guide, so CGPA, attendance, and fees are not stated here.`;
     }
     if (role === 'FACULTY' || role === 'HOD') {
-        const dept = getDepartmentStats(user?.department || 'CSE');
-        return `${name}, ${role.toLowerCase()} login${user?.department ? ` in ${user.department}` : ''}. Department view: ${dept.totalStudents} students, ${dept.totalFaculty} faculty, attendance ${dept.averageAttendance}%, pass ${dept.passPercentage}%.`;
+        return `${name}, ${role.toLowerCase()} login${user?.department ? ` in ${user.department}` : ''}. Department census is not stored in this guide.`;
     }
     return `${name}, admin login${user?.email ? ` (${user.email})` : ''}. You can open accounts, exams, results, certificates, placements, and the campus simulations.`;
 }
@@ -236,30 +214,33 @@ function studentFacts(query, user, live) {
     const name = displayName(user);
     if (query.includes('attendance')) {
         return {
-            text: `${name}, your attendance ring is ${snap.attendance}%.\n\nKeep it above 75%. Subject-wise periods are on Attendance.`,
+            text: snap.attendance == null
+                ? `${name}, attendance is not stored for this guide. Subject-wise periods are on Attendance.`
+                : `${name}, your attendance ring is ${snap.attendance}%.\n\nKeep it above 75%. Subject-wise periods are on Attendance.`,
             path: '/student/attendance',
             label: 'Open Attendance',
         };
     }
     if (query.includes('arrear')) {
         return {
-            text: `${name}, your arrears ring shows ${snap.arrears}.\n\n${snap.arrears === 0 ? 'The ring stays empty when the count is 0.' : 'Open Grade Book to see the failed papers.'}`,
+            text: snap.arrears == null
+                ? `${name}, arrears are not stored for this guide. Open Grade Book for the stored result rows.`
+                : `${name}, your arrears ring shows ${snap.arrears}.`,
             path: '/student/gradebook',
             label: 'Open Grade Book',
         };
     }
     if (query.includes('cat')) {
-        const lines = snap.marks.cat.map((row) => `${row.subject}: ${row.score}/${row.max}`).join('\n');
-        return { text: `${name}, your CAT marks:\n\n${lines}`, path: '/student/cat-mark', label: 'Open CAT Mark' };
+        return { text: `${name}, CAT marks are not stored for this guide.`, path: '/student/cat-mark', label: 'Open CAT Mark' };
     }
     if (query.includes('assignment')) {
-        const lines = snap.marks.assignments.map((row) => `${row.subject}: ${row.score}/${row.max}`).join('\n');
-        return { text: `${name}, your assignment marks:\n\n${lines}`, path: '/student/assignment', label: 'Open Assignment Mark' };
+        return { text: `${name}, assignment marks are not stored for this guide.`, path: '/student/assignment', label: 'Open Assignment Mark' };
     }
     if (query.includes('cgpa') || query.includes('gpa') || /\bgrade\b/.test(query) || query.includes('grade book')) {
-        const grades = snap.results.slice(0, 5).map((row) => `${row.code} ${row.title}: ${row.grade}`).join('\n');
         return {
-            text: `${name}, your CGPA ring is ${snap.cgpa.toFixed(2)} / 10.\n\nLatest grade-book sample:\n${grades}`,
+            text: snap.cgpa == null
+                ? `${name}, CGPA is not stored for this guide. Open Grade Book for stored results.`
+                : `${name}, your CGPA ring is ${snap.cgpa.toFixed(2)} / 10.`,
             path: '/student/gradebook',
             label: 'Open Grade Book',
         };
@@ -281,26 +262,18 @@ function studentFacts(query, user, live) {
 }
 
 function parentFacts(query, user) {
-    const ward = parentWard();
     const fees = feeLines();
     const name = displayName(user);
-    if (query.includes('attendance') || query.includes('ward') || query.includes('child')) {
+    if (query.includes('attendance') || query.includes('ward') || query.includes('child') || query.includes('cgpa') || query.includes('grade') || query.includes('gpa')) {
         return {
-            text: `${name}, the linked student on this parent login is ${ward.name} (${ward.registerNo}).\nAttendance: ${ward.attendance}%.\nCGPA: ${ward.cgpa.toFixed(2)} / 10.`,
+            text: `${name}, no linked student record is available to this guide, so attendance and CGPA are not stated here.`,
             path: '/parent/attendance',
             label: 'Open Attendance Feed',
         };
     }
-    if (query.includes('cgpa') || query.includes('grade') || query.includes('gpa')) {
-        return {
-            text: `${name}, ${ward.name}'s CGPA on the parent dashboard is ${ward.cgpa.toFixed(2)} / 10. Arrears: ${ward.arrears}.`,
-            path: '/parent/grades',
-            label: 'Open Academic Grades',
-        };
-    }
     if (query.includes('fee') || query.includes('due') || query.includes('pay')) {
         return {
-            text: `${name}, fees for ${ward.name}: academic pending ${money(ward.academicDue)}, exam pending ${money(ward.examDue)}.\n\n${fees.academic}`,
+            text: `${name}, no linked fee ledger is stored for this parent login.\n\n${fees.academic}`,
             path: '/parent/fees',
             label: 'Open Academic Fee',
         };
@@ -310,10 +283,9 @@ function parentFacts(query, user) {
 
 function facultyFacts(query, user) {
     const name = displayName(user);
-    const dept = getDepartmentStats(user?.department || 'CSE');
     if (query.includes('department') || query.includes('hod') || query.includes('pass percent')) {
         return {
-            text: `${name}, department snapshot for ${user?.department || 'CSE'}: ${dept.totalStudents} students, ${dept.totalFaculty} faculty, average attendance ${dept.averageAttendance}%, pass ${dept.passPercentage}%.`,
+            text: `${name}, no department census is stored in this guide, so student counts and pass percentage are not stated here.`,
             path: roleOf(user) === 'HOD' ? '/hod' : '/faculty/analytics',
             label: roleOf(user) === 'HOD' ? 'Open HOD Dashboard' : 'Open Class Analytics',
         };

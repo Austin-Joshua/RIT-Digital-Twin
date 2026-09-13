@@ -260,7 +260,7 @@ public class StudentAcademicOnboardingService {
                         "credits", s.getCredits(),
                         "semester", s.getSemester() != null ? s.getSemester().getSemesterNumber() : null
                 )).toList());
-        resp.put("notifications", List.of("Welcome to Smart Campus", "Check updated gradebook records"));
+        resp.put("notifications", List.of());
         return resp;
     }
 

@@ -16,4 +16,11 @@ public interface TimetableSlotRepository extends JpaRepository<TimetableSlot, Lo
     @EntityGraph(attributePaths = { "subject", "subject.department", "subject.semester", "faculty", "faculty.role", "department" })
     List<TimetableSlot> findByDepartmentIdAndSectionIn(Long departmentId, List<String> sections);
     void deleteByDepartmentIdAndSectionIn(Long departmentId, List<String> sections);
+
+    @EntityGraph(attributePaths = { "classroom", "classroom.building" })
+    List<TimetableSlot> findByDayOfWeekIgnoreCase(String dayOfWeek);
+
+    @EntityGraph(attributePaths = { "classroom", "classroom.building" })
+    @org.springframework.data.jpa.repository.Query("select s from TimetableSlot s")
+    List<TimetableSlot> findAllWithClassroom();
 }

@@ -1,41 +1,16 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
-import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/AuthContext';
 import {
-    LuLayoutDashboard, LuClock, LuBookOpen, LuFileText, LuCalendarCheck2,
-    LuAward, LuPenTool, LuTestTube, LuClipboardList,
-    LuBook, LuBanknote, LuMessageSquare, LuUsers,
-    LuFileCheck, LuMail, LuKey, LuLogOut,
-    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
-    LuSun, LuMoon, LuMonitor
+    LuMenu, LuUser, LuSun, LuMoon, LuMonitor, LuLogOut
 } from 'react-icons/lu';
-import GlobalSearch from '../components/common/GlobalSearch';
 import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
-import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import CampusAssistant from '../features/ai/CampusAssistant';
+import PageTransition from '../platform/ui/PageTransition';
 import './student-layout.css';
-
-const studentNav = [
-    { path: '/student', label: 'Dashboard', icon: <LuLayoutDashboard />, end: true },
-    { path: '/student/timetable', label: 'My Time Table', icon: <LuClock /> },
-    { path: '/student/registration', label: 'My Subject Registration', icon: <LuBookOpen /> },
-    { path: '/student/leave', label: 'Apply Leave / OD', icon: <LuFileText /> },
-    { path: '/student/attendance', label: 'Attendance', icon: <LuCalendarCheck2 /> },
-    { path: '/student/certificates', label: 'Apply Certificates', icon: <LuAward /> },
-    { path: '/student/cat-mark', label: 'CAT Mark', icon: <LuPenTool /> },
-    { path: '/student/lab-mark', label: 'LAB Mark', icon: <LuTestTube /> },
-    { path: '/student/assignment', label: 'Assignment Mark', icon: <LuClipboardList /> },
-    { path: '/student/gradebook', label: 'Grade Book', icon: <LuBook /> },
-    { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
-    { path: '/student/exam-fee', label: 'Exam Fee', icon: <LuBanknote /> },
-    { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
-    { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
-    { path: '/student/clubs', label: 'Club Management', icon: <LuUsers /> },
-    { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
-    { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
-];
 
 const LG_BREAKPOINT = 1024;
 const StudentLayout = () => {
@@ -44,7 +19,6 @@ const StudentLayout = () => {
     const { isDarkMode, toggleTheme, themePreference } = useContext(ThemeContext);
     const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
-    const [committeeOpen, setCommitteeOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -94,25 +68,6 @@ const StudentLayout = () => {
         ? `Reg No: ${user.registerNo}`
         : (user?.email || 'student@ritchennai.edu.in');
 
-    const navItems = [
-        ...studentNav,
-        {
-            label: 'Class Committee',
-            icon: <LuUsers />,
-            isDropdown: true,
-            isOpen: committeeOpen,
-            onToggle: () => setCommitteeOpen(!committeeOpen),
-            subItems: [
-                { path: '/student/committee/schedule', label: 'Schedule', icon: <LuCalendarCheck2 /> },
-                { path: '/student/committee/minutes', label: 'Minutes of Meeting', icon: <LuFileText /> },
-            ]
-        },
-        { path: '/student/profile', label: 'My Profile', icon: <LuUser /> },
-        { path: '/student/nodue', label: 'No Due Request', icon: <LuFileCheck /> },
-        { path: '/student/messages', label: 'Messages', icon: <LuMail /> },
-        { path: '/student/change-password', label: 'Change Password', icon: <LuKey /> },
-    ];
-
     return (
         <div className="stu-layout">
             {/* ── Sidebar ── */}
@@ -121,7 +76,6 @@ const StudentLayout = () => {
                 setSidebarOpen={setSidebarOpen}
                 user={user}
                 isDesktop={isDesktop}
-                navItems={navItems}
             />
 
             {/* Mobile Sidebar Backdrop */}
@@ -285,12 +239,12 @@ const StudentLayout = () => {
                             Loading page...
                         </div>
                     }>
-                        <Outlet />
+                        <PageTransition />
                     </Suspense>
                 </div>
 
                 {/* AI Assistant Integration */}
-                <ChatbotWidget studentId={user?.id} />
+                <CampusAssistant studentId={user?.id} />
             </div>
         </div>
     );

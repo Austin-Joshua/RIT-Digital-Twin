@@ -1,38 +1,34 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../hooks/AuthContext';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell } from 'react-icons/fa';
-import { getSockJsEndpoint } from '../utils/websocketUrls';
+import { useWebSocket } from '../hooks/WebSocketContext';
 
 const NotificationBar = () => {
     const { user } = useAuth();
+    const { subscribe, connected } = useWebSocket();
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
-        if (!user) return;
-
-        const client = new Client({
-            webSocketFactory: () => new SockJS(getSockJsEndpoint('/ws-notifications')),
-            onConnect: () => {
-                client.subscribe('/topic/global', (message) => {
-                    const notif = JSON.parse(message.body);
-                    setNotifications(prev => [notif, ...prev]);
-                });
-
-                client.subscribe(`/user/${user.userId}/topic/notifications`, (message) => {
-                    const notif = JSON.parse(message.body);
-                    setNotifications(prev => [notif, ...prev]);
-                });
-            }
-        });
-
-        client.activate();
-        return () => client.deactivate();
-    }, [user]);
+        if (!user || !connected) return undefined;
+        const add = (payload) => {
+            const row = typeof payload === 'string'
+                ? { title: 'Notice', message: payload }
+                : { title: payload?.title || 'Notice', message: payload?.message || payload?.content || '' };
+            if (!row.message && !row.title) return;
+            setNotifications(prev => [row, ...prev]);
+        };
+        const notices = subscribe('/topic/notifications', add);
+        const broadcasts = subscribe('/topic/broadcasts', add);
+        const personal = subscribe('/user/queue/notifications', add);
+        return () => {
+            notices.unsubscribe();
+            broadcasts.unsubscribe();
+            personal.unsubscribe();
+        };
+    }, [connected, subscribe, user]);
 
     // Handle clicks outside dropdown to close it
     useEffect(() => {

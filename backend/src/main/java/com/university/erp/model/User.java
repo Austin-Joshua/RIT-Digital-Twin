@@ -50,6 +50,9 @@ public class User extends BaseEntity implements UserDetails {
     private String firstName;
     private String lastName;
 
+    @Column(length = 20)
+    private String phone;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

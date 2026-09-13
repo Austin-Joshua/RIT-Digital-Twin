@@ -2,7 +2,6 @@ package com.university.erp.config;
 
 import com.university.erp.model.*;
 import com.university.erp.repository.*;
-import com.university.erp.security.OneTimeTokens;
 import com.university.erp.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -19,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 @Slf4j
-@org.springframework.core.annotation.Order(2)
+@org.springframework.core.annotation.Order(20)
 public class StudentDataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -80,6 +79,9 @@ public class StudentDataSeeder implements CommandLineRunner {
 
     @org.springframework.beans.factory.annotation.Autowired
     private TimetableSlotRepository timetableSlotRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.university.erp.service.CampusCredentialAlignment campusCredentialAlignment;
 
     public StudentDataSeeder(
             UserRepository userRepository,
@@ -152,6 +154,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         
         // CSBS Batch 2024-2028
         seedBatch(csbs, "CSBS-C", "2024-2028", createCsbsData(), studentRole);
+        campusCredentialAlignment.alignClassAccounts();
         
         seedOperationsSuiteData(cse);
         seedSmartCampusSuiteData();
@@ -329,8 +332,8 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (user == null) {
                 user = User.builder()
                         .username(info.regNo)
-                        .password(passwordEncoder.encode(OneTimeTokens.generate()))
-                        .email(info.regNo + "@ritchennai.edu.in")
+                        .password(passwordEncoder.encode(com.university.erp.security.LoginCredentials.studentPassword(info.regNo)))
+                        .email(com.university.erp.security.LoginCredentials.collegeEmail(info.regNo))
                         .role(role)
                         .build();
                 isNew = true;
@@ -358,6 +361,12 @@ public class StudentDataSeeder implements CommandLineRunner {
             student.setDepartment(dept);
             student.setScholarType(info.isHosteller ? "Hosteller" : "Day Scholar");
             student.setEmail(user.getEmail());
+            if (student.getPhone() == null || student.getPhone().isBlank()) {
+                student.setPhone(com.university.erp.security.LoginCredentials.studentPhone(info.regNo));
+            }
+            if (user.getPhone() == null || user.getPhone().isBlank()) {
+                user.setPhone(student.getPhone());
+            }
             student = studentRepository.save(student);
             
             ensureParentForStudent(student);
@@ -390,8 +399,8 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (parentRole == null) return;
             parentUser = User.builder()
                 .username(parentUsername)
-                .password(passwordEncoder.encode(OneTimeTokens.generate()))
-                .email(student.getRegisterNo() + "_parent@ritchennai.edu.in")
+                .password(passwordEncoder.encode(com.university.erp.security.LoginCredentials.STAFF_MOCK_PASSWORD))
+                .email(com.university.erp.security.LoginCredentials.parentEmail(student.getRegisterNo()))
                 .role(parentRole)
                 .mustChangePassword(true)
                 .build();
@@ -410,7 +419,16 @@ public class StudentDataSeeder implements CommandLineRunner {
         parent.setStudent(student);
         parent.setName(parentName + " Parent");
         parent.setRelationship("Parent");
+        if (parent.getContactInfo() == null || parent.getContactInfo().isBlank()) {
+            parent.setContactInfo(com.university.erp.security.LoginCredentials.parentPhone(student.getRegisterNo()));
+        }
+        if (parentUser.getPhone() == null || parentUser.getPhone().isBlank()) {
+            parentUser.setPhone(parent.getContactInfo().matches("^\\d{10}$")
+                    ? parent.getContactInfo()
+                    : com.university.erp.security.LoginCredentials.parentPhone(student.getRegisterNo()));
+        }
         parentRepository.save(parent);
+        userRepository.save(parentUser);
     }
 
     private void assignSubjectsAndGrades(Student student, Semester sem, List<Subject> subjects, double factor) {

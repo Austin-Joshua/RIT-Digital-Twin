@@ -9,6 +9,11 @@ import java.util.List;
 @Repository
 public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
     List<Classroom> findByBuilding_Id(Long buildingId);
+
     @Query("select c from Classroom c where c.capacity >= :minCapacity")
-    List<Classroom> findByCapacityAtLeast(Integer minCapacity);
+    List<Classroom> findByCapacityAtLeast(@org.springframework.data.repository.query.Param("minCapacity") Integer minCapacity);
+
+    @Query("select c from Classroom c")
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "building" })
+    List<Classroom> findAllWithBuilding();
 }

@@ -10,6 +10,7 @@ import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import com.university.erp.repository.StudentRepository;
 import com.university.erp.security.JwtUtils;
+import com.university.erp.security.LoginAttemptPolicy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,53 +79,42 @@ public class AuthService {
         String password = request.getPassword().trim();
 
         log.info("Attempting login for user: {}", username);
+        if (bruteForceProtectionService.isBlocked(username) || bruteForceProtectionService.isBlockedByIp(clientIp)) {
+            throw new RuntimeException("Account locked due to 5 failed attempts. Contact admin.");
+        }
+
+        Optional<User> existingUser = resolveLoginUser(username);
+        if (existingUser.isPresent() && !existingUser.get().isAccountNonLocked()) {
+            recordLoginLog(existingUser.get(), username, clientIp, deviceInfo, location, "FAILURE", "Account locked");
+            throw new RuntimeException("Account locked due to 5 failed attempts. Contact admin.");
+        }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
 
             User user = (User) authentication.getPrincipal();
-            syncStudentIdentityFromMaster(user, username);
-
-            if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
-                recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Account " + user.getAccountStatus());
-                throw new RuntimeException("Account " + user.getAccountStatus() + ". Please contact admin.");
-            }
-
-            log.info("Authentication successful for user: {}", username);
-            user.setFailedLoginAttempts(0);
-            user.setLastLogin(java.time.LocalDateTime.now());
-            userRepository.save(user);
-            bruteForceProtectionService.loginSucceeded(username);
-            bruteForceProtectionService.loginSucceededByIp(clientIp);
-            recordLoginLog(user, username, clientIp, deviceInfo, location, "SUCCESS", "Standard login");
-            requestSecurityMonitoringService.trackSuccessfulLogin(user.getUserId(), user.getUsername(), clientIp, safeLocation(location), safeDevice(deviceInfo));
-            return generateAuthResponse(user, false);
-
+            return completeLogin(user, username, clientIp, deviceInfo, location, "Standard login");
         } catch (org.springframework.security.core.AuthenticationException e) {
             log.warn("Authentication failed for {}", username);
         }
 
-        Optional<User> existingUser = resolveUserByAnyIdentity(username);
-        if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
-            existingUser = studentRepository.findByRegisterNo(username)
-                    .map(student -> student.getUser())
-                    .filter(user -> user != null);
+        if (existingUser.isPresent() && acceptsPhoneSecret(existingUser.get(), password)) {
+            return completeLogin(existingUser.get(), username, clientIp, deviceInfo, location, "Phone secret login");
         }
 
         String diagnosticMessage = "Invalid username or password.";
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            int attempts = user.getFailedLoginAttempts() + 1;
-            user.setFailedLoginAttempts(attempts);
-            if (attempts >= 5) {
+            boolean locked = "locked".equalsIgnoreCase(user.getAccountStatus());
+            LoginAttemptPolicy.Outcome outcome = LoginAttemptPolicy.onFailure(user.getFailedLoginAttempts(), locked);
+            user.setFailedLoginAttempts(outcome.attempts());
+            if (outcome.locked()) {
                 user.setAccountStatus("locked");
-                diagnosticMessage = "Account locked due to 5 failed attempts. Contact admin.";
                 log.warn("User account {} locked.", username);
-            } else {
-                diagnosticMessage = "Invalid username or password. " + (5 - attempts) + " attempts remaining.";
             }
             userRepository.save(user);
+            diagnosticMessage = outcome.message();
             recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Invalid credentials");
             long recentFailures = loginLogRepository.countByIpAddressAndStatusAndLoginTimeAfter(
                     clientIp, "FAILURE", java.time.LocalDateTime.now().minusMinutes(10));
@@ -142,7 +132,49 @@ public class AuthService {
         }
 
         bruteForceProtectionService.loginFailed(username);
+        bruteForceProtectionService.loginFailedByIp(clientIp);
         throw new RuntimeException(diagnosticMessage);
+    }
+
+    private AuthResponse completeLogin(User user, String username, String clientIp, String deviceInfo, String location, String reason) {
+        syncStudentIdentityFromMaster(user, username);
+        if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
+            recordLoginLog(user, username, clientIp, deviceInfo, location, "FAILURE", "Account " + user.getAccountStatus());
+            throw new RuntimeException("Account " + user.getAccountStatus() + ". Please contact admin.");
+        }
+        user.setFailedLoginAttempts(LoginAttemptPolicy.onSuccess());
+        user.setLastLogin(java.time.LocalDateTime.now());
+        userRepository.save(user);
+        bruteForceProtectionService.loginSucceeded(username);
+        bruteForceProtectionService.loginSucceeded(user.getUsername());
+        if (user.getEmail() != null) {
+            bruteForceProtectionService.loginSucceeded(user.getEmail());
+        }
+        bruteForceProtectionService.loginSucceededByIp(clientIp);
+        recordLoginLog(user, username, clientIp, deviceInfo, location, "SUCCESS", reason);
+        requestSecurityMonitoringService.trackSuccessfulLogin(user.getUserId(), user.getUsername(), clientIp, safeLocation(location), safeDevice(deviceInfo));
+        return generateAuthResponse(user, false);
+    }
+
+    private Optional<User> resolveLoginUser(String username) {
+        Optional<User> existingUser = resolveUserByAnyIdentity(username);
+        if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
+            existingUser = studentRepository.findByRegisterNo(username)
+                    .map(Student::getUser)
+                    .filter(user -> user != null);
+        }
+        return existingUser;
+    }
+
+    private boolean acceptsPhoneSecret(User user, String submitted) {
+        if (user.getPhone() != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, user.getPhone())) {
+            return true;
+        }
+        if (user.getRole() != null && user.getRole().getRoleName() == Role.UserRole.STUDENT) {
+            Student student = user.getLinkedStudent();
+            return student != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, student.getPhone());
+        }
+        return false;
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -375,8 +407,10 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setMustChangePassword(false);
         user.setLastPasswordChange(java.time.LocalDateTime.now());
+        user.setFailedLoginAttempts(LoginAttemptPolicy.onSuccess());
         userRepository.save(user);
-        recordAuditLog(user, "CHANGE_PASSWORD", "User changed their own password", user.getUserId(), null);
+        refreshTokenService.deleteByUserId(user.getUserId());
+        recordAuditLog(user, "CHANGE_PASSWORD", "User changed their own password. Previous refresh session revoked.", user.getUserId(), null);
     }
 
     private void recordAuditLog(User actor, String action, String details, Long affectedUserId, String ip) {
@@ -405,7 +439,8 @@ public class AuthService {
                 .map(refreshTokenService::verifyExpiration)
                 .map(token -> token.getUser())
                 .map(user -> generateAuthResponse(user, false))
-                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.UNAUTHORIZED, "Sign in again."));
     }
 
     @Transactional
@@ -539,7 +574,9 @@ public class AuthService {
         String normalized = identifier.trim();
         String lower = normalized.toLowerCase();
 
-        Optional<User> direct = userRepository.findByUsername(normalized)
+        String alias = com.university.erp.security.LoginCredentials.storedUsername(normalized).orElse(normalized);
+        Optional<User> direct = userRepository.findByUsername(alias)
+                .or(() -> userRepository.findByUsername(normalized))
                 .or(() -> userRepository.findByUsername(lower))
                 .or(() -> userRepository.findByEmail(lower))
                 .or(() -> userRepository.findByEmail(normalized))

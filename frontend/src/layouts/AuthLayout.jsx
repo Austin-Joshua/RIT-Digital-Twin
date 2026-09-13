@@ -55,11 +55,15 @@ const AuthLayout = () => {
                         />
                         <AnimatePresence mode="wait">
                             <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants} style={{ width: '100%' }}>
-                                <h1 style={{ fontSize: '2.6rem', fontWeight: 800, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
+                                <p className="brand-kicker">RIT Digital Twin</p>
+                                <h1 style={{ fontSize: '2.6rem', fontWeight: 800, margin: '0 0 8px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'center' }}>
-                                    Smart Campus Intelligence Platform
+                                <p className="brand-line">
+                                    Your campus. Digitized. Live. Predictive. Intelligent.
+                                </p>
+                                <p className="brand-qualify">
+                                    Live means the picture follows the campus clock. Occupancy and energy stay labeled when they are estimated or simulated.
                                 </p>
 
                                 <div className="brand-description" style={{
@@ -134,7 +138,9 @@ const AuthLayout = () => {
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
                     }
                     .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
-                    .brand-panel p, .brand-description, .brand-tagline { display: none !important; }
+                    .brand-description, .brand-tagline { display: none !important; }
+                    .brand-line { display: block !important; margin-bottom: 6px !important; font-size: 0.92rem !important; }
+                    .brand-qualify { display: block !important; font-size: 0.75rem !important; margin-bottom: 0 !important; }
                     .brand-panel img { height: 60px !important; margin-left: auto; margin-right: auto; }
                     .form-panel { 
                         padding: 40px 20px !important; 
@@ -153,6 +159,33 @@ const AuthLayout = () => {
                     .brand-panel img { height: 48px !important; }
                     .form-panel { padding: 16px 12px !important; }
                     .auth-form-wrapper { padding: 0 !important; }
+                }
+                .brand-kicker {
+                    margin: 0 0 8px;
+                    font-size: 12px;
+                    letter-spacing: 0.14em;
+                    text-transform: uppercase;
+                    color: var(--color-accent-gold);
+                    font-weight: 700;
+                    text-align: center;
+                }
+                .brand-line {
+                    font-size: 1.05rem;
+                    color: rgba(255, 255, 255, 0.94);
+                    margin: 0 0 10px;
+                    line-height: 1.45;
+                    font-weight: 600;
+                    text-align: center;
+                }
+                .brand-qualify {
+                    font-size: 0.82rem;
+                    color: rgba(255, 255, 255, 0.72);
+                    margin: 0 0 18px;
+                    line-height: 1.45;
+                    text-align: center;
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .brand-panel, .form-panel { transition: none !important; }
                 }
             `}</style>
         </div>

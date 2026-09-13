@@ -15,7 +15,7 @@ public class ParentService {
     }
 
     public Student getAssignedStudent(Long parentUserId) {
-        Parent parent = parentRepository.findByUser_Id(parentUserId)
+        Parent parent = parentRepository.findAssignedByUserId(parentUserId)
                 .orElseThrow(() -> new RuntimeException("Parent profile not found"));
         return parent.getStudent();
     }

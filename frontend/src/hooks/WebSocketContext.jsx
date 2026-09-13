@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getSockJsEndpoint } from '../utils/websocketUrls';
+import { useAuth } from './AuthContext';
 
 const WebSocketContext = createContext(null);
 
@@ -19,20 +20,26 @@ export const useWebSocket = () => {
 const getWebSocketURL = () => getSockJsEndpoint('/ws');
 
 export const WebSocketProvider = ({ children }) => {
+    const { token } = useAuth();
     const clientRef = useRef(null);
+    const pendingRef = useRef(new Map());
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        const wsUrl = getWebSocketURL();
-        
-        console.log(`[WebSocket] Connecting to: ${wsUrl}`);
+        if (!token) {
+            clientRef.current?.deactivate();
+            clientRef.current = null;
+            setConnected(false);
+            return undefined;
+        }
 
+        const wsUrl = getWebSocketURL();
         const client = new Client({
             webSocketFactory: () => new SockJS(wsUrl),
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
-            // Enable better debugging in development
+            connectHeaders: { Authorization: `Bearer ${token}` },
             debug: (msg) => {
                 if (import.meta.env.DEV) {
                     console.log(`[WebSocket Debug] ${msg}`);
@@ -40,62 +47,68 @@ export const WebSocketProvider = ({ children }) => {
             }
         });
 
-        client.onConnect = (frame) => {
-            console.log('[WebSocket] Connected:', frame);
+        client.onConnect = () => {
             setConnected(true);
+            pendingRef.current.forEach((entry) => entry.attach());
         };
-
-        client.onStompError = (frame) => {
-            console.error('[WebSocket] Error:', frame.headers['message']);
-            console.error('[WebSocket] Details:', frame.body);
+        client.onStompError = () => {
+            pendingRef.current.forEach((entry) => { entry.subscription = null; });
             setConnected(false);
         };
-
         client.onWebSocketClose = () => {
-            console.warn('[WebSocket] Connection closed');
+            pendingRef.current.forEach((entry) => { entry.subscription = null; });
             setConnected(false);
         };
-
-        client.onWebSocketError = (event) => {
-            console.error('[WebSocket] WebSocket error:', event);
-            setConnected(false);
-        };
+        client.onWebSocketError = () => setConnected(false);
 
         client.activate();
         clientRef.current = client;
 
         return () => {
-            if (client) {
-                client.deactivate();
-                setConnected(false);
-            }
+            pendingRef.current.forEach((entry) => entry.subscription?.unsubscribe());
+            pendingRef.current.forEach((entry) => { entry.subscription = null; });
+            client.deactivate();
+            clientRef.current = null;
+            setConnected(false);
         };
-    }, []);
+    }, [token]);
 
-    const publish = (destination, message) => {
-        if (clientRef.current && connected) {
+    const publish = useCallback((destination, message) => {
+        if (clientRef.current && clientRef.current.connected) {
             clientRef.current.publish({
                 destination,
                 body: JSON.stringify(message),
             });
-        } else {
-            console.warn('[WebSocket] Cannot publish - not connected');
         }
-    };
+    }, []);
 
-    const subscribe = (destination, callback) => {
-        if (clientRef.current && connected) {
-            return clientRef.current.subscribe(destination, (message) => {
-                callback(JSON.parse(message.body));
+    const subscribe = useCallback((destination, callback) => {
+        const entry = { destination, callback, subscription: null, attach: () => {} };
+        entry.attach = () => {
+            if (!clientRef.current?.connected || entry.subscription) return;
+            entry.subscription = clientRef.current.subscribe(destination, (message) => {
+                try {
+                    callback(JSON.parse(message.body));
+                } catch {
+                    // Ignore a malformed frame instead of breaking the socket.
+                }
             });
-        } else {
-            console.warn('[WebSocket] Cannot subscribe - not connected');
-            return null;
-        }
-    };
+        };
+        pendingRef.current.set(entry, entry);
+        entry.attach();
+        return {
+            unsubscribe() {
+                entry.subscription?.unsubscribe();
+                entry.subscription = null;
+                pendingRef.current.delete(entry);
+            }
+        };
+    }, []);
+
+    const value = React.useMemo(() => ({ connected, publish, subscribe }), [connected, publish, subscribe]);
 
     return (
-        <WebSocketContext.Provider value={{ connected, publish, subscribe }}>
+        <WebSocketContext.Provider value={value}>
             {children}
         </WebSocketContext.Provider>
     );

@@ -11,13 +11,7 @@ const FacultyAttendance = () => {
     const [markingMode, setMarkingMode] = useState(false);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-    const [students, setStudents] = useState([
-        { reg: '211520104001', name: 'Aakash S', attended: 42, total: 45, percentage: 93.3, currentStatus: 'present' },
-        { reg: '211520104002', name: 'Balaji K', attended: 35, total: 45, percentage: 77.8, currentStatus: 'present' },
-        { reg: '211520104003', name: 'Chandini R', attended: 44, total: 45, percentage: 97.8, currentStatus: 'present' },
-        { reg: '211520104004', name: 'Dinesh M', attended: 28, total: 45, percentage: 62.2, currentStatus: 'absent' },
-        { reg: '211520104005', name: 'Elango P', attended: 40, total: 45, percentage: 88.9, currentStatus: 'present' },
-    ]);
+    const [students, setStudents] = useState([]);
 
     React.useEffect(() => {
         const loadAssignments = async () => {
@@ -29,7 +23,7 @@ const FacultyAttendance = () => {
                     setSelectedCourse(`${rows[0].subjectCode} - ${rows[0].subjectName}`);
                 }
             } catch {
-                // keep fallback local data
+                addToast('Assigned subjects could not be read. No local roster is substituted.', 'warning');
             }
         };
         loadAssignments();
@@ -108,9 +102,9 @@ const FacultyAttendance = () => {
                     records: updated.map(s => ({ studentId: Number(s.studentId || 0), status: s.currentStatus }))
                 });
             }
-            addToast(`Attendance for ${date} saved successfully. Shared with student portal.`, 'success');
+            addToast(`Attendance for ${date} was stored.`, 'success');
         } catch {
-            addToast('Attendance saved locally; backend sync failed.', 'warning');
+            addToast('Attendance was not saved. No local roster was stored.', 'warning');
         } finally {
             setLoading(false);
         }
@@ -143,10 +137,7 @@ const FacultyAttendance = () => {
                                 {a.subjectCode} - {a.subjectName} / {a.section}
                             </option>
                         )) : (
-                            <>
-                                <option value="CS8651 - Internet Programming">CS8651 - Internet Programming / CSE-A</option>
-                                <option value="CS8691 - Artificial Intelligence">CS8691 - Artificial Intelligence / CSE-B</option>
-                            </>
+                            <option value="">No assigned subject stored</option>
                         )}
                     </select>
                     <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors">

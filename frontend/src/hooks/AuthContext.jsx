@@ -55,6 +55,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('role');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('rit_dt_token');
+        localStorage.removeItem('rit_dt_user');
         sessionStorage.clear();
 
         setUser(null);
@@ -74,6 +78,27 @@ export const AuthProvider = ({ children }) => {
             });
     };
 
+    const persistSession = (jwt, refreshToken, userData) => {
+        localStorage.setItem('token', jwt);
+        localStorage.setItem('user', JSON.stringify(userData));
+        if (userData.role) localStorage.setItem('role', userData.role);
+        if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+
+        setUser(userData);
+        setToken(jwt);
+        setRole(userData.role || null);
+        setIsAuthenticated(true);
+    };
+
+    useEffect(() => {
+        const onRefreshed = (event) => {
+            const next = event.detail?.token;
+            if (next) setToken(next);
+        };
+        window.addEventListener('rit-token-refreshed', onRefreshed);
+        return () => window.removeEventListener('rit-token-refreshed', onRefreshed);
+    }, []);
+
     const login = async (username, password) => {
         const u = (username || '').trim();
         const p = (password || '').trim();
@@ -86,21 +111,12 @@ export const AuthProvider = ({ children }) => {
 
         try {
             const response = await api.post('/auth/login', { username: u, password: p });
-            const { token: jwt, ...userData } = response.data || {};
+            const { token: jwt, refreshToken, ...userData } = response.data || {};
             if (!jwt || !userData) {
                 return { success: false, message: 'Invalid authentication response from server.' };
             }
 
-            localStorage.setItem('token', jwt);
-            localStorage.setItem('user', JSON.stringify(userData));
-            if (userData.role) {
-                localStorage.setItem('role', userData.role);
-            }
-
-            setUser(userData);
-            setToken(jwt);
-            setRole(userData.role || null);
-            setIsAuthenticated(true);
+            persistSession(jwt, refreshToken, userData);
 
             return { 
                 success: true, 
@@ -145,22 +161,13 @@ export const AuthProvider = ({ children }) => {
             const result = await signInWithPopup(auth, googleProvider);
             const idToken = await result.user.getIdToken();
             const response = await api.post('/auth/google', { token: idToken });
-            const { token: jwt, ...userData } = response.data || {};
+            const { token: jwt, refreshToken, ...userData } = response.data || {};
 
             if (!jwt || !userData) {
                 return { success: false, message: 'Invalid Google authentication response from server.' };
             }
 
-            localStorage.setItem('token', jwt);
-            localStorage.setItem('user', JSON.stringify(userData));
-            if (userData.role) {
-                localStorage.setItem('role', userData.role);
-            }
-
-            setUser(userData);
-            setToken(jwt);
-            setRole(userData.role || null);
-            setIsAuthenticated(true);
+            persistSession(jwt, refreshToken, userData);
 
             return {
                 success: true,

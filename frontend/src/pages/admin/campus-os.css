@@ -1,0 +1,66 @@
+.campus-os { display: flex; flex-direction: column; gap: 16px; }
+.campus-os-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+  font-weight: 700;
+}
+.campus-os-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+.campus-os-head h1 { margin: 4px 0; font-size: 1.7rem; letter-spacing: -0.02em; }
+.campus-os-head p { margin: 0; max-width: 62ch; color: var(--theme-text-muted); font-size: 14px; line-height: 1.5; }
+.campus-os-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+.campus-os-tools button, .campus-os-steps button, .campus-os-steps a, .campus-os-more > button, .twin-demo-actions button, .twin-demo-actions a, .twin-demo-rail button {
+  min-height: 40px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+.campus-os-steps { display: flex; flex-wrap: wrap; gap: 8px; }
+.campus-os-steps button.active, .twin-demo-rail button.active { border-color: var(--color-accent-gold); }
+.campus-os-more { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+
+.twin-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed var(--color-accent-gold);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+}
+.twin-demo h2, .twin-demo h3 { margin: 0; }
+.twin-demo header p, .twin-demo article p { margin: 0; color: var(--theme-text-muted); font-size: 14px; line-height: 1.5; }
+.twin-demo-rail { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.twin-demo-badge {
+  display: inline-flex;
+  width: fit-content;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-accent-gold);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--theme-text);
+}
+.twin-demo-example { font-size: 13px !important; }
+.twin-demo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+
+@media (max-width: 800px) {
+  .campus-os-head { flex-direction: column; }
+  .campus-os-tools { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .campus-os, .twin-demo { transition: none; }
+}

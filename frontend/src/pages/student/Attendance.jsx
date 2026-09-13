@@ -8,14 +8,7 @@ const AttendanceReport = () => {
     const [search, setSearch] = useState('');
     const { addToast: _addToast } = useToast();
     const [selectedRows, setSelectedRows] = useState([]);
-    const [attendanceRecords, setAttendanceRecords] = useState([
-        { slNo: 1, code: 'CS3401', name: 'Algorithms and Data Structures', faculty: 'Dr. Sarah Smith', attended: 42, total: 45, percent: 93.3 },
-        { slNo: 2, code: 'CS3402', name: 'Operating Systems', faculty: 'Prof. James Wilson', attended: 38, total: 45, percent: 84.4 },
-        { slNo: 3, code: 'CS3403', name: 'Computer Networks', faculty: 'Dr. Emily Brown', attended: 30, total: 45, percent: 66.7 },
-        { slNo: 4, code: 'CS3404', name: 'Database Management', faculty: 'Prof. Michael Johnson', attended: 44, total: 45, percent: 97.8 },
-        { slNo: 5, code: 'GE3401', name: 'Professional Ethics', faculty: 'Dr. Robert Davis', attended: 45, total: 45, percent: 100.0 },
-        { slNo: 6, code: 'CS8651', name: 'Internet Programming', faculty: 'Dr. Sarah Smith', attended: 42, total: 45, percent: 93.3 }
-    ]);
+    const [attendanceRecords, setAttendanceRecords] = useState([]);
 
     React.useEffect(() => {
         const loadSummary = async () => {
@@ -35,40 +28,11 @@ const AttendanceReport = () => {
                     return;
                 }
             } catch {
-                // fall back to local mirror
-            }
-        };
-
-        const checkConnectivity = () => {
-            const syncedData = localStorage.getItem('connectivity_attendance');
-            if (syncedData) {
-                const data = JSON.parse(syncedData);
-                // Match by code (handling both CS3401 style and CS8651 from faculty view)
-                const courseCode = data.course.split(' - ')[0];
-
-                setAttendanceRecords(prev => prev.map(rec => {
-                    if (rec.code === courseCode) {
-                        // Assuming current user is "Aakash S" (reg: ...4001) from the faculty list
-                        const studentData = data.students.find(s => s.reg === '211520104001');
-                        if (studentData) {
-                            return {
-                                ...rec,
-                                attended: studentData.attended,
-                                total: studentData.total,
-                                percent: parseFloat(studentData.percentage)
-                            };
-                        }
-                    }
-                    return rec;
-                }));
+                setAttendanceRecords([]);
             }
         };
 
         loadSummary();
-        checkConnectivity();
-        // Add event listener for cross-tab sync
-        window.addEventListener('storage', checkConnectivity);
-        return () => window.removeEventListener('storage', checkConnectivity);
     }, []);
 
     const handleSelectAll = () => {
@@ -91,8 +55,7 @@ const AttendanceReport = () => {
             <div className="stu-report-header" style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
                 <h2 style={{ margin: '0 0 16px 0', fontSize: '22px', fontWeight: '800', color: 'var(--theme-text)', borderLeft: '4px solid var(--color-accent-gold)', paddingLeft: '16px' }}>Attendance Performance Report</h2>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--theme-text-muted)' }}>
-                    <span>Academic Year : <b style={{ color: 'var(--theme-text)' }}>2025-2026</b></span>
-                    <span>Semester : <b style={{ color: 'var(--theme-text)' }}>IV</b></span>
+                    <span>Academic year and semester come from stored attendance rows. None are shown until that summary exists.</span>
                 </div>
             </div>
 
@@ -177,7 +140,7 @@ const AttendanceReport = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="8" style={{ textAlign: 'center', padding: '40px', opacity: 0.7, fontSize: '14px', color: 'var(--theme-text-muted)' }}>
-                                        No matching records found
+                                        No attendance summary is stored for this login.
                                     </td>
                                 </tr>
                             )}

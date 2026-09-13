@@ -1,0 +1,36 @@
+.alert-center { display: flex; flex-direction: column; gap: 16px; }
+.alert-center h2 { margin: 0; font-size: 1.25rem; }
+.alert-center-head p, .alert-note, .alert-card p, .alert-coverage p { margin: 4px 0 0; color: var(--theme-text-muted); font-size: 13px; }
+.alert-filters, .alert-coverage, .alert-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+.alert-filters button, .alert-status select {
+  min-height: 36px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.alert-filters button.active { border-color: var(--color-accent-gold); }
+.alert-group { display: flex; flex-direction: column; gap: 8px; }
+.alert-group h3 { margin: 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.alert-card, .predict-card, .alert-coverage article {
+  background: var(--card-bg);
+  border: 1px solid var(--theme-border);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+.alert-card-critical { border-left-color: var(--color-danger, #b42318); }
+.alert-card-high { border-left-color: #c2410c; }
+.alert-card-medium { border-left-color: var(--color-warning, #b45309); }
+.alert-card-low { border-left-color: var(--theme-brand-strong); }
+.alert-card-informational { border-left-color: var(--theme-border); }
+.alert-card header, .predict-card header, .alert-coverage header { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.alert-card dl, .predict-card dl { display: grid; grid-template-columns: 140px 1fr; gap: 4px 8px; margin: 10px 0 0; font-size: 13px; }
+.alert-card dt, .predict-card dt { color: var(--theme-text-muted); }
+.alert-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.predict-card { min-width: min(100%, 240px); flex: 1; }
+.predict-card strong { display: block; font-size: 1.4rem; }
+.alert-coverage article { flex: 1; min-width: min(100%, 180px); }
+.alert-coverage article.unsupported { opacity: 0.85; }

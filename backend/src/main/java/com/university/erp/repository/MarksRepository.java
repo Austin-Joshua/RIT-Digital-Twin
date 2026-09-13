@@ -34,4 +34,10 @@ public interface MarksRepository extends JpaRepository<Marks, Long> {
     @EntityGraph(attributePaths = { "student", "subject" })
     @Query("SELECT m FROM Marks m WHERE m.student.id IN :studentIds")
     List<Marks> findAllByStudentIdIn(Collection<Long> studentIds);
+
+    @Query("select count(m) from Marks m where m.grade is not null and m.grade <> ''")
+    long countGradedMarks();
+
+    @Query("select count(m) from Marks m where m.grade is not null and m.grade <> '' and upper(m.grade) not in ('F', 'AB')")
+    long countPassingGrades();
 }

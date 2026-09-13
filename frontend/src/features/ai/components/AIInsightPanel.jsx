@@ -4,28 +4,7 @@ import api from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBrain, FaLightbulb, FaArrowRight, FaRobot, FaMagic, FaTimes } from 'react-icons/fa';
 
-const MOCK_INSIGHTS = {
-    STUDENT: [
-        { category: 'ACADEMIC', message: 'Your performance in Labs is 15% higher than theory.', suggestion: 'Review theory notes before Friday.' },
-        { category: 'CAREER', message: 'Your skills align 92% with Full Stack roles.', suggestion: 'Check new React internships.' }
-    ],
-    FACULTY: [
-        { category: 'CLASS_PULSE', message: 'CSE-A participation dropped by 10% today.', suggestion: 'Try interactive quiz in next hour.' },
-        { category: 'RESEARCH', message: 'Your paper on ML matches 3 current grants.', suggestion: 'Draft proposal by EOW.' }
-    ],
-    PARENT: [
-        { category: 'CELEBRATION', message: 'Ram ranked in the top 5% for Coding velocity this week!', suggestion: 'Celebrate this milestone at dinner.' },
-        { category: 'MILESTONE', message: 'Project "Eco-Track" was selected for the Campus Showcase.', suggestion: 'View project details and feedback.' },
-        { category: 'FORECAST', message: 'Ram is on track for 8.7 CGPA. Excellent trajectory.', suggestion: 'Keep up the positive encouragement!' }
-    ],
-    ADMIN: [
-        { category: 'INFRA', message: 'Block C energy spike detected (A/C load).', suggestion: 'Optimize schedules for Room 302.' },
-        { category: 'SENTIMENT', message: 'Campus vibe is "Excited" (85% positive).', suggestion: 'Broadcast sports event update.' }
-    ]
-};
-
 const AIInsightPanel = ({ role = 'STUDENT', category }) => {
-    const effectiveRole = role === 'ADMIN' ? 'ADMIN' : role;
     const navigate = useNavigate();
     const [insights, setInsights] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,16 +14,18 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
         const fetchInsights = async () => {
             try {
                 const response = await api.get('/intelligence/insights');
-                const data = category ? response.data.filter(i => i.category === category) : response.data;
-                setInsights(data.length > 0 ? data : (MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT));
+                const data = Array.isArray(response.data)
+                    ? (category ? response.data.filter(i => i.category === category) : response.data)
+                    : [];
+                setInsights(data);
             } catch {
-                setInsights(MOCK_INSIGHTS[effectiveRole] || MOCK_INSIGHTS.STUDENT);
+                setInsights([]);
             } finally {
                 setLoading(false);
             }
         };
         fetchInsights();
-    }, [category, effectiveRole]);
+    }, [category]);
 
     if (loading) return (
         <div className="animate-pulse h-64 rounded-2xl border border-dashed flex items-center justify-center" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
@@ -80,7 +61,9 @@ const AIInsightPanel = ({ role = 'STUDENT', category }) => {
                 </div>
 
                 <div className="space-y-4 relative z-10">
-                    {insights.map((insight, idx) => (
+                    {insights.length === 0 ? (
+                        <p style={{ margin: 0 }}>No intelligence insights available</p>
+                    ) : insights.map((insight, idx) => (
                         <motion.div
                             key={idx}
                             whileHover={{ scale: 1.01 }}

@@ -12,9 +12,9 @@ import {
 import api from '../../services/api';
 import { FaChalkboardTeacher, FaUserGraduate, FaChartLine, FaExclamationTriangle, FaStar } from 'react-icons/fa';
 
-import { getDepartmentStats } from '../../utils/MockDataGenerator';
 import { useAuth } from '../../hooks/AuthContext';
 import RingStat from '../../components/common/RingStat';
+import RoleExperience from '../../platform/ui/RoleExperience';
 
 const HODDashboard = () => {
   const { user } = useAuth();
@@ -33,51 +33,6 @@ const HODDashboard = () => {
   const [trendBy, setTrendBy] = useState('semester');
   const [studentYear, setStudentYear] = useState('');
   const [studentSection, setStudentSection] = useState('');
-
-  const generateMockHODData = () => {
-    const dStats = getDepartmentStats('CSE');
-    setStats({
-      totalFaculty: dStats.totalFaculty,
-      totalStudents: dStats.totalStudents,
-      avgMarks: dStats.averageMarks,
-      passPercentage: dStats.passPercentage,
-      isHandS: false,
-      departmentName: 'Computer Science and Engineering'
-    });
-    setAnalytics({
-      totalAttendance: dStats.averageAttendance,
-      placementStat: "84%",
-      activeResearch: "12 Projects"
-    });
-    setClassPerformance([
-      { id: 1, name: 'CSE-A', year: 'III', performance: 'strong', gpa: 8.4 },
-      { id: 2, name: 'CSE-B', year: 'III', performance: 'average', gpa: 7.8 },
-      { id: 3, name: 'CSBS', year: 'II', performance: 'strong', gpa: 8.6 },
-    ]);
-    setStudents([
-      { id: 1, name: 'Ram Kumar', reg: 'RIT2021001', year: 'III', section: 'A', gpa: 8.5, attendance: 92 },
-      { id: 2, name: 'Sachin S', reg: '2117240080119', year: 'III', section: 'B', gpa: 7.9, attendance: 88 }
-    ]);
-    setFaculty([
-      { id: 1, name: 'Dr. Anita R', designation: 'Professor', specialization: 'AI/ML' },
-      { id: 2, name: 'Prof. Rajesh K', designation: 'Asst. Professor', specialization: 'Cloud Computing' }
-    ]);
-    setTrends([
-      { name: 'Sem 1', avgGpa: 7.8 },
-      { name: 'Sem 2', avgGpa: 8.1 },
-      { name: 'Sem 3', avgGpa: 8.3 },
-      { name: 'Sem 4', avgGpa: 8.4 },
-    ]);
-    setWeakSubjects([
-      { code: 'CS102', title: 'Discrete Math', failCount: 12 },
-      { code: 'CS204', title: 'Computer Networks', failCount: 8 }
-    ]);
-    setHeatmap([
-      { day: 'Mon', '9am': 92, '11am': 88, '1pm': 85, '3pm': 80 },
-      { day: 'Tue', '9am': 90, '11am': 85, '1pm': 82, '3pm': 78 },
-      { day: 'Wed', '9am': 94, '11am': 90, '1pm': 88, '3pm': 84 },
-    ]);
-  };
 
   const fetchAll = async () => {
     setLoading(true);
@@ -105,14 +60,7 @@ const HODDashboard = () => {
       setTrends(trendsRes.data);
       setRankings(rankingsRes.data);
     } catch (err) {
-      console.warn('HOD fetch error, switching to deterministic mock sync', err);
-      // Only mock if the server is absolutely unreachable, otherwise prioritize real data
-      if (err.message?.includes('Network Error')) {
-          generateMockHODData();
-      } else {
-          // If we have partial data (e.g. from data initializer), prefer showing that
-          generateMockHODData(); 
-      }
+      setError('Department records could not be read. No estimated picture is substituted.');
     } finally {
       setLoading(false);
     }
@@ -143,10 +91,15 @@ const HODDashboard = () => {
 
   const perfColor = (perf) => (perf === 'strong' ? '#16a34a' : perf === 'average' ? '#ca8a04' : '#dc2626');
 
-  if (loading && !stats) {
+  if (!stats) {
     return (
       <div className="space-y-6" style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
-        <div style={{ textAlign: 'center', padding: '48px', color: 'var(--theme-text-muted)' }}>Loading department data...</div>
+        <RoleExperience />
+        <p style={{ color: 'var(--theme-text-muted)' }}>
+          {loading
+            ? 'Reading department records.'
+            : (error || 'Department records are not available. No estimated department is substituted.')}
+        </p>
       </div>
     );
   }
@@ -155,6 +108,7 @@ const HODDashboard = () => {
 
   return (
     <div className="space-y-6" style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
+      <RoleExperience />
       <div className="dashboard-welcome-banner" style={{ 
           background: 'linear-gradient(135deg, var(--color-accent-gold) 0%, #b45309 100%)',
           color: 'var(--theme-brand-strong)',
@@ -209,8 +163,8 @@ const HODDashboard = () => {
           {isHandS && <span style={{ fontSize: '0.7em', fontWeight: 'normal', color: 'var(--theme-text-muted)', marginLeft: '8px' }}>First year from all branches (reported under H&S)</span>}
         </h2>
         <div className="ims-stat-row" style={{ marginBottom: 16 }}>
-          <RingStat label="Faculty" value={String(stats?.totalFaculty ?? 0)} center={String(stats?.totalFaculty ?? 0)} sub="Department strength" percent={Math.min(100, Math.round(((stats?.totalFaculty || 0) / 40) * 100))} color="#2ecc71" />
-          <RingStat label="Students" value={String(stats?.totalStudents ?? 0)} center={String(stats?.totalStudents ?? 0)} sub={isHandS ? 'First year, all branches' : 'Department roll'} percent={Math.min(100, Math.round(((stats?.totalStudents || 0) / 600) * 100))} color="#17a2b8" />
+          <RingStat label="Faculty" value={String(stats?.totalFaculty ?? 0)} center={String(stats?.totalFaculty ?? 0)} sub="Stored department count" percent={null} color="#2ecc71" />
+          <RingStat label="Students" value={String(stats?.totalStudents ?? 0)} center={String(stats?.totalStudents ?? 0)} sub={isHandS ? 'First year, all branches' : 'Stored department roll'} percent={null} color="#17a2b8" />
           <RingStat label="Attendance" value={`${analytics?.totalAttendance ?? 0}%`} center={`${analytics?.totalAttendance ?? 0}%`} sub="Average this semester" percent={Number(analytics?.totalAttendance || 0)} color="#f0ad4e" />
           <RingStat label="Pass" value={`${stats?.passPercentage ?? 0}%`} center={`${stats?.avgMarks ?? 0}`} sub="Average marks" percent={Number(stats?.passPercentage || 0)} color="#dc3545" />
         </div>

@@ -1,83 +1,91 @@
-import React, { useState } from 'react';
-import { FaFileInvoice, FaReceipt } from 'react-icons/fa';
-import { useToast } from '../../hooks/ToastContext';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/AuthContext';
-import { academicYearLabel, examFees } from '../../utils/studentFees';
+import './fee-ledger.css';
 
-const ExamFee = () => {
-    const { addToast } = useToast();
+const TABS = ['Fee', 'Payment History'];
+
+export default function ExamFee() {
+    const navigate = useNavigate();
     const { user } = useAuth();
-    const [paidIds, setPaidIds] = useState(() => new Set());
-    const year = academicYearLabel();
-    const pending = examFees.filter((fee) => fee.status === 'UNPAID' && !paidIds.has(fee.id));
-    const pendingTotal = pending.reduce((sum, fee) => sum + fee.amount, 0);
+    const parent = String(user?.role || '').replace('ROLE_', '') === 'PARENT';
+    const [tab, setTab] = useState('Fee');
+    const [payOpen, setPayOpen] = useState(false);
+    const [notice, setNotice] = useState('');
 
-    const pay = () => {
-        setPaidIds(new Set(examFees.map((fee) => fee.id)));
-        addToast(`Exam fee of ₹${pendingTotal.toLocaleString('en-IN')} recorded for ${year}.`, 'success');
+    const submitPay = (event) => {
+        event.preventDefault();
+        setPayOpen(false);
+        setNotice('No exam-fee row is stored, so nothing was sent. Official IMS pay is not an RIT Digital Twin record.');
     };
 
     return (
-        <div className="stu-dashboard">
-            <div className="ims-page-head">
-                <div>
-                    <h1><FaFileInvoice /> Exam Fee</h1>
-                    <p>Theory, practical, and arrear exam fees for {user?.registerNo || 'your register number'}.</p>
-                </div>
-                <div className="ims-year-pill">
-                    <span>Academic Year</span>
-                    <strong>{year}</strong>
-                </div>
+        <section className="fee-ledger" aria-label="Exam Fee">
+            <header>
+                <h1>Exam Fee</h1>
+                <p className="fee-note">
+                    {parent ? 'Parent login uses the same exam-fee layout as the student page.' : 'Same sections as the official IMS exam fee page.'}
+                    {' '}Rows are semester, exam month and year, and amount. None are stored for this login.
+                </p>
+            </header>
+            <div className="fee-ledger-tools">
+                <button type="button" onClick={() => navigate(-1)}>Back</button>
+                <button type="button" onClick={() => setPayOpen(true)}>Pay Exam</button>
             </div>
+            <div className="fee-tabs" role="tablist" aria-label="Exam fee sections">
+                {TABS.map((item) => (
+                    <button key={item} type="button" role="tab" aria-selected={tab === item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>{item}</button>
+                ))}
+            </div>
+            {notice ? <p className="fee-note" role="status">{notice}</p> : null}
 
-            <div className="ims-stat-row">
-                <article className="ims-stat-card">
-                    <div className="ims-ring" style={{ '--ring': pendingTotal === 0 ? '#2ecc71' : '#e63946', '--pct': pendingTotal === 0 ? '100%' : '28%' }}>
-                        <span>{pendingTotal === 0 ? 'Paid' : 'Due'}</span>
-                    </div>
-                    <div>
-                        <div className="ims-stat-label">Exam Fees Pending</div>
-                        <div className="ims-stat-value">₹{pendingTotal.toLocaleString('en-IN')}</div>
-                        <div className="ims-stat-sub">{year}</div>
+            {tab === 'Fee' ? (
+                <article className="fee-card">
+                    <h2>Fee Details</h2>
+                    <dl className="fee-lines">
+                        <dt>Total Fee</dt>
+                        <dd>Not stored</dd>
+                        <dt>Paid Amount</dt>
+                        <dd>Not stored</dd>
+                        <dt>Balance Amount</dt>
+                        <dd>Not stored</dd>
+                    </dl>
+                </article>
+            ) : (
+                <article className="fee-card">
+                    <h2>Payment History</h2>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table className="fee-table">
+                            <thead>
+                                <tr>
+                                    <th>Semester</th>
+                                    <th>Exam Month & Year</th>
+                                    <th>Amount</th>
+                                    <th>Pay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colSpan={4}>No exam-fee row is stored. A sample semester is not listed.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </article>
-            </div>
+            )}
 
-            <div className="stu-info-card">
-                <div className="info-header">Exam fee breakdown</div>
-                <div className="info-body" style={{ padding: 0 }}>
-                    <table className="stu-data-table">
-                        <thead>
-                            <tr>
-                                <th>Component</th>
-                                <th>Deadline</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {examFees.map((fee) => {
-                                const status = paidIds.has(fee.id) ? 'PAID' : fee.status;
-                                return (
-                                    <tr key={fee.id}>
-                                        <td>{fee.label}</td>
-                                        <td>{fee.deadline}</td>
-                                        <td>₹{fee.amount.toLocaleString('en-IN')}</td>
-                                        <td>{status}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+            {payOpen ? (
+                <div className="fee-scrim" role="presentation" onMouseDown={() => setPayOpen(false)}>
+                    <form className="fee-modal" role="dialog" aria-modal="true" aria-label="Pay exam fee" onMouseDown={(event) => event.stopPropagation()} onSubmit={submitPay}>
+                        <h2>Pay Exam</h2>
+                        <p>Semester, exam month, and amount are not stored, so Pay cannot submit a charge.</p>
+                        <div className="fee-ledger-tools">
+                            <button type="button" onClick={() => setPayOpen(false)}>Back</button>
+                            <button type="submit" className="primary">Pay</button>
+                        </div>
+                    </form>
                 </div>
-                <div className="info-footer">
-                    <button type="button" className="ims-pay-btn" onClick={pay} disabled={pendingTotal === 0}>
-                        <FaReceipt /> {pendingTotal === 0 ? 'No exam fee pending' : `Pay ₹${pendingTotal.toLocaleString('en-IN')}`}
-                    </button>
-                </div>
-            </div>
-        </div>
+            ) : null}
+        </section>
     );
-};
-
-export default ExamFee;
+}

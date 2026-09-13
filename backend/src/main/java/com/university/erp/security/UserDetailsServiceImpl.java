@@ -34,7 +34,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         final String searchEmail = normalized.contains("@") ? lower : lower + "@ritchennai.edu.in";
         final String searchUsername = normalized;
 
-        UserDetails direct = userRepository.findByUsername(searchUsername)
+        String alias = com.university.erp.security.LoginCredentials.storedUsername(normalized).orElse(searchUsername);
+        UserDetails direct = userRepository.findByUsername(alias)
+                .or(() -> userRepository.findByUsername(searchUsername))
                 .or(() -> userRepository.findByUsername(lower))
                 .or(() -> userRepository.findByEmail(searchEmail))
                 .or(() -> userRepository.findByEmail(normalized))

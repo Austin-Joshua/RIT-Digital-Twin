@@ -1,0 +1,41 @@
+.command-center { display: flex; flex-direction: column; gap: 16px; }
+.command-head, .command-main { display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 16px; }
+.command-kicker { margin: 0; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--theme-text-muted); font-weight: 700; }
+.command-head h1, .command-head h2 { margin: 4px 0; font-size: 1.35rem; font-weight: 700; }
+.command-head p, .command-health p, .command-kpis p { color: var(--theme-text-muted); font-size: 13px; }
+.command-score, .command-health article, .command-kpis article, .command-board, .command-alert {
+  background: var(--card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+.command-score { display: flex; flex-direction: column; gap: 4px; }
+.command-score strong { font-size: 2.4rem; line-height: 1; }
+.command-health, .command-kpis, .command-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
+.command-kpis strong, .command-health strong { display: block; font-size: 1.3rem; margin: 6px 0; }
+.command-layers, .command-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.command-layers button, .command-actions button, .command-building, .command-map-link {
+  min-height: 40px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.command-layers button.active { border-color: var(--color-accent-gold); }
+.command-building { width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; margin-top: 8px; }
+.command-building strong { margin-left: auto; }
+.command-timeline { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.command-timeline li { display: grid; grid-template-columns: 72px 1fr 1fr auto; gap: 8px; font-size: 13px; }
+.command-alert { margin-bottom: 8px; }
+.command-alert p { margin: 4px 0; font-size: 13px; }
+.command-empty, .command-gap { color: var(--theme-text-muted); font-size: 14px; }
+.command-negative { color: var(--color-danger, #b42318); }
+.command-models { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+.command-models article { border: 1px solid var(--theme-border); border-radius: var(--radius-sm); padding: 10px; }
+.command-models header, .command-alert header { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.command-drawer p, .command-drawer li { font-size: 14px; }
+@media (max-width: 900px) {
+  .command-head, .command-main, .command-timeline li { grid-template-columns: 1fr; }
+}

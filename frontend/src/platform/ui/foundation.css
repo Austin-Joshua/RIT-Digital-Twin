@@ -1,0 +1,92 @@
+.source-live { color: var(--color-success); }
+.source-simulated { color: var(--color-warning); }
+.source-predicted { color: var(--theme-brand-strong); }
+.source-historical,
+.source-estimated { color: var(--theme-text-muted); }
+
+.campus-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.campus-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.campus-metric,
+.campus-panel,
+.campus-alert,
+.campus-chart,
+.campus-drawer,
+.campus-state {
+  color: var(--theme-text);
+  font-family: var(--font-primary);
+}
+
+.campus-panel,
+.campus-alert,
+.campus-chart,
+.campus-drawer-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-md);
+}
+
+.campus-metric-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.campus-metric-label,
+.campus-panel-title,
+.campus-chart-title {
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  color: var(--theme-text-muted);
+}
+
+.campus-state {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--theme-text-muted);
+}
+
+.campus-state-error { color: var(--color-danger); }
+
+.campus-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.campus-drawer-panel {
+  width: min(420px, 100%);
+  height: 100%;
+  padding: var(--spacing-lg);
+  overflow: auto;
+  border-radius: 0;
+}
+
+.campus-link { margin: 0; font-size: 13px; color: var(--theme-text-muted); }
+.campus-link-connected { color: var(--theme-text); }
+.campus-link-offline { color: var(--color-danger, #b42318); }
+.state-changed { animation: state-tick 700ms ease; }
+@keyframes state-tick {
+  from { box-shadow: 0 0 0 2px var(--color-accent-gold, #c4a35a); }
+  to { box-shadow: 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .state-changed { animation: none; }
+}

@@ -1,11 +1,15 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
+const rawApiBase =
   import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
   (typeof window !== "undefined" &&
   !window.location.hostname.includes("localhost") &&
   !window.location.hostname.includes("127.0.0.1")
     ? "https://rit-backend-0zvm.onrender.com/api"
     : "http://localhost:8080/api");
+
+const API_BASE_URL = rawApiBase.replace(/\/+$/, "").endsWith("/api")
+  ? rawApiBase.replace(/\/+$/, "")
+  : `${rawApiBase.replace(/\/+$/, "")}/api`;
 
 const API_TIMEOUT = 30000;
 

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CertificateRequestRepository extends JpaRepository<CertificateRequest, Long> {
     List<CertificateRequest> findByStudentId(Long studentId);
+
+    List<CertificateRequest> findAllByOrderByCreatedAtDesc();
 }

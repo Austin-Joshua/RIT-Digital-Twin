@@ -22,10 +22,16 @@ const LoginPage = () => {
     const { isDarkMode } = useContext(ThemeContext);
 
     useEffect(() => {
-        let timeoutId;
+        let stopped = false;
+        let timer;
+        let abortTimer;
+        const controllerRef = { current: null };
+
         const checkConnection = async () => {
             const controller = new AbortController();
-            timeoutId = setTimeout(() => controller.abort(), 15000);
+            controllerRef.current = controller;
+            abortTimer = setTimeout(() => controller.abort(), 8000);
+            let online = false;
 
             try {
                 const healthUrl = `${getBackendRootURL()}/actuator/health`;
@@ -34,20 +40,23 @@ const LoginPage = () => {
                     mode: 'cors',
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
-                if (response.ok) setBackendStatus('online');
-                else setBackendStatus('offline');
+                online = response.ok;
             } catch {
-                setBackendStatus('offline');
+                online = false;
             } finally {
-                clearTimeout(timeoutId);
+                clearTimeout(abortTimer);
             }
+
+            if (stopped) return;
+            setBackendStatus(online ? 'online' : 'offline');
+            timer = setTimeout(checkConnection, online ? 60000 : 15000);
         };
 
         checkConnection();
-        const interval = setInterval(checkConnection, 10000);
         return () => {
-            if (timeoutId) clearTimeout(timeoutId);
-            clearInterval(interval);
+            stopped = true;
+            clearTimeout(timer);
+            clearTimeout(abortTimer);
         };
     }, []);
 

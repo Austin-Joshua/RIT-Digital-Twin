@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ExportButtons from '../../components/common/ExportButtons';
 import { useToast } from '../../hooks/ToastContext';
 import { useAuth } from '../../hooks/AuthContext';
-import { getSemesterResults } from '../../utils/MockDataGenerator';
 import api from '../../services/api';
 
 const GradeBook = () => {
@@ -38,10 +37,6 @@ const GradeBook = () => {
                         result: g.gradeLetter === 'RA' ? 'RA' : 'PASS',
                         monthYear: g.semester % 2 === 1 ? 'DEC 2024' : 'MAY 2025'
                     })));
-                } else if ([1, 2, 3].includes(Number(semester))) {
-                    // Fallback to Curriculum Generator for requested semesters
-                    const mockResults = getSemesterResults(user?.email || 'guest@ritchennai.edu.in', Number(semester));
-                    setGrades(mockResults);
                 } else {
                     setGrades([]);
                 }

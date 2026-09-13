@@ -18,4 +18,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByDepartmentId(Long departmentId);
 
     List<Attendance> findByStudent_IdIn(java.util.Collection<Long> studentIds);
+
+    @Query("select avg(a.percentage) from Attendance a where a.percentage is not null")
+    Double averageAttendancePercentage();
 }

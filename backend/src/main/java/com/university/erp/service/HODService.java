@@ -108,34 +108,33 @@ public class HODService {
             analytics.put("averageMarks", null);
             analytics.put("passPercentage", null);
             analytics.put("internalMarksAverage", null);
-            return analytics;
-        }
-
-        BigDecimal totalScoreSum = BigDecimal.ZERO;
-        int totalScoreCount = 0;
-        BigDecimal internalSum = BigDecimal.ZERO;
-        int internalCount = 0;
-        int passed = 0;
-        int totalWithGrade = 0;
-        for (Marks m : deptMarks) {
-            if (m.getTotalScore() != null) {
-                totalScoreSum = totalScoreSum.add(m.getTotalScore());
-                totalScoreCount++;
-            }
-            if (m.getCalculatedInternal() != null) {
-                internalSum = internalSum.add(m.getCalculatedInternal());
-                internalCount++;
-            }
-            if (m.getGrade() != null && !m.getGrade().isEmpty()) {
-                totalWithGrade++;
-                if (!"F".equalsIgnoreCase(m.getGrade()) && !"AB".equalsIgnoreCase(m.getGrade())) {
-                    passed++;
+        } else {
+            BigDecimal totalScoreSum = BigDecimal.ZERO;
+            int totalScoreCount = 0;
+            BigDecimal internalSum = BigDecimal.ZERO;
+            int internalCount = 0;
+            int passed = 0;
+            int totalWithGrade = 0;
+            for (Marks m : deptMarks) {
+                if (m.getTotalScore() != null) {
+                    totalScoreSum = totalScoreSum.add(m.getTotalScore());
+                    totalScoreCount++;
+                }
+                if (m.getCalculatedInternal() != null) {
+                    internalSum = internalSum.add(m.getCalculatedInternal());
+                    internalCount++;
+                }
+                if (m.getGrade() != null && !m.getGrade().isEmpty()) {
+                    totalWithGrade++;
+                    if (!"F".equalsIgnoreCase(m.getGrade()) && !"AB".equalsIgnoreCase(m.getGrade())) {
+                        passed++;
+                    }
                 }
             }
+            analytics.put("averageMarks", totalScoreCount > 0 ? totalScoreSum.divide(BigDecimal.valueOf(totalScoreCount), 2, RoundingMode.HALF_UP) : null);
+            analytics.put("passPercentage", totalWithGrade > 0 ? BigDecimal.valueOf(100.0 * passed / totalWithGrade).setScale(2, RoundingMode.HALF_UP) : null);
+            analytics.put("internalMarksAverage", internalCount > 0 ? internalSum.divide(BigDecimal.valueOf(internalCount), 2, RoundingMode.HALF_UP) : null);
         }
-        analytics.put("averageMarks", totalScoreCount > 0 ? totalScoreSum.divide(BigDecimal.valueOf(totalScoreCount), 2, RoundingMode.HALF_UP) : null);
-        analytics.put("passPercentage", totalWithGrade > 0 ? BigDecimal.valueOf(100.0 * passed / totalWithGrade).setScale(2, RoundingMode.HALF_UP) : null);
-        analytics.put("internalMarksAverage", internalCount > 0 ? internalSum.divide(BigDecimal.valueOf(internalCount), 2, RoundingMode.HALF_UP) : null);
 
         if (deptAttendance.isEmpty()) {
             analytics.put("averageAttendance", null);

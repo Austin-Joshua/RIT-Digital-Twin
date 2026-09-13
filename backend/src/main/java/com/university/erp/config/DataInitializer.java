@@ -5,20 +5,15 @@ import com.university.erp.model.User;
 import com.university.erp.repository.RoleRepository;
 import com.university.erp.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.repository.BusStopRepository;
 import com.university.erp.model.TransportRoute;
 import com.university.erp.model.BusStop;
-import com.university.erp.model.AlumniProfile;
-import com.university.erp.model.AssetInventory;
-import com.university.erp.model.FacultyLeaveRequest;
 import com.university.erp.repository.AlumniProfileRepository;
 import com.university.erp.repository.AssetInventoryRepository;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
@@ -38,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -60,6 +54,7 @@ public class DataInitializer implements CommandLineRunner {
         private final SemesterRepository semesterRepository;
         private final SubjectRepository subjectRepository;
         private final JdbcTemplate jdbcTemplate;
+        private final com.university.erp.service.CampusCredentialAlignment campusCredentialAlignment;
 
         public DataInitializer(UserRepository userRepository, RoleRepository roleRepository,
                         PasswordEncoder passwordEncoder, TransportRouteRepository transportRouteRepository,
@@ -68,7 +63,8 @@ public class DataInitializer implements CommandLineRunner {
                         DepartmentRepository departmentRepository, FacultyProfileRepository facultyProfileRepository,
                         FacultySubjectRepository facultySubjectRepository, SemesterRepository semesterRepository,
                         SubjectRepository subjectRepository,
-                        JdbcTemplate jdbcTemplate) {
+                        JdbcTemplate jdbcTemplate,
+                        com.university.erp.service.CampusCredentialAlignment campusCredentialAlignment) {
                 this.userRepository = userRepository;
                 this.roleRepository = roleRepository;
                 this.passwordEncoder = passwordEncoder;
@@ -83,6 +79,7 @@ public class DataInitializer implements CommandLineRunner {
                 this.semesterRepository = semesterRepository;
                 this.subjectRepository = subjectRepository;
                 this.jdbcTemplate = jdbcTemplate;
+                this.campusCredentialAlignment = campusCredentialAlignment;
         }
 
         @Override
@@ -118,6 +115,7 @@ public class DataInitializer implements CommandLineRunner {
                 assignFacultyToDepartment();
                 seedCseMockFacultyAndAllocations();
                 assignRegisterNumbersToDemoStudents();
+                campusCredentialAlignment.alignMockStaffAccounts();
 
                 log.info("RIT Digital Twin: data initialization complete.");
                 } catch (Exception e) {
@@ -356,146 +354,105 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         private void seedErpData() {
-                if (alumniRepo.count() == 0) {
-                        AlumniProfile p1 = new AlumniProfile();
-                        p1.setName("Arjun Kumar");
-                        p1.setBatch("2018-2022");
-                        p1.setDepartment("Computer Science");
-                        p1.setCompany("Amazon");
-                        p1.setDesignation("Software Development Eng");
-                        alumniRepo.save(p1);
-
-                        AlumniProfile p2 = new AlumniProfile();
-                        p2.setName("Priya R");
-                        p2.setBatch("2017-2021");
-                        p2.setDepartment("ECE");
-                        p2.setCompany("TCS");
-                        p2.setDesignation("Systems Engineer");
-                        alumniRepo.save(p2);
-                }
-
-                if (assetRepo.count() == 0) {
-                        AssetInventory a1 = new AssetInventory();
-                        a1.setAssetName("Dell Optiplex 7090");
-                        a1.setCategory("Electronics");
-                        a1.setStatus("Active");
-                        a1.setLastMaintained("2024-01-15");
-                        a1.setLocation("Lab 4");
-                        assetRepo.save(a1);
-
-                        AssetInventory a2 = new AssetInventory();
-                        a2.setAssetName("Smart Interactive Whiteboard");
-                        a2.setCategory("Furniture");
-                        a2.setStatus("Maintenance Required");
-                        a2.setLastMaintained("2023-10-12");
-                        a2.setLocation("Room 102");
-                        assetRepo.save(a2);
-                }
-
-                if (leaveRepo.count() == 0) {
-                        FacultyLeaveRequest l1 = new FacultyLeaveRequest();
-                        l1.setFacultyId("FAC-001");
-                        l1.setFacultyName("Dr. Anita S");
-                        l1.setLeaveType("Casual Leave");
-                        l1.setStartDate("2024-04-10");
-                        l1.setEndDate("2024-04-12");
-                        l1.setStatus("Pending");
-                        leaveRepo.save(l1);
-                }
+                // Alumni, assets, and leave rows are not invented here.
+                // A local DEMO profile may add explicitly labeled DEMO records.
         }
 
         private void seedTransportData() {
-                if (transportRouteRepository.count() == 0) {
-                        // Coordinators
-                        String coord1 = "A. Kalesha";
-                        String phone1 = "6380751700";
-                        String coord2 = "N. Sudhakar";
-                        String phone2 = "7548862447";
-
-                        // Helper to seed a route
-                        seedRoute("R01", "Ennore", "Ennore", LocalTime.of(5, 50), coord1, phone1, List.of(
-                                        new StopInfo("Ennore", LocalTime.of(5, 50), "Railway Station"),
-                                        new StopInfo("Ernavoor", LocalTime.of(5, 54), "Junction"),
-                                        new StopInfo("Theradi", LocalTime.of(6, 3), "Metro"),
-                                        new StopInfo("Tollgate", LocalTime.of(6, 18), "Plaza"),
-                                        new StopInfo("New Washermenpet", LocalTime.of(6, 27), "Police Station"),
-                                        new StopInfo("Mint", LocalTime.of(6, 37), "Clock Tower"),
-                                        new StopInfo("Basin Bridge", LocalTime.of(6, 41), "Bridge")));
-
-                        seedRoute("R02", "Triplicane", "Triplicane", LocalTime.of(6, 20), coord2, phone2, List.of(
-                                        new StopInfo("Triplicane", LocalTime.of(6, 20), "High School"),
-                                        new StopInfo("Light House", LocalTime.of(6, 32), "Beach"),
-                                        new StopInfo("Mylapore Tank", LocalTime.of(6, 37), "Temple"),
-                                        new StopInfo("Adyar", LocalTime.of(6, 50), "Signal"),
-                                        new StopInfo("Guindy", LocalTime.of(7, 8), "Metro Station")));
-
-                        seedRoute("R11", "Chengalpattu", "Chengalpattu", LocalTime.of(6, 0), coord1, phone1, List.of(
-                                        new StopInfo("New Bus Stand", LocalTime.of(6, 0), "Platform 1"),
-                                        new StopInfo("Singaperumal Koil", LocalTime.of(6, 15), "Temple Junction"),
-                                        new StopInfo("Maraimalai Nagar", LocalTime.of(6, 22), "Ford Gate"),
-                                        new StopInfo("Guduvanchery", LocalTime.of(6, 35), "Bus Stop"),
-                                        new StopInfo("Vandalur", LocalTime.of(6, 42), "Zoo Entrance"),
-                                        new StopInfo("Tambaram Gate", LocalTime.of(6, 55), "Airforce Station")));
-
-                        seedRoute("R14", "Thiruvallur", "Thiruvallur", LocalTime.of(6, 25), coord2, phone2, List.of(
-                                        new StopInfo("Thiruvallur", LocalTime.of(6, 25), "Bus Stand"),
-                                        new StopInfo("Collector Office", LocalTime.of(6, 30), "Main Gate"),
-                                        new StopInfo("Putlur", LocalTime.of(6, 40), "Railway Station"),
-                                        new StopInfo("Veppampattu", LocalTime.of(6, 45), "Junction"),
-                                        new StopInfo("Sevvapet", LocalTime.of(6, 50), "Temple")));
-
-                        seedRoute("R22", "Thiruthani", "Thiruthani", LocalTime.of(5, 55), coord1, phone1, List.of(
-                                        new StopInfo("Thiruthani Bypass", LocalTime.of(5, 55), "Bypass"),
-                                        new StopInfo("Nagalamman Nagar", LocalTime.of(6, 8), "Entrance"),
-                                        new StopInfo("Jothi Nagar", LocalTime.of(6, 12), "Park"),
-                                        new StopInfo("New Bus Stand", LocalTime.of(6, 22), "Platform"),
-                                        new StopInfo("Navy Gate", LocalTime.of(6, 30), "Gate")));
-
-                        // Seed the rest of the 51 routes (basic info)
-                        String[][] basicRoutes = {
-                                        { "R01A", "Tondiarpet", "06:17" }, { "R01B", "Kasimedu", "06:15" },
-                                        { "R03", "Choolai", "06:20" },
-                                        { "R03A", "Collector Nagar", "06:50" }, { "R03B", "Water Tank", "06:40" },
-                                        { "R04", "East Mogappair", "06:30" },
-                                        { "R05", "CIT Nagar", "06:10" }, { "R05A", "Loyola College", "06:40" },
-                                        { "R06", "Chinmayanagar", "06:10" },
-                                        { "R07", "Santhome", "06:10" }, { "R08", "Kovilambakkam", "06:10" },
-                                        { "R08A", "Adambakkam", "06:30" },
-                                        { "R09", "MKB Nagar", "06:00" }, { "R09A", "Perambur", "06:30" },
-                                        { "R10", "Thachoor", "05:50" },
-                                        { "R11A", "Guduvanchery", "06:30" }, { "R12", "Minjur", "05:45" },
-                                        { "R13", "Vyasarpadi", "06:10" },
-                                        { "R13A", "ICF", "06:45" }, { "R14A", "Kakkalur", "06:55" },
-                                        { "R15", "Kancheepuram", "06:00" },
-                                        { "R15A", "Orikkai", "06:15" }, { "R16", "Neelankarai", "06:10" },
-                                        { "R16A", "Guindy", "06:45" },
-                                        { "R16B", "Sholinganallur", "06:10" }, { "R17", "Valluvarkottam", "06:15" },
-                                        { "R17A", "Valasaravakkam", "06:45" },
-                                        { "R18", "Pallikaranai", "06:15" }, { "R18A", "Sembakkam", "06:25" },
-                                        { "R18B", "Kelambakkam", "06:00" },
-                                        { "R19", "Poombukar", "06:10" }, { "R19A", "Vinayagapuram", "06:45" },
-                                        { "R20", "Vepampattu", "06:30" },
-                                        { "R21", "Ayyapakkam", "06:15" }, { "R22A", "SR Gate", "06:30" },
-                                        { "R23", "K4 Police Station", "06:35" },
-                                        { "R24", "Arcot", "05:25" }, { "R25", "Kallikuppam", "06:45" },
-                                        { "R25A", "Pudur", "06:45" },
-                                        { "R26", "Andarkuppam", "06:35" }, { "R27", "Avadi", "06:25" },
-                                        { "R27A", "Kollumedu", "06:30" },
-                                        { "R28", "Agaram", "06:20" }, { "R29", "Velachery", "06:10" },
-                                        { "R29A", "Pammal", "06:35" },
-                                        { "R29B", "Sivanthangal", "07:05" }
-                        };
-
-                        for (String[] r : basicRoutes) {
-                                LocalTime startTime = LocalTime.parse(r[2]);
-                                List<StopInfo> genericStops = List.of(
-                                                new StopInfo(r[1], startTime, "Bus Stand"),
-                                                new StopInfo(r[1] + " Junction", startTime.plusMinutes(15),
-                                                                "Main Road"),
-                                                new StopInfo("RIT Campus", startTime.plusMinutes(45), "College Gate"));
-                                seedRoute(r[0], r[1] + " Route", r[1], startTime, coord1, phone1, genericStops);
-                        }
+                if (transportRouteRepository.count() != 0) {
+                        return;
                 }
+                String coord1 = "A. Kalesha";
+                String phone1 = "6380751700";
+                String coord2 = "N. Sudhakar";
+                String phone2 = "7548862447";
+
+                seedRoute("R01", "Ennore", "Ennore", LocalTime.of(5, 50), coord1, phone1, timedStops(
+                                "Ennore", "05:50", "Railway Station",
+                                "Ernavoor", "05:54", "Junction",
+                                "Theradi", "06:03", "Metro",
+                                "Tollgate", "06:18", "Plaza",
+                                "New Washermenpet", "06:27", "Police Station",
+                                "Mint", "06:37", "Clock Tower",
+                                "Basin Bridge", "06:41", "Bridge"));
+                seedRoute("R02", "Triplicane", "Triplicane", LocalTime.of(6, 20), coord2, phone2, timedStops(
+                                "Triplicane", "06:20", "High School",
+                                "Light House", "06:32", "Beach",
+                                "Mylapore Tank", "06:37", "Temple",
+                                "Adyar", "06:50", "Signal",
+                                "Guindy", "07:08", "Metro Station"));
+                seedRoute("R11", "Chengalpattu", "Chengalpattu", LocalTime.of(6, 0), coord1, phone1, timedStops(
+                                "New Bus Stand", "06:00", "Platform 1",
+                                "Singaperumal Koil", "06:15", "Temple Junction",
+                                "Maraimalai Nagar", "06:22", "Ford Gate",
+                                "Guduvanchery", "06:35", "Bus Stop",
+                                "Vandalur", "06:42", "Zoo Entrance",
+                                "Tambaram Gate", "06:55", "Airforce Station"));
+                seedRoute("R14", "Thiruvallur", "Thiruvallur", LocalTime.of(6, 25), coord2, phone2, timedStops(
+                                "Thiruvallur", "06:25", "Bus Stand",
+                                "Collector Office", "06:30", "Main Gate",
+                                "Putlur", "06:40", "Railway Station",
+                                "Veppampattu", "06:45", "Junction",
+                                "Sevvapet", "06:50", "Temple"));
+                seedRoute("R22", "Thiruthani", "Thiruthani", LocalTime.of(5, 55), coord1, phone1, timedStops(
+                                "Thiruthani Bypass", "05:55", "Bypass",
+                                "Nagalamman Nagar", "06:08", "Entrance",
+                                "Jothi Nagar", "06:12", "Park",
+                                "New Bus Stand", "06:22", "Platform",
+                                "Navy Gate", "06:30", "Gate"));
+
+                String[][] basicRoutes = {
+                                { "R01A", "Tondiarpet", "06:17" }, { "R01B", "Kasimedu", "06:15" },
+                                { "R03", "Choolai", "06:20" },
+                                { "R03A", "Collector Nagar", "06:50" }, { "R03B", "Water Tank", "06:40" },
+                                { "R04", "East Mogappair", "06:30" },
+                                { "R05", "CIT Nagar", "06:10" }, { "R05A", "Loyola College", "06:40" },
+                                { "R06", "Chinmayanagar", "06:10" },
+                                { "R07", "Santhome", "06:10" }, { "R08", "Kovilambakkam", "06:10" },
+                                { "R08A", "Adambakkam", "06:30" },
+                                { "R09", "MKB Nagar", "06:00" }, { "R09A", "Perambur", "06:30" },
+                                { "R10", "Thachoor", "05:50" },
+                                { "R11A", "Guduvanchery", "06:30" }, { "R12", "Minjur", "05:45" },
+                                { "R13", "Vyasarpadi", "06:10" },
+                                { "R13A", "ICF", "06:45" }, { "R14A", "Kakkalur", "06:55" },
+                                { "R15", "Kancheepuram", "06:00" },
+                                { "R15A", "Orikkai", "06:15" }, { "R16", "Neelankarai", "06:10" },
+                                { "R16A", "Guindy", "06:45" },
+                                { "R16B", "Sholinganallur", "06:10" }, { "R17", "Valluvarkottam", "06:15" },
+                                { "R17A", "Valasaravakkam", "06:45" },
+                                { "R18", "Pallikaranai", "06:15" }, { "R18A", "Sembakkam", "06:25" },
+                                { "R18B", "Kelambakkam", "06:00" },
+                                { "R19", "Poombukar", "06:10" }, { "R19A", "Vinayagapuram", "06:45" },
+                                { "R20", "Vepampattu", "06:30" },
+                                { "R21", "Ayyapakkam", "06:15" }, { "R22A", "SR Gate", "06:30" },
+                                { "R23", "K4 Police Station", "06:35" },
+                                { "R24", "Arcot", "05:25" }, { "R25", "Kallikuppam", "06:45" },
+                                { "R25A", "Pudur", "06:45" },
+                                { "R26", "Andarkuppam", "06:35" }, { "R27", "Avadi", "06:25" },
+                                { "R27A", "Kollumedu", "06:30" },
+                                { "R28", "Agaram", "06:20" }, { "R29", "Velachery", "06:10" },
+                                { "R29A", "Pammal", "06:35" },
+                                { "R29B", "Sivanthangal", "07:05" }
+                };
+                for (String[] route : basicRoutes) {
+                        LocalTime startTime = LocalTime.parse(route[2]);
+                        List<StopInfo> genericStops = List.of(
+                                        new StopInfo(route[1], startTime, "Bus Stand"),
+                                        new StopInfo(route[1] + " Junction", startTime.plusMinutes(15), "Main Road"),
+                                        new StopInfo("RIT Campus", startTime.plusMinutes(45), "College Gate"));
+                        seedRoute(route[0], route[1] + " Route", route[1], startTime, coord1, phone1, genericStops);
+                }
+        }
+
+        private static List<StopInfo> timedStops(String... nameTimeLandmark) {
+                if (nameTimeLandmark.length % 3 != 0) {
+                        throw new IllegalArgumentException("Stops must be name, time, landmark triples");
+                }
+                List<StopInfo> stops = new java.util.ArrayList<>(nameTimeLandmark.length / 3);
+                for (int i = 0; i < nameTimeLandmark.length; i += 3) {
+                        stops.add(new StopInfo(nameTimeLandmark[i], LocalTime.parse(nameTimeLandmark[i + 1]), nameTimeLandmark[i + 2]));
+                }
+                return stops;
         }
 
         private void seedRoute(String num, String name, String start, LocalTime time, String coord, String phone,

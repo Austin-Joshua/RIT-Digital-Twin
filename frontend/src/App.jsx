@@ -16,19 +16,18 @@ import RegisterPage from './pages/auth/RegisterPage';
 
 /* Lazy Loaded Admin Pages */
 const Dashboard = lazy(() => import('./pages/admin/DashboardWrapper'));
-const ClassroomPage = lazy(() => import('./pages/enterprise/ClassroomPage'));
 const ClassroomAllocation = lazy(() => import('./pages/enterprise/ClassroomAllocation'));
 const EnergyPage = lazy(() => import('./pages/enterprise/EnergyPage'));
 const TransportDirectory = lazy(() => import('./pages/enterprise/TransportDirectory'));
-const TransportSimulation = lazy(() => import('./pages/enterprise/TransportSimulation'));
-const CrowdPage = lazy(() => import('./pages/enterprise/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/enterprise/PredictionPage'));
 const SmartAlgorithms = lazy(() => import('./pages/enterprise/SmartAlgorithms'));
 const CampusMap = lazy(() => import('./pages/enterprise/CampusMap'));
+const SimulationLab = lazy(() => import('./pages/enterprise/SimulationLab'));
 
 const ParentDashboard = lazy(() => import('./pages/parent/ParentDashboard'));
 
 /* HOD (Head of Department) */
+const RoleCampus = lazy(() => import('./pages/roles/RoleCampus'));
 const HODDashboard = lazy(() => import('./pages/hod/HODDashboard'));
 const HODStudentPerformance = lazy(() => import('./pages/hod/HODStudentPerformance'));
 
@@ -44,7 +43,6 @@ const ClassRiskHeatmap = lazy(() => import('./pages/enterprise/ClassRiskHeatmap'
 const UploadMarks = lazy(() => import('./pages/enterprise/UploadMarks'));
 const EmergencyDashboard = lazy(() => import('./pages/enterprise/EmergencyDashboard'));
 const MaintenanceModule = lazy(() => import('./pages/enterprise/MaintenanceModule'));
-const SustainabilityDashboard = lazy(() => import('./pages/enterprise/SustainabilityDashboard'));
 const RecruitmentHR = lazy(() => import('./pages/enterprise/RecruitmentHR'));
 const AlumniPortal = lazy(() => import('./pages/enterprise/AlumniPortal'));
 const InventoryAssets = lazy(() => import('./pages/enterprise/InventoryAssets'));
@@ -221,6 +219,9 @@ const App = () => {
                     <ProtectedRoute requiredRole="HOD"><HODLayout /></ProtectedRoute>
                   }>
                     <Route index element={<HODDashboard />} />
+                    <Route path="twin" element={<RoleCampus mapPath="/hod/map" simulationPath="/hod/simulation" decisionPath="/hod/twin" />} />
+                    <Route path="map" element={<CampusMap />} />
+                    <Route path="simulation" element={<SimulationLab />} />
                     <Route path="student/:studentId" element={<HODStudentPerformance />} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
@@ -232,13 +233,14 @@ const App = () => {
                     <ProtectedRoute><InstitutionalLayout /></ProtectedRoute>
                   }>
                     <Route index element={<InstitutionalIndexRoute />} />
-                    <Route path="simulations/classroom" element={<RouteRoleGuard allowedRoles={['ADMIN']}><ClassroomPage /></RouteRoleGuard>} />
+                    <Route path="simulations" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SimulationLab /></RouteRoleGuard>} />
+                    <Route path="simulations/classroom" element={<Navigate to="/simulations" replace />} />
                     <Route path="classrooms/allocation" element={<RouteRoleGuard allowedRoles={['ADMIN','FACULTY','HOD']}><ClassroomAllocation /></RouteRoleGuard>} />
                     <Route path="simulations/energy" element={<RouteRoleGuard allowedRoles={['ADMIN']}><EnergyPage /></RouteRoleGuard>} />
-                    <Route path="simulations/transport" element={<RouteRoleGuard allowedRoles={['ADMIN']}><TransportSimulation /></RouteRoleGuard>} />
+                    <Route path="simulations/transport" element={<Navigate to="/simulations" replace />} />
                     <Route path="transport" element={<RouteRoleGuard allowedRoles={['ADMIN']}><TransportDirectory /></RouteRoleGuard>} />
-                    <Route path="simulations/crowd" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CrowdPage /></RouteRoleGuard>} />
-                    <Route path="simulations/sustainability" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SustainabilityDashboard /></RouteRoleGuard>} />
+                    <Route path="simulations/crowd" element={<Navigate to="/simulations" replace />} />
+                    <Route path="simulations/sustainability" element={<Navigate to="/simulations" replace />} />
                     <Route path="predictions" element={<RouteRoleGuard allowedRoles={['ADMIN']}><PredictionPage /></RouteRoleGuard>} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="map" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CampusMap /></RouteRoleGuard>} />
@@ -265,6 +267,8 @@ const App = () => {
 
                     {/* Faculty-only routes */}
                     <Route path="faculty" element={<RouteRoleGuard allowedRoles={['FACULTY']}><Dashboard /></RouteRoleGuard>} />
+                    <Route path="faculty/twin" element={<RouteRoleGuard allowedRoles={['FACULTY']}><RoleCampus mapPath="/faculty/map" decisionPath="/faculty/twin" /></RouteRoleGuard>} />
+                    <Route path="faculty/map" element={<RouteRoleGuard allowedRoles={['FACULTY']}><CampusMap /></RouteRoleGuard>} />
                     <Route path="faculty/risk-heatmap" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ClassRiskHeatmap /></RouteRoleGuard>} />
                     <Route path="faculty/upload-marks" element={<RouteRoleGuard allowedRoles={['FACULTY']}><UploadMarks /></RouteRoleGuard>} />
                     <Route path="faculty/academics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAcademics /></RouteRoleGuard>} />

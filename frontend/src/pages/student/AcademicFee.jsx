@@ -1,200 +1,130 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-    FaCreditCard, FaHistory, FaFileInvoice, FaShieldAlt, 
-    FaCheckCircle, FaExclamationCircle, FaReceipt 
-} from 'react-icons/fa';
-import { useToast } from '../../hooks/ToastContext';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/AuthContext';
-import Card from '../../components/common/Card';
-import { academicFees, academicYearLabel } from '../../utils/studentFees';
+import './fee-ledger.css';
 
-const AcademicFee = () => {
-    const { addToast } = useToast();
+const TABS = ['Fee', 'Payment History', 'Consolidated Receipt'];
+
+function money(value) {
+    if (value == null || Number.isNaN(Number(value))) return 'Not stored';
+    return `₹${Number(value).toLocaleString('en-IN')}`;
+}
+
+export default function AcademicFee() {
+    const navigate = useNavigate();
     const { user } = useAuth();
-    const isParent = user?.role === 'PARENT' || user?.role === 'ROLE_PARENT';
-    const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, success
-    const studentName = isParent ? 'Ram Kumar' : '';
+    const parent = String(user?.role || '').replace('ROLE_', '') === 'PARENT';
+    const [tab, setTab] = useState('Fee');
+    const [payOpen, setPayOpen] = useState(false);
+    const [amount, setAmount] = useState('');
+    const [notice, setNotice] = useState('');
 
-    const feeDetails = academicFees;
-
-    const paymentHistory = [
-        { id: 'TXN001', date: '2024-12-15', amount: 85000, method: 'UPI', status: 'SUCCESS' },
-        { id: 'TXN002', date: '2024-08-10', amount: 15000, method: 'Net Banking', status: 'SUCCESS' },
+    const details = [
+        ['Course', 'Not stored'],
+        ['Admitted Mode', 'Not stored'],
+        ['Scholarship', 'Not stored'],
+        ['GQG', 'Not stored'],
+        ['FG', 'Not stored'],
+        ['Hosteler', 'Not stored'],
+    ];
+    const lines = [
+        ['Current AY', 'Not stored'],
+        ['Opening Balance', 'Not stored'],
+        ['Tuition Fee', 'Not stored'],
+        ['Hostel Fee', 'Not stored'],
+        ['Other Fee', 'Not stored'],
+        ['AU / Library Fee', 'Not stored'],
+        ['Fine & Breakage', 'Not stored'],
+        ['Total Fee', 'Not stored'],
+        ['Paid Amount', 'Not stored'],
+        ['Reversal Amount', 'Not stored'],
+        ['Balance Amount', 'Not stored'],
+        ['Wallet Balance', 'Not stored'],
+        ['Last Updated On', 'Not stored'],
     ];
 
-    const totalDue = feeDetails.filter(f => f.status === 'UNPAID' && f.type === 'ACADEMIC')
-                               .reduce((acc, curr) => acc + curr.amount, 0);
-    const totalPaid = paymentHistory.reduce((acc, curr) => acc + curr.amount, 0);
-
-    const handlePayment = () => {
-        setPaymentStatus('processing');
-        setTimeout(() => {
-            setPaymentStatus('success');
-            addToast(`Payment of ₹${totalDue.toLocaleString('en-IN')} successful!`, 'success');
-        }, 2000);
+    const submitPay = (event) => {
+        event.preventDefault();
+        setPayOpen(false);
+        setAmount('');
+        setNotice('No balance is stored for this login, so nothing was sent. The official IMS pay action uses the Worldline gateway, which is not connected here.');
     };
 
-    const kpis = [
-        { label: 'Net Payable Balance', value: `₹${totalDue.toLocaleString('en-IN')}`, color: 'red', icon: <FaCreditCard /> },
-        { label: 'Total Fees Paid', value: `₹${totalPaid.toLocaleString('en-IN')}`, color: 'green', icon: <FaCheckCircle /> },
-        { label: 'Scholarship / Rebate', value: '₹10,500', color: 'teal', icon: <FaFileInvoice /> },
-        { label: 'Next Due Date', value: '30 Jun 2025', color: 'yellow', icon: <FaExclamationCircle /> },
-    ];
-
     return (
-        <div className="stu-dashboard space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Header Section (Clean UI) */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 px-2">
-                <div>
-                    <h1 className="text-3xl font-black flex items-center gap-4 text-[var(--theme-text)] tracking-tight">
-                        <FaFileInvoice className="text-[#0B2C6B] dark:text-blue-400" />
-                        {isParent ? `Student Fee Portal: ${studentName}` : 'Academic Fee Portal'}
-                    </h1>
-                    <p className="mt-2 text-[var(--theme-text-muted)] font-medium max-w-xl text-lg">
-                        {isParent 
-                            ? "Monitor and manage your ward's educational investments securely." 
-                            : "Manage your educational investments securely."
-                        }
-                    </p>
-                </div>
-                <div className="bg-[var(--theme-bg-muted)] p-4 rounded-xl border border-[var(--theme-border)] text-right">
-                    <span className="text-[10px] uppercase tracking-[4px] text-[var(--theme-text-muted)] font-bold block mb-1">Academic Year</span>
-                    <span className="text-xl font-black text-[var(--theme-text)]">{academicYearLabel().replace('-', ' - ')}</span>
-                </div>
+        <section className="fee-ledger" aria-label="Academic Fee">
+            <header>
+                <h1>Academic Fee</h1>
+                <p className="fee-note">
+                    {parent ? 'Parent login uses the same fee layout as the student ledger.' : 'Same sections as the official IMS academic fee page.'}
+                    {' '}A stored ledger is not connected, so no tuition figure is substituted.
+                </p>
+            </header>
+            <div className="fee-ledger-tools">
+                <button type="button" onClick={() => navigate(-1)}>Back</button>
+                <button type="button" onClick={() => setPayOpen(true)}>Pay</button>
             </div>
-
-            {/* KPI Row (Standard Dashboard Pattern) */}
-            <div className="stu-kpi-row">
-                {kpis.map((kpi, idx) => (
-                    <div key={idx} className={`stu-kpi-card ${kpi.color}`}>
-                        <div className="kpi-main">
-                            <h3 className="kpi-value" style={{ fontSize: '28px' }}>{kpi.value}</h3>
-                            <p className="kpi-label">{kpi.label}</p>
-                        </div>
-                        <div className="kpi-icon">{kpi.icon}</div>
-                        <div className="kpi-more">Details <FaReceipt style={{marginLeft: '4px'}} /></div>
-                    </div>
+            <div className="fee-tabs" role="tablist" aria-label="Fee sections">
+                {TABS.map((item) => (
+                    <button key={item} type="button" role="tab" aria-selected={tab === item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>{item}</button>
                 ))}
             </div>
+            {notice ? <p className="fee-note" role="status">{notice}</p> : null}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Detailed Breakdown Card */}
-                <div className="lg:col-span-2 space-y-8">
-                    <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
-                        <div className="info-header" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div className="flex items-center gap-3">
-                                <FaReceipt className="text-lg text-slate-400" />
-                                <span className="font-bold">Detailed Fee Breakdown</span>
-                            </div>
-                            <button className="table-btn primary" style={{ fontSize: '11px', padding: '6px 12px' }}>Download Invoice</button>
-                        </div>
-                        <div className="info-body p-0">
-                            <div className="overflow-x-auto">
-                                <table className="stu-data-table" style={{ width: '100%', border: 'none' }}>
-                                    <thead>
-                                        <tr style={{ background: 'var(--theme-bg-muted)' }}>
-                                            <th style={{ padding: '16px 24px', textAlign: 'left' }}>Fee Description</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'center' }}>Deadline</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'right' }}>Amount</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'center' }}>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-[var(--theme-border)]">
-                                        {feeDetails.map((fee) => (
-                                            <tr key={fee.id} className="hover:bg-[var(--theme-bg-muted)] transition-colors">
-                                                <td style={{ padding: '16px 24px' }}>
-                                                    <div className="font-bold text-[var(--theme-text)]">{fee.label}</div>
-                                                    <div className="text-[10px] text-[var(--theme-text-muted)] uppercase tracking-widest">{fee.type}</div>
-                                                </td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center', fontSize: '13px', color: 'var(--theme-text)' }}>{fee.deadline}</td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'right', color: 'var(--theme-text)' }} className="font-bold">₹{fee.amount.toLocaleString('en-IN')}</td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                                        fee.status === 'PAID' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                                                    }`}>
-                                                        {fee.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="info-footer p-6 bg-[var(--theme-bg-muted)] rounded-b-3xl border-t border-[var(--theme-border)]">
-                            <div className="flex justify-between items-center text-[var(--theme-text)]">
-                                <span className="text-[10px] uppercase tracking-[4px] font-black opacity-60">Subtotal Payable</span>
-                                <span className="text-2xl font-black text-[#0B2C6B] dark:text-blue-400">₹{totalDue.toLocaleString('en-IN')}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sidebar Payment & History */}
-                <div className="space-y-8">
-                    {/* Payment Action Card */}
-                    <motion.div 
-                        whileHover={{ scale: 1.02 }}
-                        className="stu-info-card p-8 flex flex-col items-center"
-                    >
-                        <div className="z-10 flex flex-col items-center w-full">
-                            <div className="text-[10px] uppercase tracking-[6px] text-[var(--theme-text-muted)] font-black mb-2 text-center">Checkout Gateway</div>
-                            <h3 className="text-4xl font-black mb-8 tracking-tighter text-[var(--theme-text)]">₹{totalDue.toLocaleString('en-IN')}</h3>
-                            
-                            {paymentStatus === 'success' ? (
-                                <div className="flex flex-col items-center gap-3 py-4 text-emerald-500 animate-in zoom-in-95">
-                                    <FaCheckCircle className="text-5xl" />
-                                    <span className="font-black uppercase tracking-widest">Payment Verified</span>
-                                </div>
-                            ) : (
-                                <button 
-                                    onClick={handlePayment}
-                                    disabled={paymentStatus === 'processing'}
-                                    className="w-full py-4 rounded-xl bg-[var(--color-primary-navy)] text-white font-extrabold flex items-center justify-center gap-3 transition-all active:scale-95 disabled:grayscale shadow-lg"
-                                >
-                                    {paymentStatus === 'processing' ? 'Processing...' : 'Complete Payment'}
-                                    <FaCreditCard />
-                                </button>
-                            )}
-                            
-                            <div className="flex items-center gap-2 mt-8 text-[var(--theme-text-muted)] opacity-80">
-                                <FaShieldAlt className="text-xs" />
-                                <span className="text-[9px] uppercase tracking-widest font-bold">256-Bit SSL Encrypted Gateway</span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Quick History Card */}
-                    <div className="stu-info-card" style={{ borderTop: 'none' }}>
-                        <div className="info-header" style={{ padding: '20px', borderBottom: '1px solid var(--theme-border)' }}>
-                            <div className="flex items-center gap-2">
-                                <FaHistory className="text-sm text-slate-400" />
-                                <span className="font-black text-sm uppercase tracking-widest">Payment History</span>
-                            </div>
-                        </div>
-                        <div className="info-body p-4 space-y-4">
-                            {paymentHistory.map((txn, i) => (
-                                <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                    <div>
-                                        <div className="font-bold text-sm text-slate-900 dark:text-white">Transaction {txn.id}</div>
-                                        <div className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">{txn.date}</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-black text-xs text-emerald-600">₹{txn.amount.toLocaleString('en-IN')}</div>
-                                        <div className="text-[9px] text-slate-400 uppercase font-black">{txn.method}</div>
-                                    </div>
-                                </div>
+            {tab === 'Fee' ? (
+                <>
+                    <article className="fee-card">
+                        <h2>Student Details</h2>
+                        <div className="fee-grid">
+                            {details.map(([label, value]) => (
+                                <p key={label}><strong>{label}</strong> : {value}</p>
                             ))}
                         </div>
-                        <div className="info-footer p-4 pt-0 text-center">
-                            <span className="text-[10px] uppercase font-black text-slate-400 cursor-pointer hover:text-blue-500 transition-colors">View All Statements</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+                    </article>
+                    <article className="fee-card">
+                        <h2>Fee Details</h2>
+                        <dl className="fee-lines">
+                            {lines.map(([label, value]) => (
+                                <span key={label} style={{ display: 'contents' }}>
+                                    <dt>{label}</dt>
+                                    <dd>{value}</dd>
+                                </span>
+                            ))}
+                        </dl>
+                    </article>
+                </>
+            ) : null}
 
-export default AcademicFee;
+            {tab === 'Payment History' ? (
+                <article className="fee-card">
+                    <h2>Payment History</h2>
+                    <p>No payment is stored for this login. Sample transactions are not listed.</p>
+                </article>
+            ) : null}
+
+            {tab === 'Consolidated Receipt' ? (
+                <article className="fee-card">
+                    <h2>Consolidated Receipts</h2>
+                    <p>No receipt is stored for this login. A receipt is not generated from a sample payment.</p>
+                </article>
+            ) : null}
+
+            {payOpen ? (
+                <div className="fee-scrim" role="presentation" onMouseDown={() => setPayOpen(false)}>
+                    <form className="fee-modal" role="dialog" aria-modal="true" aria-label="Pay academic fee" onMouseDown={(event) => event.stopPropagation()} onSubmit={submitPay}>
+                        <h2>Pay</h2>
+                        <p>Balance : Not stored</p>
+                        <p>Wallet Balance : Not stored</p>
+                        <label>
+                            Enter Amount
+                            <input inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="Amount" />
+                        </label>
+                        <div className="fee-ledger-tools">
+                            <button type="button" onClick={() => setPayOpen(false)}>Back</button>
+                            <button type="submit" className="primary">Pay</button>
+                        </div>
+                    </form>
+                </div>
+            ) : null}
+        </section>
+    );
+}

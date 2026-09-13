@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
-    @Cacheable(value = "departments", key = "#code")
+    @Cacheable(value = "departments", key = "#code", unless = "#result == null")
     Optional<Department> findByCode(String code);
 }

@@ -1,14 +1,17 @@
 package com.university.erp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.university.erp.intelligence.SourceClass;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "digital_twin_metrics", indexes = {
-    @Index(name = "idx_metric_type", columnList = "metricType"),
-    @Index(name = "idx_location_code", columnList = "locationCode"),
-    @Index(name = "idx_timestamp", columnList = "timestamp")
+    @Index(name = "idx_metric_type", columnList = "metric_type"),
+    @Index(name = "idx_location_code", columnList = "location_code"),
+    @Index(name = "idx_timestamp", columnList = "timestamp"),
+    @Index(name = "idx_dtm_type_time", columnList = "metric_type, timestamp")
 })
 @Data
 @NoArgsConstructor
@@ -34,5 +37,14 @@ public class DigitalTwinMetrics extends BaseEntity {
 
     private Boolean isSimulated;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source_class", length = 16)
+    private SourceClass sourceClass;
+
     private String scenarioName; // Null for live data, contains scenario name for What-Ifs
+
+    @JsonProperty("source")
+    public String getSource() {
+        return sourceClass == null ? null : sourceClass.name();
+    }
 }

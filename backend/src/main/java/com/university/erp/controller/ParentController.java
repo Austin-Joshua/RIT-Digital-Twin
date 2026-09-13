@@ -38,16 +38,16 @@ public class ParentController {
         java.util.List<Map<String, Object>> internalMarks = erpCoreService.internalMarksForStudent(studentUserId);
         java.util.List<Map<String, Object>> attendance = erpCoreService.attendanceSummaryForStudent(studentUserId);
 
-        return ResponseEntity.ok(Map.of(
-                "studentInfo", Map.of(
-                    "name", student.getStudentName(),
-                    "registerNo", student.getRegisterNo(),
-                    "department", student.getDepartment().getDeptName(),
-                    "cgpa", student.getCurrentCgpa() != null ? student.getCurrentCgpa() : 0.0
-                ),
-                "academics", internalMarks,
-                "attendance", attendance
-        ));
+        Map<String, Object> studentInfo = new java.util.LinkedHashMap<>();
+        studentInfo.put("name", student.getStudentName());
+        studentInfo.put("registerNo", student.getRegisterNo());
+        studentInfo.put("department", student.getDepartment() == null ? null : student.getDepartment().getDeptName());
+        studentInfo.put("cgpa", student.getCurrentCgpa());
+        Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("studentInfo", studentInfo);
+        body.put("academics", internalMarks);
+        body.put("attendance", attendance);
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/student/timetable")

@@ -81,6 +81,12 @@
     --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.05);
     --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
 
+    --source-live: var(--color-success);
+    --source-simulated: var(--color-warning);
+    --source-predicted: var(--color-primary-navy);
+    --source-historical: var(--color-text-secondary);
+    --source-estimated: var(--color-text-secondary);
+
     /* Transitions */
     --transition-speed: 260ms;
     --transition-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -110,6 +116,9 @@
     --publish-btn-text: #0F172A;
     --publish-btn-bg-disabled: #475569;
     --publish-btn-text-disabled: #94A3B8;
+    --source-predicted: #93C5FD;
+    --source-historical: #CBD5E1;
+    --source-estimated: #CBD5E1;
 }
 
 /* Light mode input semantics */

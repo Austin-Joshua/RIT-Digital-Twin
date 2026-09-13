@@ -7,6 +7,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    define: {
+      global: 'globalThis',
+    },
 
     resolve: {
       alias: {

@@ -7,6 +7,7 @@ import com.university.erp.dto.ChangePasswordRequest;
 import com.university.erp.dto.RegisterRequest;
 import com.university.erp.model.User;
 import com.university.erp.service.AuthService;
+import com.university.erp.service.AuditService;
 import com.university.erp.service.BruteForceProtectionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,13 @@ import java.util.Optional;
 public class AuthController {
 
     private final AuthService authService;
+    private final AuditService auditService;
     private final BruteForceProtectionService bruteForceProtectionService;
 
-    public AuthController(AuthService authService, BruteForceProtectionService bruteForceProtectionService) {
+    public AuthController(AuthService authService, AuditService auditService,
+                          BruteForceProtectionService bruteForceProtectionService) {
         this.authService = authService;
+        this.auditService = auditService;
         this.bruteForceProtectionService = bruteForceProtectionService;
     }
 
@@ -99,6 +103,11 @@ public class AuthController {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            try {
+                auditService.log("LOGOUT", "Refresh session revoked");
+            } catch (RuntimeException ex) {
+                // Logout still proceeds if the audit row cannot be written.
+            }
             authService.revokeRefreshTokens(user.getUserId());
         }
         org.springframework.security.core.context.SecurityContextHolder.clearContext();

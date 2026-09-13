@@ -10,7 +10,7 @@ import axios from 'axios';
  * 3. Local dev: localhost:8080
  */
 const getAPIBaseURL = () => {
-  const fromEnv = import.meta.env.VITE_API_BASE_URL;
+  const fromEnv = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
   if (fromEnv && typeof fromEnv === 'string' && fromEnv.trim()) {
     const u = fromEnv.trim().replace(/\/+$/, '');
     return u.endsWith('/api') ? u : u + '/api';
@@ -43,23 +43,34 @@ const api = axios.create({
   }
 });
 
-// Institutional Scale Configuration: Prevent duplicate state-changing requests (Throttling)
-const pendingRequests = new Map();
+const inflight = new Map();
+const httpAdapter = axios.getAdapter(axios.defaults.adapter);
+
+function inflightKey(config) {
+  const method = (config.method || 'get').toLowerCase();
+  const params = method === 'get' ? JSON.stringify(config.params || {}) : JSON.stringify(config.data || {});
+  return `${method}:${config.baseURL || ''}${config.url}:${params}`;
+}
+
+api.defaults.adapter = (config) => {
+  const method = (config.method || 'get').toLowerCase();
+  const shareable = method === 'get' || method === 'post' || method === 'put' || method === 'delete';
+  if (!shareable) return httpAdapter(config);
+
+  const key = inflightKey(config);
+  const existing = inflight.get(key);
+  if (existing) return existing;
+
+  const pending = httpAdapter(config).finally(() => {
+    if (inflight.get(key) === pending) inflight.delete(key);
+  });
+  inflight.set(key, pending);
+  return pending;
+};
 
 api.interceptors.request.use(
   (config) => {
-    // 1. Throttling for state-changing requests for institutional scale stability
-    const isStateChanging = ['post', 'put', 'delete'].includes(config.method?.toLowerCase());
-    if (isStateChanging) {
-      const requestKey = `${config.method}:${config.url}:${JSON.stringify(config.data || {})}`;
-      if (pendingRequests.has(requestKey)) {
-        return Promise.reject(new Error('DUPLICATE_REQUEST_THROTTLED'));
-      }
-      pendingRequests.set(requestKey, true);
-      config.__requestKey = requestKey; // Store for cleanup
-    }
-
-    // 2. Auth Interceptor logic
+    // Auth Interceptor logic
     if (config.headers['X-Skip-Interceptor']) {
       delete config.headers['X-Skip-Interceptor'];
       if (config.url && config.url.startsWith('/actuator')) {
@@ -84,52 +95,74 @@ api.interceptors.request.use(
 // Simple delay helper for retry backoff
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+let refreshInFlight = null;
+
+function persistRefreshedSession(data) {
+  const nextToken = data?.token || data?.accessToken;
+  if (!nextToken) return null;
+  localStorage.setItem('token', nextToken);
+  localStorage.setItem('rit_dt_token', nextToken);
+  localStorage.setItem('accessToken', nextToken);
+  if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+  window.dispatchEvent(new CustomEvent('rit-token-refreshed', { detail: { token: nextToken } }));
+  return nextToken;
+}
+
+function refreshSession() {
+  if (!refreshInFlight) {
+    const refreshToken = localStorage.getItem('refreshToken');
+    refreshInFlight = refreshToken
+      ? axios.post(`${API_URL}/auth/refresh-token`, { refreshToken }, { headers: { 'Content-Type': 'application/json' } })
+        .then((response) => persistRefreshedSession(response.data))
+        .finally(() => { refreshInFlight = null; })
+      : Promise.resolve(null);
+  }
+  return refreshInFlight;
+}
+
+function clearSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('role');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('rit_dt_token');
+  localStorage.removeItem('rit_dt_user');
+}
+
 api.interceptors.response.use(
-  (response) => {
-    // Cleanup pending requests on success
-    if (response.config.__requestKey) {
-      pendingRequests.delete(response.config.__requestKey);
-    }
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    // Cleanup pending requests on error
-    if (error.config && error.config.__requestKey) {
-      pendingRequests.delete(error.config.__requestKey);
-    }
-
-    // Handle Throttled requests quietly
-    if (error.message === 'DUPLICATE_REQUEST_THROTTLED') {
-      console.warn('Network: Double-click detected. Request throttled for institutional stability.');
-      return new Promise(() => {}); // Return a 'forever pending' promise to silent the UI failure
-    }
-    // Don't intercept 401 on the login endpoint — let AuthContext handle it
-    const isLoginRequest = error.config && error.config.url && error.config.url.includes('/auth/login');
-    if (error.response && error.response.status === 401 && !isLoginRequest) {
-      // Clear tokens and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('rit_dt_token');
-      localStorage.removeItem('rit_dt_user');
-
-      // Only redirect if we're in a browser environment
+    const url = error.config?.url || '';
+    const isAuthRequest = url.includes('/auth/login') || url.includes('/auth/refresh') || url.includes('/auth/register');
+    if (error.response?.status === 401 && !isAuthRequest && !error.config?._retry) {
+      error.config._retry = true;
+      try {
+        const nextToken = await refreshSession();
+        if (nextToken) {
+          error.config.headers = error.config.headers || {};
+          error.config.headers.Authorization = `Bearer ${nextToken}`;
+          return api(error.config);
+        }
+      } catch {
+        // Fall through to sign-in.
+      }
+      clearSession();
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
       }
       return Promise.reject(error);
     }
 
-    // Basic retry for transient network/5xx errors
     const status = error.response?.status;
     const shouldRetry = !status || (status >= 500 && status < 600);
     const config = error.config || {};
 
-    if (shouldRetry && !isLoginRequest) {
+    if (shouldRetry && !isAuthRequest) {
       config.__retryCount = config.__retryCount || 0;
       if (config.__retryCount < 2) {
         config.__retryCount += 1;
-        const backoffMs = 250 * config.__retryCount;
-        await sleep(backoffMs);
+        await sleep(250 * config.__retryCount);
         return api(config);
       }
     }

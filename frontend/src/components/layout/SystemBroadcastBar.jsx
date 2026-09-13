@@ -45,7 +45,7 @@ const SystemBroadcastBar = () => {
                 {broadcast.isLive && (
                     <div className="live-indicator">
                         <FaCircle className="live-dot" />
-                        LIVE
+                        On now
                     </div>
                 )}
             </div>

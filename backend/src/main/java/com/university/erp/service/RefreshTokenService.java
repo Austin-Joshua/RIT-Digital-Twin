@@ -5,8 +5,10 @@ import com.university.erp.model.User;
 import com.university.erp.repository.RefreshTokenRepository;
 import com.university.erp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -50,7 +52,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token was expired. Please make a new signin request");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sign in again.");
         }
         return token;
     }

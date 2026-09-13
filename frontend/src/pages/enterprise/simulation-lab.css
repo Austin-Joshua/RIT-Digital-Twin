@@ -1,0 +1,46 @@
+.sim-lab, .sim-result { display: flex; flex-direction: column; gap: 16px; }
+.sim-banner, .sim-card, .sim-scenario {
+  background: var(--card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+.sim-banner { border-left: 4px solid var(--color-warning, #b45309); }
+.sim-banner strong, .sim-kicker { letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px; }
+.sim-banner p, .sim-note, .sim-card p, .sim-scenario p { margin: 6px 0 0; color: var(--theme-text-muted); font-size: 13px; }
+.sim-layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; align-items: start; }
+.sim-presets, .sim-tabs, .sim-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sim-presets button, .sim-tabs button, .sim-actions button, .sim-run {
+  min-height: 36px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.sim-tabs button.active, .sim-presets button:hover { border-color: var(--color-accent-gold); }
+.sim-field { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; font-size: 13px; }
+.sim-field input[type="range"] { width: 100%; }
+.sim-field input[type="number"], .sim-field input[type="text"] {
+  min-height: 36px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+}
+.sim-field input[type="number"] { width: 88px; }
+.sim-field input[type="text"] { width: 100%; box-sizing: border-box; }
+.sim-run { background: var(--color-primary-navy); color: white; border: 0; }
+.sim-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.sim-metrics article { border: 1px solid var(--theme-border); border-radius: var(--radius-sm); padding: 10px; }
+.sim-metrics strong { display: block; font-size: 1.2rem; margin: 4px 0; }
+.sim-delta-up { color: var(--color-danger, #b42318); }
+.sim-delta-down { color: var(--color-success, #067647); }
+.sim-chart { height: 280px; }
+.sim-buildings { display: grid; gap: 8px; }
+.sim-unsupported { opacity: 0.8; }
+@media (max-width: 900px) {
+  .sim-layout { grid-template-columns: 1fr; }
+}

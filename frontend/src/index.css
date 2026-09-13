@@ -174,9 +174,9 @@ html.dark .ims-report-table th {
     border: none;
     border-radius: var(--radius-sm);
     padding: 10px 20px;
-    font-weight: 500;
+    font-weight: 700;
+    min-height: 40px;
     cursor: pointer;
-    transition: all 0.1s ease;
 }
 
 .btn-primary:hover {
@@ -189,7 +189,8 @@ html.dark .ims-report-table th {
     border: none;
     border-radius: var(--radius-sm);
     padding: 10px 20px;
-    font-weight: 500;
+    font-weight: 700;
+    min-height: 40px;
     cursor: pointer;
     transition: all 0.1s ease;
 }
@@ -248,13 +249,13 @@ textarea::placeholder {
 
 .page-header {
     font-size: var(--font-size-h1);
-    font-weight: 700;
-    color: var(--color-accent-gold);
+    font-weight: 800;
+    color: var(--theme-text);
     margin-bottom: var(--spacing-xl);
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    border-left: 6px solid var(--color-accent-gold);
+    border-left: 4px solid var(--color-accent-gold);
     padding-left: 16px;
 }
 

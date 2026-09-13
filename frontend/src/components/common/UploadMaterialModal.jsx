@@ -19,10 +19,10 @@ const UploadMaterialModal = ({ isOpen, onClose, onUpload }) => {
             ...formData,
             id: Date.now(),
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            size: (Math.random() * 5 + 1).toFixed(1) + ' MB',
+            size: 'Not stored',
             downloaded: false
         });
-        setFormData({ title: '', type: 'PDF', subject: 'Internet Programming' });
+        setFormData({ title: '', type: 'PDF', subject: '' });
         onClose();
     };
 

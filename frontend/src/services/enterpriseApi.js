@@ -26,7 +26,8 @@ export const workflowApi = {
     registerSubject: (studentId, subjectId) => api.post(`/workflow/registrations/${studentId}/${subjectId}`),
     getCertificates: (studentId) => api.get(`/workflow/certificates/${studentId}`),
     requestCertificate: (studentId, type) => api.post(`/workflow/certificates/request/${studentId}?type=${type}`),
-    approveCertificate: (requestId) => api.post(`/workflow/certificates/approve/${requestId}`),
+    listCertificateQueue: () => api.get('/workflow/certificates'),
+    reviewCertificate: (id, status) => api.post(`/workflow/certificates/${id}/review`, { status }),
     getResultApprovals: (departmentId, semester) => api.get(`/workflow/results/${departmentId}/${semester}`),
     uploadResults: (departmentId, semester, facultyEmail) =>
         api.post(`/workflow/results/upload?departmentId=${departmentId}&semester=${semester}&facultyEmail=${facultyEmail}`),

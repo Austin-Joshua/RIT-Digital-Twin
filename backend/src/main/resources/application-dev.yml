@@ -18,6 +18,11 @@ spring:
       ddl-auto: update
     defer-datasource-initialization: false
 
+app:
+  demo:
+    campusos: true
+    password: Demo-CampusOS-2026
+
 logging:
   level:
     com.university.erp: INFO
