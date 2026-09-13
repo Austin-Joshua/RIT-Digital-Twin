@@ -29,7 +29,7 @@ export const WebSocketProvider = ({ children }) => {
         if (!token) {
             clientRef.current?.deactivate();
             clientRef.current = null;
-            setConnected(false);
+            requestAnimationFrame(() => setConnected(false));
             return undefined;
         }
 
@@ -64,12 +64,13 @@ export const WebSocketProvider = ({ children }) => {
         client.activate();
         clientRef.current = client;
 
+        const pending = pendingRef.current;
         return () => {
-            pendingRef.current.forEach((entry) => entry.subscription?.unsubscribe());
-            pendingRef.current.forEach((entry) => { entry.subscription = null; });
+            pending.forEach((entry) => entry.subscription?.unsubscribe());
+            pending.forEach((entry) => { entry.subscription = null; });
             client.deactivate();
             clientRef.current = null;
-            setConnected(false);
+            requestAnimationFrame(() => setConnected(false));
         };
     }, [token]);
 

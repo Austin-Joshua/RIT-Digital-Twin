@@ -55,17 +55,16 @@ export default function AlertCenter({ mapBase = '/map', simulationBase = '/simul
     load();
   }, [load, stream.revision]);
 
-  const alerts = center?.alerts || [];
-  const coverage = center?.coverage || [];
+  const coverage = useMemo(() => center?.coverage || [], [center?.coverage]);
   const cards = center?.predictionCards || [];
-  const categories = coverage.map((item) => item.category);
+  const categories = useMemo(() => coverage.map((item) => item.category), [coverage]);
 
-  const visible = useMemo(() => alerts.filter((alert) => {
+  const visible = useMemo(() => (center?.alerts || []).filter((alert) => {
     if (!includeResolved && alert.status === 'RESOLVED') return false;
     if (severity !== 'ALL' && alert.severity !== severity) return false;
     if (category !== 'ALL' && alert.category !== category) return false;
     return true;
-  }), [alerts, includeResolved, severity, category]);
+  }), [center?.alerts, includeResolved, severity, category]);
 
   const groups = useMemo(() => {
     const keys = groupBy === 'category'

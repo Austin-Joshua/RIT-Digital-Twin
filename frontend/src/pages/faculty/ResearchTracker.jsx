@@ -4,16 +4,16 @@ import DetailModal from '../../components/common/DetailModal';
 import Card from '../../components/common/Card';
 import AddPublicationModal from '../../components/common/AddPublicationModal';
 
+const DEFAULT_PAPERS = [
+    { id: 1, title: 'Optimizing Container Orchestration using Deep Reinforcement Learning', type: 'Journal', publisher: 'IEEE Access', date: 'Feb 2024', status: 'Published', citations: 12, abstract: 'This paper proposes a novel deep reinforcement learning approach to optimize container orchestration in cloud environments, significantly reducing latency and improving resource utilization.', authors: 'Dr. Faculty Name, Dr. Co-Author', doi: '10.1109/ACCESS.2024.1234567' },
+    { id: 2, title: 'Serverless Computing Cold Start Mitigation', type: 'Conference', publisher: 'ACM CloudComp', date: 'Pending', status: 'Under Review', citations: 0, abstract: 'We evaluate several strategies for mitigating cold starts in serverless computing, including pre-warming techniques and predictive scaling models, demonstrating a 40% reduction in average invocation delay.', authors: 'Dr. Faculty Name, Student Submitter', doi: 'N/A' },
+];
+
 const ResearchTracker = () => {
     const [selectedPaper, setSelectedPaper] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    const defaultPapers = [
-        { id: 1, title: 'Optimizing Container Orchestration using Deep Reinforcement Learning', type: 'Journal', publisher: 'IEEE Access', date: 'Feb 2024', status: 'Published', citations: 12, abstract: 'This paper proposes a novel deep reinforcement learning approach to optimize container orchestration in cloud environments, significantly reducing latency and improving resource utilization.', authors: 'Dr. Faculty Name, Dr. Co-Author', doi: '10.1109/ACCESS.2024.1234567' },
-        { id: 2, title: 'Serverless Computing Cold Start Mitigation', type: 'Conference', publisher: 'ACM CloudComp', date: 'Pending', status: 'Under Review', citations: 0, abstract: 'We evaluate several strategies for mitigating cold starts in serverless computing, including pre-warming techniques and predictive scaling models, demonstrating a 40% reduction in average invocation delay.', authors: 'Dr. Faculty Name, Student Submitter', doi: 'N/A' },
-    ];
-
-    const [allPapers, setAllPapers] = useState(defaultPapers);
+    const [allPapers, setAllPapers] = useState(DEFAULT_PAPERS);
 
     useEffect(() => {
         const loadPapers = () => {
@@ -21,7 +21,7 @@ const ResearchTracker = () => {
             if (stored) {
                 setAllPapers(JSON.parse(stored));
             } else {
-                localStorage.setItem('connectivity_publications', JSON.stringify(defaultPapers));
+                localStorage.setItem('connectivity_publications', JSON.stringify(DEFAULT_PAPERS));
             }
         };
         loadPapers();

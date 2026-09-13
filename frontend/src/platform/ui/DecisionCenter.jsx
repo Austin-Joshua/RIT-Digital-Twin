@@ -31,22 +31,23 @@ export default function DecisionCenter() {
 
   useEffect(() => { load(); }, [load]);
 
-  useEffect(() => {
-    if (!requested || !board || opened.current === requested) return;
-    if ((board.problems || []).some((problem) => problem.key === requested)) {
-      opened.current = requested;
-      openProblem(requested);
-    }
-  }, [requested, board]);
-
-  const openProblem = (key) => {
+  const openProblem = useCallback((key) => {
     setPending(true);
     setError('');
     twinService.reviewDecision(key)
       .then((response) => setReview(response.data))
       .catch(() => setError('This problem could not be reviewed. No impact was substituted.'))
       .finally(() => setPending(false));
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!requested || !board || opened.current === requested) return;
+    if ((board.problems || []).some((problem) => problem.key === requested)) {
+      opened.current = requested;
+      const frame = requestAnimationFrame(() => openProblem(requested));
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [requested, board, openProblem]);
 
   const authorize = (optionId) => {
     if (!review?.problem?.key) return;

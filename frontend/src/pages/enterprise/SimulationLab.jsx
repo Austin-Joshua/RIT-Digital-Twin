@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import twinService from '../../services/twinService';
@@ -77,11 +77,9 @@ export default function SimulationLab() {
       .finally(() => setLoading(false));
   };
 
-  const chartRows = useMemo(() => {
-    if (!result?.current) return [];
-    return Object.entries(result.current)
-      .filter(([key, metric]) => metric?.value != null && ['occupancy', 'crowd', 'utilization', 'transportFill'].includes(key))
-      .map(([key, metric]) => {
+  const chartRows = !result?.current ? [] : Object.entries(result.current)
+    .filter(([key, metric]) => metric?.value != null && ['occupancy', 'crowd', 'utilization', 'transportFill'].includes(key))
+    .map(([key, metric]) => {
       const row = { metric: metric.label };
       row.Current = metric.value;
       (result.scenarios || []).forEach((scenario) => {
@@ -89,7 +87,6 @@ export default function SimulationLab() {
       });
       return row;
     });
-  }, [result]);
 
   const hourRows = (result?.hours || []).map((hour) => ({
     hour: hour.hour,

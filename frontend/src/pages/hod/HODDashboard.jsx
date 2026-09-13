@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -79,7 +79,7 @@ const HODDashboard = () => {
     ]);
   };
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -106,40 +106,38 @@ const HODDashboard = () => {
       setRankings(rankingsRes.data);
     } catch (err) {
       console.warn('HOD fetch error, switching to deterministic mock sync', err);
-      // Only mock if the server is absolutely unreachable, otherwise prioritize real data
       if (err.message?.includes('Network Error')) {
           generateMockHODData();
       } else {
-          // If we have partial data (e.g. from data initializer), prefer showing that
           generateMockHODData(); 
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [classSort, studentYear, studentSection, trendBy]);
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [fetchAll]);
 
   useEffect(() => {
     if (!loading) {
       api.get('/hod/class-performance', { params: { sortBy: classSort } }).then((r) => setClassPerformance(r.data)).catch(() => {});
     }
-  }, [classSort]);
+  }, [classSort, loading]);
 
   useEffect(() => {
     if (!loading) {
       api.get('/hod/performance-trends', { params: { by: trendBy } }).then((r) => setTrends(r.data)).catch(() => {});
     }
-  }, [trendBy]);
+  }, [trendBy, loading]);
 
   useEffect(() => {
     if (!loading) {
       api.get('/hod/students', { params: { year: studentYear || undefined, section: studentSection || undefined } })
         .then((r) => setStudents(r.data)).catch(() => {});
     }
-  }, [studentYear, studentSection]);
+  }, [studentYear, studentSection, loading]);
 
   const perfColor = (perf) => (perf === 'strong' ? '#16a34a' : perf === 'average' ? '#ca8a04' : '#dc2626');
 

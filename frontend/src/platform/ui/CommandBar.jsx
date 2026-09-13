@@ -27,15 +27,13 @@ export default function CommandBar({ open, onClose }) {
 
     useEffect(() => {
         if (!open) return undefined;
-        setQuery('');
-        setIndex(0);
-        const frame = requestAnimationFrame(() => inputRef.current?.focus());
+        const frame = requestAnimationFrame(() => {
+            setQuery('');
+            setIndex(0);
+            inputRef.current?.focus();
+        });
         return () => cancelAnimationFrame(frame);
     }, [open]);
-
-    useEffect(() => {
-        setIndex(0);
-    }, [query]);
 
     const go = (item) => {
         if (!item?.path) return;
@@ -87,7 +85,10 @@ export default function CommandBar({ open, onClose }) {
                             <input
                                 ref={inputRef}
                                 value={query}
-                                onChange={(event) => setQuery(event.target.value)}
+                                onChange={(event) => {
+                                    setQuery(event.target.value);
+                                    setIndex(0);
+                                }}
                                 onKeyDown={onKeyDown}
                                 placeholder="Jump to a page"
                                 aria-controls={listId}

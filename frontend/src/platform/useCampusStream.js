@@ -11,7 +11,9 @@ export function useCampusStream(onState) {
     const { user } = useAuth();
     const enabled = OPERATIONAL.has(normalizeRole(user?.role));
     const onStateRef = useRef(onState);
-    onStateRef.current = onState;
+    useEffect(() => {
+        onStateRef.current = onState;
+    }, [onState]);
     const [status, setStatus] = useState(enabled ? 'connecting' : 'restricted');
     const [revision, setRevision] = useState(0);
 
@@ -23,16 +25,19 @@ export function useCampusStream(onState) {
 
     useEffect(() => {
         if (!enabled) {
-            setStatus('restricted');
-            return undefined;
+            const frame = requestAnimationFrame(() => setStatus('restricted'));
+            return () => cancelAnimationFrame(frame);
         }
         if (!connected) {
-            setStatus('offline');
-            return undefined;
+            const frame = requestAnimationFrame(() => setStatus('offline'));
+            return () => cancelAnimationFrame(frame);
         }
         const subscription = subscribe('/topic/campus/state', accept);
-        setStatus('connected');
-        return () => subscription.unsubscribe();
+        const frame = requestAnimationFrame(() => setStatus('connected'));
+        return () => {
+            cancelAnimationFrame(frame);
+            subscription.unsubscribe();
+        };
     }, [accept, connected, enabled, subscribe]);
 
     useEffect(() => {

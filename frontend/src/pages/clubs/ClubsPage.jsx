@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/AuthContext';
 import {
@@ -48,7 +48,7 @@ const ClubsPage = () => {
     const canManageMembers = role === 'ADMIN' || role === 'FACULTY' || role === 'HOD';
     const canViewAnalytics = role === 'ADMIN' || role === 'HOD';
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             setLoading(true);
             setError('');
@@ -79,11 +79,11 @@ const ClubsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [canManageClubs, canViewAnalytics, role, selectedClubId]);
 
     useEffect(() => {
         loadData();
-    }, [role]);
+    }, [loadData]);
 
     useEffect(() => {
         const loadMembers = async () => {

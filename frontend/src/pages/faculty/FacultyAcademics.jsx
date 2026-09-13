@@ -3,6 +3,13 @@ import Card from '../../components/common/Card';
 import { FaBook, FaFileAlt, FaVideo, FaDownload } from 'react-icons/fa';
 import UploadMaterialModal from '../../components/common/UploadMaterialModal';
 
+const DEFAULT_MATERIALS = [
+    { id: 1, title: 'Unit 1: React Fundamentals', type: 'PDF', date: 'Oct 12', size: '2.4 MB', subject: 'Internet Programming' },
+    { id: 2, title: 'Lecture: Node.js Architecture', type: 'Video', date: 'Oct 15', size: '145 MB', subject: 'Internet Programming' },
+    { id: 3, title: 'Assignment 2 Guidelines', type: 'Doc', date: 'Oct 18', size: '1.1 MB', subject: 'Internet Programming' },
+    { id: 4, title: 'Unit 2: Express Routing', type: 'PDF', date: 'Oct 20', size: '3.2 MB', subject: 'Internet Programming' },
+];
+
 const FacultyAcademics = () => {
     const [_isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -22,14 +29,7 @@ const FacultyAcademics = () => {
         { code: 'BS301', name: 'Business Communication', semester: 'I', branch: 'CSBS', students: 58, syllabusCovered: 88 },
     ];
 
-    const defaultMaterials = [
-        { id: 1, title: 'Unit 1: React Fundamentals', type: 'PDF', date: 'Oct 12', size: '2.4 MB', subject: 'Internet Programming' },
-        { id: 2, title: 'Lecture: Node.js Architecture', type: 'Video', date: 'Oct 15', size: '145 MB', subject: 'Internet Programming' },
-        { id: 3, title: 'Assignment 2 Guidelines', type: 'Doc', date: 'Oct 18', size: '1.1 MB', subject: 'Internet Programming' },
-        { id: 4, title: 'Unit 2: Express Routing', type: 'PDF', date: 'Oct 20', size: '3.2 MB', subject: 'Internet Programming' },
-    ];
-
-    const [allMaterials, setAllMaterials] = useState(defaultMaterials);
+    const [allMaterials, setAllMaterials] = useState(DEFAULT_MATERIALS);
 
     useEffect(() => {
         const loadMaterials = () => {
@@ -37,7 +37,7 @@ const FacultyAcademics = () => {
             if (stored) {
                 setAllMaterials(JSON.parse(stored));
             } else {
-                localStorage.setItem('connectivity_materials', JSON.stringify(defaultMaterials));
+                localStorage.setItem('connectivity_materials', JSON.stringify(DEFAULT_MATERIALS));
             }
         };
         loadMaterials();

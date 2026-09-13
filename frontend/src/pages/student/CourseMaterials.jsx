@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaBook, FaDownload, FaFilePdf, FaFileArchive, FaSearch, FaFolderOpen, FaCheckCircle, FaLock } from 'react-icons/fa';
 
+const INITIAL_NOTES = [
+    { id: 101, subject: 'CS3451', title: 'Unit 1: Process Management', type: 'pdf', size: '2.4 MB', date: '2 days ago', downloaded: true },
+    { id: 102, subject: 'CS3451', title: 'Unit 2: Scheduling Algorithms', type: 'pdf', size: '1.8 MB', date: '1 week ago', downloaded: false },
+    { id: 103, subject: 'CS3491', title: 'Intro to Neural Networks', type: 'pdf', size: '4.1 MB', date: '3 days ago', downloaded: true },
+    { id: 104, subject: 'IT3401', title: 'React Hooks Complete Guide', type: 'zip', size: '12 MB', date: '2 weeks ago', downloaded: false },
+];
+
 const CourseMaterials = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('notes');
@@ -13,14 +20,7 @@ const CourseMaterials = () => {
         { id: 4, code: 'CS3401', name: 'Algorithms', progress: 60 },
     ];
 
-    const initialNotes = [
-        { id: 101, subject: 'CS3451', title: 'Unit 1: Process Management', type: 'pdf', size: '2.4 MB', date: '2 days ago', downloaded: true },
-        { id: 102, subject: 'CS3451', title: 'Unit 2: Scheduling Algorithms', type: 'pdf', size: '1.8 MB', date: '1 week ago', downloaded: false },
-        { id: 103, subject: 'CS3491', title: 'Intro to Neural Networks', type: 'pdf', size: '4.1 MB', date: '3 days ago', downloaded: true },
-        { id: 104, subject: 'IT3401', title: 'React Hooks Complete Guide', type: 'zip', size: '12 MB', date: '2 weeks ago', downloaded: false },
-    ];
-
-    const [notes, setNotes] = useState(initialNotes);
+    const [notes, setNotes] = useState(INITIAL_NOTES);
 
     useEffect(() => {
         const loadMaterials = () => {
@@ -37,7 +37,7 @@ const CourseMaterials = () => {
                     date: mat.date,
                     downloaded: mat.downloaded || false
                 }));
-                setNotes([...formatted, ...initialNotes]);
+                setNotes([...formatted, ...INITIAL_NOTES]);
             }
         };
         loadMaterials();

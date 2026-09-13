@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import twinService from '../../services/twinService';
 import { useCampusStream } from '../../platform/useCampusStream';
 import CampusOS from '../admin/CampusOS';
@@ -25,8 +25,7 @@ export default function RoleCampus({ mapPath, simulationPath = null, decisionPat
     };
     const stream = useCampusStream(applyState);
 
-    const loadCommand = () => {
-        setLoading(true);
+    const fetchCampusState = useCallback(() => {
         setError('');
         twinService.getCampusState()
             .then((response) => {
@@ -38,11 +37,17 @@ export default function RoleCampus({ mapPath, simulationPath = null, decisionPat
             })
             .catch(() => setError('Campus records could not be read. No estimated picture is substituted.'))
             .finally(() => setLoading(false));
-    };
+    }, []);
+
+    const loadCommand = useCallback(() => {
+        setLoading(true);
+        fetchCampusState();
+    }, [fetchCampusState]);
 
     useEffect(() => {
-        loadCommand();
-    }, []);
+        const frame = requestAnimationFrame(() => fetchCampusState());
+        return () => cancelAnimationFrame(frame);
+    }, [fetchCampusState]);
 
     return (
         <CampusOS
