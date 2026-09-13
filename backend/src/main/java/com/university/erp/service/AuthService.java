@@ -160,7 +160,7 @@ public class AuthService {
         Optional<User> existingUser = resolveUserByAnyIdentity(username);
         if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
             existingUser = studentRepository.findByRegisterNo(username)
-                    .map(Student::getUser)
+                    .map(s -> s.getUser())
                     .filter(user -> user != null);
         }
         return existingUser;

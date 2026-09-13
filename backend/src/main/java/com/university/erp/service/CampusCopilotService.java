@@ -169,11 +169,9 @@ public class CampusCopilotService {
 
     private Map<String, Object> availability(String query) {
         LocalDate day = dayFrom(query);
-        LocalTime time = timeFrom(query);
-        boolean clockNow = time == null;
-        if (clockNow) {
-            time = LocalTime.now(CAMPUS);
-        }
+        LocalTime rawTime = timeFrom(query);
+        boolean clockNow = rawTime == null;
+        LocalTime time = clockNow ? LocalTime.now(CAMPUS) : rawTime;
         String dayName = day.getDayOfWeek().name();
         List<TimetableSlot> slots = timetableSlotRepository.findByDayOfWeekIgnoreCase(dayName);
         String when = day.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
