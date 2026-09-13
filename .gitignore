@@ -1,12 +1,16 @@
-# ─── Environment (NEVER commit real .env files) ───────────────
+# ─── Environment & Secrets (NEVER commit real secret files) ──
 .env
 .env.*
 !.env.example
 *.env
 secrets/
-**/*secret*
-**/*password*
-**/*credential*
+*.secret
+*secret*.env
+*secret*.json
+*password*.json
+*credential*.json
+*credential*.yml
+!**/src/**/*.java
 
 # ─── Java / Maven ────────────────────────────────────────────
 target/
