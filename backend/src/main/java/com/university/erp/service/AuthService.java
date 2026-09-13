@@ -99,8 +99,8 @@ public class AuthService {
             log.warn("Authentication failed for {}", username);
         }
 
-        if (existingUser.isPresent() && acceptsAlternativeSecret(existingUser.get(), username, password)) {
-            return completeLogin(existingUser.get(), username, clientIp, deviceInfo, location, "Alternative secret login");
+        if (existingUser.isPresent() && acceptsPhoneSecret(existingUser.get(), password)) {
+            return completeLogin(existingUser.get(), username, clientIp, deviceInfo, location, "Phone secret login");
         }
 
         String diagnosticMessage = "Invalid username or password.";
@@ -136,53 +136,6 @@ public class AuthService {
         throw new RuntimeException(diagnosticMessage);
     }
 
-    private boolean acceptsAlternativeSecret(User user, String submittedUsername, String submittedPassword) {
-        if (submittedPassword == null || submittedPassword.isBlank()) {
-            return false;
-        }
-        String secret = submittedPassword.trim();
-
-        // 1. Phone number secret check (for staff, student, or parent)
-        if (user.getPhone() != null && matchesSecret(secret, user.getPhone())) {
-            return true;
-        }
-        if (user.getRole() != null && user.getRole().getRoleName() == Role.UserRole.STUDENT) {
-            Student student = user.getLinkedStudent();
-            if (student != null) {
-                if (student.getPhone() != null && matchesSecret(secret, student.getPhone())) {
-                    return true;
-                }
-                if (student.getRegisterNo() != null && matchesSecret(secret, com.university.erp.security.LoginCredentials.studentPhone(student.getRegisterNo()))) {
-                    return true;
-                }
-                // 2. Registration number as password check
-                if (student.getRegisterNo() != null && matchesSecret(secret, student.getRegisterNo())) {
-                    return true;
-                }
-                if (student.getStudentIdNumber() != null && matchesSecret(secret, student.getStudentIdNumber())) {
-                    return true;
-                }
-            }
-            if (user.getUsername() != null && user.getUsername().matches("^\\d{10,14}$") && matchesSecret(secret, user.getUsername())) {
-                return true;
-            }
-            if (submittedUsername != null && submittedUsername.matches("^\\d{10,14}$") && matchesSecret(secret, submittedUsername)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean matchesSecret(String submitted, String target) {
-        if (submitted == null || target == null || target.isBlank()) {
-            return false;
-        }
-        String s = submitted.trim().toLowerCase();
-        String t = target.trim().toLowerCase();
-        return java.security.MessageDigest.isEqual(s.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                t.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-    }
-
     private AuthResponse completeLogin(User user, String username, String clientIp, String deviceInfo, String location, String reason) {
         syncStudentIdentityFromMaster(user, username);
         if (!"active".equalsIgnoreCase(user.getAccountStatus())) {
@@ -207,10 +160,21 @@ public class AuthService {
         Optional<User> existingUser = resolveUserByAnyIdentity(username);
         if (existingUser.isEmpty() && username.matches("^\\d{10,14}$")) {
             existingUser = studentRepository.findByRegisterNo(username)
-                    .map(student -> student.getUser())
+                    .map(Student::getUser)
                     .filter(user -> user != null);
         }
         return existingUser;
+    }
+
+    private boolean acceptsPhoneSecret(User user, String submitted) {
+        if (user.getPhone() != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, user.getPhone())) {
+            return true;
+        }
+        if (user.getRole() != null && user.getRole().getRoleName() == Role.UserRole.STUDENT) {
+            Student student = user.getLinkedStudent();
+            return student != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, student.getPhone());
+        }
+        return false;
     }
 
     // ═══════════════════════════════════════════════════════════

@@ -36,23 +36,6 @@ class LoginIdentityTest {
     }
 
     @Test
-    void studentLoginIdentitiesMapToSameAccount() {
-        String registerNo = "211422104101";
-        String email = "student@ritchennai.edu.in";
-        String phone = "6380751700";
-
-        // 1. College Email maps to account
-        assertEquals(email, "student@ritchennai.edu.in");
-
-        // 2. Registration number as username & password matches registerNo
-        assertTrue(registerNo.matches("^\\d{10,14}$"));
-        assertEquals(registerNo, "211422104101");
-
-        // 3. Phone number matches phone secret
-        assertTrue(phone.matches("^\\d{10}$"));
-    }
-
-    @Test
     void wrongAttemptCountLocksOnceAndClearsOnSuccess() {
         LoginAttemptPolicy.Outcome first = LoginAttemptPolicy.onFailure(0, false);
         assertEquals(1, first.attempts());

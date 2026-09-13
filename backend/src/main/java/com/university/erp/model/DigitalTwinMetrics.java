@@ -29,7 +29,6 @@ public class DigitalTwinMetrics extends BaseEntity {
 
     private String locationCode; // Building or Classroom Code
 
-    @Column(name = "`value`")
     private Double value;
 
     private String unit;

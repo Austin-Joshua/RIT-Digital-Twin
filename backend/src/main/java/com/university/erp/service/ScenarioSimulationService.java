@@ -260,7 +260,7 @@ public class ScenarioSimulationService {
 
     private Double energy(List<Building> buildings, double classLoad, double hvacFactor) {
         return EnergyFormula.simulated(
-                buildings.stream().map(b -> b.getBaseEnergyLoad()).toList(),
+                buildings.stream().map(Building::getBaseEnergyLoad).toList(),
                 classLoad,
                 hvacFactor);
     }
