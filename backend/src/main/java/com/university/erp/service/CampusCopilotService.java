@@ -167,6 +167,7 @@ public class CampusCopilotService {
                 + (warnings.size() == 1 ? "" : "s") + ". Other students are not listed.", List.of(), "Own stored rows only.");
     }
 
+    @SuppressWarnings("null")
     private Map<String, Object> availability(String query) {
         LocalDate day = dayFrom(query);
         LocalTime rawTime = timeFrom(query);
