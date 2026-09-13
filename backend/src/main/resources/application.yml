@@ -6,7 +6,7 @@ app:
     credentials: ${APP_FIREBASE_CREDENTIALS:}
     credentials-file: ${APP_FIREBASE_CREDENTIALS_FILE:}
   jwt:
-    secret: ${APP_JWT_SECRET:${JWT_SECRET}}
+    secret: ${APP_JWT_SECRET:${JWT_SECRET:rit_digital_twin_secret_key_default_32_bytes_min_length_2026_safe}}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:${JWT_EXPIRATION:86400000}}
     refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:${JWT_REFRESH_EXPIRATION:604800000}}
   google:
@@ -65,10 +65,10 @@ spring:
   main:
     allow-circular-references: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:rit_digital_twin}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&rewriteBatchedStatements=true}
-    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:ritapp}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD}}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:rit_digital_twin;DB_CLOSE_DELAY=-1;MODE=MySQL}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL:10}
       minimum-idle: 3
@@ -84,10 +84,9 @@ spring:
     properties:
       hibernate:
         format_sql: false
-        dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: false
   flyway:
-    enabled: true
+    enabled: ${SPRING_FLYWAY_ENABLED:false}
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: false

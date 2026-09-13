@@ -1,40 +1,30 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { ThemeContext } from '../hooks/ThemeContext';
-import { LuSearch } from 'react-icons/lu';
-import { sectionsForRole } from '../platform/navCatalog';
-import CommandBar from '../platform/ui/CommandBar';
+import { LuChevronDown, LuChevronRight } from 'react-icons/lu';
+import GlobalSearch from './common/GlobalSearch';
 
 const Sidebar = ({ 
     sidebarOpen, 
     setSidebarOpen, 
     user, 
-    isDesktop
+    isDesktop, 
+    navItems = [] 
 }) => {
     const { isDarkMode } = useContext(ThemeContext);
-    const [commandOpen, setCommandOpen] = useState(false);
     const normalizedRole = String(user?.role || '').replace('ROLE_', '').toUpperCase();
-    const sections = sectionsForRole(normalizedRole);
     const homePath = normalizedRole === 'STUDENT'
         ? '/student'
         : normalizedRole === 'PARENT'
             ? '/parent'
             : normalizedRole === 'HOD'
                 ? '/hod'
-                : normalizedRole === 'FACULTY'
-                    ? '/faculty'
-                    : '/';
+                : '/';
 
-    useEffect(() => {
-        const onKey = (event) => {
-            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-                event.preventDefault();
-                setCommandOpen((open) => !open);
-            }
-        };
-        window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
-    }, []);
+    // Filter out dropdown sub-items for search
+    const searchItems = navItems.filter(item => !item.subItems).concat(
+        navItems.filter(item => item.subItems).flatMap(item => item.subItems)
+    );
 
     return (
         <aside className={`stu-sidebar ${sidebarOpen ? 'open' : ''}`}>
@@ -61,38 +51,65 @@ const Sidebar = ({
 
             {/* Sidebar Search */}
             <div className="stu-sidebar-search">
-                <button type="button" className="command-launch" onClick={() => setCommandOpen(true)} aria-label="Search the campus">
-                    <LuSearch size={16} aria-hidden="true" />
-                    <span>Search</span>
-                    <kbd>Ctrl K</kbd>
-                </button>
+                <GlobalSearch
+                    navItems={searchItems}
+                    placeholder="Search"
+                />
             </div>
 
-            <nav className="stu-nav" aria-label="Campus">
-                {sections.map((section) => (
-                    <div key={section.id} className="nav-section">
-                        <p className="nav-section-label">{section.label}</p>
-                        {section.items.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                                <NavLink
-                                    key={item.path}
-                                    to={item.path}
-                                    end={Boolean(item.end)}
-                                    className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
-                                    onClick={() => {
-                                        if (!isDesktop) setSidebarOpen(false);
-                                    }}
+            {/* Navigation */}
+            <nav className="stu-nav">
+                {navItems.map((item, idx) => (
+                    <div key={idx}>
+                        {item.subItems || item.isDropdown ? (
+                            <>
+                                <div
+                                    className={`stu-nav-item ${(item.isOpen || item.active) ? 'active' : ''}`}
+                                    onClick={item.onToggle}
+                                    style={{ cursor: 'pointer', justifyContent: 'space-between' }}
                                 >
-                                    <span className="nav-icon">{Icon ? <Icon size={16} /> : null}</span>
-                                    <span>{item.label}</span>
-                                </NavLink>
-                            );
-                        })}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span className="nav-icon">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </div>
+                                    <span className="nav-chevron">
+                                        {(item.isOpen || item.active) ? <LuChevronDown fontSize="14px" /> : <LuChevronRight fontSize="14px" />}
+                                    </span>
+                                </div>
+                                {(item.isOpen || item.active) && (
+                                    <div className="stu-submenu">
+                                        {item.subItems.map((sub) => (
+                                            <NavLink
+                                                key={sub.path}
+                                                to={sub.path}
+                                                className={({ isActive }) => `stu-nav-item submenu-item ${isActive ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    if (!isDesktop) setSidebarOpen(false);
+                                                }}
+                                            >
+                                                <span className="nav-icon">{sub.icon}</span>
+                                                <span>{sub.label}</span>
+                                            </NavLink>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <NavLink
+                                to={item.path}
+                                end={item.end || item.exact || false}
+                                className={({ isActive }) => `stu-nav-item ${isActive ? 'active' : ''}`}
+                                onClick={() => {
+                                    if (!isDesktop) setSidebarOpen(false);
+                                }}
+                            >
+                                <span className="nav-icon">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </NavLink>
+                        )}
                     </div>
                 ))}
             </nav>
-            <CommandBar open={commandOpen} onClose={() => setCommandOpen(false)} />
         </aside>
     );
 };

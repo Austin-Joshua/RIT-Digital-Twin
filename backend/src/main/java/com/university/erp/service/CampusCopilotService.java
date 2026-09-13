@@ -169,15 +169,13 @@ public class CampusCopilotService {
 
     private Map<String, Object> availability(String query) {
         LocalDate day = dayFrom(query);
-        LocalTime time = timeFrom(query);
-        boolean clockNow = time == null;
-        if (clockNow) {
-            time = LocalTime.now(CAMPUS);
-        }
+        LocalTime parsedTime = timeFrom(query);
+        boolean clockNow = parsedTime == null;
+        LocalTime targetTime = parsedTime != null ? parsedTime : LocalTime.now(CAMPUS);
         String dayName = day.getDayOfWeek().name();
         List<TimetableSlot> slots = timetableSlotRepository.findByDayOfWeekIgnoreCase(dayName);
         String when = day.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-                + (clockNow ? " at the current campus clock (" + time.withNano(0) + ")" : " at " + time);
+                + (clockNow ? " at the current campus clock (" + targetTime.withNano(0) + ")" : " at " + targetTime);
         if (slots.isEmpty()) {
             return answer("No timetable slots are stored for " + when + ". Free rooms are not inferred from an empty day.", List.of(), "No slots for that day.");
         }
@@ -186,7 +184,7 @@ public class CampusCopilotService {
             if (slot.getClassroom() == null || slot.getClassroom().getId() == null) {
                 continue;
             }
-            if (covers(slot, time)) {
+            if (covers(slot, targetTime)) {
                 busy.add(slot.getClassroom().getId());
             }
         }

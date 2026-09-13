@@ -6,8 +6,16 @@ const RecruitmentHR = () => {
     const { addToast: _addToast } = useToast();
     const [activeTab, setActiveTab] = useState('recruitment'); // recruitment, payroll
 
-    const applicants = [];
-    const payroll = [];
+    const applicants = [
+        { id: 201, name: 'Dr. Sarah Jenifer', role: 'Asst. Professor (CSE)', status: 'Interview Scheduled', experience: '5 Yrs', date: 'Mar 15, 2024', aiScore: 94 },
+        { id: 202, name: 'Mr. Rajesh Kumar', role: 'Lab Assistant (ECE)', status: 'Screening', experience: '2 Yrs', date: 'Mar 12, 2024', aiScore: 78 },
+        { id: 203, name: 'Dr. John Doe', role: 'Professor (Mech)', status: 'Offer Extended', experience: '12 Yrs', date: 'Feb 28, 2024', aiScore: 89 },
+    ];
+
+    const payroll = [
+        { id: 'EMP1045', name: 'Prof. Anitha M', dept: 'CSE', basic: 75000, hra: 15000, ded: 5000, net: 85000, status: 'Processed' },
+        { id: 'EMP1082', name: 'Dr. Karthik S', dept: 'ECE', basic: 90000, hra: 18000, ded: 7000, net: 101000, status: 'Pending' },
+    ];
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 p-6">
@@ -24,7 +32,7 @@ const RecruitmentHR = () => {
                 <div className="stu-kpi-card blue cursor-pointer hover:scale-[1.02] transition-transform">
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Open Positions</div>
-                        <div className="text-4xl font-black mb-1 text-white">Not stored</div>
+                        <div className="text-4xl font-black mb-1 text-white">12</div>
                         <div className="text-sm text-blue-100">Across All Departments</div>
                     </div>
                     <div className="kpi-icon"><FaBriefcase /></div>
@@ -33,7 +41,7 @@ const RecruitmentHR = () => {
                 <div className="stu-kpi-card amber cursor-pointer hover:scale-[1.02] transition-transform">
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-amber-900 uppercase tracking-wider mb-2">Active Candidates</div>
-                        <div className="text-4xl font-black mb-1" style={{ color: 'var(--ims-bg-light)' }}>Not stored</div>
+                        <div className="text-4xl font-black mb-1" style={{ color: 'var(--ims-bg-light)' }}>48</div>
                         <div className="text-sm text-amber-900">In Interview Pipeline</div>
                     </div>
                     <div className="kpi-icon"><FaUsers /></div>
@@ -42,7 +50,7 @@ const RecruitmentHR = () => {
                 <div className="stu-kpi-card green cursor-pointer hover:scale-[1.02] transition-transform">
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-green-200 uppercase tracking-wider mb-2">Offers Accepted</div>
-                        <div className="text-4xl font-black mb-1 text-white">Not stored</div>
+                        <div className="text-4xl font-black mb-1 text-white">5</div>
                         <div className="text-sm text-green-100">This Quarter</div>
                     </div>
                     <div className="kpi-icon"><FaCheck /></div>
@@ -51,7 +59,7 @@ const RecruitmentHR = () => {
                 <div className="stu-kpi-card purple cursor-pointer hover:scale-[1.02] transition-transform">
                     <div className="kpi-main">
                         <div className="text-sm font-bold text-purple-200 uppercase tracking-wider mb-2">Payroll Status</div>
-                        <div className="text-4xl font-black mb-1 text-white">Not stored</div>
+                        <div className="text-4xl font-black mb-1 text-white">68%</div>
                         <div className="text-sm text-purple-100">Processing Pending</div>
                     </div>
                     <div className="kpi-icon"><FaFileInvoice /></div>

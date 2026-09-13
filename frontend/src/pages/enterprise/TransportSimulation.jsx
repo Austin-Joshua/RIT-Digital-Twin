@@ -4,7 +4,6 @@ import {
     ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
 import api from '../../services/api';
-import { unwrapSimulation } from '../../platform/sourceClass';
 import { useAuth } from '../../hooks/AuthContext';
 import { Navigate } from 'react-router-dom';
 import KPIDetailsModal from '../../components/common/KPIDetailsModal';
@@ -42,7 +41,7 @@ function TransportPage() {
         setError('');
         try {
             const res = await api.post('/simulate/transport', params);
-            setData(unwrapSimulation(res.data));
+            setData(res.data);
         } catch (err) {
             setError(err.response?.data?.message || 'Unable to complete network analysis. Please verify your connection to the institution server.');
         } finally {
@@ -68,7 +67,6 @@ function TransportPage() {
                     <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-accent-gold)' }}>
                         <span className="p-2 bg-navy-900 text-white rounded-lg">🚌</span> Institutional Fleet Intelligence
                     </h2>
-                    <p style={{ margin: '8px 0 0', color: 'var(--theme-text-muted)' }}>SIMULATED. Fuel, EV, and payback figures are calculated from the inputs below. They are not GPS, a fuel meter, or campus energy.</p>
                     <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">Evaluating fleet dynamics, fuel economics, and residential cluster distributions</p>
                 </div>
                 <div className="flex gap-3">

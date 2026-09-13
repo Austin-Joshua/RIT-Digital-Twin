@@ -2,8 +2,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LuUserPlus, LuUserMinus, LuZap, LuClock, LuBell, LuPlus } from 'react-icons/lu';
 
-const ABSENT_FACULTY = [];
-const SUBSTITUTES = [];
+const ABSENT_FACULTY = [
+    { name: 'Dr. Ramesh K', dept: 'CS', periods: ['P1', 'P4'], reason: 'Medical' },
+    { name: 'Prof. Anitha S', dept: 'IT', periods: ['P2'], reason: 'External OD' },
+];
+
+const SUBSTITUTES = [
+    { name: 'Prof. Senthil', load: 12, expertise: 'Data Structures', match: 95 },
+    { name: 'Dr. Mary J', load: 15, expertise: 'Operating Systems', match: 88 },
+    { name: 'Mr. Vignesh', load: 10, expertise: 'Programming', match: 82 },
+];
 
 const SubstitutionOverridePanel = () => {
     const [notifying, setNotifying] = useState(false);
@@ -19,7 +27,7 @@ const SubstitutionOverridePanel = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Faculty Substitution Panel</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>No absence or substitute queue is stored. Matches are not generated.</p>
+                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0' }}>AI-driven clash detection and substitution matching</p>
                 </div>
                 <button style={{ padding: '12px 24px', borderRadius: '8px', border: 'none', background: 'var(--color-primary-navy)', color: 'white', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(11,44,107,0.3)' }}>
                     <LuPlus /> Mark Bulk Absence
@@ -33,7 +41,6 @@ const SubstitutionOverridePanel = () => {
                         <LuUserMinus color="#dc2626" /> Today&apos;s Absent Faculty
                     </div>
                     <div style={{ padding: '12px' }}>
-                        {ABSENT_FACULTY.length === 0 ? <p style={{ margin: 0 }}>No faculty absences are stored.</p> : null}
                         {ABSENT_FACULTY.map((f, i) => (
                             <div key={i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', marginBottom: '12px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>

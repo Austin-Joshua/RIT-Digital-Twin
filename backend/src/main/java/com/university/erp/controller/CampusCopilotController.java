@@ -35,15 +35,16 @@ public class CampusCopilotController {
 
     @PostMapping("/ask")
     @PreAuthorize("hasAnyRole('ADMIN','HOD','FACULTY','STUDENT','PARENT')")
-    public ResponseEntity<Map<String, Object>> ask(@RequestBody Map<String, Object> body, Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> ask(@RequestBody Map<String, Object> body) {
         String query = body.get("query") == null ? "" : String.valueOf(body.get("query"));
         String page = body.get("page") == null ? "" : String.valueOf(body.get("page"));
         String entity = body.get("entity") == null ? "" : String.valueOf(body.get("entity"));
         Map<String, Object> grounded = campusCopilotService.ask(query, page, entity);
-        return ResponseEntity.ok(campusAiGateway.finish(query, roleOf(authentication), grounded));
+        return ResponseEntity.ok(campusAiGateway.finish(query, roleOf(), grounded));
     }
 
-    private static String roleOf(Authentication authentication) {
+    private static String roleOf() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return "";
         }

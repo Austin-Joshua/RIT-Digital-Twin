@@ -20,12 +20,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   const normalizedRole = (user.role || "").replace("ROLE_", "").toUpperCase();
   if (allowedRoles.length > 0 && !allowedRoles.includes(normalizedRole)) {
-    const home = normalizedRole === "STUDENT" ? "/student"
-      : normalizedRole === "PARENT" ? "/parent"
-        : normalizedRole === "HOD" ? "/hod"
-          : normalizedRole === "FACULTY" ? "/faculty"
-            : "/";
-    return <Navigate to={home} replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

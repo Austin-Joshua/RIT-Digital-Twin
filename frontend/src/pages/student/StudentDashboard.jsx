@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
-import RoleExperience from '../../platform/ui/RoleExperience';
+import { useAuth } from '../../hooks/AuthContext';
+import { getAcademicStats } from '../../utils/MockDataGenerator';
+import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
+import RingStat from '../../components/common/RingStat';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
@@ -23,16 +26,44 @@ function formatDay(date) {
 }
 
 const StudentDashboard = () => {
+    const { user } = useAuth();
+    const email = user?.email || 'guest@ritchennai.edu.in';
+    const initialStats = getAcademicStats(email);
     const now = useMemo(() => new Date(), []);
+    const yearLabel = academicYearLabel(now);
     const semester = semesterWindow(now);
+
+    const [kpiData, setKpiData] = useState({
+        cgpa: initialStats.cgpa,
+        attendance: initialStats.attendance,
+        arrear: initialStats.arrears,
+    });
     const [timetable, setTimetable] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
+    const feesPending = pendingAcademicFees();
+    const academicTotal = academicFees
+        .filter((fee) => fee.type === 'ACADEMIC')
+        .reduce((sum, fee) => sum + fee.amount, 0);
+    const feesPaidShare = academicTotal === 0
+        ? 100
+        : Math.round(((academicTotal - feesPending) / academicTotal) * 100);
+    const cgpa = Number(kpiData.cgpa || 0);
+    const attendance = Math.round(Number(kpiData.attendance || 0));
+    const arrears = Number(kpiData.arrear || 0);
 
     useEffect(() => {
+        api.get('/academic/student/cgpa')
+            .then((cgpaRes) => {
+                if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
+                    const apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
+                    if (apiCgpa > 0) setKpiData((prev) => ({ ...prev, cgpa: apiCgpa }));
+                }
+            })
+            .catch(() => {});
         api.get('/academic/student/timetable')
             .then((res) => setTimetable(Array.isArray(res.data) ? res.data : []))
             .catch(() => setTimetable([]));
-    }, []);
+    }, [user]);
 
     const calendar = useMemo(() => {
         const year = now.getFullYear();
@@ -64,7 +95,39 @@ const StudentDashboard = () => {
 
     return (
         <div className="stu-dashboard">
-            <RoleExperience />
+            <div className="ims-stat-row">
+                <RingStat
+                    label="CGPA"
+                    value={`${cgpa.toFixed(2)} / 10`}
+                    center={cgpa.toFixed(2)}
+                    sub="Overall performance"
+                    percent={(cgpa / 10) * 100}
+                    color="#2ecc71"
+                />
+                <RingStat
+                    label="Attendance"
+                    value={`${attendance}%`}
+                    center={`${attendance}%`}
+                    sub="Average this semester"
+                    percent={attendance}
+                    color="#17a2b8"
+                />
+                <RingStat
+                    label="Arrears"
+                    value={String(arrears)}
+                    center={String(arrears)}
+                    percent={arrears === 0 ? 0 : Math.min(100, arrears * 25)}
+                    color="#dc3545"
+                />
+                <RingStat
+                    label="Fees Pending"
+                    value={`₹${(feesPending || 0).toLocaleString('en-IN')}`}
+                    center={feesPending === 0 ? '100% Paid' : 'Due'}
+                    sub={`AY ${yearLabel}`}
+                    percent={feesPaidShare}
+                    color="#f0ad4e"
+                />
+            </div>
 
             <section className="ims-calendar-card">
                 <div className="ims-cal-legend">

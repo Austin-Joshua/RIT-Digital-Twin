@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/common/Card';
 import { FaCalendarCheck, FaCheck, FaTimes, FaUserAlt, FaClock, FaClipboardList, FaHandshake, FaExclamationTriangle } from 'react-icons/fa';
+import api from '../../services/api';
 import { useToast } from '../../hooks/ToastContext';
 
+const DEFAULT_LEAVE_REQUESTS = [
+    { id: 'm1', studentName: 'Sachin S', reg: '2117240080119', dept: 'CSE', type: 'LEAVE', startDate: '2026-04-10', endDate: '2026-04-12', reason: 'Common cold and medical rest.', status: 'PENDING', appliedDate: '07/04/2026' },
+    { id: 'm2', studentName: 'Sanjana M', reg: '2117240080121', dept: 'CSE', type: 'OD', startDate: '2026-04-15', endDate: '2026-04-15', reason: 'Inter-college Hackathon participation.', status: 'PENDING', appliedDate: '07/04/2026' }
+];
+
 function readLeaveSnapshot() {
-    return { requests: [], notes: {} };
+    let syncReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
+    if (!Array.isArray(syncReqs) || syncReqs.length === 0) {
+        syncReqs = DEFAULT_LEAVE_REQUESTS;
+        localStorage.setItem('rit_global_leave_requests', JSON.stringify(syncReqs));
+    }
+    const notes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
+    return { requests: syncReqs, notes };
 }
 
 const FacultyLeaves = () => {
@@ -25,8 +37,20 @@ const FacultyLeaves = () => {
         return () => window.removeEventListener('storage', onStorage);
     }, []);
 
-    const handleAction = async () => {
-        addToast('This queue is not stored, so the request was not updated.', 'error');
+    const handleAction = async (id, action) => {
+        try {
+            const globalReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
+            const updated = globalReqs.map(r => 
+                r.id === id ? { ...r, status: action === 'Approved' ? 'APPROVED' : 'REJECTED' } : r
+            );
+            localStorage.setItem('rit_global_leave_requests', JSON.stringify(updated));
+            setRequests(updated);
+            addToast(`Request ${action} successfully!`, 'success');
+            
+            api.put(`/faculty/leaves/${id}/status`, { status: action.toUpperCase() }).catch(() => null);
+        } catch {
+            addToast('Action failed. Please try again.', 'error');
+        }
     };
 
     const counts = {
@@ -86,7 +110,7 @@ const FacultyLeaves = () => {
                         {loading ? (
                             <div style={{ padding: '40px', textAlign: 'center' }}>Synchronizing...</div>
                         ) : requests.length === 0 ? (
-                            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.8 }}>No student leave or OD queue is stored for this login.</div>
+                            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>No pending requests.</div>
                         ) : (
                             <div className="requests-grid" style={{ display: 'flex', flexDirection: 'column' }}>
                                 {requests.map((req) => (

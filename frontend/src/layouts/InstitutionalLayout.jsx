@@ -1,14 +1,19 @@
 import React, { useState, useContext, Suspense, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
 import { useToast } from '../hooks/ToastContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/layout/Header';
 import SystemBroadcastBar from '../components/layout/SystemBroadcastBar';
-import CampusAssistant from '../features/ai/CampusAssistant';
-import PageTransition from '../platform/ui/PageTransition';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import {
+    LuLayoutDashboard, LuTrendingUp, LuBriefcase,
+    LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
+    LuSchool, LuLightbulb, LuBus, LuUsers, LuCpu, LuKey, LuShieldAlert,
+    LuLayoutGrid, LuFlame
+} from 'react-icons/lu';
 import './student-layout.css';
 
 const LayoutLoader = () => (
@@ -89,6 +94,46 @@ const InstitutionalLayout = () => {
         ? `${isAcademicLeader ? `PROF. ${roleLabel}` : roleLabel} • ${user.department}`
         : (isAcademicLeader ? `PROF. ${roleLabel}` : (roleLabel || 'Institutional User'));
 
+    const adminNavItems = [
+        { path: '/', label: 'Home', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/analytics', label: 'Analytics', icon: <LuTrendingUp />, exact: true },
+        { path: '/analytics/placement', label: 'Placements', icon: <LuBriefcase /> },
+        { path: '/management/audit', label: 'Audit Logs', icon: <LuFileCode /> },
+        { path: '/management/users', label: 'User Accounts', icon: <LuShieldAlert /> },
+        { path: '/management/exam-timetable', label: 'Exam Timetables', icon: <LuCalendar /> },
+        { path: '/management/results', label: 'Results', icon: <LuBook /> },
+        { path: '/management/clubs', label: 'Club Management', icon: <LuUsers /> },
+        { path: '/management/substitutions', label: 'Class Substitutions', icon: <LuRefreshCcw /> },
+        { path: '/management/certificates', label: 'Certificate', icon: <LuAward /> },
+        { path: '/simulations/classroom', label: 'Classroom Allocation', icon: <LuSchool /> },
+        { path: '/simulations/energy', label: 'Energy Optimization', icon: <LuLightbulb /> },
+        { path: '/simulations/transport', label: 'Route Flow Visualization', icon: <LuBus /> },
+        { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
+        { path: '/simulations/sustainability', label: 'Sustainability', icon: <LuFlame /> },
+        { path: '/predictions', label: 'Predictive Analysis', icon: <LuTrendingUp /> },
+        { path: '/management/algorithms', label: 'Smart Algorithms', icon: <LuCpu /> },
+        { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
+    ];
+
+    const facultyNavItems = [
+        { path: '/faculty', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+        { path: '/faculty/academics', label: 'Academics', icon: <LuBook /> },
+        { path: '/faculty/timetable', label: 'My Timetable', icon: <LuCalendar /> },
+        { path: '/faculty/timetable-allocation', label: 'Timetable Allocation', icon: <LuCalendar /> },
+        { path: '/faculty/grading', label: 'Performance Grading', icon: <LuAward /> },
+        { path: '/faculty/attendance', label: 'Attendance', icon: <LuCalendar /> },
+        { path: '/faculty/leaves', label: 'Leaves & Approvals', icon: <LuRefreshCcw /> },
+        { path: '/faculty/analytics', label: 'Class Analytics', icon: <LuTrendingUp /> },
+        { path: '/faculty/proctor', label: 'Proctor Wards', icon: <LuUsers /> },
+        { path: '/faculty/clubs', label: 'Club Management', icon: <LuLayoutGrid /> },
+        { path: '/faculty/research', label: 'Research Tracker', icon: <LuLightbulb /> },
+        { path: '/faculty/upload-marks', label: 'Upload Marks', icon: <LuAward /> },
+        { path: '/faculty/risk-heatmap', label: 'Class Risk Heatmap', icon: <LuShieldAlert /> },
+        { path: '/change-password', label: 'Change Password', icon: <LuKey /> },
+    ];
+
+    const navItems = (user?.role === 'FACULTY') ? facultyNavItems : adminNavItems;
+
     return (
         <div className={`stu-layout ${isDarkMode ? 'dark' : 'light'}`}>
             <SystemBroadcastBar />
@@ -98,6 +143,7 @@ const InstitutionalLayout = () => {
                 setSidebarOpen={handleSetSidebarOpen}
                 user={user}
                 isDesktop={isDesktop}
+                navItems={navItems}
             />
 
             {/* Mobile Sidebar Backdrop */}
@@ -143,12 +189,12 @@ const InstitutionalLayout = () => {
                 {/* Content Area */}
                 <main className="stu-content">
                     <Suspense fallback={<LayoutLoader />}>
-                        <PageTransition />
+                        <Outlet />
                     </Suspense>
                 </main>
 
                 {/* AI Assistant Integration */}
-                <CampusAssistant />
+                <ChatbotWidget />
             </div>
         </div>
     );

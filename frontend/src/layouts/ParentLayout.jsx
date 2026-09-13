@@ -1,16 +1,28 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
-import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/AuthContext';
 import {
-    LuLogOut, LuMenu, LuUser, LuSun, LuMoon, LuMonitor
+    LuLayoutDashboard, LuBookOpen, LuCalendarCheck2, LuAward,
+    LuBanknote, LuKey, LuLogOut, LuMenu, LuUser, LuSun, LuMoon, LuMonitor, LuUsers
 } from 'react-icons/lu';
+import GlobalSearch from '../components/common/GlobalSearch';
 import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
-import CampusAssistant from '../features/ai/CampusAssistant';
-import PageTransition from '../platform/ui/PageTransition';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import './student-layout.css';
+
+const parentNav = [
+    { path: '/parent', label: 'Parent Dashboard', icon: <LuLayoutDashboard />, end: true },
+    { path: '/parent/profile', label: 'My Profile', icon: <LuUser /> },
+    { path: '/parent/grades', label: 'Academic Grades', icon: <LuAward /> },
+    { path: '/parent/attendance', label: 'Attendance Feed', icon: <LuCalendarCheck2 /> },
+    { path: '/parent/fees', label: 'Academic Fee', icon: <LuBanknote /> },
+    { path: '/parent/exam-fee', label: 'Exam Fee', icon: <LuBanknote /> },
+    { path: '/parent/clubs', label: 'Club Participation', icon: <LuUsers /> },
+    { path: '/parent/change-password', label: 'Change Password', icon: <LuKey /> },
+];
 
 const LG_BREAKPOINT = 1024;
 const ParentLayout = () => {
@@ -56,6 +68,7 @@ const ParentLayout = () => {
                 setSidebarOpen={setSidebarOpen}
                 user={user}
                 isDesktop={isDesktop}
+                navItems={parentNav}
             />
 
             {sidebarOpen && !isDesktop && (
@@ -158,12 +171,12 @@ const ParentLayout = () => {
                             Loading page...
                         </div>
                     }>
-                        <PageTransition />
+                        <Outlet />
                     </Suspense>
                 </div>
                 
                 {/* AI Assistant Integration */}
-                <CampusAssistant studentId={null} />
+                <ChatbotWidget studentId={null} />
             </div>
         </div>
     );

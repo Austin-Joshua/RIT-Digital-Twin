@@ -22,16 +22,10 @@ const LoginPage = () => {
     const { isDarkMode } = useContext(ThemeContext);
 
     useEffect(() => {
-        let stopped = false;
-        let timer;
-        let abortTimer;
-        const controllerRef = { current: null };
-
+        let timeoutId;
         const checkConnection = async () => {
             const controller = new AbortController();
-            controllerRef.current = controller;
-            abortTimer = setTimeout(() => controller.abort(), 8000);
-            let online = false;
+            timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const healthUrl = `${getBackendRootURL()}/actuator/health`;
@@ -40,23 +34,20 @@ const LoginPage = () => {
                     mode: 'cors',
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
-                online = response.ok;
+                if (response.ok) setBackendStatus('online');
+                else setBackendStatus('offline');
             } catch {
-                online = false;
+                setBackendStatus('offline');
             } finally {
-                clearTimeout(abortTimer);
+                clearTimeout(timeoutId);
             }
-
-            if (stopped) return;
-            setBackendStatus(online ? 'online' : 'offline');
-            timer = setTimeout(checkConnection, online ? 60000 : 15000);
         };
 
         checkConnection();
+        const interval = setInterval(checkConnection, 10000);
         return () => {
-            stopped = true;
-            clearTimeout(timer);
-            clearTimeout(abortTimer);
+            if (timeoutId) clearTimeout(timeoutId);
+            clearInterval(interval);
         };
     }, []);
 
@@ -136,7 +127,7 @@ const LoginPage = () => {
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '18px' }}>
                         <div style={{ minWidth: 0, flex: 1, paddingTop: '2px' }}>
                             <h2 style={{
-                                fontSize: '1.45rem', fontWeight: 800,
+                                fontSize: '1.45rem', fontWeight: 650,
                                 color: isDarkMode ? '#FFD700' : '#B8860B',
                                 margin: 0,
                                 lineHeight: 1.2,

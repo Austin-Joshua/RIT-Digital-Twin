@@ -82,7 +82,6 @@ public class GeminiClient {
         }
     }
 
-    @SuppressWarnings("unchecked")
     static String textOf(Map<String, Object> response) {
         if (response == null) {
             return null;

@@ -17,16 +17,16 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (!this.state.hasError) return this.props.children;
     return (
-      <div role="alert" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ maxWidth: '28rem', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>This page could not be shown</h1>
-          <p style={{ color: 'var(--theme-text-muted)', marginBottom: '16px' }}>
-            The rest of the campus is unchanged. Try again, or return home.
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md text-center p-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Something went wrong</h1>
+          <p className="text-gray-500 text-sm mb-6">
+            {this.state.error?.message || 'An unexpected error occurred'}
           </p>
-          <button type="button" onClick={() => this.setState({ hasError: false, error: null })} style={{ marginRight: '8px' }}>
-            Try again
-          </button>
-          <button type="button" onClick={() => { window.location.href = '/'; }}>
+          <button
+            onClick={() => { window.location.href = '/'; }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+          >
             Go home
           </button>
         </div>

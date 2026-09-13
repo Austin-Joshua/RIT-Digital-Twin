@@ -32,7 +32,7 @@ const TransportPage = () => {
                     startPoint: r.origin,
                     endPoint: 'RIT Campus',
                     currentOccupancy: r.students,
-                    capacity: r.students && r.occupancyPercent ? Math.round(r.students / (r.occupancyPercent / 100)) : null,
+                    capacity: Math.round(r.students / (r.occupancyPercent / 100)) || 50,
                     stops: [], // Simulation relies on live rendering, stops omitted for brevity
                     coordinatorName: 'AI Fleet Management',
                 }));

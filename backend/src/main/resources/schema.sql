@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS subjects (
     semester_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (dept_id) REFERENCES departments(id) ON DELETE SET NULL,
     FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE SET NULL,
     INDEX idx_subject_code (subject_code)
 );
@@ -357,7 +357,7 @@ CREATE TABLE IF NOT EXISTS timetable_slots (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL,
     FOREIGN KEY (faculty_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE SET NULL,
+    FOREIGN KEY (dept_id) REFERENCES departments(id) ON DELETE SET NULL,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id) ON DELETE SET NULL
 );
 

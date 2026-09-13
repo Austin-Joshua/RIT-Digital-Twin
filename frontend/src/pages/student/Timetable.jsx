@@ -10,7 +10,6 @@ const TIMETABLE_CACHE_TTL_MS = 60 * 1000;
 const Timetable = () => {
     const hasWarmCache = Array.isArray(timetableMemoryCache) && timetableMemoryCache.length >= 0;
     const [timetable, setTimetable] = useState(hasWarmCache ? timetableMemoryCache : []);
-    const [loadError, setLoadError] = useState('');
     const [loading, setLoading] = useState(!hasWarmCache);
 
     useEffect(() => {
@@ -24,14 +23,12 @@ const Timetable = () => {
                 timetableLastFetchedAt = Date.now();
                 if (opts.setState && isMounted) {
                     setTimetable(data);
-                    setLoadError('');
                     setLoading(false);
                 }
             } catch (err) {
                 console.error("Timetable Fetch Error:", err);
                 if (opts.setState && isMounted) {
-                    if (timetableMemoryCache) setTimetable(timetableMemoryCache);
-                    setLoadError('The timetable could not be read. An empty week is not shown in its place.');
+                    setTimetable(timetableMemoryCache || []);
                     setLoading(false);
                 }
             }
@@ -63,17 +60,6 @@ const Timetable = () => {
     }, [timetable]);
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton height="400px" /></div>;
-
-    if (loadError && !timetable.length) {
-        return (
-            <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
-                <h2 style={{ marginBottom: '16px', color: 'var(--theme-text)' }}>My Weekly Time Table</h2>
-                <div style={{ background: 'var(--card-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '18px', color: 'var(--theme-text-muted)' }}>
-                    {loadError}
-                </div>
-            </div>
-        );
-    }
 
     if (!timetable.length) {
         return (

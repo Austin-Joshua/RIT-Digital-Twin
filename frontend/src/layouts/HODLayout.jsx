@@ -1,12 +1,11 @@
 import React, { useState, useContext, Suspense, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { LuMenu, LuMonitor, LuMoon, LuSun, LuUser, LuSettings, LuLogOut } from 'react-icons/lu';
+import { Link, Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { LuLayoutDashboard, LuUsers, LuKey, LuMenu, LuMonitor, LuMoon, LuSun, LuUser, LuSettings, LuLogOut } from 'react-icons/lu';
 import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
-import CampusAssistant from '../features/ai/CampusAssistant';
-import PageTransition from '../platform/ui/PageTransition';
+import ChatbotWidget from '../features/ai/components/ChatbotWidget';
 import './student-layout.css';
 import Sidebar from '../components/Sidebar';
 
@@ -17,6 +16,12 @@ const LayoutLoader = () => (
 );
 
 const LG_BREAKPOINT = 1024;
+
+const hodNavItems = [
+  { path: '/hod', label: 'Dashboard', icon: <LuLayoutDashboard />, exact: true },
+  { path: '/hod/clubs', label: 'Clubs', icon: <LuUsers /> },
+  { path: '/hod/change-password', label: 'Change Password', icon: <LuKey /> },
+];
 
 const HODLayout = () => {
   const { user, logout } = useAuth();
@@ -61,6 +66,7 @@ const HODLayout = () => {
           setSidebarOpen={setSidebarOpen}
           user={user}
           isDesktop={isDesktop}
+          navItems={hodNavItems}
       />
 
       <AnimatePresence>
@@ -153,12 +159,12 @@ const HODLayout = () => {
 
         <div className="stu-content">
           <Suspense fallback={<LayoutLoader />}>
-            <PageTransition />
+            <Outlet />
           </Suspense>
         </div>
 
         {/* AI Assistant Integration */}
-        <CampusAssistant />
+        <ChatbotWidget />
       </div>
     </div>
   );
