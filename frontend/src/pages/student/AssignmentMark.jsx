@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FaFileAlt, FaUpload, FaCheckCircle, FaClock, FaDownload, FaAward } from 'react-icons/fa';
 import { useAuth } from '../../hooks/AuthContext';
 import { useToast } from '../../hooks/ToastContext';
-import { getInternalMarks } from '../../utils/MockDataGenerator';
 
 const SUBJECTS = [
     { code: 'CS3401', name: 'Algorithms & Data Structures', faculty: 'Dr. Maheswari R', assign1: 9, assign2: 9, deadline: '2026-09-20', status: 'Submitted', file: 'CS3401_Assignment1_Austin.pdf' },
@@ -37,7 +36,7 @@ const AssignmentMark = () => {
                         <FaFileAlt className="text-[#0B2C6B] dark:text-gold-500" /> Academic Assignments & Marks
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                        View course assignments, submit solutions, and track assignment evaluation marks.
+                        View course assignments, submit solutions, and track assignment evaluation marks for Register No: <strong>{user?.username || '2117240020044'}</strong>.
                     </p>
                 </div>
             </div>
