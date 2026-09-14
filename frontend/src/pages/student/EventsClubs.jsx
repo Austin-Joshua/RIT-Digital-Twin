@@ -17,6 +17,17 @@ const EventsClubs = () => {
         { id: 102, name: 'Google Developer Student Club', icon: '🚀', members: 340, description: 'Learn, build, and scale with Google technologies.', joined: false },
         { id: 103, name: 'Robotics Society', icon: '🤖', members: 85, description: 'Building autonomous robots and IoT devices.', joined: true },
         { id: 104, name: 'Photography Club', icon: '📸', members: 150, description: 'Capturing campus moments and learning composition.', joined: false },
+        { id: 105, name: 'STEAM Club', icon: '🎨', members: 110, description: 'Interdisciplinary innovation in science, tech, arts, and maths.', joined: false },
+        { id: 106, name: 'Techsparks Club', icon: '⚡', members: 95, description: 'Student-led tech events, hackathons, and peer mentoring.', joined: true },
+    ];
+
+    const centers = [
+        { id: 201, name: 'Apple Centre of Excellence', icon: '🍏', members: 60, description: 'Advanced iOS app development, Swift/SwiftUI engineering, and Apple ecosystem research.', joined: true },
+        { id: 202, name: 'VR & AR Centre of Excellence', icon: '🥽', members: 45, description: 'Virtual Reality, Augmented Reality, 3D spatial computing, and immersive simulation labs.', joined: false },
+        { id: 203, name: 'Cyber Security & Digital Forensics Centre', icon: '🛡️', members: 75, description: 'Network defense, ethical hacking, cryptography, vulnerability assessment, and digital forensics.', joined: false },
+        { id: 204, name: 'AI & Robotics Centre of Excellence', icon: '🤖', members: 90, description: 'Artificial intelligence, computer vision, autonomous robotics, and machine learning solutions.', joined: true },
+        { id: 205, name: 'IoT & Smart Systems Centre', icon: '📡', members: 65, description: 'Internet of Things, embedded hardware design, smart sensor networks, and edge computing.', joined: false },
+        { id: 206, name: 'Electric Vehicle & Green Tech Centre', icon: '⚡', members: 50, description: 'EV powertrain engineering, battery management systems, and sustainable green tech research.', joined: false },
     ];
 
     const toggleRegistration = (title) => {
@@ -28,9 +39,9 @@ const EventsClubs = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaRegStar className="text-gold-500" /> Campus Events & Clubs
+                        <FaRegStar className="text-gold-500" /> Campus Events, Clubs & Centers of Excellence
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Discover opportunities, join communities, and RSVP to events</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Discover opportunities, research centers, join communities, and RSVP to events</p>
                 </div>
             </div>
 
@@ -47,6 +58,12 @@ const EventsClubs = () => {
                         className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'clubs' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-navy-800' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-800'}`}
                     >
                         <FaUsers /> Student Clubs
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('centers')}
+                        className={`flex-1 py-4 text-sm font-bold flex justify-center items-center gap-2 transition-colors ${activeTab === 'centers' ? 'text-navy-900 dark:text-gold-500 border-b-2 border-navy-900 dark:border-gold-500 bg-white dark:bg-navy-800' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-800'}`}
+                    >
+                        <FaRegStar /> Centers of Excellence
                     </button>
                 </div>
 
@@ -117,6 +134,40 @@ const EventsClubs = () => {
                                                     className="text-xs font-bold text-blue-600 dark:text-gold-500 hover:underline"
                                                 >
                                                     Request to Join
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'centers' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                            {centers.map(center => (
+                                <div key={center.id} className="flex flex-col sm:flex-row gap-5 border border-amber-200/60 dark:border-gold-500/30 rounded-xl p-5 hover:shadow-md transition-all bg-amber-50/30 dark:bg-navy-900/40">
+                                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-navy-800 shadow-sm border border-gold-300 dark:border-gold-500/40 flex items-center justify-center text-3xl shrink-0">
+                                        {center.icon}
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="font-bold text-navy-900 dark:text-white text-lg">{center.name}</h3>
+                                            {center.joined ? (
+                                                <span className="text-xs font-bold text-amber-700 dark:text-gold-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded border border-amber-300 dark:border-gold-500/40">Enrolled</span>
+                                            ) : null}
+                                        </div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{center.description}</p>
+                                        <div className="flex justify-between items-center mt-auto">
+                                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                                                <FaUsers /> {center.members} researchers & students
+                                            </span>
+                                            {!center.joined && (
+                                                <button
+                                                    onClick={() => addToast(`Application submitted for ${center.name}`, 'success')}
+                                                    className="text-xs font-bold text-amber-700 dark:text-gold-500 hover:underline"
+                                                >
+                                                    Apply to Join Center
                                                 </button>
                                             )}
                                         </div>

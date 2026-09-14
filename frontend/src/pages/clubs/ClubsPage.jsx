@@ -26,6 +26,7 @@ const ClubsPage = () => {
     const [selectedClubId, setSelectedClubId] = useState('');
     const [clubMembers, setClubMembers] = useState([]);
     const [memberFilters, setMemberFilters] = useState({ query: '', status: 'all' });
+    const [categoryFilter, setCategoryFilter] = useState('all');
     const [memberEdits, setMemberEdits] = useState({});
     const [newMembership, setNewMembership] = useState({
         studentIdNumber: '',
@@ -319,24 +320,58 @@ const ClubsPage = () => {
                     <div className="info-header">Principal Management Panel</div>
                     <div className="info-body">
                         <form onSubmit={handleCreateClub} style={{ display: 'grid', gap: '10px' }}>
-                            <input value={newClub.clubName} onChange={(e) => setNewClub({ ...newClub, clubName: e.target.value })} placeholder="Club Name" required />
+                            <input value={newClub.clubName} onChange={(e) => setNewClub({ ...newClub, clubName: e.target.value })} placeholder="Club or Center Name" required />
                             <input value={newClub.description} onChange={(e) => setNewClub({ ...newClub, description: e.target.value })} placeholder="Description" required />
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '10px' }}>
-                                <input value={newClub.category} onChange={(e) => setNewClub({ ...newClub, category: e.target.value })} placeholder="Category" required />
+                                <select value={newClub.category} onChange={(e) => setNewClub({ ...newClub, category: e.target.value })}>
+                                    <option value="technical">Technical Club</option>
+                                    <option value="center_of_excellence">Center of Excellence</option>
+                                    <option value="language">Language Club</option>
+                                    <option value="service">Service Club</option>
+                                    <option value="cultural">Cultural Club</option>
+                                </select>
                                 <input value={newClub.contactEmail} onChange={(e) => setNewClub({ ...newClub, contactEmail: e.target.value })} placeholder="Contact Email" />
                                 <select value={newClub.status} onChange={(e) => setNewClub({ ...newClub, status: e.target.value })}>
                                     <option value="active">Active</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
                             </div>
-                            <button className="table-btn primary" disabled={saving} type="submit">Add New Club</button>
+                            <button className="table-btn primary" disabled={saving} type="submit">Add New Organization</button>
                         </form>
                     </div>
                 </div>
             )}
 
             <div className="stu-info-card" style={{ borderTopColor: '#0ea5e9' }}>
-                <div className="info-header">All Clubs</div>
+                <div className="info-header" style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                    <span>All Campus Organizations</span>
+                    <div style={{ display: 'flex', gap: '6px', fontSize: '13px' }}>
+                        <button
+                            type="button"
+                            onClick={() => setCategoryFilter('all')}
+                            className={`table-btn ${categoryFilter === 'all' ? 'primary' : ''}`}
+                            style={{ padding: '4px 10px' }}
+                        >
+                            All ({clubs.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setCategoryFilter('clubs')}
+                            className={`table-btn ${categoryFilter === 'clubs' ? 'primary' : ''}`}
+                            style={{ padding: '4px 10px' }}
+                        >
+                            Student Clubs ({clubs.filter(c => c.category !== 'center_of_excellence').length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setCategoryFilter('center_of_excellence')}
+                            className={`table-btn ${categoryFilter === 'center_of_excellence' ? 'primary' : ''}`}
+                            style={{ padding: '4px 10px' }}
+                        >
+                            Centers of Excellence ({clubs.filter(c => c.category === 'center_of_excellence').length})
+                        </button>
+                    </div>
+                </div>
                 <div className="info-body" style={{ padding: '0' }}>
                     <div className="stu-data-table-wrapper">
                         <table className="stu-data-table">
@@ -352,13 +387,28 @@ const ClubsPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {clubs.map((club) => {
+                                {clubs
+                                    .filter(club => {
+                                        if (categoryFilter === 'center_of_excellence') return club.category === 'center_of_excellence';
+                                        if (categoryFilter === 'clubs') return club.category !== 'center_of_excellence';
+                                        return true;
+                                    })
+                                    .map((club) => {
                                     const mine = myMembershipByClubId.get(club.clubId);
+                                    const isCenter = club.category === 'center_of_excellence';
                                     return (
                                         <tr key={club.clubId}>
-                                            <td>{club.clubName}</td>
+                                            <td>
+                                                <strong style={{ color: isCenter ? 'var(--theme-brand-strong, #d97706)' : 'inherit' }}>
+                                                    {club.clubName}
+                                                </strong>
+                                            </td>
                                             <td>{club.description}</td>
-                                            <td>{club.category}</td>
+                                            <td>
+                                                <span className={`status-badge ${isCenter ? 'pending' : 'approved'}`} style={{ textTransform: 'capitalize' }}>
+                                                    {isCenter ? 'Center of Excellence' : club.category}
+                                                </span>
+                                            </td>
                                             <td>
                                                 {canManageClubs ? (
                                                     <select
