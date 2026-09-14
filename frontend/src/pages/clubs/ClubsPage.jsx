@@ -195,11 +195,27 @@ const ClubsPage = () => {
                 studentId: myStudentId,
                 clubId,
                 roleType: 'member',
-                status: 'active'
+                status: 'pending'
             });
             await loadData();
         } catch {
             setError('Unable to submit join request.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const approveMembership = async (membershipId) => {
+        try {
+            setSaving(true);
+            await api.put(`/clubs/memberships/${membershipId}`, {
+                status: 'active'
+            });
+            const res = await api.get(`/clubs/${selectedClubId}/members`);
+            setClubMembers(Array.isArray(res.data) ? res.data : []);
+            await loadData();
+        } catch {
+            setError('Could not approve membership.');
         } finally {
             setSaving(false);
         }
@@ -608,11 +624,17 @@ const ClubsPage = () => {
                                                     onChange={(e) => setMemberEditField(m.membershipId, 'status', e.target.value)}
                                                 >
                                                     <option value="active">active</option>
+                                                    <option value="pending">pending approval</option>
                                                     <option value="inactive">inactive</option>
                                                 </select>
                                             </td>
                                             <td>{m.joinedDate}</td>
                                             <td style={{ display: 'flex', gap: '6px' }}>
+                                                {m.status === 'pending' && (
+                                                    <button className="table-btn primary" disabled={saving} onClick={() => approveMembership(m.membershipId)}>
+                                                        Approve
+                                                    </button>
+                                                )}
                                                 <button className="table-btn" disabled={saving} onClick={() => saveMemberInline(m.membershipId)}>Save</button>
                                                 <button className="table-btn" disabled={saving} onClick={() => deactivateMember(m.membershipId)}>Deactivate</button>
                                             </td>
