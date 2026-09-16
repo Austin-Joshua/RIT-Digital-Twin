@@ -1,5 +1,6 @@
 package com.university.erp.controller;
 
+import com.university.erp.model.AuditLog;
 import com.university.erp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
