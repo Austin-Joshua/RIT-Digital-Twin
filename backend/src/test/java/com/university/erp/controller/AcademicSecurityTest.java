@@ -14,7 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,12 +23,12 @@ import static org.mockito.Mockito.*;
 
 class AcademicSecurityTest {
 
-    private AcademicService academicService;
-    private StudentProfileService studentProfileService;
-    private StudentAcademicOnboardingService onboardingService;
-    private StudentLeaveRequestRepository leaveRequestRepository;
-    private ParentRepository parentRepository;
-    private AcademicController academicController;
+    AcademicService academicService;
+    StudentProfileService studentProfileService;
+    StudentAcademicOnboardingService onboardingService;
+    StudentLeaveRequestRepository leaveRequestRepository;
+    ParentRepository parentRepository;
+    AcademicController academicController;
 
     @BeforeEach
     void setUp() {
