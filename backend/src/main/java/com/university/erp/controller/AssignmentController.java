@@ -104,9 +104,7 @@ public class AssignmentController {
     public ResponseEntity<Map<String, Object>> submitAssignmentJson(
             @PathVariable Long assignmentId,
             @RequestBody Map<String, Object> payload) {
-        String rawFileName = (String) payload.getOrDefault("fileName", "Submission.pdf");
-        byte[] dummyHeader = "%PDF-1.4 simulated content".getBytes();
-        return doSubmit(assignmentId, rawFileName, (long) dummyHeader.length, "application/pdf", dummyHeader);
+        throw new ErpException.InvalidOperationException("Direct JSON file submission is disabled. Submit assignment using multipart/form-data with actual file bytes.");
     }
 
     private ResponseEntity<Map<String, Object>> doSubmit(
@@ -143,7 +141,9 @@ public class AssignmentController {
             Files.createDirectories(STORAGE_ROOT);
             Path targetPath = STORAGE_ROOT.resolve(storageKey.replace('/', '_'));
             Files.write(targetPath, fileBytes);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            throw new ErpException.InvalidOperationException("Failed to persist uploaded assignment file to storage: " + e.getMessage());
+        }
 
         AssignmentSubmission submission = submissionRepository.findByAssignment_IdAndStudent_Id(assignmentId, student.getId())
                 .orElseGet(() -> AssignmentSubmission.builder()
@@ -200,19 +200,20 @@ public class AssignmentController {
                 if (!profile.get().getDepartment().equalsIgnoreCase(submission.getAssignment().getSubject().getDepartment().getDeptName())) {
                     throw new ErpException.UnauthorizedException("Access Denied: Submissions outside your department are restricted.");
                 }
+            } else {
+                throw new ErpException.UnauthorizedException("Access Denied: Department authorization could not be verified for HOD.");
             }
         }
 
         byte[] content;
         try {
             Path targetPath = STORAGE_ROOT.resolve(String.valueOf(submission.getFileUrl()).replace('/', '_'));
-            if (Files.exists(targetPath)) {
-                content = Files.readAllBytes(targetPath);
-            } else {
-                content = ("%PDF-1.4\n% Authentic submission content for " + submission.getFileName()).getBytes();
+            if (!Files.exists(targetPath)) {
+                throw new ErpException.ResourceNotFoundException("Submission file not found on storage: " + submission.getFileName());
             }
+            content = Files.readAllBytes(targetPath);
         } catch (IOException e) {
-            content = ("%PDF-1.4\n% Submission content placeholder").getBytes();
+            throw new ErpException.ResourceNotFoundException("Failed to read submission file from storage: " + e.getMessage());
         }
 
         String fileName = submission.getFileName() != null ? submission.getFileName() : "submission.pdf";

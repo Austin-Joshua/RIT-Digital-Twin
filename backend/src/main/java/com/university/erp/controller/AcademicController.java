@@ -99,7 +99,7 @@ public class AcademicController {
 
         Long deptId = getDepartmentId(currentUser);
         if (deptId == null || studentRepository == null) {
-            return ResponseEntity.ok(allPending);
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         List<StudentLeaveRequest> scoped = allPending.stream().filter(req -> {
@@ -108,7 +108,7 @@ public class AcademicController {
             if (studentOpt.isPresent() && studentOpt.get().getDepartment() != null) {
                 return deptId.equals(studentOpt.get().getDepartment().getId());
             }
-            return true;
+            return false;
         }).toList();
 
         return ResponseEntity.ok(scoped);
@@ -126,16 +126,21 @@ public class AcademicController {
         User currentUser = (User) auth.getPrincipal();
         Role.UserRole role = currentUser.getRole() != null ? currentUser.getRole().getRoleName() : null;
 
-        // Resource & Department authorization scoping
-        if (role != Role.UserRole.ADMIN && studentRepository != null) {
+        // Resource & Department authorization scoping (Fail Closed)
+        if (role != Role.UserRole.ADMIN) {
             Long deptId = getDepartmentId(currentUser);
-            if (deptId != null) {
+            if (deptId == null) {
+                throw new AccessDeniedException("Department authorization could not be established for user.");
+            }
+            if (studentRepository != null) {
                 Optional<Student> studentOpt = studentRepository.findByRegisterNo(req.getStudentId())
                         .or(() -> studentRepository.findByStudentIdNumber(req.getStudentId()));
                 if (studentOpt.isPresent() && studentOpt.get().getDepartment() != null) {
                     if (!deptId.equals(studentOpt.get().getDepartment().getId())) {
                         throw new AccessDeniedException("HOD/Faculty can only process leave/OD requests for students within their department.");
                     }
+                } else {
+                    throw new AccessDeniedException("Student department authorization could not be verified.");
                 }
             }
         }

@@ -196,20 +196,46 @@ class AcademicSecurityTest {
     @Test
     void leaveWorkflow_RejectsInvalidTransitions() {
         Role facultyRole = Role.builder().roleName(Role.UserRole.FACULTY).build();
-        User facultyUser = User.builder().userId(20L).username("faculty.coordinator").role(facultyRole).build();
+        Department cseDept = Department.builder().id(1L).deptName("CSE").build();
+        User facultyUser = User.builder().userId(20L).username("faculty.coordinator").department(cseDept).role(facultyRole).build();
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(facultyUser, null, facultyUser.getAuthorities())
         );
 
         StudentLeaveRequest approvedLeave = StudentLeaveRequest.builder()
                 .id(1L)
+                .studentId("2117240020044")
                 .status("APPROVED")
                 .build();
         when(leaveRequestRepository.findById(1L)).thenReturn(Optional.of(approvedLeave));
 
+        Student cseStudent = Student.builder().id(100L).department(cseDept).registerNo("2117240020044").build();
+        when(studentRepository.findByRegisterNo("2117240020044")).thenReturn(Optional.of(cseStudent));
+
         // Transition from APPROVED back to PENDING must be rejected with InvalidOperationException
         assertThrows(ErpException.InvalidOperationException.class, () -> {
             academicController.updateStudentLeaveStatus(1L, Map.of("status", "PENDING"));
+        });
+    }
+
+    @Test
+    void leaveWorkflow_RejectsFacultyWithoutDepartment() {
+        Role facultyRole = Role.builder().roleName(Role.UserRole.FACULTY).build();
+        User facultyNoDept = User.builder().userId(20L).username("faculty.nodept").role(facultyRole).build();
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(facultyNoDept, null, facultyNoDept.getAuthorities())
+        );
+
+        StudentLeaveRequest pendingLeave = StudentLeaveRequest.builder()
+                .id(1L)
+                .studentId("2117240020044")
+                .status("PENDING")
+                .build();
+        when(leaveRequestRepository.findById(1L)).thenReturn(Optional.of(pendingLeave));
+
+        // Faculty without department must be denied access (Fail-closed)
+        assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> {
+            academicController.updateStudentLeaveStatus(1L, Map.of("status", "APPROVED"));
         });
     }
 
