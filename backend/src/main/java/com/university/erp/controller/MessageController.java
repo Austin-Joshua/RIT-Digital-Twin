@@ -53,10 +53,9 @@ public class MessageController {
             throw new ErpException.InvalidOperationException("Recipient, subject, and content are required.");
         }
 
-        // Find recipient by email or username, or fallback to first admin
+        // Find recipient strictly by email or username
         User recipient = userRepository.findByEmailIgnoreCase(to.trim())
                 .or(() -> userRepository.findByUsernameIgnoreCase(to.trim()))
-                .or(() -> userRepository.findAll().stream().findFirst())
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Recipient user not found: " + to));
 
         ErpMessage msg = ErpMessage.builder()

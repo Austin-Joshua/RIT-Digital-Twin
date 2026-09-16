@@ -22,6 +22,8 @@ public class AdminDashboardController {
     private final FacultyLeaveRequestRepository facultyLeaveRequestRepository;
     private final PlacementApplicationRepository placementApplicationRepository;
 
+    private final AuditLogRepository auditLogRepository;
+
     @GetMapping("/dashboard")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getAdminDashboard() {
@@ -37,21 +39,32 @@ public class AdminDashboardController {
 
         long placedStudents = placementApplicationRepository.countByStatus("ACCEPTED");
         long totalApplicants = placementApplicationRepository.count();
-        double placementRate = totalApplicants > 0 ? (placedStudents * 100.0 / totalApplicants) : 94.2;
+        double placementRate = totalApplicants > 0 ? (placedStudents * 100.0 / totalApplicants) : 0.0;
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("totalStudents", totalStudents > 0 ? totalStudents : 120);
-        body.put("totalFaculty", totalFaculty > 0 ? totalFaculty : 35);
+        body.put("totalStudents", totalStudents);
+        body.put("totalFaculty", totalFaculty);
         body.put("activeUsers", totalUsers);
         body.put("placementRate", Math.round(placementRate * 10.0) / 10.0);
-        body.put("activeResearch", 14);
+        body.put("activeResearch", 0);
         body.put("pendingApprovals", pendingApprovals);
 
-        List<Map<String, Object>> auditLogs = List.of(
-                Map.of("event", "SYSTEM_UP", "user", "Principal Office", "timestamp", new Date().toString(), "details", "Authoritative Digital Twin Database Engine active."),
-                Map.of("event", "SECURITY_SCAN", "user", "AdaptiveDefense", "timestamp", new Date().toString(), "details", "Zero unauthorized IDOR requests detected across tenant boundaries.")
-        );
-        body.put("auditLogs", auditLogs);
+        List<AuditLog> realLogs = auditLogRepository.findAll().stream()
+                .sorted((a, b) -> b.getActionTime().compareTo(a.getActionTime()))
+                .limit(10)
+                .toList();
+
+        List<Map<String, Object>> auditLogList = new ArrayList<>();
+        for (AuditLog log : realLogs) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("event", log.getAction());
+            map.put("user", log.getActor() != null ? log.getActor().getUsername() : "System");
+            map.put("timestamp", log.getActionTime() != null ? log.getActionTime().toString() : new Date().toString());
+            map.put("details", log.getDetails() != null ? log.getDetails() : "Action performed");
+            auditLogList.add(map);
+        }
+
+        body.put("auditLogs", auditLogList);
 
         return ResponseEntity.ok(body);
     }

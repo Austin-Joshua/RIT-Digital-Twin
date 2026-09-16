@@ -7,22 +7,17 @@ import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAn
 import MiniCalendar from '../../components/common/MiniCalendar';
 import RingStat from '../../components/common/RingStat';
 
-const FALLBACK_AUDIT_LOGS = [
-    { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: '2026-01-01T00:00:00.000Z', details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
-    { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: '2026-01-01T00:00:00.000Z', details: 'All user sessions verified via Spring Security context.' }
-];
-
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalFaculty: 0,
-        placementRate: 94.2,
-        activeResearch: 12,
+        placementRate: 0,
+        activeResearch: 0,
         pendingApprovals: 0,
         activeAlerts: 0,
     });
-    const [auditLogs] = useState(FALLBACK_AUDIT_LOGS);
+    const [auditLogs, setAuditLogs] = useState([]);
     const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,11 +30,14 @@ const AdminDashboard = () => {
                         ...prev,
                         totalStudents: Number(res.data.totalStudents || 0),
                         totalFaculty: Number(res.data.totalFaculty || 0),
-                        placementRate: Number(res.data.placementRate || 94.2),
+                        placementRate: Number(res.data.placementRate || 0),
                         activeResearch: Number(res.data.activeResearch || 0),
                         pendingApprovals: Number(res.data.pendingApprovals || 0),
                         activeAlerts: Number(res.data.activeAlerts || 0),
                     }));
+                    if (Array.isArray(res.data.auditLogs)) {
+                        setAuditLogs(res.data.auditLogs);
+                    }
                 }
             })
             .catch(() => {})
