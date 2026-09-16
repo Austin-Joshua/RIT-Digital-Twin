@@ -1,9 +1,12 @@
 package com.university.erp.controller;
 
 import com.university.erp.model.FacultyLeaveRequest;
+import com.university.erp.model.FacultyProfile;
 import com.university.erp.model.Role;
 import com.university.erp.model.User;
 import com.university.erp.repository.FacultyLeaveRequestRepository;
+import com.university.erp.repository.FacultyProfileRepository;
+import com.university.erp.repository.UserRepository;
 import com.university.erp.service.NotificationService;
 import com.university.erp.util.ErpException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/faculty/leaves")
@@ -23,7 +27,37 @@ public class FacultyLeaveRequestController {
     private FacultyLeaveRequestRepository repository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FacultyProfileRepository facultyProfileRepository;
+
+    @Autowired
     private NotificationService notificationService;
+
+    private String resolveFacultyDepartment(FacultyLeaveRequest req) {
+        if (req == null) return null;
+        String identifier = req.getFacultyId();
+        if (identifier == null || identifier.isBlank()) {
+            identifier = req.getFacultyName();
+        }
+        if (identifier == null || identifier.isBlank()) {
+            return null;
+        }
+
+        Optional<User> userOpt = userRepository.findByUsernameIgnoreCase(identifier);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getDepartment() != null && user.getDepartment().getDeptName() != null) {
+                return user.getDepartment().getDeptName();
+            }
+            Optional<FacultyProfile> profileOpt = facultyProfileRepository.findByUser_Id(user.getId());
+            if (profileOpt.isPresent() && profileOpt.get().getDepartment() != null) {
+                return profileOpt.get().getDepartment();
+            }
+        }
+        return null;
+    }
 
     @GetMapping
     @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN','HOD')")
@@ -41,9 +75,12 @@ public class FacultyLeaveRequestController {
             throw new AccessDeniedException("Access Denied: HOD departmental context missing.");
         }
 
-        String deptName = currentUser.getDepartment().getDeptName();
+        String hodDeptName = currentUser.getDepartment().getDeptName();
         return all.stream()
-                .filter(r -> r.getDepartment() != null && deptName.equalsIgnoreCase(r.getDepartment()))
+                .filter(r -> {
+                    String dept = resolveFacultyDepartment(r);
+                    return dept != null && hodDeptName.equalsIgnoreCase(dept);
+                })
                 .toList();
     }
 
@@ -54,11 +91,14 @@ public class FacultyLeaveRequestController {
         java.util.Objects.requireNonNull(request, "request body must not be null");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) auth.getPrincipal();
-        if (request.getFacultyName() == null || request.getFacultyName().isBlank()) {
-            request.setFacultyName(currentUser.getUsername());
+
+        if (request.getFacultyId() == null || request.getFacultyId().isBlank()) {
+            request.setFacultyId(currentUser.getUsername());
         }
-        if (request.getDepartment() == null && currentUser.getDepartment() != null) {
-            request.setDepartment(currentUser.getDepartment().getDeptName());
+        if (request.getFacultyName() == null || request.getFacultyName().isBlank()) {
+            String name = (currentUser.getFirstName() != null ? currentUser.getFirstName() : "") +
+                    (currentUser.getLastName() != null ? " " + currentUser.getLastName() : "");
+            request.setFacultyName(name.isBlank() ? currentUser.getUsername() : name.trim());
         }
         request.setStatus("PENDING");
         return repository.save(request);
@@ -82,7 +122,8 @@ public class FacultyLeaveRequestController {
             if (currentUser.getDepartment() == null || currentUser.getDepartment().getDeptName() == null) {
                 throw new AccessDeniedException("Access Denied: HOD departmental context missing.");
             }
-            if (request.getDepartment() == null || !currentUser.getDepartment().getDeptName().equalsIgnoreCase(request.getDepartment())) {
+            String reqDept = resolveFacultyDepartment(request);
+            if (reqDept == null || !currentUser.getDepartment().getDeptName().equalsIgnoreCase(reqDept)) {
                 throw new AccessDeniedException("Access Denied: You can only approve/reject faculty leaves within your authorized department.");
             }
         }
