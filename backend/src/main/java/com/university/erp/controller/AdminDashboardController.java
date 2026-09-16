@@ -22,7 +22,7 @@ public class AdminDashboardController {
     private final StudentLeaveRequestRepository studentLeaveRequestRepository;
     private final FacultyLeaveRequestRepository facultyLeaveRequestRepository;
     private final PlacementApplicationRepository placementApplicationRepository;
-
+    private final ResearchPublicationRepository researchPublicationRepository;
     private final AuditLogRepository auditLogRepository;
 
     @GetMapping("/dashboard")
@@ -32,10 +32,8 @@ public class AdminDashboardController {
         long totalFaculty = facultyProfileRepository.count();
         long totalUsers = userRepository.count();
         
-        long pendingStudentLeaves = studentLeaveRequestRepository.findAll().stream()
-                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus())).count();
-        long pendingFacultyLeaves = facultyLeaveRequestRepository.findAll().stream()
-                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus())).count();
+        long pendingStudentLeaves = studentLeaveRequestRepository.countByStatus("PENDING");
+        long pendingFacultyLeaves = facultyLeaveRequestRepository.countByStatus("PENDING");
         long pendingApprovals = pendingStudentLeaves + pendingFacultyLeaves;
 
         long placedStudents = placementApplicationRepository.countByStatus("ACCEPTED");
@@ -47,13 +45,10 @@ public class AdminDashboardController {
         body.put("totalFaculty", totalFaculty);
         body.put("activeUsers", totalUsers);
         body.put("placementRate", Math.round(placementRate * 10.0) / 10.0);
-        body.put("activeResearch", 0);
+        body.put("activeResearch", researchPublicationRepository.count());
         body.put("pendingApprovals", pendingApprovals);
 
-        List<AuditLog> realLogs = auditLogRepository.findAll().stream()
-                .sorted((a, b) -> b.getActionTime().compareTo(a.getActionTime()))
-                .limit(10)
-                .toList();
+        List<AuditLog> realLogs = auditLogRepository.findTop10ByOrderByActionTimeDesc();
 
         List<Map<String, Object>> auditLogList = new ArrayList<>();
         for (AuditLog log : realLogs) {
@@ -66,6 +61,7 @@ public class AdminDashboardController {
         }
 
         body.put("auditLogs", auditLogList);
+        body.put("recentAuditLogs", auditLogList);
 
         return ResponseEntity.ok(body);
     }
