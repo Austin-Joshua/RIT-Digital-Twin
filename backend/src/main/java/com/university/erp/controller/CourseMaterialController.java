@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import com.university.erp.util.FileUploadSecurityValidator;
+
 @RestController
 @RequestMapping("/api/materials")
 public class CourseMaterialController {
@@ -38,15 +40,18 @@ public class CourseMaterialController {
         String title = String.valueOf(payload.getOrDefault("title", "Lecture Notes"));
         String fileType = String.valueOf(payload.getOrDefault("type", "PDF"));
         String fileSize = String.valueOf(payload.getOrDefault("size", "2.5 MB"));
-        String filePath = String.valueOf(payload.getOrDefault("filePath", "/uploads/materials/" + title.replaceAll("\\s+", "_") + "." + fileType.toLowerCase()));
+        
+        String candidateFile = String.valueOf(payload.getOrDefault("fileName", title.replaceAll("\\s+", "_") + "." + fileType.toLowerCase()));
+        String safeFileName = FileUploadSecurityValidator.sanitizeAndValidateFileName(candidateFile);
+        String secureStoragePath = FileUploadSecurityValidator.generateSecureStoragePath("materials", safeFileName);
         String uploadedBy = (auth != null) ? auth.getName() : "FACULTY";
 
         CourseMaterial material = CourseMaterial.builder()
                 .subjectCode(subjectCode)
                 .title(title)
-                .fileType(fileType)
+                .fileType(fileType.toUpperCase())
                 .fileSize(fileSize)
-                .filePath(filePath)
+                .filePath(secureStoragePath)
                 .uploadedBy(uploadedBy)
                 .build();
 

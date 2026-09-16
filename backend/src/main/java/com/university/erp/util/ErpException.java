@@ -47,5 +47,19 @@ public class ErpException extends RuntimeException {
             super(message);
         }
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public static class BadRequestException extends InvalidOperationException {
+        public BadRequestException(String message) {
+            super(message);
+        }
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public static class UnauthorizedException extends ErpException {
+        public UnauthorizedException(String message) {
+            super(message);
+        }
+    }
 }
 

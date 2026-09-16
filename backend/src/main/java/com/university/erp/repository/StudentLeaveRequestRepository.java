@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface StudentLeaveRequestRepository extends JpaRepository<StudentLeaveRequest, Long> {
     List<StudentLeaveRequest> findByStudentId(String studentId);
+    List<StudentLeaveRequest> findByStatusOrderByStartDateDesc(String status);
     long countByStatus(String status);
 }

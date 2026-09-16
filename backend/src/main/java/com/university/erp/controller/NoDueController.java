@@ -54,8 +54,19 @@ public class NoDueController {
             item.put("id", req != null ? req.getId() : idCounter++);
             item.put("name", clearance);
             item.put("code", "ND-" + clearance.substring(0, Math.min(clearance.length(), 4)).toUpperCase().trim());
-            item.put("faculty", "Designated Officer");
-            item.put("status", req != null ? req.getStatus() : "Not Requested");
+            
+            String officer = "Pending Assignment";
+            if (req != null) {
+                if (req.getApprovedBy() != null) {
+                    officer = req.getApprovedBy().getFirstName() + " " + req.getApprovedBy().getLastName();
+                } else if (req.getRejectedBy() != null) {
+                    officer = req.getRejectedBy().getFirstName() + " " + req.getRejectedBy().getLastName();
+                } else if ("PENDING".equalsIgnoreCase(req.getStatus())) {
+                    officer = "Under Verification";
+                }
+            }
+            item.put("faculty", officer);
+            item.put("status", req != null ? req.getStatus().toUpperCase() : "NOT_REQUESTED");
             item.put("remarks", req != null && req.getRemarks() != null ? req.getRemarks() : "");
             response.add(item);
         }
@@ -82,21 +93,21 @@ public class NoDueController {
                         .clearanceType(clearanceType)
                         .build());
 
-        request.setStatus("Pending");
+        request.setStatus("PENDING");
         request.setRequestedAt(LocalDateTime.now());
         noDueRequestRepository.save(request);
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "No Due request submitted for " + clearanceType,
-                "status", "Pending"
+                "status", "PENDING"
         ));
     }
 
     @GetMapping("/pending")
     @PreAuthorize("hasAnyRole('ADMIN','HOD','FACULTY')")
     public ResponseEntity<List<Map<String, Object>>> getPendingRequests() {
-        List<NoDueRequest> requests = noDueRequestRepository.findAll();
+        List<NoDueRequest> requests = noDueRequestRepository.findByStatusIgnoreCase("PENDING");
         List<Map<String, Object>> response = new ArrayList<>();
         for (NoDueRequest r : requests) {
             Map<String, Object> map = new LinkedHashMap<>();
@@ -105,7 +116,7 @@ public class NoDueController {
             map.put("reg", r.getStudent().getRegisterNo());
             map.put("dept", r.getStudent().getDepartment() != null ? r.getStudent().getDepartment().getDeptName() : "CSE");
             map.put("clearanceType", r.getClearanceType());
-            map.put("status", r.getStatus());
+            map.put("status", r.getStatus().toUpperCase());
             map.put("remarks", r.getRemarks());
             map.put("requestedAt", r.getRequestedAt());
             response.add(map);
@@ -122,16 +133,32 @@ public class NoDueController {
         NoDueRequest request = noDueRequestRepository.findById(id)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Request not found"));
 
-        String status = payload.getOrDefault("status", "APPROVED");
-        String remarks = payload.getOrDefault("remarks", "Clearance granted.");
+        String newStatus = payload.getOrDefault("status", "APPROVED").toUpperCase();
+        if (!"APPROVED".equals(newStatus) && !"REJECTED".equals(newStatus)) {
+            throw new ErpException.InvalidOperationException("Invalid clearance status transition. Allowed: APPROVED, REJECTED.");
+        }
+        if (!"PENDING".equalsIgnoreCase(request.getStatus())) {
+            throw new ErpException.InvalidOperationException("Cannot update status of a request that is already " + request.getStatus());
+        }
 
-        request.setStatus(status);
+        String remarks = payload.getOrDefault("remarks", newStatus.equals("APPROVED") ? "Clearance granted." : "Clearance withheld.");
+
+        request.setStatus(newStatus);
         request.setRemarks(remarks);
-        request.setApprovedAt(LocalDateTime.now());
-        request.setApprovedBy(currentUser());
+        if ("APPROVED".equals(newStatus)) {
+            request.setApprovedAt(LocalDateTime.now());
+            request.setApprovedBy(currentUser());
+            request.setRejectedAt(null);
+            request.setRejectedBy(null);
+        } else {
+            request.setRejectedAt(LocalDateTime.now());
+            request.setRejectedBy(currentUser());
+            request.setApprovedAt(null);
+            request.setApprovedBy(null);
+        }
         noDueRequestRepository.save(request);
 
-        return ResponseEntity.ok(Map.of("success", true, "status", status));
+        return ResponseEntity.ok(Map.of("success", true, "status", newStatus));
     }
 
     private User currentUser() {

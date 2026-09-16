@@ -33,10 +33,15 @@ public class NoDueRequest {
 
     private LocalDateTime requestedAt;
     private LocalDateTime approvedAt;
+    private LocalDateTime rejectedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
     private User approvedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rejected_by")
+    private User rejectedBy;
 
     @PrePersist
     protected void onCreate() {

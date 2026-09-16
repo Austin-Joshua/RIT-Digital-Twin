@@ -27,4 +27,10 @@ public class StudentLeaveRequest {
     
     private String status;    // PENDING, APPROVED, REJECTED
     private String studentName;
+
+    private String approvedBy;
+    private java.time.LocalDateTime approvedAt;
+    private String rejectedBy;
+    private java.time.LocalDateTime rejectedAt;
+    private String remarks;
 }

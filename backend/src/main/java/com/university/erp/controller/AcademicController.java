@@ -24,14 +24,17 @@ public class AcademicController {
     private final StudentProfileService studentProfileService;
     private final StudentAcademicOnboardingService onboardingService;
     private final com.university.erp.repository.StudentLeaveRequestRepository leaveRequestRepository;
+    private final com.university.erp.repository.ParentRepository parentRepository;
 
     public AcademicController(AcademicService academicService, StudentProfileService studentProfileService,
             StudentAcademicOnboardingService onboardingService, 
-            com.university.erp.repository.StudentLeaveRequestRepository leaveRequestRepository) {
+            com.university.erp.repository.StudentLeaveRequestRepository leaveRequestRepository,
+            com.university.erp.repository.ParentRepository parentRepository) {
         this.academicService = academicService;
         this.studentProfileService = studentProfileService;
         this.onboardingService = onboardingService;
         this.leaveRequestRepository = leaveRequestRepository;
+        this.parentRepository = parentRepository;
     }
 
     @PostMapping("/leave/apply")
@@ -56,7 +59,7 @@ public class AcademicController {
     @GetMapping("/leave/pending")
     @PreAuthorize("hasAnyRole('FACULTY','HOD','ADMIN')")
     public ResponseEntity<List<com.university.erp.model.StudentLeaveRequest>> getPendingStudentLeaves() {
-        return ResponseEntity.ok(leaveRequestRepository.findAll());
+        return ResponseEntity.ok(leaveRequestRepository.findByStatusOrderByStartDateDesc("PENDING"));
     }
 
     @PutMapping("/leave/{id}/status")
@@ -66,7 +69,32 @@ public class AcademicController {
             @RequestBody java.util.Map<String, String> body) {
         com.university.erp.model.StudentLeaveRequest req = leaveRequestRepository.findById(id)
                 .orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Leave request not found"));
-        req.setStatus(body.getOrDefault("status", "APPROVED"));
+
+        String newStatus = body.getOrDefault("status", "APPROVED").toUpperCase();
+        if (!"APPROVED".equals(newStatus) && !"REJECTED".equals(newStatus)) {
+            throw new com.university.erp.util.ErpException.InvalidOperationException("Invalid leave status. Only APPROVED or REJECTED are permitted.");
+        }
+        if (!"PENDING".equalsIgnoreCase(req.getStatus())) {
+            throw new com.university.erp.util.ErpException.InvalidOperationException("Cannot update status of a request that is already " + req.getStatus());
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        String remarks = body.getOrDefault("remarks", "");
+
+        req.setStatus(newStatus);
+        req.setRemarks(remarks);
+        if ("APPROVED".equals(newStatus)) {
+            req.setApprovedBy(currentUser.getUsername());
+            req.setApprovedAt(java.time.LocalDateTime.now());
+            req.setRejectedBy(null);
+            req.setRejectedAt(null);
+        } else {
+            req.setRejectedBy(currentUser.getUsername());
+            req.setRejectedAt(java.time.LocalDateTime.now());
+            req.setApprovedBy(null);
+            req.setApprovedAt(null);
+        }
         return ResponseEntity.ok(leaveRequestRepository.save(req));
     }
 
@@ -104,9 +132,14 @@ public class AcademicController {
             }
         }
 
-        // Parents are strictly view-only; access control to specific wards can be
-        // extended
-        // via an explicit parent-student mapping if introduced later.
+        // Parent must only access their linked ward
+        if (role == Role.UserRole.PARENT) {
+            com.university.erp.model.Parent parent = parentRepository.findByUser_Id(currentUser.getId())
+                    .orElseThrow(() -> new AccessDeniedException("Parent record not found for authenticated user."));
+            if (parent.getStudent() == null || !parent.getStudent().getId().equals(studentId)) {
+                throw new AccessDeniedException("Parents can only access marks for their linked ward.");
+            }
+        }
 
         // Faculty and HOD are limited to their department where available
         if (role == Role.UserRole.FACULTY || role == Role.UserRole.HOD) {

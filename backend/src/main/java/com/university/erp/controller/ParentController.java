@@ -50,6 +50,27 @@ public class ParentController {
         return ResponseEntity.ok(body);
     }
 
+    @GetMapping("/students")
+    @PreAuthorize("hasRole('PARENT')")
+    public ResponseEntity<List<Map<String, Object>>> getLinkedStudents(@AuthenticationPrincipal User user) {
+        Student student = parentService.getAssignedStudent(user.getId());
+        if (student == null) {
+            return ResponseEntity.ok(List.of());
+        }
+        Map<String, Object> map = new java.util.LinkedHashMap<>();
+        map.put("id", student.getId());
+        map.put("studentName", student.getStudentName());
+        map.put("registerNo", student.getRegisterNo());
+        map.put("studentIdNumber", student.getStudentIdNumber());
+        map.put("section", student.getSection());
+        map.put("batch", student.getBatch());
+        map.put("year", student.getYear());
+        map.put("currentSemester", student.getCurrentSemester());
+        map.put("currentCgpa", student.getCurrentCgpa());
+        map.put("department", student.getDepartment() != null ? student.getDepartment().getDeptName() : null);
+        return ResponseEntity.ok(List.of(map));
+    }
+
     @GetMapping("/student/timetable")
     @PreAuthorize("hasRole('PARENT')")
     public ResponseEntity<List<TimetableSlotViewDto>> getWardTimetable(@AuthenticationPrincipal User user) {
