@@ -17,12 +17,12 @@ import static org.mockito.Mockito.*;
 
 class AssignmentSecurityTest {
 
-    private AssignmentRepository assignmentRepository;
-    private AssignmentSubmissionRepository submissionRepository;
-    private StudentRepository studentRepository;
-    private StudentSubjectRepository studentSubjectRepository;
-    private FacultyProfileRepository facultyProfileRepository;
-    private AssignmentController assignmentController;
+    AssignmentRepository assignmentRepository;
+    AssignmentSubmissionRepository submissionRepository;
+    StudentRepository studentRepository;
+    StudentSubjectRepository studentSubjectRepository;
+    FacultyProfileRepository facultyProfileRepository;
+    AssignmentController assignmentController;
 
     @BeforeEach
     void setUp() {

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public final class FileUploadSecurityValidator {
 
-    private static final long MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
+    public static final long MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
             "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "zip", "png", "jpg", "jpeg"
@@ -17,6 +17,15 @@ public final class FileUploadSecurityValidator {
     );
 
     private FileUploadSecurityValidator() {}
+
+    /**
+     * Validates that uploaded file does not exceed institutional limits.
+     */
+    public static void validateFileSize(long sizeBytes) {
+        if (sizeBytes > MAX_FILE_SIZE_BYTES) {
+            throw new ErpException.InvalidOperationException("File size exceeds maximum permitted limit of 25MB.");
+        }
+    }
 
     /**
      * Sanitizes client-provided filename and ensures no directory traversal or executable exploits.
