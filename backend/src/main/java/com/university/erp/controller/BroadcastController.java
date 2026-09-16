@@ -1,61 +1,42 @@
 package com.university.erp.controller;
 
-import com.university.erp.model.AuditLog;
 import com.university.erp.model.Broadcast;
-import com.university.erp.model.User;
-import com.university.erp.repository.AuditLogRepository;
-import com.university.erp.repository.BroadcastRepository;
-import com.university.erp.repository.UserRepository;
+import com.university.erp.service.BroadcastService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class BroadcastController {
 
-    private final BroadcastRepository broadcastRepository;
-    private final AuditLogRepository auditLogRepository;
-    private final UserRepository userRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-
-    public BroadcastController(
-            BroadcastRepository broadcastRepository,
-            AuditLogRepository auditLogRepository,
-            UserRepository userRepository,
-            SimpMessagingTemplate messagingTemplate) {
-        this.broadcastRepository = broadcastRepository;
-        this.auditLogRepository = auditLogRepository;
-        this.userRepository = userRepository;
-        this.messagingTemplate = messagingTemplate;
-    }
+    private final BroadcastService broadcastService;
 
     @GetMapping("/api/broadcasts/active")
     public ResponseEntity<List<Broadcast>> getActiveBroadcasts(Authentication auth) {
-        List<Broadcast> activeList;
-        if (auth == null || !auth.isAuthenticated()) {
-            activeList = broadcastRepository.findByAudienceInAndActiveTrueOrderByCreatedAtDesc(List.of("ALL"));
-        } else {
-            String role = auth.getAuthorities().stream()
+        String role = "ALL";
+        if (auth != null && auth.isAuthenticated()) {
+            role = auth.getAuthorities().stream()
                     .map(a -> a.getAuthority().replace("ROLE_", ""))
                     .findFirst()
                     .orElse("ALL");
-            activeList = broadcastRepository.findByAudienceInAndActiveTrueOrderByCreatedAtDesc(List.of("ALL", role, role + "S"));
         }
-        return ResponseEntity.ok(activeList);
+        return ResponseEntity.ok(broadcastService.getActiveBroadcasts(role));
     }
 
     @GetMapping("/api/broadcasts")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
     public ResponseEntity<List<Broadcast>> getAllBroadcasts() {
-        return ResponseEntity.ok(broadcastRepository.findAll());
+        return ResponseEntity.ok(broadcastService.getAllBroadcasts());
     }
 
     @PostMapping("/api/broadcasts")
@@ -69,76 +50,37 @@ public class BroadcastController {
         String message = (String) payload.getOrDefault("message", "");
         String priority = (String) payload.getOrDefault("priority", "info");
         String audience = (String) payload.getOrDefault("audience", "ALL");
-
         String username = (auth != null) ? auth.getName() : "ADMIN";
+        String clientIp = request != null ? request.getRemoteAddr() : "127.0.0.1";
 
-        Broadcast broadcast = Broadcast.builder()
-                .title(title)
-                .message(message)
-                .priority(priority)
-                .createdBy(username)
-                .active(true)
-                .audience(audience.toUpperCase())
-                .build();
-
-        Broadcast saved = broadcastRepository.save(broadcast);
-
-        // Audit broadcast emission
-        User actor = userRepository.findByUsername(username).orElse(null);
-        auditLogRepository.save(AuditLog.builder()
-                .actor(actor)
-                .action("EMIT_BROADCAST")
-                .actionTime(LocalDateTime.now())
-                .details(String.format("Title: %s, Priority: %s, Audience: %s", title, priority, audience))
-                .ipAddress(request.getRemoteAddr())
-                .build());
-
-        // Dispatch in real-time via WebSocket
-        Map<String, Object> wsPayload = new HashMap<>();
-        wsPayload.put("id", saved.getId());
-        wsPayload.put("title", saved.getTitle());
-        wsPayload.put("message", saved.getMessage());
-        wsPayload.put("priority", saved.getPriority());
-        wsPayload.put("audience", saved.getAudience());
-        wsPayload.put("createdBy", saved.getCreatedBy());
-        wsPayload.put("isLive", true);
-        wsPayload.put("timestamp", String.valueOf(System.currentTimeMillis()));
-
-        messagingTemplate.convertAndSend("/topic/broadcasts", wsPayload);
-
+        Broadcast saved = broadcastService.createBroadcast(title, message, priority, audience, username, clientIp);
         return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/api/broadcasts/{id}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deactivateBroadcast(@PathVariable Long id) {
-        return broadcastRepository.findById(id).map(b -> {
-            b.setActive(false);
-            broadcastRepository.save(b);
+        boolean deactivated = broadcastService.deactivateBroadcast(id);
+        if (deactivated) {
             return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    // Legacy STOMP socket endpoint preserved
+    // Authoritative STOMP handler delegates directly to BroadcastService
     @MessageMapping("/broadcast")
     @SendTo("/topic/broadcasts")
-    public Map<String, Object> handleGlobalBroadcast(Map<String, Object> payload) {
+    public Map<String, Object> handleGlobalBroadcast(Map<String, Object> payload, Principal principal) {
         String title = String.valueOf(payload.getOrDefault("title", "Campus Broadcast"));
         String msg = String.valueOf(payload.getOrDefault("message", ""));
         String priority = String.valueOf(payload.getOrDefault("priority", "info"));
+        String sender = (principal != null) ? principal.getName() : String.valueOf(payload.getOrDefault("sender", "ADMIN"));
 
-        Broadcast broadcast = Broadcast.builder()
-                .title(title)
-                .message(msg)
-                .priority(priority)
-                .createdBy(String.valueOf(payload.getOrDefault("sender", "SYSTEM")))
-                .active(true)
-                .audience("ALL")
-                .build();
-        Broadcast saved = broadcastRepository.save(broadcast);
+        Broadcast saved = broadcastService.createBroadcast(title, msg, priority, "ALL", sender, "127.0.0.1");
 
         payload.put("id", saved.getId());
         payload.put("timestamp", String.valueOf(System.currentTimeMillis()));
+        payload.put("isLive", true);
         return payload;
     }
 }

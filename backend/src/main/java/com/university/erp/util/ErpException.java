@@ -61,5 +61,11 @@ public class ErpException extends RuntimeException {
             super(message);
         }
     }
-}
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public static class ConflictException extends ErpException {
+        public ConflictException(String message) {
+            super(message);
+        }
+    }
+}

@@ -1,8 +1,7 @@
 package com.university.erp.controller;
 
 import com.university.erp.model.*;
-import com.university.erp.repository.ParentRepository;
-import com.university.erp.repository.StudentLeaveRequestRepository;
+import com.university.erp.repository.*;
 import com.university.erp.service.AcademicService;
 import com.university.erp.service.StudentAcademicOnboardingService;
 import com.university.erp.service.StudentProfileService;
@@ -28,6 +27,8 @@ class AcademicSecurityTest {
     StudentAcademicOnboardingService onboardingService;
     StudentLeaveRequestRepository leaveRequestRepository;
     ParentRepository parentRepository;
+    StudentRepository studentRepository;
+    AuditLogRepository auditLogRepository;
     AcademicController academicController;
 
     @BeforeEach
@@ -37,6 +38,8 @@ class AcademicSecurityTest {
         onboardingService = mock(StudentAcademicOnboardingService.class);
         leaveRequestRepository = mock(StudentLeaveRequestRepository.class);
         parentRepository = mock(ParentRepository.class);
+        studentRepository = mock(StudentRepository.class);
+        auditLogRepository = mock(AuditLogRepository.class);
 
         academicController = new AcademicController(
                 academicService,
@@ -45,6 +48,7 @@ class AcademicSecurityTest {
                 leaveRequestRepository,
                 parentRepository
         );
+        academicController.setOptionalRepositories(studentRepository, auditLogRepository);
     }
 
     @Test
@@ -147,6 +151,49 @@ class AcademicSecurityTest {
     }
 
     @Test
+    void facultyCannotProcessLeaveForStudentInAnotherDepartment() {
+        Role facultyRole = Role.builder().roleName(Role.UserRole.FACULTY).build();
+        Department cseDept = Department.builder().id(1L).deptName("CSE").build();
+        Department eceDept = Department.builder().id(2L).deptName("ECE").build();
+
+        User facultyUser = User.builder().userId(20L).username("faculty.cse").department(cseDept).role(facultyRole).build();
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(facultyUser, null, facultyUser.getAuthorities())
+        );
+
+        StudentLeaveRequest leave = StudentLeaveRequest.builder()
+                .id(15L)
+                .studentId("2117240080001")
+                .status("PENDING")
+                .build();
+        when(leaveRequestRepository.findById(15L)).thenReturn(Optional.of(leave));
+
+        Student eceStudent = Student.builder().id(200L).department(eceDept).registerNo("2117240080001").build();
+        when(studentRepository.findByRegisterNo("2117240080001")).thenReturn(Optional.of(eceStudent));
+
+        assertThrows(AccessDeniedException.class, () -> {
+            academicController.updateStudentLeaveStatus(15L, Map.of("status", "APPROVED"));
+        });
+    }
+
+    @Test
+    void applyLeave_RejectsInvalidRequestType() {
+        Role studentRole = Role.builder().roleName(Role.UserRole.STUDENT).build();
+        User studentUser = User.builder().userId(10L).username("2117240020044").role(studentRole).build();
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(studentUser, null, studentUser.getAuthorities())
+        );
+
+        StudentLeaveRequest invalid = StudentLeaveRequest.builder()
+                .type("VACATION")
+                .build();
+
+        assertThrows(ErpException.InvalidOperationException.class, () -> {
+            academicController.applyLeave(invalid);
+        });
+    }
+
+    @Test
     void leaveWorkflow_RejectsInvalidTransitions() {
         Role facultyRole = Role.builder().roleName(Role.UserRole.FACULTY).build();
         User facultyUser = User.builder().userId(20L).username("faculty.coordinator").role(facultyRole).build();
@@ -169,17 +216,22 @@ class AcademicSecurityTest {
     @Test
     void leaveWorkflow_ApprovesValidTransitionAndRecordsAuditing() {
         Role facultyRole = Role.builder().roleName(Role.UserRole.FACULTY).build();
-        User facultyUser = User.builder().userId(20L).username("faculty.coordinator").role(facultyRole).build();
+        Department cseDept = Department.builder().id(1L).deptName("CSE").build();
+        User facultyUser = User.builder().userId(20L).username("faculty.coordinator").department(cseDept).role(facultyRole).build();
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(facultyUser, null, facultyUser.getAuthorities())
         );
 
         StudentLeaveRequest pendingLeave = StudentLeaveRequest.builder()
                 .id(2L)
+                .studentId("2117240020044")
                 .status("PENDING")
                 .build();
         when(leaveRequestRepository.findById(2L)).thenReturn(Optional.of(pendingLeave));
         when(leaveRequestRepository.save(any(StudentLeaveRequest.class))).thenAnswer(i -> i.getArgument(0));
+
+        Student cseStudent = Student.builder().id(100L).department(cseDept).registerNo("2117240020044").build();
+        when(studentRepository.findByRegisterNo("2117240020044")).thenReturn(Optional.of(cseStudent));
 
         ResponseEntity<StudentLeaveRequest> response = academicController.updateStudentLeaveStatus(
                 2L, Map.of("status", "APPROVED", "remarks", "Approved by advisor")
