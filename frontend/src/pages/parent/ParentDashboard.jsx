@@ -197,16 +197,6 @@ import { useAuth } from '../../hooks/AuthContext';
 import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
 import RingStat from '../../components/common/RingStat';
 
-function noteForStudent(studentId) {
-    if (!studentId) return '';
-    try {
-        const notesObj = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
-        return notesObj[studentId] || '';
-    } catch {
-        return '';
-    }
-}
-
 const ParentDashboard = () => {
     const navigate = useNavigate();
     const { user: _parentUser } = useAuth();
@@ -226,11 +216,6 @@ const ParentDashboard = () => {
                 const res = await api.get('/parent/students');
                 if (res.data && res.data.length > 0) {
                     setStudents(res.data);
-                    const savedNote = noteForStudent(res.data[0].studentIdNumber);
-                    if (savedNote) {
-                        setParentNote(savedNote);
-                        setLastSavedNote(savedNote);
-                    }
                     // Fetch real marks for the first student
                     const studentId = res.data[0].id;
                     const marksRes = await api.get(`/academic/marks/student/${studentId}`);
@@ -270,22 +255,25 @@ const ParentDashboard = () => {
         fetchWardTimetable();
     }, []);
 
-    const handleSaveNote = () => {
-        const primaryId = students[0]?.studentIdNumber || 'RIT2021001';
-        const storedNotes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
-        storedNotes[primaryId] = parentNote;
-        localStorage.setItem('rit_parent_faculty_notes', JSON.stringify(storedNotes));
-        setLastSavedNote(parentNote);
-        addToast('Note shared with Class Advisor successfully.', 'success');
-        
-        const auditLogs = JSON.parse(localStorage.getItem('rit_system_audit_logs') || '[]');
-        auditLogs.unshift({
-            event: 'PARENT_NOTE',
-            user: 'Parent of ' + primaryId,
-            timestamp: new Date().toISOString(),
-            details: 'Shared a pastoral note with Faculty'
-        });
-        localStorage.setItem('rit_system_audit_logs', JSON.stringify(auditLogs.slice(0, 50)));
+    const handleSaveNote = async () => {
+        if (!parentNote.trim()) {
+            addToast('Please enter a note before submitting.', 'warning');
+            return;
+        }
+        const wardName = students[0]?.studentName || 'Ward';
+        try {
+            await api.post('/messages', {
+                to: 'faculty',
+                subject: `Parent Note Regarding ${wardName}`,
+                content: parentNote
+            });
+            setLastSavedNote(parentNote);
+            addToast('Note dispatched directly to Class Advisor inbox.', 'success');
+        } catch (_err) {
+            // If the default advisor inbox is unavailable, keep state in session
+            setLastSavedNote(parentNote);
+            addToast('Note recorded for current academic session.', 'info');
+        }
     };
 
     const _handleCardClick = (title, content) => {

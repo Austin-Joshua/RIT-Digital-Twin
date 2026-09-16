@@ -3,6 +3,7 @@ import { FaFlask, FaPlus, FaExternalLinkAlt, FaBookOpen, FaQuoteRight, FaCalenda
 import DetailModal from '../../components/common/DetailModal';
 import Card from '../../components/common/Card';
 import AddPublicationModal from '../../components/common/AddPublicationModal';
+import api from '../../services/api';
 
 const DEFAULT_PAPERS = [
     { id: 1, title: 'Optimizing Container Orchestration using Deep Reinforcement Learning', type: 'Journal', publisher: 'IEEE Access', date: 'Feb 2024', status: 'Published', citations: 12, abstract: 'This paper proposes a novel deep reinforcement learning approach to optimize container orchestration in cloud environments, significantly reducing latency and improving resource utilization.', authors: 'Dr. Faculty Name, Dr. Co-Author', doi: '10.1109/ACCESS.2024.1234567' },
@@ -12,28 +13,31 @@ const DEFAULT_PAPERS = [
 const ResearchTracker = () => {
     const [selectedPaper, setSelectedPaper] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
     const [allPapers, setAllPapers] = useState(DEFAULT_PAPERS);
 
     useEffect(() => {
-        const loadPapers = () => {
-            const stored = localStorage.getItem('connectivity_publications');
-            if (stored) {
-                setAllPapers(JSON.parse(stored));
-            } else {
-                localStorage.setItem('connectivity_publications', JSON.stringify(DEFAULT_PAPERS));
-            }
-        };
-        loadPapers();
-        window.addEventListener('storage', loadPapers);
-        return () => window.removeEventListener('storage', loadPapers);
+        let isMounted = true;
+        api.get('/research/publications')
+            .then((res) => {
+                if (!isMounted) return;
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    setAllPapers(res.data);
+                }
+            })
+            .catch(() => {
+                // Keep default academic reference templates if backend empty
+            });
+        return () => { isMounted = false; };
     }, []);
 
-    const handleSavePublication = (newPub) => {
-        const updatedPapers = [newPub, ...allPapers];
-        setAllPapers(updatedPapers);
-        localStorage.setItem('connectivity_publications', JSON.stringify(updatedPapers));
-        window.dispatchEvent(new Event('storage')); // trigger sync across components
+    const handleSavePublication = async (newPub) => {
+        try {
+            const res = await api.post('/research/publications', newPub);
+            const saved = res.data || newPub;
+            setAllPapers(prev => [saved, ...prev]);
+        } catch (_err) {
+            setAllPapers(prev => [newPub, ...prev]);
+        }
     };
 
     const totalCitations = allPapers.reduce((sum, p) => sum + (Number(p.citations) || 0), 0);

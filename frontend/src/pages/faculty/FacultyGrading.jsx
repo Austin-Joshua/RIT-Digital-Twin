@@ -84,12 +84,9 @@ const FacultyGrading = () => {
     }, [students, search]);
 
     const handleSave = async () => {
-        const gradingData = { lastUpdated: new Date().toISOString(), course: selectedCourse, semester: semester, students };
-        localStorage.setItem('connectivity_grading', JSON.stringify(gradingData));
-
         const apiReady = students.some((s) => s.studentSubjectId);
         if (!apiReady) {
-            addToast("Grades saved locally. Connect a mapped roster to publish.", "warning");
+            addToast("Please select a mapped course roster with enrolled students to publish marks.", "warning");
             return;
         }
         try {

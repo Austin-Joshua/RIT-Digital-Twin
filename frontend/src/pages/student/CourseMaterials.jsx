@@ -8,6 +8,8 @@ const INITIAL_NOTES = [
     { id: 104, subject: 'IT3401', title: 'React Hooks Complete Guide', type: 'zip', size: '12 MB', date: '2 weeks ago', downloaded: false },
 ];
 
+import api from '../../services/api';
+
 const CourseMaterials = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('notes');
@@ -23,26 +25,27 @@ const CourseMaterials = () => {
     const [notes, setNotes] = useState(INITIAL_NOTES);
 
     useEffect(() => {
-        const loadMaterials = () => {
-            const stored = localStorage.getItem('connectivity_materials');
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                // Format the faculty materials to match student view layout
-                const formatted = parsed.map(mat => ({
-                    id: mat.id,
-                    subject: mat.subject.substring(0, 15) + (mat.subject.length > 15 ? '...' : ''), // truncate long names
-                    title: mat.title,
-                    type: mat.type.toLowerCase(),
-                    size: mat.size,
-                    date: mat.date,
-                    downloaded: mat.downloaded || false
-                }));
-                setNotes([...formatted, ...INITIAL_NOTES]);
-            }
-        };
-        loadMaterials();
-        window.addEventListener('storage', loadMaterials);
-        return () => window.removeEventListener('storage', loadMaterials);
+        let isMounted = true;
+        api.get('/materials')
+            .then((res) => {
+                if (!isMounted) return;
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    const formatted = res.data.map(mat => ({
+                        id: mat.id,
+                        subject: mat.subjectCode,
+                        title: mat.title,
+                        type: (mat.fileType || 'pdf').toLowerCase(),
+                        size: mat.fileSize || '2.0 MB',
+                        date: 'Recently Updated',
+                        downloaded: false
+                    }));
+                    setNotes([...formatted, ...INITIAL_NOTES]);
+                }
+            })
+            .catch(() => {
+                // Keep default curriculum reference notes if offline
+            });
+        return () => { isMounted = false; };
     }, []);
 
     const materials = {

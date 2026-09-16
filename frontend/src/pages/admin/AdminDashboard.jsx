@@ -6,9 +6,11 @@ import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
 import RingStat from '../../components/common/RingStat';
+import { useToast } from '../../hooks/ToastContext';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const { addToast } = useToast();
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalFaculty: 0,
@@ -28,19 +30,21 @@ const AdminDashboard = () => {
                 if (res.data) {
                     setStats(prev => ({
                         ...prev,
-                        totalStudents: Number(res.data.totalStudents || 0),
-                        totalFaculty: Number(res.data.totalFaculty || 0),
-                        placementRate: Number(res.data.placementRate || 0),
-                        activeResearch: Number(res.data.activeResearch || 0),
-                        pendingApprovals: Number(res.data.pendingApprovals || 0),
-                        activeAlerts: Number(res.data.activeAlerts || 0),
+                        totalStudents: res.data.totalStudents ?? 0,
+                        totalFaculty: res.data.totalFaculty ?? 0,
+                        placementRate: res.data.placementRate ?? 0,
+                        activeResearch: res.data.activeResearch ?? 0,
+                        pendingApprovals: res.data.pendingApprovals ?? 0,
+                        activeAlerts: res.data.activeAlerts ?? 0,
                     }));
-                    if (Array.isArray(res.data.auditLogs)) {
-                        setAuditLogs(res.data.auditLogs);
+                    if (Array.isArray(res.data.recentAuditLogs)) {
+                        setAuditLogs(res.data.recentAuditLogs);
                     }
                 }
             })
-            .catch(() => {})
+            .catch(() => {
+                // Production: zero-fake-metrics rule
+            })
             .finally(() => {
                 if (isMounted) setLoading(false);
             });
@@ -48,19 +52,25 @@ const AdminDashboard = () => {
         return () => { isMounted = false; };
     }, []);
 
-    const triggerBroadcast = (e) => {
+    const triggerBroadcast = async (e) => {
         e.preventDefault();
-        const fd = new FormData(e.target);
-        const broadcast = {
-            id: Date.now(),
-            title: fd.get('title'),
-            message: fd.get('message'),
-            priority: fd.get('priority'),
-            isLive: fd.get('isLive') === 'on',
-            active: true
-        };
-        localStorage.setItem('rit_global_broadcast', JSON.stringify(broadcast));
-        alert('Institutional-wide broadcast sent to all 1,000+ active user sessions!');
+        const form = e.target;
+        const fd = new FormData(form);
+        const title = fd.get('title');
+        const message = fd.get('message');
+        const priority = fd.get('priority');
+        try {
+            await api.post('/broadcasts', {
+                title,
+                message,
+                priority,
+                audience: 'ALL'
+            });
+            addToast('Institutional broadcast persisted to database and dispatched via live WebSocket.', 'success');
+            form.reset();
+        } catch (_err) {
+            addToast('Failed to emit broadcast. Ensure you have administrator permissions.', 'error');
+        }
     };
 
     return (

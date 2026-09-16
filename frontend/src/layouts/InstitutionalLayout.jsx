@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
-import { useToast } from '../hooks/ToastContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/layout/Header';
 import SystemBroadcastBar from '../components/layout/SystemBroadcastBar';
@@ -26,7 +25,6 @@ const LG_BREAKPOINT = 1024;
 
 const InstitutionalLayout = () => {
     const { user, logout } = useAuth();
-    const { addToast } = useToast();
     const navigate = useNavigate();
     const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
@@ -52,19 +50,10 @@ const InstitutionalLayout = () => {
         };
         document.addEventListener('mousedown', handleClickOutside);
 
-        const handleBroadcastSync = (e) => {
-            if (e.key === 'rit_global_broadcast' && e.newValue) {
-                const broadcast = JSON.parse(e.newValue);
-                addToast(`📢 Broadcast: ${broadcast.title}`, 'info');
-            }
-        };
-        window.addEventListener('storage', handleBroadcastSync);
-
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
-            window.removeEventListener('storage', handleBroadcastSync);
         };
-    }, [addToast]);
+    }, []);
 
     // Optimized Performance Callbacks
     const handleLogout = useCallback(() => {

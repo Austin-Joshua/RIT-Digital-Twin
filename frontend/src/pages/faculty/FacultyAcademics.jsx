@@ -48,11 +48,41 @@ const FacultyAcademics = () => {
         return () => { isMounted = false; };
     }, []);
 
-    const handleUpload = (newMat) => {
-        const updatedMaterials = [newMat, ...allMaterials];
-        setAllMaterials(updatedMaterials);
-        localStorage.setItem('connectivity_materials', JSON.stringify(updatedMaterials));
-        window.dispatchEvent(new Event('storage'));
+    useEffect(() => {
+        let isMounted = true;
+        api.get('/materials')
+            .then(res => {
+                if (!isMounted) return;
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    setAllMaterials(res.data.map(m => ({
+                        id: m.id,
+                        title: m.title,
+                        type: m.fileType || 'PDF',
+                        date: 'Recently Uploaded',
+                        size: m.fileSize || '2.0 MB',
+                        subject: m.subjectCode
+                    })));
+                }
+            })
+            .catch(() => {});
+
+        return () => { isMounted = false; };
+    }, []);
+
+    const handleUpload = async (newMat) => {
+        try {
+            await api.post('/materials', {
+                subjectCode: newMat.subject || 'GENERIC',
+                title: newMat.title,
+                type: newMat.type,
+                size: newMat.size
+            });
+            const updatedMaterials = [newMat, ...allMaterials];
+            setAllMaterials(updatedMaterials);
+        } catch (_err) {
+            const updatedMaterials = [newMat, ...allMaterials];
+            setAllMaterials(updatedMaterials);
+        }
     };
 
     return (
