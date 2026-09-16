@@ -1336,7 +1336,7 @@ public class TimetableService {
 
     private String anonymizedFacultyName(User faculty) {
         if (faculty == null || faculty.getUserId() == null) {
-            return "Mock Faculty";
+            return "Unassigned";
         }
         long suffix = (faculty.getUserId() % 97L) + 1L;
         return "Faculty-" + String.format("%02d", suffix);

@@ -136,5 +136,5 @@ spring:
       connection-timeout: 30000
   flyway:
     enabled: true
-    validate-on-migrate: false
+    validate-on-migrate: true
     baseline-on-migrate: true

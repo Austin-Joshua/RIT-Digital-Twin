@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import { ThemeContext } from '../hooks/ThemeContext';
@@ -11,32 +11,39 @@ vi.mock('../hooks/AuthContext', () => ({
   }),
 }));
 
-const renderLogin = () =>
-  render(
-    <BrowserRouter>
-      <ThemeContext.Provider value={{ isDarkMode: false }}>
-        <LoginPage />
-      </ThemeContext.Provider>
-    </BrowserRouter>
-  );
+const renderLogin = async () => {
+  let result;
+  await act(async () => {
+    result = render(
+      <BrowserRouter>
+        <ThemeContext.Provider value={{ isDarkMode: false }}>
+          <LoginPage />
+        </ThemeContext.Provider>
+      </BrowserRouter>
+    );
+  });
+  return result;
+};
 
 describe('Login page', () => {
-  it('renders user id and password fields', () => {
-    renderLogin();
+  it('renders user id and password fields', async () => {
+    await renderLogin();
     expect(screen.getByPlaceholderText(/^user id$/i)).toBeTruthy();
     expect(screen.getByPlaceholderText(/password/i)).toBeTruthy();
   });
 
-  it('renders sign in button', () => {
-    renderLogin();
+  it('renders sign in button', async () => {
+    await renderLogin();
     expect(screen.getByRole('button', { name: /^sign in$/i })).toBeTruthy();
   });
 
   it('submits form and stays on screen', async () => {
-    renderLogin();
-    fireEvent.change(screen.getByPlaceholderText(/^user id$/i), { target: { value: 'FAC-001' } });
-    fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'FAC-001' } });
-    fireEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
+    await renderLogin();
+    await act(async () => {
+      fireEvent.change(screen.getByPlaceholderText(/^user id$/i), { target: { value: 'FAC-001' } });
+      fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'FAC-001' } });
+      fireEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
+    });
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /^sign in$/i })).toBeTruthy();
     });

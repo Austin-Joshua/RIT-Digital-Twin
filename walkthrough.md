@@ -67,6 +67,16 @@ All inappropriate reliance on client `localStorage`, fake mock generators (`Mock
 | [`AdminDashboard.jsx`](file:///c:/Users/austi/OneDrive/Desktop/Digital%20Twin/RIT-Digital-Twin/frontend/src/pages/admin/AdminDashboard.jsx) | Hardcoded `totalStudents: 4520`, `totalFaculty: 254` | Resolves live database aggregates from `/api/admin/dashboard`. |
 | [`Messages.jsx`](file:///c:/Users/austi/OneDrive/Desktop/Digital%20Twin/RIT-Digital-Twin/frontend/src/pages/student/Messages.jsx) | Hardcoded `mockMessages` dictionary | Connected to `/api/messages/inbox`, `/api/messages/outbox`, and `/api/messages/send`. |
 | [`HODDashboard.jsx`](file:///c:/Users/austi/OneDrive/Desktop/Digital%20Twin/RIT-Digital-Twin/frontend/src/pages/hod/HODDashboard.jsx) | `generateMockHODData()` fallback on network failure | Displays honest error state: "Unable to load department metrics from ERP server." |
+| [`CrowdMonitor.jsx`](file:///c:/Users/austi/OneDrive/Desktop/Digital%20Twin/RIT-Digital-Twin/frontend/src/pages/enterprise/CrowdMonitor.jsx) | Entirely static hardcoded component | Connects to `/api/twin/crowd-density` with day/slot parameters to fetch authoritative values. |
+
+---
+
+## 3. Production Configuration & Fake Data Cleanup
+
+- **Zero-Mock Verification**: Systematically audited backend controllers to ensure no hardcoded data structures (like "Mock Faculty", "CSE" default, "Pending Assignment" logic) override real institutional values. Nulls now properly fallback to "Unassigned" or "N/A" without masquerading as valid data.
+- **WebSocket Security**: Secured STOMP WebSockets (`/ws`) via `CampusSocketAuthInterceptor`, requiring a valid JWT for any subscription or publish attempt.
+- **Migration & Properties Safety**: Locked down embedded `application.yml` profiles to enforce `validate-on-migrate: true` to prevent any structural drift from Flyway scripts in production.
+- **Lint Verification**: Resolved missing dependency and unused variable lint errors on the frontend React components to guarantee warnings-free execution.
 
 ---
 
@@ -89,8 +99,12 @@ Ran `./mvnw test` across the complete backend test suite:
 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.university.erp.intelligence.LoginIdentityTest
 [INFO] Running com.university.erp.service.TimetableServiceTest
 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.796 s -- in com.university.erp.service.TimetableServiceTest
+[INFO] Running com.university.erp.controller.AssignmentSecurityTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.441 s -- in com.university.erp.controller.AssignmentSecurityTest
+[INFO] Running com.university.erp.controller.AcademicSecurityTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.645 s -- in com.university.erp.controller.AcademicSecurityTest
 [INFO] Results:
-[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 

@@ -114,7 +114,7 @@ public class NoDueController {
             map.put("id", r.getId());
             map.put("studentName", r.getStudent().getStudentName());
             map.put("reg", r.getStudent().getRegisterNo());
-            map.put("dept", r.getStudent().getDepartment() != null ? r.getStudent().getDepartment().getDeptName() : "CSE");
+            map.put("dept", r.getStudent().getDepartment() != null ? r.getStudent().getDepartment().getDeptName() : "N/A");
             map.put("clearanceType", r.getClearanceType());
             map.put("status", r.getStatus().toUpperCase());
             map.put("remarks", r.getRemarks());
