@@ -44,7 +44,22 @@ const api = axios.create({
 });
 
 const inflight = new Map();
+const referenceCache = new Map();
 const httpAdapter = axios.getAdapter(axios.defaults.adapter);
+
+const STATIC_CACHE_ROUTES = [
+  '/academic/departments',
+  '/academic/courses',
+  '/transport/routes',
+  '/transport/stops',
+  '/twin/catalog',
+  '/assets/categories'
+];
+
+function isStaticRoute(url) {
+  if (!url) return false;
+  return STATIC_CACHE_ROUTES.some((route) => url.includes(route));
+}
 
 function inflightKey(config) {
   const method = (config.method || 'get').toLowerCase();
@@ -54,6 +69,17 @@ function inflightKey(config) {
 
 api.defaults.adapter = (config) => {
   const method = (config.method || 'get').toLowerCase();
+
+  // Check TTL cache for static GET requests
+  if (method === 'get' && (isStaticRoute(config.url) || config.cacheTTL)) {
+    const key = inflightKey(config);
+    const cached = referenceCache.get(key);
+    const ttl = config.cacheTTL || 300000; // 5 min default TTL
+    if (cached && (Date.now() - cached.timestamp < ttl)) {
+      return Promise.resolve({ ...cached.response, config });
+    }
+  }
+
   const shareable = method === 'get' || method === 'post' || method === 'put' || method === 'delete';
   if (!shareable) return httpAdapter(config);
 
@@ -61,7 +87,12 @@ api.defaults.adapter = (config) => {
   const existing = inflight.get(key);
   if (existing) return existing;
 
-  const pending = httpAdapter(config).finally(() => {
+  const pending = httpAdapter(config).then((response) => {
+    if (method === 'get' && (isStaticRoute(config.url) || config.cacheTTL)) {
+      referenceCache.set(key, { timestamp: Date.now(), response });
+    }
+    return response;
+  }).finally(() => {
     if (inflight.get(key) === pending) inflight.delete(key);
   });
   inflight.set(key, pending);

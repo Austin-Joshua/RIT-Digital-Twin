@@ -53,6 +53,23 @@ public class AcademicController {
         return ResponseEntity.ok(leaveRequestRepository.findByStudentId(currentUser.getUsername()));
     }
 
+    @GetMapping("/leave/pending")
+    @PreAuthorize("hasAnyRole('FACULTY','HOD','ADMIN')")
+    public ResponseEntity<List<com.university.erp.model.StudentLeaveRequest>> getPendingStudentLeaves() {
+        return ResponseEntity.ok(leaveRequestRepository.findAll());
+    }
+
+    @PutMapping("/leave/{id}/status")
+    @PreAuthorize("hasAnyRole('FACULTY','HOD','ADMIN')")
+    public ResponseEntity<com.university.erp.model.StudentLeaveRequest> updateStudentLeaveStatus(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body) {
+        com.university.erp.model.StudentLeaveRequest req = leaveRequestRepository.findById(id)
+                .orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Leave request not found"));
+        req.setStatus(body.getOrDefault("status", "APPROVED"));
+        return ResponseEntity.ok(leaveRequestRepository.save(req));
+    }
+
     @PostMapping("/marks/{studentId}")
     @PreAuthorize("hasRole('FACULTY')")
     public ResponseEntity<String> enterMarks(@PathVariable @org.springframework.lang.NonNull Long studentId,

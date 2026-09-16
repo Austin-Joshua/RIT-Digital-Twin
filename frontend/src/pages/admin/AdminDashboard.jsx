@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUniversity, FaMagic, FaCalendarCheck, FaBullhorn } from 'react-icons/fa';
+import api from '../../services/api';
 import AIInsightPanel from '../../features/ai/components/AIInsightPanel';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import MiniCalendar from '../../components/common/MiniCalendar';
@@ -8,37 +9,45 @@ import RingStat from '../../components/common/RingStat';
 
 const FALLBACK_AUDIT_LOGS = [
     { event: 'SYSTEM_UP', user: 'Principal Office', timestamp: '2026-01-01T00:00:00.000Z', details: 'Institutional Digital Twin Engine v4.2 Started Successfully.' },
-    { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: '2026-01-01T00:00:00.000Z', details: 'All 15,400 user sessions verified. 0 anomalies detected.' }
+    { event: 'SECURITY_SCAN', user: 'Shield.ai', timestamp: '2026-01-01T00:00:00.000Z', details: 'All user sessions verified via Spring Security context.' }
 ];
-
-function readAdminSnapshot() {
-    const leaves = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-    const logs = JSON.parse(localStorage.getItem('rit_system_audit_logs') || '[]');
-    return {
-        pendingApprovals: Array.isArray(leaves) ? leaves.filter((item) => item.status === 'PENDING').length : 0,
-        auditLogs: Array.isArray(logs) && logs.length > 0 ? logs.slice(0, 5) : FALLBACK_AUDIT_LOGS,
-    };
-}
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [stats, setStats] = useState(() => ({
-        totalStudents: 4520,
-        totalFaculty: 254,
+    const [stats, setStats] = useState({
+        totalStudents: 0,
+        totalFaculty: 0,
         placementRate: 94.2,
         activeResearch: 12,
-        pendingApprovals: readAdminSnapshot().pendingApprovals
-    }));
-    const [auditLogs, setAuditLogs] = useState(() => readAdminSnapshot().auditLogs);
+        pendingApprovals: 0,
+        activeAlerts: 0,
+    });
+    const [auditLogs] = useState(FALLBACK_AUDIT_LOGS);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const onStorage = () => {
-            const snapshot = readAdminSnapshot();
-            setStats((prev) => ({ ...prev, pendingApprovals: snapshot.pendingApprovals }));
-            setAuditLogs(snapshot.auditLogs);
-        };
-        window.addEventListener('storage', onStorage);
-        return () => window.removeEventListener('storage', onStorage);
+        let isMounted = true;
+        api.get('/admin/dashboard')
+            .then((res) => {
+                if (!isMounted) return;
+                if (res.data) {
+                    setStats(prev => ({
+                        ...prev,
+                        totalStudents: Number(res.data.totalStudents || 0),
+                        totalFaculty: Number(res.data.totalFaculty || 0),
+                        placementRate: Number(res.data.placementRate || 94.2),
+                        activeResearch: Number(res.data.activeResearch || 0),
+                        pendingApprovals: Number(res.data.pendingApprovals || 0),
+                        activeAlerts: Number(res.data.activeAlerts || 0),
+                    }));
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                if (isMounted) setLoading(false);
+            });
+
+        return () => { isMounted = false; };
     }, []);
 
     const triggerBroadcast = (e) => {

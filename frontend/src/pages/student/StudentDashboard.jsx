@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/AuthContext';
-import { getAcademicStats } from '../../utils/MockDataGenerator';
 import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
 import RingStat from '../../components/common/RingStat';
 
@@ -27,16 +26,15 @@ function formatDay(date) {
 
 const StudentDashboard = () => {
     const { user } = useAuth();
-    const email = user?.email || 'guest@ritchennai.edu.in';
-    const initialStats = getAcademicStats(email);
     const now = useMemo(() => new Date(), []);
     const yearLabel = academicYearLabel(now);
     const semester = semesterWindow(now);
 
     const [kpiData, setKpiData] = useState({
-        cgpa: initialStats.cgpa,
-        attendance: initialStats.attendance,
-        arrear: initialStats.arrears,
+        cgpa: null,
+        attendance: null,
+        arrear: 0,
+        loading: true,
     });
     const [timetable, setTimetable] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -47,22 +45,54 @@ const StudentDashboard = () => {
     const feesPaidShare = academicTotal === 0
         ? 100
         : Math.round(((academicTotal - feesPending) / academicTotal) * 100);
-    const cgpa = Number(kpiData.cgpa || 0);
-    const attendance = Math.round(Number(kpiData.attendance || 0));
+
+    const cgpa = kpiData.cgpa !== null ? Number(kpiData.cgpa) : null;
+    const attendance = kpiData.attendance !== null ? Math.round(Number(kpiData.attendance)) : null;
     const arrears = Number(kpiData.arrear || 0);
 
     useEffect(() => {
-        api.get('/academic/student/cgpa')
-            .then((cgpaRes) => {
-                if (Array.isArray(cgpaRes.data) && cgpaRes.data.length > 0) {
-                    const apiCgpa = cgpaRes.data.reduce((acc, curr) => acc + curr.gpa, 0) / cgpaRes.data.length;
-                    if (apiCgpa > 0) setKpiData((prev) => ({ ...prev, cgpa: apiCgpa }));
+        let isMounted = true;
+
+        // 1. Authoritative CGPA
+        const pCgpa = api.get('/academic/student/cgpa')
+            .then((res) => {
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    const valid = res.data.filter(s => typeof s.gpa === 'number');
+                    const mean = valid.length > 0 ? valid.reduce((acc, curr) => acc + curr.gpa, 0) / valid.length : null;
+                    return mean;
                 }
+                return null;
             })
-            .catch(() => {});
-        api.get('/academic/student/timetable')
-            .then((res) => setTimetable(Array.isArray(res.data) ? res.data : []))
-            .catch(() => setTimetable([]));
+            .catch(() => null);
+
+        // 2. Authoritative Attendance Summary
+        const pAtt = api.get('/erp/student/attendance-summary')
+            .then((res) => {
+                if (Array.isArray(res.data) && res.data.length > 0) {
+                    const avg = res.data.reduce((sum, r) => sum + Number(r.percentage || 0), 0) / res.data.length;
+                    return avg;
+                }
+                return null;
+            })
+            .catch(() => null);
+
+        // 3. Timetable
+        const pTt = api.get('/academic/student/timetable')
+            .then((res) => Array.isArray(res.data) ? res.data : [])
+            .catch(() => []);
+
+        Promise.all([pCgpa, pAtt, pTt]).then(([cgpaVal, attVal, ttData]) => {
+            if (!isMounted) return;
+            setKpiData({
+                cgpa: cgpaVal,
+                attendance: attVal,
+                arrear: 0,
+                loading: false,
+            });
+            setTimetable(ttData);
+        });
+
+        return () => { isMounted = false; };
     }, [user]);
 
     const calendar = useMemo(() => {
@@ -98,18 +128,18 @@ const StudentDashboard = () => {
             <div className="ims-stat-row">
                 <RingStat
                     label="CGPA"
-                    value={`${cgpa.toFixed(2)} / 10`}
-                    center={cgpa.toFixed(2)}
+                    value={cgpa !== null ? `${cgpa.toFixed(2)} / 10` : 'Data unavailable'}
+                    center={cgpa !== null ? cgpa.toFixed(2) : '—'}
                     sub="Overall performance"
-                    percent={(cgpa / 10) * 100}
+                    percent={cgpa !== null ? (cgpa / 10) * 100 : 0}
                     color="#2ecc71"
                 />
                 <RingStat
                     label="Attendance"
-                    value={`${attendance}%`}
-                    center={`${attendance}%`}
+                    value={attendance !== null ? `${attendance}%` : 'Data unavailable'}
+                    center={attendance !== null ? `${attendance}%` : '—'}
                     sub="Average this semester"
-                    percent={attendance}
+                    percent={attendance !== null ? attendance : 0}
                     color="#17a2b8"
                 />
                 <RingStat

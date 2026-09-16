@@ -11,13 +11,7 @@ const FacultyAttendance = () => {
     const [markingMode, setMarkingMode] = useState(false);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-    const [students, setStudents] = useState([
-        { reg: '211520104001', name: 'Aakash S', attended: 42, total: 45, percentage: 93.3, currentStatus: 'present' },
-        { reg: '211520104002', name: 'Balaji K', attended: 35, total: 45, percentage: 77.8, currentStatus: 'present' },
-        { reg: '211520104003', name: 'Chandini R', attended: 44, total: 45, percentage: 97.8, currentStatus: 'present' },
-        { reg: '211520104004', name: 'Dinesh M', attended: 28, total: 45, percentage: 62.2, currentStatus: 'absent' },
-        { reg: '211520104005', name: 'Elango P', attended: 40, total: 45, percentage: 88.9, currentStatus: 'present' },
-    ]);
+    const [students, setStudents] = useState([]);
 
     React.useEffect(() => {
         const loadAssignments = async () => {
@@ -93,9 +87,6 @@ const FacultyAttendance = () => {
 
         setStudents(updated);
 
-        const attendanceData = { lastUpdated: new Date().toISOString(), course: selectedCourse, date: date, students: updated };
-        localStorage.setItem('connectivity_attendance', JSON.stringify(attendanceData));
-
         try {
             setLoading(true);
             const picked = assignments.find(a => `${a.subjectCode} - ${a.subjectName}` === selectedCourse);
@@ -108,9 +99,9 @@ const FacultyAttendance = () => {
                     records: updated.map(s => ({ studentId: Number(s.studentId || 0), status: s.currentStatus }))
                 });
             }
-            addToast(`Attendance for ${date} saved successfully. Shared with student portal.`, 'success');
+            addToast(`Attendance for ${date} saved successfully to ERP database.`, 'success');
         } catch {
-            addToast('Attendance saved locally; backend sync failed.', 'warning');
+            addToast('Failed to record attendance to server database. Please try again.', 'error');
         } finally {
             setLoading(false);
         }

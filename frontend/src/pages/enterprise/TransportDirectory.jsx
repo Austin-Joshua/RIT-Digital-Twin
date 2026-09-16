@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../services/api';
 import { transportRoutes } from '../../utils/data/transportRoutes';
+import dynamicCache from '../../utils/dynamicCache';
 import { LuBus, LuSearch, LuPhone, LuMapPin, LuClock, LuNavigation, LuRoute, LuCircleCheckBig } from 'react-icons/lu';
 
 const TransportPage = () => {
-    const [routes, setRoutes] = useState([]);
+    const cachedRoutes = dynamicCache.get('transport_routes');
+    const [routes, setRoutes] = useState(cachedRoutes || transportRoutes);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRoute, setSelectedRoute] = useState(null);
     const [stops, setStops] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(!cachedRoutes && !transportRoutes);
     const [searching, setSearching] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
@@ -48,16 +50,16 @@ const TransportPage = () => {
     }, []);
 
     const fetchRoutes = async () => {
-        setLoading(true);
         try {
             const res = await api.get('/transport/routes');
-            if (res.data && res.data.length > 0) {
-                setRoutes(res.data);
-            } else {
-                setRoutes(transportRoutes);
-            }
-        } catch { setRoutes(transportRoutes); }
-        finally { setLoading(false); }
+            const data = (res.data && res.data.length > 0) ? res.data : transportRoutes;
+            setRoutes(data);
+            dynamicCache.set('transport_routes', data);
+        } catch {
+            setRoutes(transportRoutes);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSearch = async (e) => {

@@ -8,67 +8,36 @@ const AttendanceReport = () => {
     const [search, setSearch] = useState('');
     const { addToast: _addToast } = useToast();
     const [selectedRows, setSelectedRows] = useState([]);
-    const [attendanceRecords, setAttendanceRecords] = useState([
-        { slNo: 1, code: 'CS3401', name: 'Algorithms and Data Structures', faculty: 'Dr. Sarah Smith', attended: 42, total: 45, percent: 93.3 },
-        { slNo: 2, code: 'CS3402', name: 'Operating Systems', faculty: 'Prof. James Wilson', attended: 38, total: 45, percent: 84.4 },
-        { slNo: 3, code: 'CS3403', name: 'Computer Networks', faculty: 'Dr. Emily Brown', attended: 30, total: 45, percent: 66.7 },
-        { slNo: 4, code: 'CS3404', name: 'Database Management', faculty: 'Prof. Michael Johnson', attended: 44, total: 45, percent: 97.8 },
-        { slNo: 5, code: 'GE3401', name: 'Professional Ethics', faculty: 'Dr. Robert Davis', attended: 45, total: 45, percent: 100.0 },
-        { slNo: 6, code: 'CS8651', name: 'Internet Programming', faculty: 'Dr. Sarah Smith', attended: 42, total: 45, percent: 93.3 }
-    ]);
+    const [attendanceRecords, setAttendanceRecords] = useState([]);
+    const [_loading, setLoading] = useState(true);
 
     React.useEffect(() => {
+        let isMounted = true;
         const loadSummary = async () => {
             try {
+                setLoading(true);
                 const res = await api.get('/erp/student/attendance-summary');
                 const rows = Array.isArray(res.data) ? res.data : [];
-                if (rows.length > 0) {
+                if (isMounted) {
                     setAttendanceRecords(rows.map((r, i) => ({
                         slNo: i + 1,
                         code: r.subjectCode,
                         name: r.subjectName,
-                        faculty: 'Assigned Faculty',
+                        faculty: 'Course Faculty',
                         attended: r.present,
                         total: r.total,
                         percent: Number(r.percentage || 0)
                     })));
-                    return;
                 }
             } catch {
-                // fall back to local mirror
-            }
-        };
-
-        const checkConnectivity = () => {
-            const syncedData = localStorage.getItem('connectivity_attendance');
-            if (syncedData) {
-                const data = JSON.parse(syncedData);
-                // Match by code (handling both CS3401 style and CS8651 from faculty view)
-                const courseCode = data.course.split(' - ')[0];
-
-                setAttendanceRecords(prev => prev.map(rec => {
-                    if (rec.code === courseCode) {
-                        // Assuming current user is "Aakash S" (reg: ...4001) from the faculty list
-                        const studentData = data.students.find(s => s.reg === '211520104001');
-                        if (studentData) {
-                            return {
-                                ...rec,
-                                attended: studentData.attended,
-                                total: studentData.total,
-                                percent: parseFloat(studentData.percentage)
-                            };
-                        }
-                    }
-                    return rec;
-                }));
+                if (isMounted) setAttendanceRecords([]);
+            } finally {
+                if (isMounted) setLoading(false);
             }
         };
 
         loadSummary();
-        checkConnectivity();
-        // Add event listener for cross-tab sync
-        window.addEventListener('storage', checkConnectivity);
-        return () => window.removeEventListener('storage', checkConnectivity);
+        return () => { isMounted = false; };
     }, []);
 
     const handleSelectAll = () => {

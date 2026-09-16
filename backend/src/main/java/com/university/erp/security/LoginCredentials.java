@@ -16,7 +16,7 @@ public final class LoginCredentials {
     }
 
     public static boolean classRegister(String registerNo) {
-        return registerNo != null && registerNo.matches("^211724002\\d{4}$|^211724008\\d{4}$");
+        return registerNo != null && registerNo.matches("^211724002\\d{4}$|^211724008\\d{4}$|^2117\\d+$");
     }
 
     public static String departmentCode(String registerNo) {
@@ -27,7 +27,7 @@ public final class LoginCredentials {
     }
 
     public static String studentPassword(String registerNo) {
-        return "Rit-" + tail(registerNo, 6);
+        return registerNo != null ? registerNo.trim() : "";
     }
 
     public static String studentPhone(String registerNo) {
@@ -38,8 +38,29 @@ public final class LoginCredentials {
         return "8" + tail(registerNo, 9);
     }
 
+    public static String emailNumberSuffix(String registerNo) {
+        if (registerNo == null) {
+            return "000000";
+        }
+        String digits = registerNo.replaceAll("\\D", "");
+        if (digits.length() >= 13) {
+            String year = digits.substring(4, 6);
+            String roll = digits.substring(digits.length() - 4);
+            return year + roll;
+        }
+        return tail(digits, 6);
+    }
+
+    public static String collegeEmail(String registerNo, String firstName) {
+        String namePart = firstName != null && !firstName.isBlank()
+                ? firstName.trim().split(" ")[0].toLowerCase(Locale.ROOT)
+                : "student";
+        String suffix = emailNumberSuffix(registerNo);
+        return namePart + "." + suffix + "@" + departmentCode(registerNo).toLowerCase(Locale.ROOT) + ".ritchennai.edu.in";
+    }
+
     public static String collegeEmail(String registerNo) {
-        return registerNo + "@" + departmentCode(registerNo).toLowerCase(Locale.ROOT) + ".ritchennai.edu.in";
+        return collegeEmail(registerNo, "student");
     }
 
     public static String parentEmail(String registerNo) {
@@ -73,11 +94,16 @@ public final class LoginCredentials {
     }
 
     public static boolean sameSecret(String submitted, String stored) {
-        if (submitted == null || stored == null || stored.isBlank() || !stored.matches("^\\d{10}$")) {
+        if (submitted == null || stored == null || stored.isBlank()) {
             return false;
         }
-        return java.security.MessageDigest.isEqual(submitted.trim().getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                stored.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        String sClean = submitted.trim();
+        String stClean = stored.trim();
+        if (java.security.MessageDigest.isEqual(sClean.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                stClean.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
+            return true;
+        }
+        return false;
     }
 
     private static String tail(String value, int length) {

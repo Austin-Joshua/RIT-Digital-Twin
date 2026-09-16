@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import Card from '../../components/common/Card';
 import { FaBook, FaFileAlt, FaVideo, FaDownload } from 'react-icons/fa';
 import UploadMaterialModal from '../../components/common/UploadMaterialModal';
+import api from '../../services/api';
 
 const DEFAULT_MATERIALS = [
-    { id: 1, title: 'Unit 1: React Fundamentals', type: 'PDF', date: 'Oct 12', size: '2.4 MB', subject: 'Internet Programming' },
-    { id: 2, title: 'Lecture: Node.js Architecture', type: 'Video', date: 'Oct 15', size: '145 MB', subject: 'Internet Programming' },
-    { id: 3, title: 'Assignment 2 Guidelines', type: 'Doc', date: 'Oct 18', size: '1.1 MB', subject: 'Internet Programming' },
-    { id: 4, title: 'Unit 2: Express Routing', type: 'PDF', date: 'Oct 20', size: '3.2 MB', subject: 'Internet Programming' },
+    { id: 1, title: 'Unit 1: React Fundamentals & Virtual DOM', type: 'PDF', date: 'Oct 12', size: '2.4 MB', subject: 'Web Technologies' },
+    { id: 2, title: 'Lecture 4: Database Transactions & ACID', type: 'Video', date: 'Oct 15', size: '145 MB', subject: 'Database Management' },
+    { id: 3, title: 'Assignment 2 Guidelines & Rubrics', type: 'Doc', date: 'Oct 18', size: '1.1 MB', subject: 'Software Engineering' },
 ];
 
 const FacultyAcademics = () => {
     const [_isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
+    const [subjects, setSubjects] = useState([]);
+    const [allMaterials, setAllMaterials] = useState(DEFAULT_MATERIALS);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -20,29 +22,30 @@ const FacultyAcademics = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const subjects = [
-        { code: 'CS8651', name: 'Internet Programming', semester: 'VI', branch: 'CSE', students: 60, syllabusCovered: 85 },
-        { code: 'CS8691', name: 'Artificial Intelligence', semester: 'VI', branch: 'CSE', students: 62, syllabusCovered: 70 },
-        { code: 'IT8076', name: 'Software Testing', semester: 'VIII', branch: 'IT', students: 55, syllabusCovered: 90 },
-        { code: 'MA3151', name: 'Matrices and Calculus', semester: 'I', branch: 'CSE', students: 64, syllabusCovered: 95 },
-        { code: 'CS3301', name: 'Data Structures', semester: 'III', branch: 'CSE', students: 62, syllabusCovered: 78 },
-        { code: 'BS301', name: 'Business Communication', semester: 'I', branch: 'CSBS', students: 58, syllabusCovered: 88 },
-    ];
-
-    const [allMaterials, setAllMaterials] = useState(DEFAULT_MATERIALS);
-
     useEffect(() => {
-        const loadMaterials = () => {
-            const stored = localStorage.getItem('connectivity_materials');
-            if (stored) {
-                setAllMaterials(JSON.parse(stored));
-            } else {
-                localStorage.setItem('connectivity_materials', JSON.stringify(DEFAULT_MATERIALS));
-            }
-        };
-        loadMaterials();
-        window.addEventListener('storage', loadMaterials);
-        return () => window.removeEventListener('storage', loadMaterials);
+        let isMounted = true;
+        api.get('/erp/faculty/assignments')
+            .then(res => {
+                if (!isMounted) return;
+                const rows = Array.isArray(res.data) ? res.data : [];
+                if (rows.length > 0) {
+                    setSubjects(rows.map(r => ({
+                        code: r.subjectCode,
+                        name: r.subjectName,
+                        semester: `Sem ${r.semester}`,
+                        branch: `Section ${r.section}`,
+                        students: 60,
+                        syllabusCovered: 85
+                    })));
+                } else {
+                    setSubjects([]);
+                }
+            })
+            .catch(() => {
+                if (isMounted) setSubjects([]);
+            });
+
+        return () => { isMounted = false; };
     }, []);
 
     const handleUpload = (newMat) => {

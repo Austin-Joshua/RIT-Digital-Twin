@@ -172,7 +172,17 @@ public class AuthService {
         }
         if (user.getRole() != null && user.getRole().getRoleName() == Role.UserRole.STUDENT) {
             Student student = user.getLinkedStudent();
-            return student != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, student.getPhone());
+            if (student != null) {
+                if (com.university.erp.security.LoginCredentials.sameSecret(submitted, student.getPhone())) {
+                    return true;
+                }
+                if (student.getRegisterNo() != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, student.getRegisterNo())) {
+                    return true;
+                }
+            }
+            if (user.getUsername() != null && com.university.erp.security.LoginCredentials.sameSecret(submitted, user.getUsername())) {
+                return true;
+            }
         }
         return false;
     }
@@ -645,16 +655,28 @@ public class AuthService {
         if (email == null || email.isBlank()) {
             return null;
         }
-        String local = email.trim().toLowerCase();
-        if (local.contains("@")) {
-            local = local.substring(0, local.indexOf('@'));
-        }
+        String lower = email.trim().toLowerCase();
+        String domain = lower.contains("@") ? lower.substring(lower.indexOf('@') + 1) : "";
+        String local = lower.contains("@") ? lower.substring(0, lower.indexOf('@')) : lower;
+
         if (local.matches("^\\d{10,14}$")) {
             return local;
         }
         String trailingDigits = extractTrailingDigits(local);
         if (trailingDigits != null && trailingDigits.length() >= 10 && trailingDigits.length() <= 14) {
             return trailingDigits;
+        }
+        if (trailingDigits != null && trailingDigits.length() == 6) {
+            String year = trailingDigits.substring(0, 2);
+            String roll = trailingDigits.substring(2);
+            String deptCode = domain.startsWith("csbs") ? "008" : "002";
+            return "2117" + year + deptCode + roll;
+        }
+        if (trailingDigits != null && trailingDigits.length() >= 4 && trailingDigits.length() <= 8) {
+            String candidate = "211724" + "00000000".substring(0, Math.max(0, 7 - trailingDigits.length())) + trailingDigits;
+            if (candidate.length() == 13) {
+                return candidate;
+            }
         }
         return null;
     }

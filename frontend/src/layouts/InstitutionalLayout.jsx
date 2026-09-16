@@ -110,6 +110,7 @@ const InstitutionalLayout = () => {
         { path: '/simulations/transport', label: 'Route Flow Visualization', icon: <LuBus /> },
         { path: '/simulations/crowd', label: 'Crowd Flow', icon: <LuUsers /> },
         { path: '/simulations/sustainability', label: 'Sustainability', icon: <LuFlame /> },
+        { path: '/simulations/lab', label: 'Twin Scenarios', icon: <LuCpu /> },
         { path: '/predictions', label: 'Predictive Analysis', icon: <LuTrendingUp /> },
         { path: '/management/algorithms', label: 'Smart Algorithms', icon: <LuCpu /> },
         { path: '/change-password', label: 'Change Password', icon: <LuKey /> },

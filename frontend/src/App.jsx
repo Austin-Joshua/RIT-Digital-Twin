@@ -25,6 +25,7 @@ const CrowdPage = lazy(() => import('./pages/enterprise/CrowdPage'));
 const PredictionPage = lazy(() => import('./pages/enterprise/PredictionPage'));
 const SmartAlgorithms = lazy(() => import('./pages/enterprise/SmartAlgorithms'));
 const CampusMap = lazy(() => import('./pages/enterprise/CampusMap'));
+const SimulationLab = lazy(() => import('./pages/enterprise/SimulationLab'));
 
 const ParentDashboard = lazy(() => import('./pages/parent/ParentDashboard'));
 
@@ -239,6 +240,7 @@ const App = () => {
                     <Route path="transport" element={<RouteRoleGuard allowedRoles={['ADMIN']}><TransportDirectory /></RouteRoleGuard>} />
                     <Route path="simulations/crowd" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CrowdPage /></RouteRoleGuard>} />
                     <Route path="simulations/sustainability" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SustainabilityDashboard /></RouteRoleGuard>} />
+                    <Route path="simulations/lab" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SimulationLab /></RouteRoleGuard>} />
                     <Route path="predictions" element={<RouteRoleGuard allowedRoles={['ADMIN']}><PredictionPage /></RouteRoleGuard>} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="map" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CampusMap /></RouteRoleGuard>} />

@@ -4,52 +4,38 @@ import { FaCalendarCheck, FaCheck, FaTimes, FaUserAlt, FaClock, FaClipboardList,
 import api from '../../services/api';
 import { useToast } from '../../hooks/ToastContext';
 
-const DEFAULT_LEAVE_REQUESTS = [
-    { id: 'm1', studentName: 'Sachin S', reg: '2117240080119', dept: 'CSE', type: 'LEAVE', startDate: '2026-04-10', endDate: '2026-04-12', reason: 'Common cold and medical rest.', status: 'PENDING', appliedDate: '07/04/2026' },
-    { id: 'm2', studentName: 'Sanjana M', reg: '2117240080121', dept: 'CSE', type: 'OD', startDate: '2026-04-15', endDate: '2026-04-15', reason: 'Inter-college Hackathon participation.', status: 'PENDING', appliedDate: '07/04/2026' }
-];
-
-function readLeaveSnapshot() {
-    let syncReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-    if (!Array.isArray(syncReqs) || syncReqs.length === 0) {
-        syncReqs = DEFAULT_LEAVE_REQUESTS;
-        localStorage.setItem('rit_global_leave_requests', JSON.stringify(syncReqs));
-    }
-    const notes = JSON.parse(localStorage.getItem('rit_parent_faculty_notes') || '{}');
-    return { requests: syncReqs, notes };
-}
-
 const FacultyLeaves = () => {
-    const initial = readLeaveSnapshot();
-    const [requests, setRequests] = useState(initial.requests);
-    const [parentNotes, setParentNotes] = useState(initial.notes);
-    const [loading, setLoading] = useState(false);
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [actionId, setActionId] = useState(null);
     const { addToast } = useToast();
 
-    useEffect(() => {
-        const onStorage = () => {
-            const snapshot = readLeaveSnapshot();
-            setRequests(snapshot.requests);
-            setParentNotes(snapshot.notes);
+    const fetchRequests = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get('/academic/leave/pending');
+            setRequests(Array.isArray(res.data) ? res.data : []);
+        } catch {
+            setRequests([]);
+        } finally {
             setLoading(false);
-        };
-        window.addEventListener('storage', onStorage);
-        return () => window.removeEventListener('storage', onStorage);
+        }
+    };
+
+    useEffect(() => {
+        fetchRequests();
     }, []);
 
     const handleAction = async (id, action) => {
         try {
-            const globalReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-            const updated = globalReqs.map(r => 
-                r.id === id ? { ...r, status: action === 'Approved' ? 'APPROVED' : 'REJECTED' } : r
-            );
-            localStorage.setItem('rit_global_leave_requests', JSON.stringify(updated));
-            setRequests(updated);
-            addToast(`Request ${action} successfully!`, 'success');
-            
-            api.put(`/faculty/leaves/${id}/status`, { status: action.toUpperCase() }).catch(() => null);
+            setActionId(id);
+            await api.put(`/academic/leave/${id}/status`, { status: action.toUpperCase() });
+            addToast(`Request marked as ${action} in ERP database!`, 'success');
+            await fetchRequests();
         } catch {
-            addToast('Action failed. Please try again.', 'error');
+            addToast('Approval action failed. Please try again.', 'error');
+        } finally {
+            setActionId(null);
         }
     };
 
@@ -91,47 +77,63 @@ const FacultyLeaves = () => {
                 </div>
                 <div className="stu-kpi-card purple" style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%)' }}>
                     <div className="kpi-main">
-                        <h3 className="kpi-value">{Object.keys(parentNotes).length}</h3>
-                        <p className="kpi-label">Parent Notes</p>
+                        <h3 className="kpi-value">{requests.length}</h3>
+                        <p className="kpi-label">Total Submissions</p>
                     </div>
                     <div className="kpi-icon"><FaHandshake /></div>
-                    <div className="kpi-more">Pastoral Messages</div>
+                    <div className="kpi-more">Database Records</div>
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }} className="faculty-main-grid">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
                 <div className="stu-info-card" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
                     <div className="info-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>Active Requests Queue</span>
+                        <span>Active Student Requests Queue (Database SOT)</span>
                         <span style={{ fontSize: '12px', background: 'var(--theme-bg-muted)', padding: '4px 10px', borderRadius: '20px', color: 'var(--theme-text-muted)' }}>{requests.length} records</span>
                     </div>
                     
                     <div style={{ padding: '0 16px' }}>
                         {loading ? (
-                            <div style={{ padding: '40px', textAlign: 'center' }}>Synchronizing...</div>
+                            <div style={{ padding: '40px', textAlign: 'center' }}>Loading authoritative leave applications...</div>
                         ) : requests.length === 0 ? (
-                            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>No pending requests.</div>
+                            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>No leave or OD applications in queue.</div>
                         ) : (
                             <div className="requests-grid" style={{ display: 'flex', flexDirection: 'column' }}>
                                 {requests.map((req) => (
-                                    <div key={req.id} style={{ background: 'var(--card-bg)', padding: '16px', display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr 120px 140px', alignItems: 'center', gap: '15px', borderBottom: '1px solid var(--theme-border)' }}>
+                                    <div key={req.id} style={{ background: 'var(--card-bg)', padding: '16px', display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr 120px 180px', alignItems: 'center', gap: '15px', borderBottom: '1px solid var(--theme-border)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--theme-bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-brand-strong)' }}><FaUserAlt size={16} /></div>
                                             <div>
-                                                <div style={{ fontSize: '13px', fontWeight: '800' }}>{req.studentName}</div>
-                                                <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>{req.reg}</div>
+                                                <div style={{ fontSize: '13px', fontWeight: '800' }}>{req.studentName || 'Student'}</div>
+                                                <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>{req.studentId}</div>
                                             </div>
                                         </div>
                                         <div style={{ fontSize: '12px' }}>
                                             <div style={{ fontWeight: '800', color: 'var(--theme-brand-strong)' }}>{req.type}</div>
                                             <div style={{ color: 'var(--theme-text-muted)' }}>{req.startDate} → {req.endDate}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)', marginTop: '2px' }}>{req.reason}</div>
                                         </div>
                                         <div>
                                             <span style={{ padding: '4px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '900', background: req.status === 'PENDING' ? '#fef3c7' : '#dcfce7', color: req.status === 'PENDING' ? '#92400e' : '#166534' }}>{req.status}</span>
                                         </div>
-                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
                                             {req.status === 'PENDING' ? (
-                                                <button onClick={() => handleAction(req.id, 'Approved')} style={{ flex: 1, background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}>Approve</button>
+                                                <>
+                                                    <button 
+                                                        disabled={actionId === req.id}
+                                                        onClick={() => handleAction(req.id, 'Approved')} 
+                                                        style={{ flex: 1, background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                                                    >
+                                                        {actionId === req.id ? '...' : 'Approve'}
+                                                    </button>
+                                                    <button 
+                                                        disabled={actionId === req.id}
+                                                        onClick={() => handleAction(req.id, 'Rejected')} 
+                                                        style={{ flex: 1, background: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                                                    >
+                                                        {actionId === req.id ? '...' : 'Reject'}
+                                                    </button>
+                                                </>
                                             ) : (
                                                 <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--theme-text-muted)', textAlign: 'center', width: '100%' }}>Finalized</div>
                                             )}
@@ -142,54 +144,7 @@ const FacultyLeaves = () => {
                         )}
                     </div>
                 </div>
-
-                <div className="stu-info-card" style={{ borderTop: '4px solid #7c3aed' }}>
-                    <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <FaHandshake color="#7c3aed" /> Parent Outreach Hub
-                    </div>
-                    <div className="info-body" style={{ padding: '15px' }}>
-                        {Object.keys(parentNotes).length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '20px', fontSize: '13px', color: 'var(--theme-text-muted)' }}>No pastoral notes from parents.</div>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {Object.entries(parentNotes).map(([studentId, note]) => (
-                                    <div key={studentId} style={{ padding: '12px', background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.2)', borderRadius: '10px' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: '800', color: '#7c3aed', marginBottom: '6px' }}>Student: {studentId}</div>
-                                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text)', fontStyle: 'italic', lineHeight: '1.4' }}>&quot;{note}&quot;</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                    <div style={{ padding: '15px', background: 'rgba(234, 179, 8, 0.05)', borderTop: '1px solid var(--theme-border)', borderRadius: '0 0 12px 12px' }}>
-                        <div style={{ display: 'flex', gap: '8px', color: '#92400e' }}>
-                            <FaExclamationTriangle size={14} />
-                            <span style={{ fontSize: '11px', fontWeight: '700' }}>Advisor Tip: Address parental concerns during proctor meetings.</span>
-                        </div>
-                    </div>
-                </div>
             </div>
-            
-            <style>{`
-                .request-row-hover {
-                    transition: all 0.2s ease;
-                }
-                .request-row-hover:hover {
-                    background: var(--theme-bg-muted) !important;
-                    transform: scale(1.002);
-                }
-                @media (max-width: 1100px) {
-                    .faculty-main-grid {
-                        grid-template-columns: 1fr !important;
-                    }
-                }
-                @media (max-width: 1024px) {
-                    .requests-grid > div {
-                        grid-template-columns: 1fr 1fr !important;
-                        gap: 15px !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 };

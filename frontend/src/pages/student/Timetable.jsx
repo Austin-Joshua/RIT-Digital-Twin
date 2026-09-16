@@ -1,45 +1,36 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import api from '../../services/api';
 import Skeleton from '../../components/common/Skeleton';
+import dynamicCache from '../../utils/dynamicCache';
 
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
-let timetableMemoryCache = null;
-let timetableLastFetchedAt = 0;
-const TIMETABLE_CACHE_TTL_MS = 60 * 1000;
 
 const Timetable = () => {
-    const hasWarmCache = Array.isArray(timetableMemoryCache) && timetableMemoryCache.length >= 0;
-    const [timetable, setTimetable] = useState(hasWarmCache ? timetableMemoryCache : []);
-    const [loading, setLoading] = useState(!hasWarmCache);
+    const cachedData = dynamicCache.get('student_timetable');
+    const [timetable, setTimetable] = useState(cachedData || []);
+    const [loading, setLoading] = useState(!cachedData);
 
     useEffect(() => {
         let isMounted = true;
 
-        const fetchTimetable = async (opts = { setState: true }) => {
-            try {
+        dynamicCache.fetchSWR(
+            'student_timetable',
+            async () => {
                 const res = await api.get('/academic/student/timetable');
-                const data = res.data || [];
-                timetableMemoryCache = data;
-                timetableLastFetchedAt = Date.now();
-                if (opts.setState && isMounted) {
-                    setTimetable(data);
-                    setLoading(false);
-                }
-            } catch (err) {
-                console.error("Timetable Fetch Error:", err);
-                if (opts.setState && isMounted) {
-                    setTimetable(timetableMemoryCache || []);
-                    setLoading(false);
+                return res.data || [];
+            },
+            {
+                onData: (data) => {
+                    if (isMounted) {
+                        setTimetable(data);
+                        setLoading(false);
+                    }
                 }
             }
-        };
-
-        const hasRecentCache = timetableMemoryCache && (Date.now() - timetableLastFetchedAt < TIMETABLE_CACHE_TTL_MS);
-        if (!hasRecentCache) {
-            fetchTimetable({ setState: true });
-        } else {
-            fetchTimetable({ setState: false });
-        }
+        ).catch((err) => {
+            console.error("Timetable Fetch Error:", err);
+            if (isMounted) setLoading(false);
+        });
 
         return () => {
             isMounted = false;

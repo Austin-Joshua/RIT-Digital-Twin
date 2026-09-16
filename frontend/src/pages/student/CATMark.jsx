@@ -1,48 +1,81 @@
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/AuthContext';
-import { getInternalMarks } from '../../utils/MockDataGenerator';
+import api from '../../services/api';
 import ImsReportTable from '../../components/common/ImsReportTable';
-
-const SUBJECTS = [
-    ['CS3401', 'Algorithms and Data Structures'],
-    ['CS3402', 'Operating Systems'],
-    ['CS3403', 'Computer Networks'],
-    ['CS3404', 'Database Management'],
-    ['GE3401', 'Professional Ethics'],
-];
 
 const CATMark = () => {
     const { user } = useAuth();
-    const marks = getInternalMarks(user?.email || 'guest@ritchennai.edu.in');
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const headers = [
         'Subject Code',
         'Subject Name',
         'Faculty Name',
-        'CO-1 (25 Marks)',
-        'CO-2 (25 Marks)',
-        'CO-3 (25 Marks)',
-        'Total (75 Marks)',
+        'CAT-1 (50)',
+        'CAT-2 (50)',
+        'CAT-3 (50)',
         'Internal Weightage',
+        'Status',
     ];
-    const rows = SUBJECTS.map(([code, name], index) => {
-        const score = marks.cat[index]?.score ?? 0;
-        const co1 = Math.round(score * 0.34);
-        const co2 = Math.round(score * 0.33);
-        const co3 = Math.max(0, Math.round(score) - co1 - co2);
-        const total = co1 + co2 + co3;
-        return {
-            key: code,
-            'Subject Code': code,
-            'Subject Name': name,
-            'Faculty Name': 'Assigned Faculty',
-            'CO-1 (25 Marks)': co1,
-            'CO-2 (25 Marks)': co2,
-            'CO-3 (25 Marks)': co3,
-            'Total (75 Marks)': total,
-            'Internal Weightage': Math.round((total / 75) * 20),
-        };
-    });
 
-    return <ImsReportTable title="CAT Mark" headers={headers} rows={rows} />;
+    useEffect(() => {
+        let isMounted = true;
+        api.get('/erp/student/internal-marks')
+            .then((res) => {
+                if (!isMounted) return;
+                const list = Array.isArray(res.data) ? res.data : [];
+                const formatted = list.map((item) => {
+                    const c1 = item.cat1Marks != null ? Number(item.cat1Marks) : null;
+                    const c2 = item.cat2Marks != null ? Number(item.cat2Marks) : null;
+                    const c3 = item.cat3Marks != null ? Number(item.cat3Marks) : null;
+                    const total = item.totalInternal != null ? Number(item.totalInternal) : null;
+
+                    return {
+                        key: item.studentSubjectId || item.subjectCode,
+                        'Subject Code': item.subjectCode,
+                        'Subject Name': item.subjectName,
+                        'Faculty Name': 'Department Faculty',
+                        'CAT-1 (50)': c1 !== null ? c1 : '—',
+                        'CAT-2 (50)': c2 !== null ? c2 : '—',
+                        'CAT-3 (50)': c3 !== null ? c3 : '—',
+                        'Internal Weightage': total !== null ? total.toFixed(1) : '—',
+                        'Status': total !== null ? (total >= 10 ? 'Eligible' : 'Needs Improvement') : 'Pending',
+                    };
+                });
+                setRows(formatted);
+                setLoading(false);
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setRows([]);
+                    setLoading(false);
+                }
+            });
+
+        return () => { isMounted = false; };
+    }, [user]);
+
+    if (loading) {
+        return (
+            <div className="p-8 text-center text-sm text-[var(--theme-text-muted)]">
+                Loading authoritative CAT marks from ERP database...
+            </div>
+        );
+    }
+
+    if (rows.length === 0) {
+        return (
+            <div className="p-8 bg-[var(--card-bg)] border border-[var(--theme-border)] rounded-xl text-center">
+                <h3 className="font-bold text-base text-[var(--theme-text)] mb-2">No CAT Marks Available</h3>
+                <p className="text-sm text-[var(--theme-text-muted)]">
+                    Faculty has not published continuous assessment marks for your enrolled subjects yet.
+                </p>
+            </div>
+        );
+    }
+
+    return <ImsReportTable title="Continuous Assessment Test (CAT) Marks" headers={headers} rows={rows} />;
 };
 
 export default CATMark;

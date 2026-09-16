@@ -193,9 +193,7 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
 };
 
 import { useNavigate } from 'react-router-dom';
-
 import { useAuth } from '../../hooks/AuthContext';
-import { getAcademicStats, getInternalMarks, getSemesterResults } from '../../utils/MockDataGenerator';
 import { academicFees, academicYearLabel, pendingAcademicFees } from '../../utils/studentFees';
 import RingStat from '../../components/common/RingStat';
 
@@ -214,28 +212,11 @@ const ParentDashboard = () => {
     const { user: _parentUser } = useAuth();
     const { addToast } = useToast();
 
-    // Instant data hydration from deterministic generator
-    const generateMockStudents = () => {
-        return [
-            {
-                id: 1,
-                user: { firstName: 'Ram', lastName: 'Kumar', email: 'ram.kumar@cse.ritchennai.edu.in' },
-                studentIdNumber: 'RIT2021001',
-                currentCgpa: 8.5,
-                attendance: 92
-            }
-        ];
-    };
-
-    const initialStudents = generateMockStudents();
-    const initialPrimary = initialStudents[0];
-    const _initialStats = getAcademicStats(initialPrimary.user.email);
-    const _initialMarks = getInternalMarks(initialPrimary.user.email);
-
-    const [students, setStudents] = useState(initialStudents);
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [selectedDetail, setSelectedDetail] = useState(null);
-    const [parentNote, setParentNote] = useState(() => noteForStudent(initialPrimary.studentIdNumber));
-    const [lastSavedNote, setLastSavedNote] = useState(() => noteForStudent(initialPrimary.studentIdNumber));
+    const [parentNote, setParentNote] = useState('');
+    const [lastSavedNote, setLastSavedNote] = useState('');
     const [realMarks, setRealMarks] = useState({ cat: [], assignments: [] });
     const [wardTimetable, setWardTimetable] = useState([]);
 
@@ -270,6 +251,8 @@ const ParentDashboard = () => {
                 }
             } catch {
                 console.warn('Parent student fetch failed');
+            } finally {
+                setLoading(false);
             }
         };
         fetchLinkedStudents();
@@ -309,13 +292,11 @@ const ParentDashboard = () => {
         setSelectedDetail({ title, content });
     };
 
-    const primary = students[0] || generateMockStudents()[0];
-    const stats = getAcademicStats(primary.user?.email || 'guest@ritchennai.edu.in');
-    const marks = realMarks.cat.length > 0 || realMarks.assignments.length > 0 ? realMarks : getInternalMarks(primary.user?.email || 'guest@ritchennai.edu.in');
-
-    const cgpa = Number(primary?.currentCgpa || stats?.cgpa || 0);
-    const attendance = Math.round(Number(primary?.attendance || stats?.attendance || 0));
-    const arrears = Number(stats?.arrears || 0);
+    const primary = students[0];
+    const cgpa = primary ? Number(primary.currentCgpa || 0) : null;
+    const attendance = primary ? Math.round(Number(primary.attendance || 0)) : null;
+    const marks = realMarks;
+    const arrears = 0;
     const feesPending = pendingAcademicFees();
     const academicTotal = academicFees
         .filter((fee) => fee.type === 'ACADEMIC')
@@ -324,14 +305,33 @@ const ParentDashboard = () => {
         ? 100
         : Math.round(((academicTotal - feesPending) / academicTotal) * 100);
 
+    if (loading) {
+        return (
+            <div className="p-12 text-center text-sm text-[var(--theme-text-muted)]">
+                Loading linked student record from ERP database...
+            </div>
+        );
+    }
+
+    if (!primary) {
+        return (
+            <div className="p-12 text-center bg-[var(--card-bg)] border border-[var(--theme-border)] rounded-2xl m-6">
+                <h3 className="text-xl font-bold text-[var(--theme-text)] mb-2">No Linked Student Found</h3>
+                <p className="text-sm text-[var(--theme-text-muted)] max-w-md mx-auto">
+                    There are no enrolled students linked to this parent guardian profile. Please contact the college registrar office to verify your registered parent contact email.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div className="stu-dashboard">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
-            <div className="stu-welcome" style={{ marginBottom: 20, display: 'none' }}>
-                <h2 style={{ margin: 0 }}>Parent Guardian Overview</h2>
-                <p style={{ marginTop: 6, color: 'var(--theme-text-muted)' }}>
-                    Linked student: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber})
+            <div className="stu-welcome" style={{ marginBottom: 20 }}>
+                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Parent Guardian Portal</h2>
+                <p style={{ marginTop: 6, color: 'var(--theme-text-muted)', fontSize: '13px' }}>
+                    Linked Ward: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber || primary.user?.username})
                 </p>
             </div>
 
@@ -456,12 +456,18 @@ const ParentDashboard = () => {
                     </div>
                     <div className="info-body" style={{ padding: '20px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                            {getSemesterResults(primary.user.email, 1).slice(0, 4).map((m, idx) => (
-                                <div key={idx} style={{ padding: '12px', background: 'var(--theme-bg-muted)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ fontSize: '13px', fontWeight: '600' }}>{m.title}</div>
-                                    <div style={{ fontWeight: '900', color: 'var(--theme-brand-strong)' }}>{m.grade}</div>
+                            {realMarks.cat.length > 0 ? (
+                                realMarks.cat.slice(0, 4).map((m, idx) => (
+                                    <div key={idx} style={{ padding: '12px', background: 'var(--theme-bg-muted)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '600' }}>{m.subject}</div>
+                                        <div style={{ fontWeight: '900', color: 'var(--theme-brand-strong)' }}>{m.score} / {m.max}</div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ color: 'var(--theme-text-muted)', fontSize: '13px', gridColumn: '1 / -1' }}>
+                                    No published continuous assessment scores available for this ward.
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>

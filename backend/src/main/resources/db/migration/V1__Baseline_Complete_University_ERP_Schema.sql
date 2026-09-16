@@ -1,5 +1,5 @@
--- RIT Digital Twin ERP - Unified Baseline Database Schema
--- Aligned with Hibernate Entity Definitions and Flyway V1 Baseline
+-- Flyway Migration V1: Complete Baseline Schema for RIT Digital Twin ERP
+-- Unified single database structure containing all required tables, constraints, indexes, and schema definitions.
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS students (
     INDEX idx_students_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Link user to student
+-- Add User to StudentFK linkage if missing
 ALTER TABLE users ADD CONSTRAINT fk_users_linked_student FOREIGN KEY (linked_student_id) REFERENCES students(id) ON DELETE SET NULL;
 
 -- 5. Parents

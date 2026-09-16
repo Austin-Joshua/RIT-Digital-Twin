@@ -3,11 +3,16 @@ import { FaBookOpen, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { workflowApi } from '../../services/enterpriseApi';
 import { useAuth } from '../../hooks/AuthContext';
+import dynamicCache from '../../utils/dynamicCache';
 
 const SubjectRegistration = () => {
     const { user } = useAuth();
-    const [registrations, setRegistrations] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const studentId = user?.id || 1;
+    const cacheKey = `student_registrations_${studentId}`;
+    const cachedRegs = dynamicCache.get(cacheKey);
+
+    const [registrations, setRegistrations] = useState(cachedRegs || []);
+    const [loading, setLoading] = useState(!cachedRegs);
     const [message, setMessage] = useState(null);
 
     // Mock subjects for the UI showcase
@@ -18,27 +23,38 @@ const SubjectRegistration = () => {
     ];
 
     useEffect(() => {
-        const fetchRegs = async () => {
-            try {
-                // Fake student ID of 1 for structural wiring
-                const studentId = user?.id || 1;
+        let isMounted = true;
+
+        dynamicCache.fetchSWR(
+            cacheKey,
+            async () => {
                 const res = await workflowApi.getRegistrations(studentId);
-                setRegistrations(res.data || []);
-            } catch (err) {
-                console.error(err);
-                setRegistrations([]);
-            } finally {
-                setLoading(false);
+                return res.data || [];
+            },
+            {
+                onData: (data) => {
+                    if (isMounted) {
+                        setRegistrations(data);
+                        setLoading(false);
+                    }
+                }
             }
+        ).catch((err) => {
+            console.error(err);
+            if (isMounted) setLoading(false);
+        });
+
+        return () => {
+            isMounted = false;
         };
-        fetchRegs();
-    }, [user]);
+    }, [studentId, cacheKey]);
 
     const handleRegister = async (subjectId) => {
         try {
-            const studentId = user?.id || 1;
             const res = await workflowApi.registerSubject(studentId, subjectId);
-            setRegistrations([...registrations, res.data]);
+            const updated = [...registrations, res.data];
+            setRegistrations(updated);
+            dynamicCache.set(cacheKey, updated);
             setMessage({ type: 'success', text: 'Successfully registered for subject!' });
         } catch {
             setMessage({ type: 'error', text: 'Registration could not be completed. The subject may be at capacity or you may already be enrolled.' });

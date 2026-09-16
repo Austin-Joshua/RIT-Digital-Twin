@@ -87,7 +87,7 @@ public class CampusCredentialAlignment {
                 changed = true;
             }
         }
-        String email = LoginCredentials.collegeEmail(registerNo);
+        String email = LoginCredentials.collegeEmail(registerNo, user.getFirstName() != null ? user.getFirstName() : student.getStudentName());
         if (canUseEmail(user, email) && !email.equalsIgnoreCase(user.getEmail())) {
             user.setEmail(email);
             student.setEmail(email);

@@ -13,13 +13,7 @@ const FacultyGrading = () => {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const [students, setStudents] = useState([
-        { reg: '211520104001', name: 'Aakash S', currentGrade: 'A+', cat1Marks: 18, cat2Marks: 17, cat3Marks: 16, assignmentMarks: 18, examMarks: 72 },
-        { reg: '211520104002', name: 'Balaji K', currentGrade: 'A', cat1Marks: 16, cat2Marks: 17, cat3Marks: 15, assignmentMarks: 17, examMarks: 68 },
-        { reg: '211520104003', name: 'Chandini R', currentGrade: 'O', cat1Marks: 20, cat2Marks: 20, cat3Marks: 19, assignmentMarks: 20, examMarks: 76 },
-        { reg: '211520104004', name: 'Dinesh M', currentGrade: 'B+', cat1Marks: 14, cat2Marks: 13, cat3Marks: 12, assignmentMarks: 14, examMarks: 60 },
-        { reg: '211520104005', name: 'Elango P', currentGrade: 'A', cat1Marks: 17, cat2Marks: 18, cat3Marks: 16, assignmentMarks: 17, examMarks: 70 },
-    ]);
+    const [students, setStudents] = useState([]);
 
     React.useEffect(() => {
         const loadAssignments = async () => {

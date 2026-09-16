@@ -9,4 +9,5 @@ import java.util.List;
 public interface PlacementApplicationRepository extends JpaRepository<PlacementApplication, Long> {
     List<PlacementApplication> findByStudent_Id(Long studentId);
     List<PlacementApplication> findByOpportunity_Id(Long opportunityId);
+    long countByStatus(String status);
 }

@@ -70,34 +70,18 @@ const LeaveOD = () => {
         }
         setLoading(true);
         try {
-            const newApp = {
-                id: Date.now(),
-                studentName: `${user?.firstName} ${user?.lastName}`,
-                reg: user?.username || '2117240080123',
-                dept: user?.department || 'CSE',
+            await api.post('/academic/leave/apply', {
                 type: formData.type,
                 startDate: formData.startDate,
                 endDate: formData.endDate,
                 reason: formData.reason,
-                status: 'PENDING',
-                appliedDate: new Date().toLocaleDateString()
-            };
-
-            // 1. Attempt API call
-            await api.post('/academic/leave/apply', formData).catch(() => null);
-
-            // 2. Sync to Global Queue (for Faculty/HOD to see)
-            const globalReqs = JSON.parse(localStorage.getItem('rit_global_leave_requests') || '[]');
-            localStorage.setItem('rit_global_leave_requests', JSON.stringify([newApp, ...globalReqs]));
-
-            // 3. Local state update for immediate feedback
-            setApplications(prev => [newApp, ...prev]);
-            
-            showToast('Application submitted successfully!');
+            });
+            await fetchApplications();
+            showToast('Application submitted successfully to department!');
             setFormData({ startDate: '', endDate: '', reason: '', type: 'LEAVE', wardenLetter: null });
             setActiveTab('history');
         } catch {
-            showToast('Could not submit application. Please try again.', 'error');
+            showToast('Could not submit application. Please verify dates and try again.', 'error');
         } finally {
             setLoading(false);
         }

@@ -15,13 +15,13 @@ class LoginIdentityTest {
         String registerNo = "2117240020044";
         assertTrue(LoginCredentials.classRegister(registerNo));
         assertTrue(LoginCredentials.classRegister("2117240080119"));
-        assertEquals("Rit-020044", LoginCredentials.studentPassword(registerNo));
+        assertEquals("2117240020044", LoginCredentials.studentPassword(registerNo));
         assertEquals("9240020044", LoginCredentials.studentPhone(registerNo));
         assertEquals("8240020044", LoginCredentials.parentPhone(registerNo));
-        assertEquals("2117240020044@cse.ritchennai.edu.in", LoginCredentials.collegeEmail(registerNo));
+        assertEquals("austin.240044@cse.ritchennai.edu.in", LoginCredentials.collegeEmail(registerNo, "austin"));
         assertEquals("2117240020044.parent@cse.ritchennai.edu.in", LoginCredentials.parentEmail(registerNo));
         assertEquals("P-2117240020044", LoginCredentials.parentUsername(registerNo));
-        assertEquals("2117240080119@csbs.ritchennai.edu.in", LoginCredentials.collegeEmail("2117240080119"));
+        assertEquals("sachin.240119@csbs.ritchennai.edu.in", LoginCredentials.collegeEmail("2117240080119", "sachin"));
         assertFalse(LoginCredentials.studentPhone(registerNo).equals(LoginCredentials.parentPhone(registerNo)));
     }
 

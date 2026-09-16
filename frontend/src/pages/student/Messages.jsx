@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaInbox, FaPaperPlane, FaEdit, FaPlus, FaSearch, FaUserCircle, FaEnvelopeOpenText, FaTimes } from 'react-icons/fa';
 import { useToast } from '../../hooks/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../../services/api';
 
 const Messages = () => {
     const { addToast } = useToast();
@@ -9,41 +10,76 @@ const Messages = () => {
     const [isComposeOpen, setIsComposeOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [newMessage, setNewMessage] = useState({ to: '', subject: '', content: '' });
+    const [inbox, setInbox] = useState([]);
+    const [outbox, setOutbox] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
 
     const folders = [
         { name: 'Inbox', icon: <FaInbox /> },
         { name: 'Outbox', icon: <FaPaperPlane /> },
-        { name: 'Drafts', icon: <FaEdit /> },
     ];
 
-    const mockMessages = {
-        Inbox: [
-            { id: 1, sender: 'Dr. Sarah Wilson', subject: 'Assignment Feedback', preview: 'Great work on the Digital Twin project. Please...', time: '10:30 AM', unread: true },
-            { id: 2, sender: 'Academic Office', subject: 'Holiday Notice', preview: 'The college will remain closed on Friday for...', time: 'Yesterday', unread: false },
-        ],
-        Outbox: [
-            { id: 3, receiver: 'Prof. Michael Brown', subject: 'Query regarding Lab 4', preview: 'I am having trouble with the circuit simulation...', time: 'Mon, 2:15 PM', status: 'Sent' },
-        ],
-        Drafts: [
-            { id: 4, receiver: 'HOD - CSE', subject: 'Symposium Proposal', preview: 'Drafting the proposal for the upcoming AI...', time: '2 days ago' },
-        ],
+    const fetchMessages = async () => {
+        try {
+            setLoading(true);
+            const [inRes, outRes] = await Promise.all([
+                api.get('/messages/inbox').catch(() => ({ data: [] })),
+                api.get('/messages/outbox').catch(() => ({ data: [] })),
+            ]);
+            setInbox(Array.isArray(inRes.data) ? inRes.data : []);
+            setOutbox(Array.isArray(outRes.data) ? outRes.data : []);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleSend = (e) => {
+    useEffect(() => {
+        fetchMessages();
+    }, []);
+
+    const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.to || !newMessage.subject) {
+        if (!newMessage.to || !newMessage.subject || !newMessage.content) {
             addToast('Please fill in all required fields', 'error');
             return;
         }
-        addToast('Message sent successfully!', 'success');
-        setIsComposeOpen(false);
-        setNewMessage({ to: '', subject: '', content: '' });
+
+        try {
+            setSending(true);
+            await api.post('/messages/send', {
+                recipientUsername: newMessage.to,
+                subject: newMessage.subject,
+                content: newMessage.content,
+            });
+            addToast('Message dispatched and persisted successfully!', 'success');
+            setIsComposeOpen(false);
+            setNewMessage({ to: '', subject: '', content: '' });
+            await fetchMessages();
+        } catch {
+            addToast('Failed to send message. Please verify recipient username.', 'error');
+        } finally {
+            setSending(false);
+        }
     };
+
+    const currentList = activeFolder === 'Inbox' ? inbox : outbox;
+    const filteredList = currentList.filter(msg => {
+        const query = searchQuery.toLowerCase();
+        return (
+            (msg.subject && msg.subject.toLowerCase().includes(query)) ||
+            (msg.content && msg.content.toLowerCase().includes(query)) ||
+            (msg.senderName && msg.senderName.toLowerCase().includes(query)) ||
+            (msg.recipientName && msg.recipientName.toLowerCase().includes(query))
+        );
+    });
+
+    const unreadCount = inbox.filter(m => !m.isRead).length;
 
     return (
         <div className="stu-report-page space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div style={{ fontSize: '14px', color: 'var(--theme-text-muted)', marginBottom: '5px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
-                Communication Hub
+                Official Campus Communication Hub
             </div>
 
             <div className="messages-layout" style={{ display: 'flex', gap: '24px' }}>
@@ -92,7 +128,9 @@ const Messages = () => {
                                 >
                                     <span style={{ fontSize: '18px' }}>{folder.icon}</span>
                                     <span style={{ fontWeight: activeFolder === folder.name ? '800' : '500', fontSize: '14px' }}>{folder.name}</span>
-                                    {folder.name === 'Inbox' && <span className="ml-auto bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">2</span>}
+                                    {folder.name === 'Inbox' && unreadCount > 0 && (
+                                        <span className="ml-auto bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">{unreadCount}</span>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -119,9 +157,13 @@ const Messages = () => {
 
                         {/* Message List */}
                         <div style={{ flex: 1, overflowY: 'auto' }}>
-                            {mockMessages[activeFolder]?.length > 0 ? (
+                            {loading ? (
+                                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>
+                                    Loading messages from ERP database...
+                                </div>
+                            ) : filteredList.length > 0 ? (
                                 <div className="divide-y divide-slate-100 dark:divide-white/5">
-                                    {mockMessages[activeFolder].map((msg) => (
+                                    {filteredList.map((msg) => (
                                         <div 
                                             key={msg.id} 
                                             style={{ 
@@ -129,20 +171,30 @@ const Messages = () => {
                                                 cursor: 'pointer', 
                                                 display: 'flex', 
                                                 gap: '15px',
-                                                background: msg.unread ? 'rgba(11, 44, 107, 0.02)' : 'transparent'
+                                                background: !msg.isRead && activeFolder === 'Inbox' ? 'rgba(11, 44, 107, 0.04)' : 'transparent'
                                             }}
                                             className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                                         >
                                             <FaUserCircle style={{ fontSize: '40px', color: 'var(--theme-border)' }} />
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                    <span style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '14px' }}>{msg.sender || msg.receiver}</span>
-                                                    <span style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>{msg.time}</span>
+                                                    <span style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '14px' }}>
+                                                        {activeFolder === 'Inbox' ? (msg.senderName || msg.senderUsername) : (msg.recipientName || msg.recipientUsername)}
+                                                    </span>
+                                                    <span style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>
+                                                        {msg.sentAt ? new Date(msg.sentAt).toLocaleString() : ''}
+                                                    </span>
                                                 </div>
-                                                <div style={{ fontWeight: msg.unread ? '700' : '500', color: 'var(--theme-text)', marginBottom: '2px', fontSize: '13px' }}>{msg.subject}</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg.preview}</div>
+                                                <div style={{ fontWeight: !msg.isRead && activeFolder === 'Inbox' ? '700' : '500', color: 'var(--theme-text)', marginBottom: '2px', fontSize: '13px' }}>
+                                                    {msg.subject}
+                                                </div>
+                                                <div style={{ fontSize: '12px', color: 'var(--theme-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {msg.content}
+                                                </div>
                                             </div>
-                                            {msg.unread && <div style={{ width: '8px', height: '8px', background: 'var(--color-primary-navy)', borderRadius: '50%', marginTop: '5px' }} />}
+                                            {!msg.isRead && activeFolder === 'Inbox' && (
+                                                <div style={{ width: '8px', height: '8px', background: 'var(--color-primary-navy)', borderRadius: '50%', marginTop: '5px' }} />
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -175,13 +227,14 @@ const Messages = () => {
                             <form onSubmit={handleSend} style={{ padding: '25px', spaceY: '15px' }}>
                                 <div className="space-y-4">
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase', opacity: 0.6 }}>Recipient</label>
+                                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '5px', textTransform: 'uppercase', opacity: 0.6 }}>Recipient Username / ID</label>
                                         <input 
                                             type="text" 
-                                            placeholder="Student ID or Faculty Name" 
+                                            placeholder="e.g. 2117240020044 or faculty email" 
                                             className="input-field" 
                                             value={newMessage.to}
                                             onChange={(e) => setNewMessage({...newMessage, to: e.target.value})}
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -192,6 +245,7 @@ const Messages = () => {
                                             className="input-field" 
                                             value={newMessage.subject}
                                             onChange={(e) => setNewMessage({...newMessage, subject: e.target.value})}
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -203,10 +257,13 @@ const Messages = () => {
                                             style={{ resize: 'none' }}
                                             value={newMessage.content}
                                             onChange={(e) => setNewMessage({...newMessage, content: e.target.value})}
+                                            required
                                         ></textarea>
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px', paddingTop: '10px' }}>
-                                        <button type="submit" className="btn-primary" style={{ flex: 1 }}>Send Message</button>
+                                        <button type="submit" disabled={sending} className="btn-primary" style={{ flex: 1 }}>
+                                            {sending ? 'Sending...' : 'Send Message'}
+                                        </button>
                                         <button type="button" onClick={() => setIsComposeOpen(false)} className="table-btn" style={{ flex: 1 }}>Discard</button>
                                     </div>
                                 </div>
@@ -215,17 +272,6 @@ const Messages = () => {
                     </div>
                 )}
             </AnimatePresence>
-
-            <style>{`
-                @media (max-width: 1024px) {
-                    .messages-layout {
-                        flex-direction: column !important;
-                    }
-                    .messages-sidebar {
-                        width: 100% !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 };

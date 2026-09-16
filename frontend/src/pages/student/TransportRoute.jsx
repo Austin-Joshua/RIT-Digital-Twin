@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import api from '../../services/api';
+import dynamicCache from '../../utils/dynamicCache';
 import { FaBus, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 
 const containerStyle = {
@@ -20,24 +21,31 @@ const TransportRoute = ({ studentId }) => {
         googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY" // Placeholder for user to fill
     });
 
-    const [routeData, setRouteData] = useState(null);
+    const cacheKey = `student_transport_route_${studentId || 'default'}`;
+    const cachedRoute = dynamicCache.get(cacheKey);
+
+    const [routeData, setRouteData] = useState(cachedRoute || null);
     const [directions, setDirections] = useState(null);
 
     useEffect(() => {
-        const fetchRoute = async () => {
-            if (!studentId) return;
-            try {
-                // Standardized endpoint search
+        if (!studentId) return;
+        let isMounted = true;
+
+        dynamicCache.fetchSWR(
+            cacheKey,
+            async () => {
                 const res = await api.get(`/transport/routes/student/${studentId}`);
-                if (res.data) {
-                    setRouteData(res.data.route || res.data);
+                return res.data?.route || res.data || null;
+            },
+            {
+                onData: (data) => {
+                    if (isMounted && data) setRouteData(data);
                 }
-            } catch (err) {
-                console.error("Failed to fetch transport data", err);
             }
-        };
-        fetchRoute();
-    }, [studentId]);
+        ).catch((err) => console.error("Failed to fetch transport data", err));
+
+        return () => { isMounted = false; };
+    }, [studentId, cacheKey]);
 
     useEffect(() => {
         if (isLoaded && routeData) {

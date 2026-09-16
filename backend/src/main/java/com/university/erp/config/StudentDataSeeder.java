@@ -333,7 +333,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 user = User.builder()
                         .username(info.regNo)
                         .password(passwordEncoder.encode(com.university.erp.security.LoginCredentials.studentPassword(info.regNo)))
-                        .email(com.university.erp.security.LoginCredentials.collegeEmail(info.regNo))
+                        .email(com.university.erp.security.LoginCredentials.collegeEmail(info.regNo, info.firstName))
                         .role(role)
                         .build();
                 isNew = true;

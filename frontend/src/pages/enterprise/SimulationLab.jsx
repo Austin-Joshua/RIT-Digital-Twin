@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContai
 import twinService from '../../services/twinService';
 import StatusBadge from '../../platform/ui/StatusBadge';
 import { ErrorState, LoadingState } from '../../platform/ui/AsyncState';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import './simulation-lab.css';
 
 const EMPTY = {
@@ -38,7 +39,7 @@ function deltaClass(key, delta) {
   return worse ? 'sim-delta-up' : 'sim-delta-down';
 }
 
-export default function SimulationLab() {
+function SimulationLab() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const focusBuilding = params.get('building');
@@ -262,5 +263,13 @@ function Slider({ label, value, min, max, suffix = '', onChange }) {
       <input type="range" min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
       <input type="number" min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
     </label>
+  );
+}
+
+export default function SimulationLabWrapped(props) {
+  return (
+    <ErrorBoundary inline title="Simulation Scenario Visualizer Interrupted">
+      <SimulationLab {...props} />
+    </ErrorBoundary>
   );
 }
