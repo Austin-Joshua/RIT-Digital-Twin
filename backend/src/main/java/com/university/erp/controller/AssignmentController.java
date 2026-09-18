@@ -237,7 +237,7 @@ public class AssignmentController {
         } else if (isHod) {
             Optional<FacultyProfile> profile = facultyProfileRepository.findByUser_Id(user.getId());
             if (profile.isPresent() && profile.get().getDepartment() != null) {
-                submissions = submissionRepository.findByAssignment_Subject_Department_DepartmentNameIgnoreCase(profile.get().getDepartment());
+                submissions = submissionRepository.findByAssignment_Subject_Department_DeptNameIgnoreCase(profile.get().getDepartment());
             } else {
                 submissions = submissionRepository.findByAssignment_Faculty_Id(user.getId());
             }
