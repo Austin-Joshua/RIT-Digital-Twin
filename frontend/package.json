@@ -48,7 +48,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/coverage-v8": "^5.0.0",
-    "@vitest/ui": "^3.2.4",
+    "@vitest/ui": "^5.0.0",
     "autoprefixer": "^10.4.27",
     "eslint": "^10.0.2",
     "eslint-plugin-react": "^7.37.5",
@@ -61,7 +61,7 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vite-plugin-pwa": "^0.19.8",
-    "vitest": "^3.2.4",
+    "vitest": "^5.0.0",
     "workbox-build": "^7.4.0"
   }
 }

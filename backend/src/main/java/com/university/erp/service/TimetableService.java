@@ -18,6 +18,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +46,10 @@ public class TimetableService {
     private static final int DEFAULT_MAX_CONSECUTIVE_PERIODS_PER_FACULTY = 6;
     private static final String APPROVAL_STATUS_APPROVED = "APPROVED";
     private static final Map<String, Integer> CURRICULUM_PERIODS_BY_CODE = buildCurriculumPeriodMap();
+
+    private static final PDType1Font HELVETICA = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+    private static final PDType1Font HELVETICA_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+    private static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
 
     private final TimetableSlotRepository timetableSlotRepository;
     private final StudentRepository studentRepository;
@@ -1215,14 +1220,14 @@ public class TimetableService {
                 try (PDPageContentStream content = new PDPageContentStream(document, page)) {
                     float y = page.getMediaBox().getHeight() - 40;
                     content.beginText();
-                    content.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    content.setFont(HELVETICA_BOLD, 12);
                     content.newLineAtOffset(40, y);
                     content.showText(truncatePdfText("Department of " + (department.getDeptName() == null ? department.getCode() : department.getDeptName()), 80));
                     content.endText();
 
                     y -= 18;
                     content.beginText();
-                    content.setFont(PDType1Font.HELVETICA_BOLD, 11);
+                    content.setFont(HELVETICA_BOLD, 11);
                     content.newLineAtOffset(40, y);
                     content.showText(truncatePdfText("Class Timetable | Section: " + section + " | Semester: " + (semesterNumber == null ? "-" : semesterNumber), 90));
                     content.endText();
@@ -1263,7 +1268,7 @@ public class TimetableService {
 
                     float summaryStart = tableTop - ((DEFAULT_DAYS.size() + 1) * rowHeight) - 28;
                     content.beginText();
-                    content.setFont(PDType1Font.HELVETICA_BOLD, 10);
+                    content.setFont(HELVETICA_BOLD, 10);
                     content.newLineAtOffset(40, summaryStart);
                     content.showText("Allocation Summary");
                     content.endText();
@@ -1279,7 +1284,7 @@ public class TimetableService {
                     float sy = summaryStart - 16;
                     for (Map.Entry<String, String> entry : subjectFaculty.entrySet()) {
                         content.beginText();
-                        content.setFont(PDType1Font.HELVETICA, 9);
+                        content.setFont(HELVETICA, 9);
                         content.newLineAtOffset(42, sy);
                         content.showText(entry.getKey() + " | " + entry.getValue());
                         content.endText();
@@ -1307,7 +1312,7 @@ public class TimetableService {
             content.stroke();
             String text = i < cells.length ? cells[i] : "";
             content.beginText();
-            content.setFont(header ? PDType1Font.HELVETICA_BOLD : PDType1Font.HELVETICA, header ? 9 : 8);
+            content.setFont(header ? HELVETICA_BOLD : HELVETICA, header ? 9 : 8);
             content.newLineAtOffset(x + 3, y + 7);
             content.showText(text == null ? "" : truncatePdfText(text, 24));
             content.endText();
@@ -1349,38 +1354,38 @@ public class TimetableService {
             try (PDPageContentStream content = new PDPageContentStream(document, page)) {
                 float y = page.getMediaBox().getHeight() - 60;
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA_BOLD, 14);
+                content.setFont(HELVETICA_BOLD, 14);
                 content.newLineAtOffset(40, y);
                 content.showText("Department Timetable Export");
                 content.endText();
                 y -= 24;
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA, 11);
+                content.setFont(HELVETICA, 11);
                 content.newLineAtOffset(40, y);
                 content.showText(truncatePdfText("Department: " + (department == null ? "-" : department.getCode()), 100));
                 content.endText();
                 y -= 16;
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA, 11);
+                content.setFont(HELVETICA, 11);
                 content.newLineAtOffset(40, y);
                 content.showText(truncatePdfText("Semester: " + (semesterNumber == null ? "-" : semesterNumber), 100));
                 content.endText();
                 y -= 16;
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA, 11);
+                content.setFont(HELVETICA, 11);
                 content.newLineAtOffset(40, y);
                 content.showText(truncatePdfText("Sections: " + String.join(", ", sections), 140));
                 content.endText();
                 y -= 22;
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA_OBLIQUE, 10);
+                content.setFont(HELVETICA_OBLIQUE, 10);
                 content.newLineAtOffset(40, y);
                 content.showText(truncatePdfText("Optimized timetable generated. Using simplified fallback export format.", 140));
                 content.endText();
                 if (reason != null && !reason.isBlank()) {
                     y -= 14;
                     content.beginText();
-                    content.setFont(PDType1Font.HELVETICA, 9);
+                    content.setFont(HELVETICA, 9);
                     content.newLineAtOffset(40, y);
                     content.showText(truncatePdfText("Note: " + reason, 140));
                     content.endText();
