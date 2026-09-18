@@ -11,11 +11,13 @@ The admin loop is Campus → Alerts → Decisions, with Map and Simulation as th
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - Java 17+
 - MySQL 8+
 
 ### Local setup
+
 ```bash
 npm install
 cd frontend && npm install
@@ -23,12 +25,14 @@ cd ../backend && ./mvnw clean package -DskipTests
 ```
 
 ### Environment
+
 ```bash
 cp .env.example .env
 cp frontend/.env.example frontend/.env
 ```
 
 ### Run
+
 - Backend: `cd backend && ./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"`
 - Frontend: `cd frontend && npm run dev`
 

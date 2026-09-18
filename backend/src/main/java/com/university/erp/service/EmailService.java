@@ -3,7 +3,7 @@ package com.university.erp.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,9 +11,9 @@ public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     
-    private final JavaMailSender mailSender;
+    private final MailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(MailSender mailSender) {
         this.mailSender = mailSender;
     }
 
