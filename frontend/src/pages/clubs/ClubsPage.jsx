@@ -549,7 +549,7 @@ function ClubCard({ club, myMembership, onJoin, saving, role, onClick }) {
                     <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                         {meta.activities.slice(0,2).map((act,i)=>(
                             <span key={i} style={{background:`${meta.color}15`,color:meta.color,borderRadius:8,padding:"3px 8px",fontSize:11,fontWeight:600}}>
-                                {act.split(/[,–\-]/)[0].trim().slice(0,30)}
+                                {act.split(/[,–-]/)[0].trim().slice(0,30)}
                             </span>
                         ))}
                         {meta.activities.length>2&&<span style={{color:"var(--theme-text-muted)",fontSize:11,padding:"3px 6px"}}>+{meta.activities.length-2} more</span>}
@@ -756,7 +756,7 @@ const ClubsPage = () => {
                     <div className="info-header">🪪 My Club Involvement</div>
                     <div className="info-body">
                         {myMemberships.length===0
-                            ?<div style={{textAlign:"center",padding:"32px",color:"var(--theme-text-muted)"}}><div style={{fontSize:40,marginBottom:12}}>🏛️</div><div style={{fontWeight:700,marginBottom:6}}>You have not joined any club yet</div><div style={{fontSize:13}}>Browse the Club Directory and click "Join Request".</div></div>
+                            ?<div style={{textAlign:"center",padding:"32px",color:"var(--theme-text-muted)"}}><div style={{fontSize:40,marginBottom:12}}>🏛️</div><div style={{fontWeight:700,marginBottom:6}}>You have not joined any club yet</div><div style={{fontSize:13}}>Browse the Club Directory and click &quot;Join Request&quot;.</div></div>
                             :<div style={{display:"grid",gap:14}}>
                                 {myMemberships.map(m=>{
                                     const meta=getMeta(m.clubName);
