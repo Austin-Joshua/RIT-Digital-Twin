@@ -187,6 +187,6 @@ public class CampusCredentialAlignment {
     private static boolean isDemo(User user) {
         String username = user.getUsername() == null ? "" : user.getUsername();
         String email = user.getEmail() == null ? "" : user.getEmail();
-        return username.startsWith("DEMO-") || email.endsWith("@campusos.demo");
+        return username.startsWith("DEMO-") || email.endsWith("@ritdigitaltwin.demo");
     }
 }

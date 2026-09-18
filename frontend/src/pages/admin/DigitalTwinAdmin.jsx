@@ -7,7 +7,7 @@ import DecisionCenter from '../../platform/ui/DecisionCenter';
 import SourceLayer from '../../platform/ui/SourceLayer';
 import InstitutionalAnalytics from '../../features/ai/components/InstitutionalAnalytics';
 import DigitalTwinDemo from './DigitalTwinDemo';
-import './campus-os.css';
+import './digital-twin-admin.css';
 
 const STEPS = [
     { id: 'campus', label: 'Campus' },
@@ -16,7 +16,7 @@ const STEPS = [
     { id: 'sources', label: 'Sources' },
 ];
 
-export default function CampusOS({
+export default function DigitalTwinAdmin({
     snapshot,
     loading,
     error,

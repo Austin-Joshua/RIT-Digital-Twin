@@ -47,8 +47,8 @@ import java.util.Set;
 @Profile("dev")
 @Order(40)
 @Slf4j
-@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "app.demo.campusos", havingValue = "true")
-public class CampusOsDemoProfile implements CommandLineRunner {
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "app.demo.ritdigitaltwin", havingValue = "true")
+public class RitDigitalTwinDemoProfile implements CommandLineRunner {
 
     static final String PROFILE = "DEMO";
     static final String BUILDING_CODE = "DEMO-MAIN";
@@ -78,7 +78,7 @@ public class CampusOsDemoProfile implements CommandLineRunner {
     private final AssetInventoryRepository assetInventoryRepository;
     private final String demoPassword;
 
-    public CampusOsDemoProfile(UserRepository userRepository, RoleRepository roleRepository,
+    public RitDigitalTwinDemoProfile(UserRepository userRepository, RoleRepository roleRepository,
                                PasswordEncoder passwordEncoder, DepartmentRepository departmentRepository,
                                BuildingRepository buildingRepository, ClassroomRepository classroomRepository,
                                StudentRepository studentRepository, SubjectRepository subjectRepository,
@@ -118,11 +118,11 @@ public class CampusOsDemoProfile implements CommandLineRunner {
         nameRemainingRooms(main);
         ensureUnmeteredAnnex();
 
-        ensureLogin("DEMO-ADM", "demo-adm@campusos.demo", Role.UserRole.ADMIN, "Demo", "Admin", cse);
-        ensureLogin("DEMO-HOD", "demo-hod@campusos.demo", Role.UserRole.HOD, "Demo", "HOD", cse);
-        User faculty = ensureLogin("DEMO-FAC", "demo-fac@campusos.demo", Role.UserRole.FACULTY, "Demo", "Faculty", cse);
-        User studentUser = ensureLogin("DEMO-STU", "demo-stu@campusos.demo", Role.UserRole.STUDENT, "Demo", "Student", cse);
-        User parentUser = ensureLogin("DEMO-PAR", "demo-par@campusos.demo", Role.UserRole.PARENT, "Demo", "Parent", cse);
+        ensureLogin("DEMO-ADM", "demo-adm@ritdigitaltwin.demo", Role.UserRole.ADMIN, "Demo", "Admin", cse);
+        ensureLogin("DEMO-HOD", "demo-hod@ritdigitaltwin.demo", Role.UserRole.HOD, "Demo", "HOD", cse);
+        User faculty = ensureLogin("DEMO-FAC", "demo-fac@ritdigitaltwin.demo", Role.UserRole.FACULTY, "Demo", "Faculty", cse);
+        User studentUser = ensureLogin("DEMO-STU", "demo-stu@ritdigitaltwin.demo", Role.UserRole.STUDENT, "Demo", "Student", cse);
+        User parentUser = ensureLogin("DEMO-PAR", "demo-par@ritdigitaltwin.demo", Role.UserRole.PARENT, "Demo", "Parent", cse);
         Student student = ensureStudent(studentUser, "DEMO-STU", "Demo Student", cse);
         ensureParent(parentUser, student);
         ensureSectionSize(cse);
@@ -257,7 +257,7 @@ public class CampusOsDemoProfile implements CommandLineRunner {
             User user = userRepository.findByUsername(registerNo).orElseGet(User::new);
             if (user.getId() == null) {
                 user.setUsername(registerNo);
-                user.setEmail(registerNo.toLowerCase() + "@campusos.demo");
+                user.setEmail(registerNo.toLowerCase() + "@ritdigitaltwin.demo");
                 user.setPassword(passwordEncoder.encode(OneTimeTokens.generate()));
                 user.setMustChangePassword(true);
             }

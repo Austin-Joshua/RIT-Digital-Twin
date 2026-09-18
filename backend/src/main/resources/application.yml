@@ -14,7 +14,7 @@ app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}}
   demo:
-    campusos: ${APP_DEMO_CAMPUSOS:false}
+    ritdigitaltwin: ${APP_DEMO_RIT:false}
   gemini:
     api-key: ${GEMINI_API_KEY:}
     enabled: ${GEMINI_ENABLED:true}

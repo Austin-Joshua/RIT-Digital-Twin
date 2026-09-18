@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import twinService from '../../services/twinService';
 import { useCampusStream } from '../../platform/useCampusStream';
-import CampusOS from '../admin/CampusOS';
+import DigitalTwinAdmin from '../admin/DigitalTwinAdmin';
 
 export default function RoleCampus({ mapPath, simulationPath = null, decisionPath }) {
     const [snapshot, setSnapshot] = useState(null);
@@ -50,7 +50,7 @@ export default function RoleCampus({ mapPath, simulationPath = null, decisionPat
     }, [fetchCampusState]);
 
     return (
-        <CampusOS
+        <DigitalTwinAdmin
             snapshot={snapshot}
             loading={loading}
             error={error}

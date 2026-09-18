@@ -12,7 +12,7 @@ The admin loop is Campus → Alerts → Decisions, with Map and Simulation as th
 
 ### Prerequisites
 - Node.js 20+
-- Java 21+
+- Java 17+
 - MySQL 8+
 
 ### Local setup
@@ -44,11 +44,11 @@ On each local startup the profile realigns one timetable slot to the current Asi
 
 | Role | Username | Password |
 | --- | --- | --- |
-| Admin | `DEMO-ADM` | `Demo-CampusOS-2026` |
-| HOD | `DEMO-HOD` | `Demo-CampusOS-2026` |
-| Faculty | `DEMO-FAC` | `Demo-CampusOS-2026` |
-| Student | `DEMO-STU` | `Demo-CampusOS-2026` |
-| Parent | `DEMO-PAR` | `Demo-CampusOS-2026` |
+| Admin | `DEMO-ADM` | `RIT-Demo-2026` |
+| HOD | `DEMO-HOD` | `RIT-Demo-2026` |
+| Faculty | `DEMO-FAC` | `RIT-Demo-2026` |
+| Student | `DEMO-STU` | `RIT-Demo-2026` |
+| Parent | `DEMO-PAR` | `RIT-Demo-2026` |
 
 Expected local state after startup:
 

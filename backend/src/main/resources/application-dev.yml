@@ -20,8 +20,8 @@ spring:
 
 app:
   demo:
-    campusos: true
-    password: Demo-CampusOS-2026
+    ritdigitaltwin: true
+    password: RIT-Demo-2026
 
 logging:
   level:
