@@ -12,5 +12,8 @@
         "dev": "npm run dev -w frontend",
         "build": "npm run build -w frontend",
         "start": "npm run dev -w frontend"
+    },
+    "devDependencies": {
+        "vitest": "^5.0.1"
     }
 }
