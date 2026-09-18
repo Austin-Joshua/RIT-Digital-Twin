@@ -28,7 +28,7 @@ const renderLogin = async () => {
 describe('Login page', () => {
   it('renders user id and password fields', async () => {
     await renderLogin();
-    expect(screen.getByPlaceholderText(/^user id$/i)).toBeTruthy();
+    expect(screen.getByPlaceholderText(/Register No \/ Email \/ User ID/i)).toBeTruthy();
     expect(screen.getByPlaceholderText(/password/i)).toBeTruthy();
   });
 
@@ -40,8 +40,8 @@ describe('Login page', () => {
   it('submits form and stays on screen', async () => {
     await renderLogin();
     await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText(/^user id$/i), { target: { value: 'FAC-001' } });
-      fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'FAC-001' } });
+      fireEvent.change(screen.getByPlaceholderText(/Register No \/ Email \/ User ID/i), { target: { value: 'testuser' } });
+      fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'password123' } });
       fireEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
     });
     await waitFor(() => {
