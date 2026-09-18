@@ -46,6 +46,7 @@ public class AuthService {
     private final RequestSecurityMonitoringService requestSecurityMonitoringService;
     private final SecurityAlertService securityAlertService;
     private final com.university.erp.repository.EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final EmailService emailService;
 
     @Value("${app.google.client-id:}")
     private String googleClientId;
@@ -58,7 +59,8 @@ public class AuthService {
             com.university.erp.repository.AuditLogRepository auditLogRepository,
             RequestSecurityMonitoringService requestSecurityMonitoringService,
             SecurityAlertService securityAlertService,
-            com.university.erp.repository.EmailVerificationTokenRepository emailVerificationTokenRepository) {
+            com.university.erp.repository.EmailVerificationTokenRepository emailVerificationTokenRepository,
+            EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -72,6 +74,7 @@ public class AuthService {
         this.requestSecurityMonitoringService = requestSecurityMonitoringService;
         this.securityAlertService = securityAlertService;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+        this.emailService = emailService;
     }
 
     // Login accepts only a stored password hash via Spring Security.
@@ -451,8 +454,7 @@ public class AuthService {
                 .build();
         emailVerificationTokenRepository.save(verificationToken);
 
-        log.info("IMPORTANT: Out-of-band email verification required for {}. Mocking email send... Magic link: http://localhost:5173/verify-email?token={}", 
-                 user.getEmail(), verificationToken.getToken());
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken.getToken());
 
         return "User registered successfully! Please check your email to verify your account.";
     }

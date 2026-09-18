@@ -42,13 +42,7 @@ The `dev` profile loads a labeled DEMO dataset so RIT Digital Twin can be exerci
 
 On each local startup the profile realigns one timetable slot to the current Asia/Kolkata clock so the slot is in progress. It does not change the system clock. It rewrites passwords only for these five accounts:
 
-| Role | Username | Password |
-| --- | --- | --- |
-| Admin | `DEMO-ADM` | `RIT-Demo-2026` |
-| HOD | `DEMO-HOD` | `RIT-Demo-2026` |
-| Faculty | `DEMO-FAC` | `RIT-Demo-2026` |
-| Student | `DEMO-STU` | `RIT-Demo-2026` |
-| Parent | `DEMO-PAR` | `RIT-Demo-2026` |
+Instead of relying on hardcoded credentials, production administrators should provision an initial admin via the newly available provisioning system, or use the one-time token if specified. The demo data dynamically assigns temporary passwords that should not be used in production.
 
 Expected local state after startup:
 

@@ -37,17 +37,9 @@ public class RateLimitInterceptor implements HandlerInterceptor {
                 .build();
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            return xff.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String clientIp = getClientIp(request);
+        String clientIp = request.getRemoteAddr();
         String path = request.getRequestURI();
         
         // 1. Specific Auth Route Rate Limiting

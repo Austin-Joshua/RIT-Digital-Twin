@@ -92,12 +92,24 @@ spring:
     validate-on-migrate: false
   mvc:
     throw-exception-if-no-handler-found: true
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:25}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   error:
     include-stacktrace: never
     include-message: never
 
 server:
   port: ${BACKEND_PORT:${PORT:8080}}
+  forward-headers-strategy: framework
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
