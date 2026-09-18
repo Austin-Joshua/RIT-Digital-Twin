@@ -19,7 +19,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^1.16.8",
+    "@googlemaps/js-api-loader": "^2.1.1",
     "@react-google-maps/api": "^2.20.8",
     "@stomp/stompjs": "^7.3.0",
     "axios": "^1.13.6",
