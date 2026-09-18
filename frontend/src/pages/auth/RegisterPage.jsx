@@ -12,8 +12,7 @@ const RegisterPage = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
-        password: '',
-        inviteCode: ''
+        password: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -114,15 +113,6 @@ const RegisterPage = () => {
                         onChange={handleChange}
                         placeholder="Secure password"
                         required
-                    />
-
-                    <Input
-                        label="Invite Code (Optional)"
-                        type="password"
-                        name="inviteCode"
-                        value={formData.inviteCode}
-                        onChange={handleChange}
-                        placeholder="Invitation code"
                     />
 
                     <Button

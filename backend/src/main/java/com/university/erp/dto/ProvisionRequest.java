@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
+public class ProvisionRequest {
     @NotBlank
     @Size(min = 3, max = 50)
     private String username;
@@ -31,4 +31,6 @@ public class RegisterRequest {
     @NotBlank
     private String lastName;
 
+    @NotBlank
+    private String role; // e.g. ADMIN or FACULTY
 }

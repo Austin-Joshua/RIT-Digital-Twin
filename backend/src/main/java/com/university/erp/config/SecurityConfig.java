@@ -80,6 +80,16 @@ public class SecurityConfig {
     @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins}")
     private String allowedOriginsConfig;
 
+    @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
+    private String getCspPolicy() {
+        if ("dev".equalsIgnoreCase(activeProfile)) {
+            return "default-src 'self'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' http://localhost:8080 http://127.0.0.1:8080 https://*.vercel.app https://*.onrender.com https://*.railway.app https://*.up.railway.app ws://localhost:8080 wss://*.onrender.com wss://*.railway.app wss://*.up.railway.app";
+        }
+        return "default-src 'self'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://*.vercel.app https://*.onrender.com https://*.railway.app https://*.up.railway.app wss://*.onrender.com wss://*.railway.app wss://*.up.railway.app";
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -118,7 +128,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny())
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' http://localhost:8080 http://127.0.0.1:8080 https://*.vercel.app https://*.onrender.com https://*.railway.app https://*.up.railway.app ws://localhost:8080 wss://*.onrender.com wss://*.railway.app wss://*.up.railway.app"))
+                                getCspPolicy()))
                         .contentTypeOptions(Customizer.withDefaults())
                         .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

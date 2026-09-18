@@ -45,6 +45,7 @@ public class AuthService {
     private final com.university.erp.repository.AuditLogRepository auditLogRepository;
     private final RequestSecurityMonitoringService requestSecurityMonitoringService;
     private final SecurityAlertService securityAlertService;
+    private final com.university.erp.repository.EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     @Value("${app.google.client-id:}")
     private String googleClientId;
@@ -56,7 +57,8 @@ public class AuthService {
             com.university.erp.repository.LoginLogRepository loginLogRepository,
             com.university.erp.repository.AuditLogRepository auditLogRepository,
             RequestSecurityMonitoringService requestSecurityMonitoringService,
-            SecurityAlertService securityAlertService) {
+            SecurityAlertService securityAlertService,
+            com.university.erp.repository.EmailVerificationTokenRepository emailVerificationTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -69,6 +71,7 @@ public class AuthService {
         this.auditLogRepository = auditLogRepository;
         this.requestSecurityMonitoringService = requestSecurityMonitoringService;
         this.securityAlertService = securityAlertService;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
     }
 
     // Login accepts only a stored password hash via Spring Security.
@@ -427,27 +430,59 @@ public class AuthService {
         }
 
         String roleEnumName = "STUDENT";
-        String inviteCode = request.getInviteCode();
-
-        if (inviteCode != null && !inviteCode.isBlank()) {
-            switch (inviteCode) {
-                case "RIT-SUPER":
-                case "RIT-ADMIN":
-                    roleEnumName = "ADMIN";
-                    break;
-                case "RIT-FACULTY":
-                    roleEnumName = "FACULTY";
-                    break;
-                case "RIT-M":
-                    roleEnumName = "ADMIN";
-                    break;
-                case "RIT-PARENT":
-                    roleEnumName = "PARENT";
-                    break;
-            }
-        }
 
         Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleEnumName))
+                .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .role(role)
+                .accountStatus("unverified")
+                .build();
+
+        user = userRepository.save(user);
+
+        com.university.erp.model.EmailVerificationToken verificationToken = com.university.erp.model.EmailVerificationToken.builder()
+                .user(user)
+                .build();
+        emailVerificationTokenRepository.save(verificationToken);
+
+        log.info("IMPORTANT: Out-of-band email verification required for {}. Mocking email send... Magic link: http://localhost:5173/verify-email?token={}", 
+                 user.getEmail(), verificationToken.getToken());
+
+        return "User registered successfully! Please check your email to verify your account.";
+    }
+
+    @Transactional
+    public void verifyEmail(String token) {
+        com.university.erp.model.EmailVerificationToken verificationToken = emailVerificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired verification token."));
+        if (verificationToken.getExpiryDate().isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("Verification token has expired.");
+        }
+        User user = verificationToken.getUser();
+        user.setAccountStatus("active");
+        userRepository.save(user);
+        emailVerificationTokenRepository.delete(verificationToken);
+        log.info("Account verified successfully for user: {}", user.getEmail());
+    }
+
+    @Transactional
+    public String provisionAccount(com.university.erp.dto.ProvisionRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("Error: Username is already taken!");
+        }
+        
+        String roleStr = request.getRole() != null ? request.getRole().toUpperCase() : "FACULTY";
+        if (!roleStr.equals("ADMIN") && !roleStr.equals("FACULTY")) {
+            throw new RuntimeException("Error: Provisioning is only allowed for ADMIN or FACULTY roles.");
+        }
+
+        Role role = roleRepository.findByRoleName(Role.UserRole.valueOf(roleStr))
                 .orElseThrow(() -> new RuntimeException("Error: Role not found in database."));
 
         User user = User.builder()
@@ -461,7 +496,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        return "User registered successfully!";
+        log.info("Provisioned new {} account for {}", roleStr, request.getUsername());
+        return "Account provisioned successfully!";
     }
 
     // ═══════════════════════════════════════════════════════════

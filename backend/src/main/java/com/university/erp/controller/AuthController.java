@@ -97,7 +97,21 @@ public class AuthController {
                 && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
         return ResponseEntity.ok(Map.of("valid", valid));
     }
+    @PostMapping("/verify-email")
+    public ResponseEntity<Map<String, String>> verifyEmailToken(@RequestBody Map<String, String> body) {
+        String token = body != null ? body.get("token") : null;
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Token is required."));
+        }
+        authService.verifyEmail(token);
+        return ResponseEntity.ok(Map.of("message", "Email verified successfully."));
+    }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/provision")
+    public ResponseEntity<Map<String, String>> provisionAdminOrFaculty(@Valid @RequestBody com.university.erp.dto.ProvisionRequest request) {
+        return ResponseEntity.ok(Map.of("message", authService.provisionAccount(request)));
+    }
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout() {
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
