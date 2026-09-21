@@ -24,7 +24,7 @@
     "@stomp/stompjs": "^7.3.0",
     "axios": "^1.13.6",
     "firebase": "^12.11.0",
-    "framer-motion": "^12.34.3",
+    "framer-motion": "^13.4.0",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
