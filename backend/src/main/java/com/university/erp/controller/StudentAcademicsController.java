@@ -25,20 +25,26 @@ public class StudentAcademicsController {
     @GetMapping("/dashboard-summary")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Map<String, Object>> dashboardSummary() {
-        return ResponseEntity.ok(onboardingService.getStudentDashboardData(currentUser().getId()));
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .body(onboardingService.getStudentDashboardData(currentUser().getId()));
     }
 
     @GetMapping("/gradebook")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<List<Map<String, Object>>> gradebook(
             @RequestParam(required = false) Integer semester) {
-        return ResponseEntity.ok(onboardingService.getGradebook(currentUser().getId(), semester));
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .body(onboardingService.getGradebook(currentUser().getId(), semester));
     }
 
     @GetMapping("/cgpa")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<List<Map<String, Object>>> cgpa() {
-        return ResponseEntity.ok(onboardingService.getSemGpa(currentUser().getId()));
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .body(onboardingService.getSemGpa(currentUser().getId()));
     }
 
     private User currentUser() {

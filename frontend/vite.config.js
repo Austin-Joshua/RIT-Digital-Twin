@@ -46,7 +46,11 @@ export default defineConfig(({ mode }) => {
               'react-vendor': ['react', 'react-dom', 'react-router-dom'],
               'ui-vendor': ['framer-motion', 'recharts'],
               'three-vendor': ['three'],
-              'utils-vendor': ['axios', 'xlsx'],
+              'pdf-vendor': ['jspdf', 'jspdf-autotable', 'html2canvas'],
+              'xlsx-vendor': ['xlsx'],
+              'maps-vendor': ['@react-google-maps', '@googlemaps'],
+              'icons-vendor': ['react-icons'],
+              'network-vendor': ['axios', 'sockjs-client', '@stomp/stompjs'],
             };
 
             for (const [chunkName, packages] of Object.entries(chunkGroups)) {

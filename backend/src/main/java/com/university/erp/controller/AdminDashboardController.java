@@ -63,6 +63,28 @@ public class AdminDashboardController {
         body.put("auditLogs", auditLogList);
         body.put("recentAuditLogs", auditLogList);
 
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .body(body);
+    }
+
+    private final com.university.erp.service.LegacyImsEtlSyncService imsEtlSyncService;
+
+    @GetMapping("/ims/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getImsSyncStatus() {
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .body(imsEtlSyncService.getLatestStatus());
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/ims/sync")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> triggerImsSync(@org.springframework.web.bind.annotation.RequestBody(required = false) List<Map<String, Object>> payload) {
+        if (payload != null && !payload.isEmpty()) {
+            return ResponseEntity.ok(imsEtlSyncService.syncFromJsonRoster(payload));
+        }
+        imsEtlSyncService.scheduledNightlySync();
+        return ResponseEntity.ok(imsEtlSyncService.getLatestStatus());
     }
 }

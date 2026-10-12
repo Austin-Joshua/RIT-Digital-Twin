@@ -16,4 +16,11 @@ public interface DigitalTwinMetricsRepository extends JpaRepository<DigitalTwinM
 
     @Query("select m from DigitalTwinMetrics m where m.scenarioName is null and m.isSimulated = true order by m.timestamp desc")
     List<DigitalTwinMetrics> findRecentBaselineSimulations(Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @Query("delete from DigitalTwinMetrics m where m.timestamp < :cutoff and m.sourceClass = :sourceClass")
+    int deleteOldTelemetry(java.time.LocalDateTime cutoff, com.university.erp.intelligence.SourceClass sourceClass);
+
+    List<DigitalTwinMetrics> findByTimestampBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

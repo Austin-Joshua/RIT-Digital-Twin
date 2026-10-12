@@ -1,14 +1,11 @@
 import React from 'react';
 import { FaFilePdf, FaFileExcel, FaPrint, FaCopy } from 'react-icons/fa';
 import { useToast } from '../../hooks/ToastContext';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
 const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => {
     const { addToast } = useToast();
     const safeFilename = () => `${String(filename || 'ExportData').replace(/[\\/:*?"<>|]+/g, '_')}-${Date.now()}`;
 
-    const handlePdf = () => {
+    const handlePdf = async () => {
         if (!data || data.length === 0) {
             addToast("No data available to export", "warning");
             return;
@@ -16,6 +13,10 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
 
         try {
             addToast(`Generating PDF for ${filename}...`, 'info');
+            const [{ default: jsPDF }] = await Promise.all([
+                import('jspdf'),
+                import('jspdf-autotable')
+            ]);
             const doc = new jsPDF();
             doc.text(`${filename.replace(/_/g, ' ')}`, 14, 15);
 

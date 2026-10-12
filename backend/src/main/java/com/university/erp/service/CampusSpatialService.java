@@ -42,6 +42,7 @@ public class CampusSpatialService {
     private final CampusRecordQuery campusRecordQuery;
     private final AttendanceRiskRepository attendanceRiskRepository;
     private final AssetInventoryRepository assetInventoryRepository;
+    private final IoTIngestionGatewayService ioTIngestionGatewayService;
 
     @Transactional(readOnly = true)
     public Map<String, Object> index(String horizon) {
@@ -226,11 +227,21 @@ public class CampusSpatialService {
         row.put("scheduledStudents", "PAST".equals(horizon) ? null : students);
         row.put("crowd", peak == null ? null : round(peak * 100));
         row.put("utilization", rooms.isEmpty() || "PAST".equals(horizon) ? null : round(relevant.size() * 100.0 / rooms.size()));
-        row.put("energyKw", energyKw(building, relevant.size()));
-        row.put("energySource", row.get("energyKw") == null ? null : SourceClass.SIMULATED.name());
-        row.put("energyBecause", row.get("energyKw") == null
-                ? EnergyFormula.UNAVAILABLE
-                : EnergyFormula.BECAUSE);
+        
+        // Prioritize live physical IoT smart meter telemetry over simulated estimation
+        Optional<com.university.erp.dto.IoTSensorTelemetryDto> liveEnergy = ioTIngestionGatewayService.getLatestTelemetry("ENERGY_KW", building.getCode());
+        if (liveEnergy.isPresent() && liveEnergy.get().getValue() != null && !"PAST".equals(horizon)) {
+            row.put("energyKw", round(liveEnergy.get().getValue()));
+            row.put("energySource", SourceClass.LIVE.name());
+            row.put("energyBecause", "Live IoT smart meter reading from device: " + liveEnergy.get().getDeviceId());
+        } else {
+            row.put("energyKw", energyKw(building, relevant.size()));
+            row.put("energySource", row.get("energyKw") == null ? null : SourceClass.SIMULATED.name());
+            row.put("energyBecause", row.get("energyKw") == null
+                    ? EnergyFormula.UNAVAILABLE
+                    : EnergyFormula.BECAUSE);
+        }
+
         if ("PAST".equals(horizon)) {
             DigitalTwinMetrics energy = past.get("ENERGY_DEMAND:" + building.getCode());
             if (energy != null && energy.getValue() != null) {
@@ -243,7 +254,7 @@ public class CampusSpatialService {
                 row.put("energyBecause", "No stored energy sample for this building.");
             }
         }
-        row.put("alertCount", densities.stream().filter(value -> value >= 0.85).count());
+        row.put("alertCount", densities.stream().filter(value -> value != null && value >= 0.85).count());
         row.put("attendanceRiskCount", sensitive && !"PAST".equals(horizon) ? risk : null);
         row.put("maintenanceMatches", sensitive ? maintenance : null);
         row.put("maintenanceBecause", sensitive
@@ -266,22 +277,35 @@ public class CampusSpatialService {
         if ("PAST".equals(horizon) && sample != null && sample.getValue() != null) {
             density = sample.getValue();
         }
+        // Check for live IoT turnstile/camera sensor data for this room
+        Optional<com.university.erp.dto.IoTSensorTelemetryDto> liveOccupancy = ioTIngestionGatewayService.getLatestTelemetry("OCCUPANCY", room.getName());
+        boolean hasLiveSensor = liveOccupancy.isPresent() && liveOccupancy.get().getValue() != null && !"PAST".equals(horizon);
+
+        long effectiveStudents = hasLiveSensor && liveOccupancy.get().getValue() != null
+                ? Math.round(liveOccupancy.get().getValue().doubleValue()) 
+                : students;
+        Double effectiveDensity = (hasLiveSensor && room.getCapacity() != null && room.getCapacity() > 0)
+                ? Double.valueOf((double) effectiveStudents / room.getCapacity())
+                : density;
+
         Map<String, Object> row = new LinkedHashMap<>();
         row.put("id", room.getId());
         row.put("name", room.getName());
         row.put("capacity", room.getCapacity());
-        row.put("occupancy", "PAST".equals(horizon) ? null : (current == null ? 0 : students));
+        row.put("occupancy", "PAST".equals(horizon) ? null : effectiveStudents);
         row.put("currentClass", current == null || current.getSubject() == null ? null : current.getSubject().getSubjectName());
         row.put("section", current == null ? null : current.getSection());
         row.put("nextClass", next == null || next.getSubject() == null ? null : next.getSubject().getSubjectName());
         row.put("nextStart", next == null ? null : next.getStartTime());
-        row.put("utilization", density == null ? null : round(density * 100));
-        row.put("available", "PAST".equals(horizon) ? null : current == null);
-        row.put("alert", density != null && density >= 0.85);
-        row.put("source", "PAST".equals(horizon) ? SourceClass.HISTORICAL.name() : SourceClass.ESTIMATED.name());
-        row.put("because", "PAST".equals(horizon)
-                ? (sample == null ? "No stored density sample for this room." : "Stored density sample. The class in session was not saved with it.")
-                : "Section size against room capacity. Not a people counter.");
+        row.put("utilization", effectiveDensity == null ? null : round(effectiveDensity.doubleValue() * 100));
+        row.put("available", "PAST".equals(horizon) ? null : (hasLiveSensor ? effectiveStudents == 0 : current == null));
+        row.put("alert", effectiveDensity != null && effectiveDensity.doubleValue() >= 0.85);
+        row.put("source", hasLiveSensor ? SourceClass.LIVE.name() : ("PAST".equals(horizon) ? SourceClass.HISTORICAL.name() : SourceClass.ESTIMATED.name()));
+        row.put("because", hasLiveSensor 
+                ? "Live optical / turnstile sensor telemetry from device: " + liveOccupancy.get().getDeviceId()
+                : ("PAST".equals(horizon)
+                    ? (sample == null ? "No stored density sample for this room." : "Stored density sample. The class in session was not saved with it.")
+                    : "Section size against room capacity. Not a people counter."));
         return row;
     }
 

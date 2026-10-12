@@ -590,28 +590,28 @@
     border-radius: 10px;
 }
 
-/* User badge - pill shape, not a heavy rectangle */
+/* User badge - matches RIT IMS top-right blue profile pill */
 .stu-user-badge {
-    background-color: #e0f2fe;
-    /* light cyan */
-    color: #0b2c6b;
-    /* RIT navy for icon/text */
-    padding: 6px 14px;
-    border-radius: 9999px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 7px 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(11, 44, 107, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 123, 255, 0.25);
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .stu-user-badge:hover {
+    background-color: #0069d9;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(11, 44, 107, 0.25);
+    box-shadow: 0 3px 8px rgba(0, 123, 255, 0.35);
 }
 
 /* ── Content ── */

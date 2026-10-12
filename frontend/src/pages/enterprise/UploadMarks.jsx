@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as XLSX from 'xlsx';
 import { FaCloudUploadAlt, FaFileExcel, FaCheckCircle, FaExclamationTriangle, FaTrash, FaDownload } from 'react-icons/fa';
 import api from '../../services/api';
 import { useToast } from '../../hooks/ToastContext';
@@ -17,7 +16,8 @@ const UploadMarks = () => {
 
     const fileInputRef = useRef(null);
 
-    const downloadTemplate = () => {
+    const downloadTemplate = async () => {
+        const XLSX = await import('xlsx');
         const templateHeaders = ["StudentData", "SubjectCode", "CAT1", "CAT2", "CAT3", "Assignment", "SemesterGrade"];
         const templateData = [
             { StudentData: "211301001", SubjectCode: "CS3401", CAT1: 45, CAT2: 42, CAT3: 48, Assignment: 10, SemesterGrade: "O" },
@@ -62,8 +62,9 @@ const UploadMarks = () => {
 
         setFile(file);
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             try {
+                const XLSX = await import('xlsx');
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const worksheet = workbook.Sheets[workbook.SheetNames[0]];

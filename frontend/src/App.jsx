@@ -11,8 +11,9 @@ import ParentLayout from './layouts/ParentLayout';
 import HODLayout from './layouts/HODLayout';
 import AuthLayout from './layouts/AuthLayout';
 
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
+/* Lazy Loaded Auth Pages */
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
 /* Lazy Loaded Admin Pages */
 const Dashboard = lazy(() => import('./pages/admin/DashboardWrapper'));

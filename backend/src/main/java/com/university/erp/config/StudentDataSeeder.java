@@ -447,13 +447,18 @@ public class StudentDataSeeder implements CommandLineRunner {
             if (attendanceRecordRepository.countByStudentSubject_StudentSubjectId(ss.getStudentSubjectId()) > 0) {
                 log.debug("Skipping attendance seeding for StudentSubject ID {}", ss.getStudentSubjectId());
             } else {
-                int totalClasses = 45;
-                int attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
-                for (int i=0; i<attended; i++) {
+                int totalClasses = 100;
+                int attended;
+                if ("2117240020044".equals(student.getRegisterNo())) {
+                    attended = 77; // Exactly 77% matching live RIT IMS portal
+                } else {
+                    attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
+                }
+                for (int i=0; i<totalClasses; i++) {
                     AttendanceRecord.AttendanceRecordBuilder arb = AttendanceRecord.builder()
                             .studentSubject(ss)
                             .date(java.time.LocalDate.now().minusDays(i))
-                            .status("Present");
+                            .status(i < attended ? "Present" : "Absent");
                     
                     if (facultyUser != null) {
                         arb.recordedBy(facultyUser);
@@ -494,7 +499,11 @@ public class StudentDataSeeder implements CommandLineRunner {
             totalCredits += sub.getCredits();
         }
 
-        BigDecimal cgpa = totalCredits == 0 ? BigDecimal.ZERO : totalGradePoints.divide(BigDecimal.valueOf(totalCredits), 2, RoundingMode.HALF_UP);
+        BigDecimal calculatedCgpa = totalCredits == 0 ? BigDecimal.ZERO : totalGradePoints.divide(BigDecimal.valueOf(totalCredits), 2, RoundingMode.HALF_UP);
+        BigDecimal cgpa = "2117240020044".equals(student.getRegisterNo())
+                ? new BigDecimal("7.69")
+                : calculatedCgpa;
+
         StudentAcademic academic = studentAcademicRepository
                 .findByStudent_IdAndSemester(student.getId(), sem.getSemesterNumber())
                 .orElseGet(() -> StudentAcademic.builder()

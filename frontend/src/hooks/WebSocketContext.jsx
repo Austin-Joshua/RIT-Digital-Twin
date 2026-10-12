@@ -83,13 +83,42 @@ export const WebSocketProvider = ({ children }) => {
         }
     }, []);
 
-    const subscribe = useCallback((destination, callback) => {
-        const entry = { destination, callback, subscription: null, attach: () => {} };
+    const subscribe = useCallback((destination, callback, options = {}) => {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const throttleInterval = options.throttleMs ?? (destination.includes('telemetry') && isMobile ? 500 : 0);
+        let lastInvoked = 0;
+        let pendingPayload = null;
+        let timer = null;
+
+        const throttledCallback = (data) => {
+            if (throttleInterval <= 0) {
+                callback(data);
+                return;
+            }
+            const now = Date.now();
+            pendingPayload = data;
+            if (now - lastInvoked >= throttleInterval) {
+                lastInvoked = now;
+                callback(pendingPayload);
+                pendingPayload = null;
+            } else if (!timer) {
+                timer = setTimeout(() => {
+                    lastInvoked = Date.now();
+                    if (pendingPayload) {
+                        callback(pendingPayload);
+                        pendingPayload = null;
+                    }
+                    timer = null;
+                }, throttleInterval - (now - lastInvoked));
+            }
+        };
+
+        const entry = { destination, callback: throttledCallback, subscription: null, attach: () => {} };
         entry.attach = () => {
             if (!clientRef.current?.connected || entry.subscription) return;
             entry.subscription = clientRef.current.subscribe(destination, (message) => {
                 try {
-                    callback(JSON.parse(message.body));
+                    entry.callback(JSON.parse(message.body));
                 } catch {
                     // Ignore a malformed frame instead of breaking the socket.
                 }
@@ -99,6 +128,7 @@ export const WebSocketProvider = ({ children }) => {
         entry.attach();
         return {
             unsubscribe() {
+                if (timer) clearTimeout(timer);
                 entry.subscription?.unsubscribe();
                 entry.subscription = null;
                 pendingRef.current.delete(entry);

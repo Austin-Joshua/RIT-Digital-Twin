@@ -1,15 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaInfoCircle, FaArrowRight } from 'react-icons/fa';
-import jsPDF from 'jspdf';
-
 const DetailedReportModal = ({ isOpen, onClose, title, value, label, icon, data, description }) => {
     if (!isOpen) return null;
 
     const weeklyTrend = [85, 82, 88, 84, 90];
     const resolvedDescription = description || `Based on the current ${(title || '').toLowerCase()} and previous 3-month trends, we predict a 4.2% improvement in the upcoming assessment cycle. Maintain current activity levels.`;
 
-    const handleDownloadReport = () => {
+    const handleDownloadReport = async () => {
+        const { default: jsPDF } = await import('jspdf');
         const doc = new jsPDF({ unit: 'pt', format: 'a4' });
         const generatedAt = new Date().toLocaleString();
         const reportTitle = `${title || 'Performance'} Detailed Insight Report`;

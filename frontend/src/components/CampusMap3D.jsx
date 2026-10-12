@@ -69,13 +69,30 @@ export default function CampusMap3D() {
   const [satLoaded, setSatLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ fps: 0, drawCalls: 0, trianglesK: 0 });
+  const [telemetrySource, setTelemetrySource] = useState("TIMETABLE PROJECTION");
+  const [showProvenanceInfo, setShowProvenanceInfo] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
+  const orbitControlsRef = useRef({ zoomIn: null, zoomOut: null, resetView: null });
 
   const loadIoTData = useCallback(async () => {
     try {
+      let isLive = false;
+      try {
+        const liveRes = await apiClient.get("/twin/iot/live");
+        if (liveRes?.data && Object.keys(liveRes.data).length > 0) {
+          isLive = true;
+          setTelemetrySource("LIVE IOT SENSOR STREAM");
+        }
+      } catch (_e) {}
+
       const response = await apiClient.get("/iot/campus-overview");
+      if (!isLive) {
+        setTelemetrySource("TIMETABLE PROJECTION");
+      }
       setIotData((prev) => normalizeCampusIoT(response?.data, prev));
     } catch (_error) {
       setIotData((prev) => normalizeCampusIoT(null, prev));
+      setTelemetrySource("TIMETABLE PROJECTION");
     }
   }, []);
 
@@ -302,6 +319,23 @@ export default function CampusMap3D() {
     };
     applyOrbit();
 
+    orbitControlsRef.current = {
+      zoomIn: () => {
+        orbitState.radius = Math.max(80, orbitState.radius - 80);
+        applyOrbit();
+      },
+      zoomOut: () => {
+        orbitState.radius = Math.min(1200, orbitState.radius + 80);
+        applyOrbit();
+      },
+      resetView: () => {
+        orbitState.theta = Math.PI * 0.3;
+        orbitState.phi = 1.1;
+        orbitState.radius = 650;
+        applyOrbit();
+      }
+    };
+
     const onDown = (e) => {
       dragging = true;
       prevMouse = { x: e.clientX, y: e.clientY };
@@ -337,17 +371,41 @@ export default function CampusMap3D() {
         setSelected(null);
       }
     };
+
+    let pinchDist = 0;
     const onTouchStart = (e) => {
       if (!e.touches?.length) return;
-      dragging = true;
-      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.touches.length === 1) {
+        dragging = true;
+        prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        dragging = false;
+        pinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
     };
     const onTouchMove = (e) => {
       if (!e.touches?.length) return;
-      onMove(e.touches[0]);
+      if (e.touches.length === 1 && dragging) {
+        onMove(e.touches[0]);
+      } else if (e.touches.length === 2) {
+        const newDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        if (pinchDist > 0) {
+          const delta = (pinchDist - newDist) * 1.6;
+          orbitState.radius = Math.max(80, Math.min(1200, orbitState.radius + delta));
+          applyOrbit();
+        }
+        pinchDist = newDist;
+      }
     };
     const onTouchEnd = () => {
       dragging = false;
+      pinchDist = 0;
     };
     const onVisibilityChange = () => {
       visibilityRef.current.hidden = document.visibilityState !== "visible";
@@ -515,7 +573,21 @@ export default function CampusMap3D() {
         style={{ background: "linear-gradient(to bottom, rgba(11,15,30,0.95), transparent)" }}
       >
         <div>
-          <p className="text-white font-bold text-base leading-tight">RIT Chennai Campus</p>
+          <div className="flex items-center gap-2">
+            <p className="text-white font-bold text-base leading-tight">RIT Chennai Campus</p>
+            <button
+              type="button"
+              onClick={() => setShowProvenanceInfo(!showProvenanceInfo)}
+              title="Click to view sensor telemetry provenance"
+              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                telemetrySource.includes("LIVE")
+                  ? "bg-emerald-950 text-emerald-300 border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+                  : "bg-blue-950 text-blue-300 border-blue-600"
+              }`}
+            >
+              ● {telemetrySource} ℹ️
+            </button>
+          </div>
           <p className="text-blue-400 text-xs font-mono">
             13.0382N 80.0454E · 10.88 acres
             {osmLoaded && <span className="ml-2 text-green-400">● OSM</span>}
@@ -539,8 +611,17 @@ export default function CampusMap3D() {
             </button>
           ))}
           <button
+            onClick={() => setShowGlossary(true)}
+            type="button"
+            title="Open Simulation Glossary & Guide"
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-950/80 text-blue-300 border border-blue-600/50 hover:bg-blue-900 transition-all ml-1"
+          >
+            📖 Glossary
+          </button>
+          <button
             onClick={loadIoTData}
             type="button"
+            title="Refresh IoT Telemetry"
             className="px-2.5 py-1 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-gray-700 transition-all ml-1"
           >
             ⟳
@@ -548,7 +629,89 @@ export default function CampusMap3D() {
         </div>
       </div>
 
-      <div className="absolute top-16 right-4 z-10 bg-black bg-opacity-70 backdrop-blur rounded-xl p-3 text-xs">
+      {/* Floating Zoom & Camera Dock for Mobile & Desktop */}
+      <div className="absolute top-20 right-4 z-20 flex flex-col gap-1.5 bg-black/80 backdrop-blur border border-gray-800 p-1.5 rounded-xl shadow-xl">
+        <button
+          type="button"
+          onClick={() => orbitControlsRef.current?.zoomIn?.()}
+          title="Zoom In"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          onClick={() => orbitControlsRef.current?.zoomOut?.()}
+          title="Zoom Out"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          onClick={() => orbitControlsRef.current?.resetView?.()}
+          title="Reset Orbit View"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-gray-300 hover:text-white text-xs font-bold flex items-center justify-center transition-all"
+        >
+          ⊙
+        </button>
+      </div>
+
+      {/* Mobile Pinch Gesture Guidance Banner */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 px-3 py-1 bg-black/75 backdrop-blur border border-gray-800 rounded-full text-[11px] text-gray-300 font-medium pointer-events-none shadow-lg">
+        📱 Pinch to zoom · 1 finger to rotate · 2 fingers to pan
+      </div>
+
+      {showProvenanceInfo && (
+        <div className="absolute top-16 left-4 z-30 max-w-sm bg-gray-950 bg-opacity-95 border border-blue-500/50 backdrop-blur rounded-xl p-3.5 text-xs text-gray-200 shadow-2xl">
+          <div className="flex justify-between items-start mb-2">
+            <span className="font-bold text-blue-400 text-xs uppercase tracking-wider">Spatial Telemetry Provenance</span>
+            <button type="button" onClick={() => setShowProvenanceInfo(false)} className="text-gray-400 hover:text-white font-bold text-sm ml-2">✕</button>
+          </div>
+          <p className="mb-2 leading-relaxed text-gray-300">
+            <strong>Expectation vs. Reality:</strong> The 3D campus model calculates crowd density and room occupancy from <em>timetabled course enrollments & scheduled room capacities</em>, not physical GPS seat tracking.
+          </p>
+          <p className="leading-relaxed text-gray-300">
+            When hardware IoT turnstiles or smart energy meters report data via the Ingestion Gateway (<code className="text-emerald-300 font-mono">/api/twin/iot/ingest</code>), the badge updates to <strong>LIVE IOT SENSOR STREAM</strong>.
+          </p>
+        </div>
+      )}
+
+      {showGlossary && (
+        <div className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-blue-500/60 rounded-2xl max-w-md w-full p-5 text-gray-200 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-2 border-b border-gray-800">
+              <h3 className="text-base font-bold text-blue-400">📖 Digital Twin & Simulation Glossary</h3>
+              <button onClick={() => setShowGlossary(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
+            </div>
+            <div className="space-y-3 text-xs leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+              <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
+                <strong className="text-amber-400 block mb-0.5">HVAC Base Load</strong>
+                <span>The constant electrical power (kW) consumed by campus chillers, ventilation fans, and common area lighting, modeled before occupancy scaling.</span>
+              </div>
+              <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
+                <strong className="text-emerald-400 block mb-0.5">Peak Density Horizon</strong>
+                <span>The 30-minute schedule window where classroom seating capacity approaches or exceeds 85% utilization across campus departments.</span>
+              </div>
+              <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
+                <strong className="text-cyan-400 block mb-0.5">Algorithmic Projection vs. Live Telemetry</strong>
+                <span>Unless physical IoT sensors stream real-time headcounts (<code className="text-emerald-300">/twin/iot/live</code>), occupancy is projected mathematically from registered student batches assigned to each room.</span>
+              </div>
+              <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
+                <strong className="text-purple-400 block mb-0.5">3D Draco & Mesh LOD (Level-of-Detail)</strong>
+                <span>Geometric polygon compression reducing Three.js GPU memory footprint to maintain 60 FPS on low-power mobile devices.</span>
+              </div>
+            </div>
+            <div className="pt-2 text-right">
+              <button onClick={() => setShowGlossary(false)} className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold cursor-pointer">
+                Close Guide
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="absolute top-36 right-4 z-10 bg-black bg-opacity-70 backdrop-blur rounded-xl p-3 text-xs">
         <p className="text-gray-400 uppercase tracking-widest text-[10px] mb-2 font-semibold">Legend</p>
         {[["#00E676", "Normal / Low"], ["#FFEA00", "Moderate"], ["#FF5252", "High / Critical"]].map(
           ([color, label]) => (

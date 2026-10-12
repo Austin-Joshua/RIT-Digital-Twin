@@ -24,6 +24,34 @@ public class DigitalTwinController {
     private final CampusSpatialService campusSpatialService;
     private final CampusStateService campusStateService;
     private final SimulatedSourceService simulatedSourceService;
+    private final IoTIngestionGatewayService ioTIngestionGatewayService;
+    private final IoTTimeSeriesRollupService ioTTimeSeriesRollupService;
+
+    @PostMapping("/iot/ingest")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
+    public ResponseEntity<Map<String, Object>> ingestSensorData(@RequestBody com.university.erp.dto.IoTSensorTelemetryDto telemetry) {
+        return ResponseEntity.ok(ioTIngestionGatewayService.ingestTelemetry(telemetry));
+    }
+
+    @GetMapping("/iot/live")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<com.university.erp.dto.IoTSensorTelemetryDto>> liveSensorSnapshot() {
+        return ResponseEntity.ok(ioTIngestionGatewayService.getLiveSnapshot());
+    }
+
+    @GetMapping("/iot/rollup")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Map<String, Object>>> getRollup(
+            @RequestParam String metricType,
+            @RequestParam String locationCode) {
+        return ResponseEntity.ok(ioTTimeSeriesRollupService.getRollupFor(metricType, locationCode));
+    }
+
+    @GetMapping("/iot/rollup-stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getRollupStats() {
+        return ResponseEntity.ok(ioTTimeSeriesRollupService.getRollupStats());
+    }
 
     @GetMapping("/spatial")
     @PreAuthorize("isAuthenticated()")

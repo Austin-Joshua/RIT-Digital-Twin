@@ -17,8 +17,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,9 +47,9 @@ public class TimetableService {
     private static final String APPROVAL_STATUS_APPROVED = "APPROVED";
     private static final Map<String, Integer> CURRICULUM_PERIODS_BY_CODE = buildCurriculumPeriodMap();
 
-    private static final PDType1Font HELVETICA = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-    private static final PDType1Font HELVETICA_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    private static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+    private static final PDFont HELVETICA = PDType1Font.HELVETICA;
+    private static final PDFont HELVETICA_BOLD = PDType1Font.HELVETICA_BOLD;
+    private static final PDFont HELVETICA_OBLIQUE = PDType1Font.HELVETICA_OBLIQUE;
 
     private final TimetableSlotRepository timetableSlotRepository;
     private final StudentRepository studentRepository;

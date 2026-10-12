@@ -1,0 +1,17 @@
+{
+  "short_name": "RIT Twin",
+  "name": "RIT Digital Twin ERP",
+  "description": "Smart Campus Intelligence & ERP Platform for Rajalakshmi Institute of Technology",
+  "icons": [
+    {
+      "src": "/assets/images/digital-twin-tree.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F8FAFC",
+  "theme_color": "#0B2C6B",
+  "display": "standalone",
+  "orientation": "portrait"
+}
