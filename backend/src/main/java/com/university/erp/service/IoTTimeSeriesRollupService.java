@@ -49,9 +49,9 @@ public class IoTTimeSeriesRollupService {
                         .collect(Collectors.groupingBy(m -> m.getMetricType() + ":" + m.getLocationCode()));
 
                 grouped.forEach((key, list) -> {
-                    double avg = list.stream().mapToDouble(DigitalTwinMetrics::getValue).average().orElse(0.0);
-                    double min = list.stream().mapToDouble(DigitalTwinMetrics::getValue).min().orElse(0.0);
-                    double max = list.stream().mapToDouble(DigitalTwinMetrics::getValue).max().orElse(0.0);
+                    double avg = list.stream().filter(m -> m != null && m.getValue() != null).mapToDouble(m -> m.getValue().doubleValue()).average().orElse(0.0);
+                    double min = list.stream().filter(m -> m != null && m.getValue() != null).mapToDouble(m -> m.getValue().doubleValue()).min().orElse(0.0);
+                    double max = list.stream().filter(m -> m != null && m.getValue() != null).mapToDouble(m -> m.getValue().doubleValue()).max().orElse(0.0);
 
                     Map<String, Object> bucket = new LinkedHashMap<>();
                     bucket.put("bucketTime", windowStart.toString());
