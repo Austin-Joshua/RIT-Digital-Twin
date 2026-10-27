@@ -234,7 +234,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
                 .lastVerifiedAt(verifiedDate).build());
 
-        Building techCentre = buildingRepository.save(Building.builder()
+        buildingRepository.save(Building.builder()
                 .name("Steve Jobs Future Tech Centre Block").code("TECH_CENTRE").totalCapacity(1200)
                 .baseEnergyLoad(new BigDecimal("220.0")).location("East Academic Wing")
                 .latitude(13.038458).longitude(80.045498)
@@ -244,7 +244,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
                 .lastVerifiedAt(verifiedDate).build());
 
-        Building cvRaman = buildingRepository.save(Building.builder()
+        buildingRepository.save(Building.builder()
                 .name("Sir C. V. Raman Block").code("CV_RAMAN").totalCapacity(1000)
                 .baseEnergyLoad(new BigDecimal("180.0")).location("Central Sciences Wing")
                 .latitude(13.038664).longitude(80.044559)
@@ -254,7 +254,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
                 .lastVerifiedAt(verifiedDate).build());
 
-        Building greenBuilding = buildingRepository.save(Building.builder()
+        buildingRepository.save(Building.builder()
                 .name("Green Building (Research & Innovation)").code("GREEN").totalCapacity(600)
                 .baseEnergyLoad(new BigDecimal("110.0")).location("North Research Quad")
                 .latitude(13.039191).longitude(80.044740)

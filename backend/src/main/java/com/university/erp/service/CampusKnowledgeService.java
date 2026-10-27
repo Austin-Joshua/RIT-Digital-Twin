@@ -187,10 +187,12 @@ public class CampusKnowledgeService {
 
         scored.sort((a, b) -> Integer.compare(b.score, a.score));
 
-        return scored.stream()
-                .limit(Math.max(1, maxResults))
-                .map(ScoredChunk::chunk)
-                .collect(Collectors.toList());
+        List<DocumentChunk> results = new ArrayList<>();
+        int limit = Math.min(scored.size(), Math.max(1, maxResults));
+        for (int i = 0; i < limit; i++) {
+            results.add(scored.get(i).chunk());
+        }
+        return results;
     }
 
     /**

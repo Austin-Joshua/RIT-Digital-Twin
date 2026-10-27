@@ -1261,7 +1261,6 @@ public class TimetableService {
                 document.addPage(page);
 
                 try (PDPageContentStream content = new PDPageContentStream(document, page)) {
-                    float width = page.getMediaBox().getWidth();
                     float height = page.getMediaBox().getHeight();
 
                     // Apply Official RIT College Branding: 24pt border, top-left logo, subtle watermark, footer
@@ -1392,7 +1391,7 @@ public class TimetableService {
         float height = mediaBox.getHeight();
 
         // 1. Page Border (24pt inset from page edges, 1.0pt solid black) - Source: BORDER.docx
-        content.setStrokingColor(0, 0, 0);
+        content.setStrokingColor(0f, 0f, 0f);
         content.setLineWidth(1.0f);
         content.addRect(24, 24, width - 48, height - 48);
         content.stroke();
@@ -1472,7 +1471,7 @@ public class TimetableService {
         content.newLineAtOffset(width - 85, 30);
         content.showText("Page " + pageNumber + " of " + totalPages);
         content.endText();
-        content.setNonStrokingColor(0, 0, 0);
+        content.setNonStrokingColor(0f, 0f, 0f);
     }
 
     private PDImageXObject loadRitLogo(PDDocument doc) {

@@ -1,22 +1,16 @@
 package com.university.erp.service;
 
-import com.university.erp.intelligence.EnergyFormula;
 import com.university.erp.intelligence.SourceClass;
 import com.university.erp.model.Building;
 import com.university.erp.model.Classroom;
-import com.university.erp.model.TimetableSlot;
-import com.university.erp.model.TransportRoute;
 import com.university.erp.repository.BuildingRepository;
 import com.university.erp.repository.CampusRecordQuery;
 import com.university.erp.repository.ClassroomRepository;
-import com.university.erp.repository.TimetableSlotRepository;
-import com.university.erp.repository.TransportRouteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -43,10 +37,7 @@ public class SyntheticTelemetryEngine {
 
     private final BuildingRepository buildingRepository;
     private final ClassroomRepository classroomRepository;
-    private final TimetableSlotRepository timetableSlotRepository;
-    private final TransportRouteRepository transportRouteRepository;
     private final CampusRecordQuery campusRecordQuery;
-    private final ScenarioSimulationService scenarioSimulationService;
 
     /**
      * Generates a deterministic time-series curve for a specific metric and scenario.
@@ -124,6 +115,8 @@ public class SyntheticTelemetryEngine {
         response.put("scenarioId", scenarioId != null ? scenarioId : "normal-day");
         response.put("source", SourceClass.SIMULATED.name());
         response.put("provenance", "SYNTHETIC");
+        response.put("monitoredClassrooms", classrooms.size());
+        response.put("activeSections", sectionCounts.size());
         response.put("points", points);
         response.put("because", "Deterministic time-series generated from scheduled timetable, diurnal curves, and scenario levers.");
         return response;

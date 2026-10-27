@@ -3,26 +3,19 @@ package com.university.erp.intelligence.tool;
 import com.university.erp.intelligence.SourceClass;
 import com.university.erp.model.Building;
 import com.university.erp.model.Classroom;
-import com.university.erp.model.TimetableSlot;
 import com.university.erp.repository.BuildingRepository;
 import com.university.erp.repository.ClassroomRepository;
-import com.university.erp.repository.TimetableSlotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class CampusBuildingGeometryTool implements CampusTool {
 
-    private static final ZoneId CAMPUS_ZONE = ZoneId.of("Asia/Kolkata");
-
     private final BuildingRepository buildingRepository;
     private final ClassroomRepository classroomRepository;
-    private final TimetableSlotRepository timetableSlotRepository;
 
     @Override
     public String name() {

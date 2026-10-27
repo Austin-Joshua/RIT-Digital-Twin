@@ -3,9 +3,7 @@ package com.university.erp.intelligence;
 import com.university.erp.intelligence.tool.*;
 import com.university.erp.model.Building;
 import com.university.erp.model.Classroom;
-import com.university.erp.model.DigitalTwinMetrics;
 import com.university.erp.model.TimetableSlot;
-import com.university.erp.model.TransportRoute;
 import com.university.erp.repository.*;
 import com.university.erp.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +28,6 @@ class CampusToolRegistryTest {
     private CampusStateService campusStateService;
     private ScenarioSimulationService scenarioSimulationService;
     private TransportRouteRepository transportRouteRepository;
-    private BusStopRepository busStopRepository;
     private StudentTransportRepository studentTransportRepository;
     private AiService aiService;
     private CrowdFlowService crowdFlowService;
@@ -49,7 +45,6 @@ class CampusToolRegistryTest {
         campusStateService = Mockito.mock(CampusStateService.class);
         scenarioSimulationService = Mockito.mock(ScenarioSimulationService.class);
         transportRouteRepository = Mockito.mock(TransportRouteRepository.class);
-        busStopRepository = Mockito.mock(BusStopRepository.class);
         studentTransportRepository = Mockito.mock(StudentTransportRepository.class);
         aiService = Mockito.mock(AiService.class);
         crowdFlowService = Mockito.mock(CrowdFlowService.class);
@@ -94,7 +89,7 @@ class CampusToolRegistryTest {
                 new RoomUtilizationTool(classroomRepository, timetableSlotRepository),
                 new EnergyMetricsTool(buildingRepository, timetableSlotRepository, metricsRepository),
                 new EnergyAnomalyTool(buildingRepository, timetableSlotRepository),
-                new TransportMetricsTool(transportRouteRepository, busStopRepository, studentTransportRepository, aiService),
+                new TransportMetricsTool(transportRouteRepository, studentTransportRepository, aiService),
                 new CrowdSimulationTool(crowdFlowService, predictiveEngine),
                 new CampusSimulationTool(scenarioSimulationService),
                 new EsgMetricsTool(buildingRepository, transportRouteRepository),
@@ -103,7 +98,7 @@ class CampusToolRegistryTest {
                 new CompareScenariosTool(scenarioSimulationService),
                 new SyntheticTelemetryTool(syntheticTelemetryEngine),
                 new MissionEvaluationTool(campusMissionService),
-                new CampusBuildingGeometryTool(buildingRepository, classroomRepository, timetableSlotRepository)
+                new CampusBuildingGeometryTool(buildingRepository, classroomRepository)
         );
 
         registry = new CampusToolRegistry(tools);

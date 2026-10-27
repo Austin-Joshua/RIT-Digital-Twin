@@ -1,9 +1,7 @@
 package com.university.erp.intelligence.tool;
 
 import com.university.erp.intelligence.SourceClass;
-import com.university.erp.model.BusStop;
 import com.university.erp.model.TransportRoute;
-import com.university.erp.repository.BusStopRepository;
 import com.university.erp.repository.StudentTransportRepository;
 import com.university.erp.repository.TransportRouteRepository;
 import com.university.erp.service.AiService;
@@ -17,7 +15,6 @@ import java.util.*;
 public class TransportMetricsTool implements CampusTool {
 
     private final TransportRouteRepository transportRouteRepository;
-    private final BusStopRepository busStopRepository;
     private final StudentTransportRepository studentTransportRepository;
     private final AiService aiService;
 

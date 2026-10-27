@@ -42,7 +42,8 @@ public class RoomUtilizationTool implements CampusTool {
         Map<Long, Long> allocatedCounts = new HashMap<>();
         for (TimetableSlot slot : allSlots) {
             if (slot.getClassroom() != null && slot.getClassroom().getId() != null) {
-                allocatedCounts.merge(slot.getClassroom().getId(), 1L, Long::sum);
+                Long roomId = slot.getClassroom().getId();
+                allocatedCounts.put(roomId, allocatedCounts.getOrDefault(roomId, 0L) + 1L);
             }
         }
 
@@ -57,7 +58,7 @@ public class RoomUtilizationTool implements CampusTool {
         }
 
         // Sort ascending by utilization to highlight lowest utilized rooms
-        stats.sort(Comparator.comparingDouble(RoomStat::utilPct));
+        stats.sort((a, b) -> Double.compare(a.utilPct(), b.utilPct()));
 
         List<RoomStat> underutilized = stats.stream().filter(s -> s.utilPct() < 35.0).toList();
         List<RoomStat> overutilized = stats.stream().filter(s -> s.utilPct() > 80.0).toList();

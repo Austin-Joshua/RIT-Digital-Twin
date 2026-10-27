@@ -29,13 +29,13 @@ public class CompareScenariosTool implements CampusTool {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ToolResult execute(Map<String, Object> params, String userRole) {
         String query = params != null && params.get("query") != null ? String.valueOf(params.get("query")).toLowerCase(Locale.ROOT) : "";
 
         // Resolve presets to compare based on query
         List<Map<String, Object>> selectedScenarios = new ArrayList<>();
         Map<String, Object> catalog = scenarioSimulationService.catalog();
-        @SuppressWarnings("unchecked")
         List<Map<String, Object>> presets = (List<Map<String, Object>>) catalog.getOrDefault("presets", List.of());
 
         if (query.contains("exam")) {

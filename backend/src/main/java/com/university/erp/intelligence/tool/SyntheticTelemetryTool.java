@@ -5,7 +5,6 @@ import com.university.erp.service.SyntheticTelemetryEngine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.util.*;
 
 @Component

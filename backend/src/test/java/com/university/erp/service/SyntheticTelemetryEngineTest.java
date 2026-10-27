@@ -1,12 +1,9 @@
 package com.university.erp.service;
 
 import com.university.erp.model.Building;
-import com.university.erp.model.Classroom;
 import com.university.erp.repository.BuildingRepository;
 import com.university.erp.repository.CampusRecordQuery;
 import com.university.erp.repository.ClassroomRepository;
-import com.university.erp.repository.TimetableSlotRepository;
-import com.university.erp.repository.TransportRouteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,10 +21,7 @@ class SyntheticTelemetryEngineTest {
 
     private BuildingRepository buildingRepository;
     private ClassroomRepository classroomRepository;
-    private TimetableSlotRepository timetableSlotRepository;
-    private TransportRouteRepository transportRouteRepository;
     private CampusRecordQuery campusRecordQuery;
-    private ScenarioSimulationService scenarioSimulationService;
 
     private SyntheticTelemetryEngine engine;
 
@@ -35,10 +29,7 @@ class SyntheticTelemetryEngineTest {
     void setUp() {
         buildingRepository = Mockito.mock(BuildingRepository.class);
         classroomRepository = Mockito.mock(ClassroomRepository.class);
-        timetableSlotRepository = Mockito.mock(TimetableSlotRepository.class);
-        transportRouteRepository = Mockito.mock(TransportRouteRepository.class);
         campusRecordQuery = Mockito.mock(CampusRecordQuery.class);
-        scenarioSimulationService = Mockito.mock(ScenarioSimulationService.class);
 
         Building b1 = new Building();
         b1.setId(1L);
@@ -58,10 +49,7 @@ class SyntheticTelemetryEngineTest {
         engine = new SyntheticTelemetryEngine(
                 buildingRepository,
                 classroomRepository,
-                timetableSlotRepository,
-                transportRouteRepository,
-                campusRecordQuery,
-                scenarioSimulationService
+                campusRecordQuery
         );
     }
 

@@ -50,10 +50,6 @@ public class EnergyAnomalyTool implements CampusTool {
         List<TimetableSlot> allDaySlots = timetableSlotRepository.findByDayOfWeekIgnoreCase(dayName);
         LocalTime currentTime = now.toLocalTime();
 
-        // Calculate nominal average classes per hour for normalization
-        long totalDayClasses = allDaySlots.size();
-        double avgClassesPerHour = Math.max(1.0, (double) totalDayClasses / 8.0);
-
         List<List<Object>> tableRows = new ArrayList<>();
         List<String> anomalyDescriptions = new ArrayList<>();
         int anomalyCount = 0;

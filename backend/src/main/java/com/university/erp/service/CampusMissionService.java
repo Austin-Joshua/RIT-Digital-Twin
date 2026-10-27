@@ -72,6 +72,7 @@ public class CampusMissionService {
     }
 
     @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
     public Map<String, Object> evaluateMission(String missionId, Map<String, Object> candidateAdjustments) {
         MissionDef def = getMission(missionId).orElse(MISSIONS.get(0));
 
@@ -82,7 +83,6 @@ public class CampusMissionService {
 
         Map<String, Object> simulationResult = scenarioSimulationService.preview(previewReq);
 
-        @SuppressWarnings("unchecked")
         List<Map<String, Object>> scenarioList = (List<Map<String, Object>>) simulationResult.get("scenarios");
         Map<String, Object> currentMetrics = (Map<String, Object>) simulationResult.get("current");
 
@@ -91,9 +91,7 @@ public class CampusMissionService {
         }
 
         Map<String, Object> evaluated = scenarioList.get(0);
-        @SuppressWarnings("unchecked")
         Map<String, Object> simulatedMetrics = (Map<String, Object>) evaluated.get("simulated");
-        @SuppressWarnings("unchecked")
         Map<String, Object> deltas = (Map<String, Object>) evaluated.get("deltas");
 
         // Extract key metrics
