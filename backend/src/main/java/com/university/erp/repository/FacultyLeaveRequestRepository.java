@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FacultyLeaveRequestRepository extends JpaRepository<FacultyLeaveRequest, Long> {
     long countByStatus(String status);
+    java.util.List<FacultyLeaveRequest> findByFacultyIdAndStatus(String facultyId, String status);
+    java.util.List<FacultyLeaveRequest> findByStatus(String status);
 }

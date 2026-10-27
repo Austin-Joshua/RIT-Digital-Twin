@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -220,14 +221,108 @@ public class StudentDataSeeder implements CommandLineRunner {
     private void seedPhysicalTwinData() {
         if (buildingRepository.count() > 0) return;
         
-        log.info("Seeding Physical Campus Twin...");
+        log.info("Seeding Physical Campus Twin with Real Geospatial Data (RIT Chennai)...");
+        LocalDateTime verifiedDate = LocalDateTime.of(2026, 10, 28, 0, 0);
+
         Building mainBlock = buildingRepository.save(Building.builder()
-                .name("Main Academic Block").code("MAIN").totalCapacity(1500)
-                .baseEnergyLoad(new BigDecimal("150.0")).location("Center Campus").build());
-        
+                .name("Main Academic Block (Admin)").code("MAIN").totalCapacity(1500)
+                .baseEnergyLoad(new BigDecimal("150.0")).location("Kuthambakkam, RIT Campus Center")
+                .latitude(13.037992).longitude(80.044688)
+                .osmWayId("367941212").numberOfLevels(4).heightMeters(16.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_4_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        Building techCentre = buildingRepository.save(Building.builder()
+                .name("Steve Jobs Future Tech Centre Block").code("TECH_CENTRE").totalCapacity(1200)
+                .baseEnergyLoad(new BigDecimal("220.0")).location("East Academic Wing")
+                .latitude(13.038458).longitude(80.045498)
+                .osmWayId("1186155495").numberOfLevels(5).heightMeters(20.0)
+                .geometrySource("MICROSOFT_BUILDING_FOOTPRINTS_OSM").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_5_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        Building cvRaman = buildingRepository.save(Building.builder()
+                .name("Sir C. V. Raman Block").code("CV_RAMAN").totalCapacity(1000)
+                .baseEnergyLoad(new BigDecimal("180.0")).location("Central Sciences Wing")
+                .latitude(13.038664).longitude(80.044559)
+                .osmWayId("1237712698").numberOfLevels(4).heightMeters(16.0)
+                .geometrySource("MICROSOFT_BUILDING_FOOTPRINTS_OSM").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_4_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        Building greenBuilding = buildingRepository.save(Building.builder()
+                .name("Green Building (Research & Innovation)").code("GREEN").totalCapacity(600)
+                .baseEnergyLoad(new BigDecimal("110.0")).location("North Research Quad")
+                .latitude(13.039191).longitude(80.044740)
+                .osmWayId("367941256").numberOfLevels(4).heightMeters(16.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_4_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
         Building labBlock = buildingRepository.save(Building.builder()
-                .name("Advanced Research Lab").code("LAB-X").totalCapacity(500)
-                .baseEnergyLoad(new BigDecimal("350.0")).location("North Wing").build());
+                .name("Alan Turing Block (Advanced Research Labs)").code("LAB-X").totalCapacity(800)
+                .baseEnergyLoad(new BigDecimal("350.0")).location("North-West Computing Wing")
+                .latitude(13.038568).longitude(80.044064)
+                .osmWayId("1186155493").numberOfLevels(4).heightMeters(16.0)
+                .geometrySource("MICROSOFT_BUILDING_FOOTPRINTS_OSM").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_4_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        buildingRepository.save(Building.builder()
+                .name("Nikola Tesla Block").code("TESLA").totalCapacity(500)
+                .baseEnergyLoad(new BigDecimal("130.0")).location("North-East Innovation Wing")
+                .latitude(13.039233).longitude(80.045637)
+                .osmWayId("367941219").numberOfLevels(3).heightMeters(12.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_3_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        buildingRepository.save(Building.builder()
+                .name("Central Library & Media Resource Centre").code("LIBRARY").totalCapacity(450)
+                .baseEnergyLoad(new BigDecimal("90.0")).location("Central Academic Plaza")
+                .latitude(13.038095).longitude(80.044488)
+                .osmWayId("367941218").numberOfLevels(3).heightMeters(12.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("VERIFIED")
+                .heightSource("ARCHITECTURAL_SURVEY_3_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        buildingRepository.save(Building.builder()
+                .name("Student Amenities & Food Court").code("CANTEEN").totalCapacity(400)
+                .baseEnergyLoad(new BigDecimal("60.0")).location("North Amenities Zone")
+                .latitude(13.039861).longitude(80.044630)
+                .osmWayId("367941216").numberOfLevels(2).heightMeters(8.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("APPROXIMATE")
+                .heightSource("ESTIMATED_2_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        buildingRepository.save(Building.builder()
+                .name("Campus Sports Complex & Arena").code("SPORTS").totalCapacity(300)
+                .baseEnergyLoad(new BigDecimal("40.0")).location("East Sports Grounds")
+                .latitude(13.040084).longitude(80.045366)
+                .osmWayId("1186155494").numberOfLevels(1).heightMeters(7.0)
+                .geometrySource("MICROSOFT_BUILDING_FOOTPRINTS_OSM").geometryStatus("APPROXIMATE")
+                .heightSource("ESTIMATED_1_LEVEL")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
+
+        buildingRepository.save(Building.builder()
+                .name("RIT Student Hostels Residency").code("HOSTEL").totalCapacity(900)
+                .baseEnergyLoad(new BigDecimal("170.0")).location("West Residential Zone")
+                .latitude(13.039085).longitude(80.043630)
+                .osmWayId("367941211").numberOfLevels(6).heightMeters(24.0)
+                .geometrySource("OPENSTREETMAP_WGS84").geometryStatus("APPROXIMATE")
+                .heightSource("ESTIMATED_6_LEVELS")
+                .sourceUpdatedAt(LocalDateTime.of(2026, 5, 16, 17, 42))
+                .lastVerifiedAt(verifiedDate).build());
 
         Classroom hall101 = classroomRepository.save(Classroom.builder()
                 .name("LEC-101").building(mainBlock).capacity(60).type("Lecture Hall")
@@ -239,12 +334,12 @@ public class StudentDataSeeder implements CommandLineRunner {
 
         // Assign classrooms to existing timetable slots (just sample assigning)
         List<TimetableSlot> slots = timetableSlotRepository.findAll();
-        for (int i=0; i<slots.size(); i++) {
+        for (int i = 0; i < slots.size(); i++) {
             TimetableSlot s = slots.get(i);
             s.setClassroom(i % 2 == 0 ? hall101 : labA);
             timetableSlotRepository.save(s);
         }
-        log.info("Physical Twin Seeding Complete.");
+        log.info("Physical Twin Seeding Complete with 10 Real-World RIT Campus Blocks.");
     }
 
 

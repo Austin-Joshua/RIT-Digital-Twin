@@ -13,4 +13,7 @@ public class TimetableSlotViewDto {
     private String section;
     private TimetableSlotSubjectViewDto subject;
     private TimetableSlotFacultyViewDto faculty;
+    private Boolean isSubstituted;
+    private String substituteFacultyName;
+    private String substitutionStatus;
 }

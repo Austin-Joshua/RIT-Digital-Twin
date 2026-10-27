@@ -52,6 +52,8 @@ public class CampusCopilotService {
     private final UserRepository userRepository;
     private final DigitalTwinMetricsRepository metricsRepository;
     private final CampusDecisionService campusDecisionService;
+    private final com.university.erp.intelligence.tool.CampusToolRegistry campusToolRegistry;
+    private final CampusKnowledgeService campusKnowledgeService;
 
     @Transactional(readOnly = true)
     public Map<String, Object> briefing(String page, String entity) {
@@ -68,7 +70,7 @@ public class CampusCopilotService {
             text = "The energy page uses the stored formula, base load plus 5.5 kW per class. No meter series is connected, so an increase cannot be proven from this page.";
             view(actions, role, "VIEW", "Open energy formula", "/simulations/energy");
         } else {
-            text = "Ask about campus state, a timetable hour, stored energy samples, or academic records this role can see. If a record is missing, the answer will say so.";
+            text = "Ask about campus state, space utilization, energy anomalies, transport logistics, ESG scoring, or scenario simulations.";
         }
         if (entity != null && !entity.isBlank() && operational(role)) {
             text = text + " Selected entity: " + entity.trim() + ".";
@@ -84,9 +86,72 @@ public class CampusCopilotService {
         if (text.isBlank()) {
             return briefing(page, entity);
         }
+        // 1. Academic Risk (Strict Role & Privacy Boundary)
         if (lower.contains("academic risk") || lower.contains("at risk") || lower.contains("which students")) {
             return academicRisk(role, lower);
         }
+        // 2. Planning Decisions Workflow
+        if (lower.contains("decision") || lower.contains("recommend") || lower.contains("authoriz")) {
+            return decisions(role);
+        }
+
+        // 3. Dynamic Digital Twin Tools Routing
+        String toolName = campusToolRegistry.routeQueryToTool(text);
+        if (toolName != null) {
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("query", text);
+            params.put("page", page);
+            if (entity != null && !entity.isBlank()) {
+                params.put("entity", entity.trim());
+                params.put("building", entity.trim());
+            } else {
+                String needle = entityNeedle(text, null);
+                if (!needle.isBlank()) {
+                    params.put("building", needle);
+                }
+            }
+            LocalDate parsedDay = dayFrom(text);
+            if (parsedDay != null) {
+                params.put("day", parsedDay.getDayOfWeek().name());
+            }
+            LocalTime parsedTime = timeFrom(text);
+            if (parsedTime != null) {
+                params.put("time", parsedTime.toString());
+            }
+            // Parse numeric percentages for simulation
+            java.util.regex.Matcher intPct = java.util.regex.Pattern.compile("([+-]?\\d+)\\s*%").matcher(text);
+            if (intPct.find()) {
+                params.put("intakePercent", Integer.parseInt(intPct.group(1)));
+            }
+
+            com.university.erp.intelligence.tool.ToolResult toolResult = campusToolRegistry.execute(toolName, params, role);
+            if (toolResult != null) {
+                if (toolResult.success()) {
+                    Map<String, Object> body = toolResult.toMap();
+                    // Attach relevant RAG citations if available
+                    List<CampusKnowledgeService.DocumentChunk> ragDocs = campusKnowledgeService.search(text, role, 2);
+                    if (!ragDocs.isEmpty()) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> citations = (List<Map<String, Object>>) body.computeIfAbsent("citations", k -> new ArrayList<>());
+                        for (CampusKnowledgeService.DocumentChunk doc : ragDocs) {
+                            Map<String, Object> c = new LinkedHashMap<>();
+                            c.put("title", doc.title());
+                            c.put("section", doc.section());
+                            c.put("citation", doc.citation());
+                            c.put("excerpt", doc.content());
+                            if (!citations.contains(c)) {
+                                citations.add(c);
+                            }
+                        }
+                    }
+                    return body;
+                } else if (toolResult.answer() != null && toolResult.answer().contains("Access Denied")) {
+                    return toolResult.toMap();
+                }
+            }
+        }
+
+        // 4. Legacy / Fallback Handlers
         if ((lower.contains("available") || lower.contains("free")) && (lower.contains("classroom") || lower.contains("room"))) {
             return availability(text);
         }
@@ -102,25 +167,20 @@ public class CampusCopilotService {
         if (lower.contains("compare") || lower.contains("scenario") || lower.contains("simulation")) {
             return compare(role);
         }
-        if (lower.contains("decision") || lower.contains("recommend") || lower.contains("authoriz")) {
-            return decisions(role);
-        }
         if (lower.contains("predict") || lower.contains("forecast")) {
             return predictions(role);
         }
         if (lower.equals("why") || lower.equals("why?") || lower.startsWith("explain")) {
             return explain(role);
         }
-        if (lower.contains("report")) {
-            List<Map<String, Object>> actions = new ArrayList<>();
-            view(actions, role, "VIEW", "Open analytics", "/analytics");
-            return answer("A generated campus report is not connected. I will not create one from estimated figures."
-                    + (actions.isEmpty() ? "" : " The existing analytics page can be opened instead."), actions, "No report writer is connected.");
-        }
         if (lower.contains("alert") || lower.contains("campus state") || lower.contains("anomaly")) {
             return answer(campusBrief(role, new ArrayList<>()), pageActions(role), "Campus state from the current timetable snapshot.");
         }
         return unavailable(role, text);
+    }
+
+    public List<Map<String, Object>> getAvailableTools() {
+        return campusToolRegistry.getToolsForRole(role());
     }
 
     private Map<String, Object> academicRisk(String role, String lower) {

@@ -33,6 +33,12 @@ public class CampusCopilotController {
         return ResponseEntity.ok(campusCopilotService.briefing(page, entity));
     }
 
+    @GetMapping("/tools")
+    @PreAuthorize("hasAnyRole('ADMIN','HOD','FACULTY','STUDENT','PARENT')")
+    public ResponseEntity<java.util.List<Map<String, Object>>> tools() {
+        return ResponseEntity.ok(campusCopilotService.getAvailableTools());
+    }
+
     @PostMapping("/ask")
     @PreAuthorize("hasAnyRole('ADMIN','HOD','FACULTY','STUDENT','PARENT')")
     public ResponseEntity<Map<String, Object>> ask(@RequestBody Map<String, Object> body, Authentication authentication) {

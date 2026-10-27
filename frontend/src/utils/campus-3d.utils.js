@@ -4,6 +4,8 @@ export function extrudeBuilding(footprint, height, options = {}) {
   const {
     bodyColor = "#C5A882",
     roofColor = "#8B7355",
+    transparent = false,
+    opacity = 1.0,
   } = options;
 
   const group = new THREE.Group();
@@ -25,6 +27,8 @@ export function extrudeBuilding(footprint, height, options = {}) {
     color: bodyColor,
     specular: "#666666",
     shininess: 20,
+    transparent,
+    opacity,
   });
   const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
   bodyMesh.castShadow = true;
@@ -33,17 +37,22 @@ export function extrudeBuilding(footprint, height, options = {}) {
 
   const roofGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.8, bevelEnabled: false });
   roofGeo.rotateX(-Math.PI / 2);
-  const roofMesh = new THREE.Mesh(roofGeo, new THREE.MeshPhongMaterial({ color: roofColor }));
+  const roofMat = new THREE.MeshPhongMaterial({
+    color: roofColor,
+    transparent,
+    opacity,
+  });
+  const roofMesh = new THREE.Mesh(roofGeo, roofMat);
   roofMesh.position.y = height;
   roofMesh.castShadow = true;
   group.add(roofMesh);
 
   const floorLinesMat = new THREE.LineBasicMaterial({
-    color: "#00000030",
+    color: "#000000",
     transparent: true,
-    opacity: 0.3,
+    opacity: transparent ? opacity * 0.3 : 0.3,
   });
-  const floorCount = Math.round(height / 4);
+  const floorCount = Math.max(1, Math.round(height / 4));
   for (let floor = 1; floor < floorCount; floor += 1) {
     const pts = footprint.map(([x, z]) => new THREE.Vector3(x, floor * (height / floorCount), z));
     pts.push(pts[0].clone());
@@ -51,7 +60,7 @@ export function extrudeBuilding(footprint, height, options = {}) {
     group.add(floorLine);
   }
 
-  return { group, bodyMesh, bodyMat };
+  return { group, bodyMesh, bodyMat, roofMesh, roofMat };
 }
 
 export function createIoTOrb(color = "#00E676", yOffset = 0) {
@@ -88,6 +97,20 @@ export function valueToColor(value) {
   if (value < 0.35) return "#00E676";
   if (value < 0.7) return "#FFEA00";
   return "#FF5252";
+}
+
+export function statusToColor(status) {
+  switch (status?.toUpperCase()) {
+    case 'VERIFIED':
+      return '#10B981'; // Emerald Green
+    case 'APPROXIMATE':
+      return '#F59E0B'; // Amber / Gold
+    case 'INCOMPLETE':
+      return '#EF4444'; // Red / Crimson
+    case 'UNVERIFIED':
+    default:
+      return '#6B7280'; // Slate Gray
+  }
 }
 
 export function createTree(x, z) {

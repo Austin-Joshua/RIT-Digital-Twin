@@ -1,46 +1,530 @@
-.sim-lab, .sim-result { display: flex; flex-direction: column; gap: 16px; }
-.sim-banner, .sim-card, .sim-scenario {
-  background: var(--card-bg);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--radius-md);
-  padding: 14px;
+/* ==========================================================================
+   Smart Campus Intelligence Lab & Scenario Studio Styles
+   ========================================================================== */
+
+.sim-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--theme-text, #f1f5f9);
 }
-.sim-banner { border-left: 4px solid var(--color-warning, #b45309); }
-.sim-banner strong, .sim-kicker { letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px; }
-.sim-banner p, .sim-note, .sim-card p, .sim-scenario p { margin: 6px 0 0; color: var(--theme-text-muted); font-size: 13px; }
-.sim-layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; align-items: start; }
-.sim-presets, .sim-tabs, .sim-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.sim-presets button, .sim-tabs button, .sim-actions button, .sim-run {
-  min-height: 36px;
-  border: 1px solid var(--theme-border);
-  background: var(--theme-bg);
-  color: var(--theme-text);
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
+
+.sim-kicker {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent-gold, #d4af37);
+  margin-bottom: 4px;
+}
+
+.sim-note {
+  margin: 6px 0 0;
+  color: var(--theme-text-muted, #94a3b8);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Lab Nav Tabs */
+.sim-mode-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--theme-border, #334155);
+  padding-bottom: 8px;
+}
+
+.sim-mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--theme-text-muted, #94a3b8);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-mode-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--theme-text, #f1f5f9);
+}
+
+.sim-mode-tab.active {
+  background: var(--color-primary-navy, #1e3a5f);
+  color: #ffffff;
+  border-color: var(--color-accent-gold, #d4af37);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+}
+
+/* Banners & Notice Cards */
+.sim-banner {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--theme-border, #334155);
+  border-left: 4px solid var(--color-accent-gold, #d4af37);
+  border-radius: var(--radius-md, 12px);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sim-banner-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sim-provenance-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent-gold, #d4af37);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* Preset Cards Studio Grid */
+.sim-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.sim-preset-card {
+  background: var(--card-bg, #0f172a);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-md, 10px);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sim-preset-card:hover {
+  border-color: var(--color-accent-gold, #d4af37);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.sim-preset-card.active {
+  border-color: var(--color-accent-gold, #d4af37);
+  background: rgba(30, 58, 95, 0.4);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.2);
+}
+
+.sim-preset-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sim-preset-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--theme-text-muted, #94a3b8);
+}
+
+.sim-preset-desc {
+  font-size: 12px;
+  color: var(--theme-text-muted, #94a3b8);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.sim-preset-affected {
+  font-size: 11px;
+  color: #38bdf8;
+  margin-top: 4px;
+}
+
+/* Main Studio Layout */
+.sim-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sim-card {
+  background: var(--card-bg, #0f172a);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-md, 12px);
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.sim-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sim-tabs button {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--theme-border, #334155);
+  background: var(--theme-bg, #020617);
+  color: var(--theme-text, #f1f5f9);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-tabs button.active {
+  border-color: var(--color-accent-gold, #d4af37);
+  background: var(--color-primary-navy, #1e3a5f);
+  color: #ffffff;
+}
+
+/* Form Controls & Sliders */
+.sim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sim-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sim-field-val {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--color-accent-gold, #d4af37);
+}
+
+.sim-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-accent-gold, #d4af37);
+  height: 6px;
+  border-radius: 3px;
+  background: #1e293b;
   cursor: pointer;
 }
-.sim-tabs button.active, .sim-presets button:hover { border-color: var(--color-accent-gold); }
-.sim-field { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; font-size: 13px; }
-.sim-field input[type="range"] { width: 100%; }
-.sim-field input[type="number"], .sim-field input[type="text"] {
-  min-height: 36px;
-  border: 1px solid var(--theme-border);
-  background: var(--theme-bg);
-  color: var(--theme-text);
-  border-radius: var(--radius-sm);
-  padding: 6px 8px;
+
+.sim-field input[type="text"],
+.sim-field select {
+  min-height: 38px;
+  border: 1px solid var(--theme-border, #334155);
+  background: var(--theme-bg, #020617);
+  color: var(--theme-text, #f1f5f9);
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px 10px;
+  font-size: 13px;
 }
-.sim-field input[type="number"] { width: 88px; }
-.sim-field input[type="text"] { width: 100%; box-sizing: border-box; }
-.sim-run { background: var(--color-primary-navy); color: white; border: 0; }
-.sim-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
-.sim-metrics article { border: 1px solid var(--theme-border); border-radius: var(--radius-sm); padding: 10px; }
-.sim-metrics strong { display: block; font-size: 1.2rem; margin: 4px 0; }
-.sim-delta-up { color: var(--color-danger, #b42318); }
-.sim-delta-down { color: var(--color-success, #067647); }
-.sim-chart { height: 280px; }
-.sim-buildings { display: grid; gap: 8px; }
-.sim-unsupported { opacity: 0.8; }
-@media (max-width: 900px) {
-  .sim-layout { grid-template-columns: 1fr; }
+
+.sim-field select {
+  cursor: pointer;
+}
+
+.sim-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.sim-actions button {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--theme-border, #334155);
+  background: var(--theme-bg, #020617);
+  color: var(--theme-text, #f1f5f9);
+}
+
+.sim-run-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #1e3a5f, #0f766e) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+}
+
+.sim-run-btn:hover:not(:disabled) {
+  filter: brightness(1.15);
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.45);
+}
+
+.sim-run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Metric Delta Badges */
+.sim-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.sim-metric-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-sm, 8px);
+  padding: 14px;
+  position: relative;
+}
+
+.sim-metric-label {
+  font-size: 12px;
+  color: var(--theme-text-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sim-metric-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 6px 0;
+  font-family: monospace;
+}
+
+.sim-delta-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sim-delta-good {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.sim-delta-warn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.sim-delta-neutral {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+/* Side-by-side Table */
+.sim-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 14px;
+}
+
+.sim-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.sim-matrix-table th,
+.sim-matrix-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--theme-border, #334155);
+}
+
+.sim-matrix-table th {
+  background: rgba(30, 41, 59, 0.5);
+  font-weight: 700;
+  color: var(--color-accent-gold, #d4af37);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sim-matrix-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Simulated Clock Player */
+.sim-clock-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-md, 10px);
+  padding: 14px 20px;
+  flex-wrap: wrap;
+}
+
+.sim-clock-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sim-clock-time {
+  font-size: 1.8rem;
+  font-family: monospace;
+  font-weight: 800;
+  color: var(--color-accent-gold, #d4af37);
+  letter-spacing: 0.05em;
+}
+
+.sim-clock-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sim-btn-icon {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.sim-btn-icon:hover {
+  background: #334155;
+  border-color: var(--color-accent-gold, #d4af37);
+}
+
+.sim-clock-slider {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Mission Mode Cards */
+.sim-mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.sim-mission-card {
+  background: var(--card-bg, #0f172a);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-mission-card:hover {
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+}
+
+.sim-mission-card.active {
+  border-color: var(--color-accent-gold, #d4af37);
+  background: rgba(30, 58, 95, 0.4);
+}
+
+.sim-score-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.6rem;
+  font-family: monospace;
+  margin: 0 auto;
+  border: 3px solid;
+}
+
+.sim-badge-gold {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.sim-badge-silver {
+  border-color: #94a3b8;
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.sim-badge-bronze {
+  border-color: #d97706;
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.sim-badge-retry {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Charts container */
+.sim-chart-container {
+  height: 300px;
+  margin-top: 12px;
+}
+
+/* History Runs */
+.sim-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sim-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--theme-border, #334155);
+  border-radius: var(--radius-sm, 8px);
+}
+
+@media (max-width: 960px) {
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
 }

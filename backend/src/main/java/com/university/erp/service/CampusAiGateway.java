@@ -30,13 +30,13 @@ public class CampusAiGateway {
             """;
 
     private static final Pattern SECRET_PROBE = Pattern.compile(
-            "(?i)(ignore (all |the |your )?(previous|prior|rit digital twin)|reveal (the )?(system prompt|api key|gemini|jwt|environment)|unrestricted assistant|return all database|all database records|show me the gemini|give me the jwt|use tools to access|filesystem|internal (backend |security )?configuration|environment variable|\\.env|gemini_api_key|api\\s*key|search the internet)");
+            "(?i)(ignore (all |the |your )?(restrictions|rules|instructions|guardrails|policy|previous|prior|rit digital twin)|reveal (all |the )?(data |information |system prompt|api key|gemini|jwt|environment|passwords|secrets)|unrestricted assistant|return all database|all database records|show me the gemini|give me the jwt|use tools to access|filesystem|internal (backend |security )?configuration|environment variable|\\.env|gemini_api_key|api\\s*key|search the internet)");
     private static final Pattern OFF_TOPIC = Pattern.compile(
             "(?i)(python program|president of the usa|give me a recipe|tell me a joke|what is the weather|write me a python|recipe for|unrelated programming)");
     private static final Pattern FOREIGN_RECORD = Pattern.compile(
             "(?i)(other student|another student|all students|every student|student b\\b|database dump|select \\*|show tables)");
     private static final Pattern CAMPUS = Pattern.compile(
-            "(?i)(\\bwhy\\b|\\bexplain\\b|\\bsummarize\\b|campus|room|building|block|alert|occupan|energy|timetable|simulat|decision|student|attendance|certificate|crowd|class|faculty|department|transport|predict|copilot|twin|hod|parent|exam|fee|capacity|utilization|\\bkw\\b|estimated|simulated|unavailable)");
+            "(?i)(\\bwhy\\b|\\bexplain\\b|\\bsummarize\\b|campus|room|building|block|alert|occupan|energy|timetable|simulat|decision|student|attendance|certificate|crowd|class|faculty|department|transport|predict|copilot|twin|hod|parent|exam|fee|capacity|utilization|\\bkw\\b|estimated|simulated|unavailable|esg|sustainab|carbon|co2|water|waste|report|fleet|loop|anomal)");
     private static final Pattern LEAK = Pattern.compile(
             "(?i)(gemini_api_key|jwt_secret|db_password|api[_ -]?key\\s*[:=]\\s*\\S+|AIza[0-9A-Za-z_\\-]{20,}|eyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]+)");
 
@@ -68,6 +68,8 @@ public class CampusAiGateway {
 
     public Map<String, Object> finish(String query, String role, Map<String, Object> grounded) {
         Map<String, Object> body = new LinkedHashMap<>(grounded == null ? Map.of() : grounded);
+        body.putIfAbsent("requestId", java.util.UUID.randomUUID().toString());
+        body.putIfAbsent("timestamp", java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Kolkata")).toString());
         String facts = String.valueOf(body.getOrDefault("answer", ""));
         if (!inScope(query) || deniedForRole(role, query)) {
             body.put("answer", REFUSAL);

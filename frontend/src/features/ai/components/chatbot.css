@@ -115,3 +115,250 @@ html.dark .rit-chat-user {
 html.dark .rit-chat-panel {
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
+
+/* Digital Twin Copilot Provenance Badges */
+.copilot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.copilot-badge-live {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+html.dark .copilot-badge-live {
+    color: #4ade80;
+}
+
+.copilot-badge-historical {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0284c7;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+html.dark .copilot-badge-historical {
+    color: #38bdf8;
+}
+
+.copilot-badge-simulated {
+    background: rgba(168, 85, 247, 0.15);
+    color: #9333ea;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+html.dark .copilot-badge-simulated {
+    color: #c084fc;
+}
+
+.copilot-badge-predicted {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+html.dark .copilot-badge-predicted {
+    color: #fbbf24;
+}
+
+.copilot-badge-estimated {
+    background: rgba(99, 102, 241, 0.15);
+    color: #4f46e5;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+html.dark .copilot-badge-estimated {
+    color: #818cf8;
+}
+
+.copilot-badge-unknown {
+    background: rgba(148, 163, 184, 0.15);
+    color: #64748b;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* Metric Cards Grid */
+.copilot-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.copilot-stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--theme-border);
+    border-radius: 12px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justifyContent: space-between;
+    transition: transform 150ms ease, border-color 150ms ease;
+}
+
+.copilot-stat-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.copilot-stat-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.75;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.copilot-stat-val {
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.copilot-stat-unit {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+/* Tables in Chat */
+.copilot-table-container {
+    overflow-x: auto;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid var(--theme-border);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+html.dark .copilot-table-container {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.copilot-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    text-align: left;
+}
+
+.copilot-table th {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.05);
+    font-weight: 700;
+    border-bottom: 1px solid var(--theme-border);
+    text-transform: uppercase;
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+}
+
+html.dark .copilot-table th {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.copilot-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    white-space: nowrap;
+}
+
+.copilot-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Reasoning & Provenance Accordion */
+.copilot-because {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: rgba(99, 102, 241, 0.06);
+    border-left: 3px solid #6366f1;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--theme-text-muted);
+}
+
+/* Action Buttons */
+.copilot-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.copilot-action-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+/* Citations Pill */
+.copilot-citation {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--theme-border);
+    font-size: 10px;
+    color: var(--theme-text-muted);
+    margin-top: 4px;
+}
+
+html.dark .copilot-citation {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Feedback Buttons */
+.copilot-feedback-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(148, 163, 184, 0.2);
+    font-size: 10px;
+    color: var(--theme-text-muted);
+}
+
+.copilot-feedback-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: opacity 150ms ease, color 150ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.copilot-feedback-btn:hover {
+    opacity: 1;
+}
+
+.copilot-feedback-btn.active-pos {
+    color: #22c55e;
+    opacity: 1;
+}
+
+.copilot-feedback-btn.active-neg {
+    color: #ef4444;
+    opacity: 1;
+}
+

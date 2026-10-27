@@ -1,3 +1,4 @@
+import React from 'react';
 import './foundation.css';
 
 export function LoadingState({ label = 'Loading' }) {

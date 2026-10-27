@@ -13,19 +13,18 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
 
         try {
             addToast(`Generating PDF for ${filename}...`, 'info');
-            const [{ default: jsPDF }] = await Promise.all([
+            const [{ default: jsPDF }, { applyCollegePageLayout }] = await Promise.all([
                 import('jspdf'),
+                import('../../utils/collegePdfBranding'),
                 import('jspdf-autotable')
             ]);
-            const doc = new jsPDF();
-            doc.text(`${filename.replace(/_/g, ' ')}`, 14, 15);
+            const doc = new jsPDF({ unit: 'pt', format: 'letter' });
 
             const tableHeaders = headers.length > 0 ? headers : Object.keys(data[0]);
             const tableRows = data.map(row => {
                 if (headers.length === 0) return Object.values(row);
                 
                 return headers.map(h => {
-                    // Try exact match, then normalized match (lowercase, no spaces)
                     const normalizedHeader = h.toLowerCase().replace(/\s+/g, '');
                     const rowKey = Object.keys(row).find(k => 
                         k === h || k.toLowerCase() === h.toLowerCase() || k.toLowerCase() === normalizedHeader
@@ -34,14 +33,29 @@ const ExportButtons = ({ filename = "ExportData", data = [], headers = [] }) => 
                 });
             });
 
+            const docTitle = String(filename || 'Export Data').replace(/[_-]+/g, ' ');
+
             doc.autoTable({
                 head: [tableHeaders],
                 body: tableRows,
-                startY: 20,
+                startY: 92,
+                margin: { top: 92, bottom: 48, left: 36, right: 36 },
                 theme: 'grid',
-                styles: { fontSize: 8 },
-                headStyles: { fillStyle: '#0B2C6B', textColor: 255 }
+                styles: { fontSize: 8, font: 'helvetica', cellPadding: 4 },
+                headStyles: { fillColor: [11, 44, 107], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [248, 250, 252] }
             });
+
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                applyCollegePageLayout(doc, {
+                    title: docTitle,
+                    documentSubtitle: `Official Record • Total Entries: ${data.length}`,
+                    pageNumber: i,
+                    totalPages
+                });
+            }
 
             const downloadName = safeFilename();
             doc.save(`${downloadName}.pdf`);

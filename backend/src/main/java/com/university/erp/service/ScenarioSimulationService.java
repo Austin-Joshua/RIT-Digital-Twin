@@ -50,6 +50,47 @@ public class ScenarioSimulationService {
         body.put("replacesCampusState", false);
         body.put("because", "Presets fill the same timetable, room, energy-formula, and route-seat levers. They do not start a second model.");
         body.put("presets", List.of(
+                preset("normal-day", "Normal operating day",
+                        "Standard operating baseline with existing registered sections, current timetable allocations, standard HVAC setpoint, and regular transit routes.",
+                        "Nominal attendance (100% of enrollment), scheduled 40-slot weekly timetable, baseline electrical demand.",
+                        List.of("All Classrooms", "All Academic Blocks", "Main Campus Fleet"),
+                        Map.of("intakePercent", 0, "extraClassrooms", 0, "timetableLoadPercent", 0, "hvacEfficiencyPercent", 0, "busCapacityPercent", 0, "evAdoptionPercent", 0)),
+                preset("exam-day", "Examination day",
+                        "Spaced examination seating across campus, requiring 8 additional venues, +25% slot concurrency, and scheduled staggered transit.",
+                        "Single-student per bench spacing requirement, mandatory invigilation scheduling, 15% transit surge before morning session.",
+                        List.of("Exam Halls", "Main Block", "Auditorium Wing", "Transit Fleet"),
+                        Map.of("intakePercent", 0, "extraClassrooms", 8, "seatsPerNewClassroom", 40, "timetableLoadPercent", 25, "hvacEfficiencyPercent", 10, "busCapacityPercent", 15, "evAdoptionPercent", 0)),
+                preset("peak-demand", "Peak-hour demand",
+                        "High-density operating window with +20% section sizes and +30% class concurrency causing max corridor congestion and peak power draw.",
+                        "Simultaneous core classes across departments, high ambient temperature during mid-day period.",
+                        List.of("Computer Science Block", "Electrical Block", "Main Corridor", "Substation 1"),
+                        Map.of("intakePercent", 20, "extraClassrooms", 0, "timetableLoadPercent", 30, "busCapacityPercent", 25, "hvacEfficiencyPercent", 0, "evAdoptionPercent", 0)),
+                preset("classroom-demand-up", "Increased classroom demand",
+                        "Student intake rises by 25% with 20% more section offerings without expanding physical classroom count, stress-testing utilization and overflow.",
+                        "No new physical classrooms added; existing 40-slot grid absorbs increased section registrations.",
+                        List.of("All Classrooms", "Lecture Theatres", "Department Labs"),
+                        Map.of("intakePercent", 25, "extraClassrooms", 0, "timetableLoadPercent", 20, "busCapacityPercent", 0, "hvacEfficiencyPercent", 0, "evAdoptionPercent", 0)),
+                preset("energy-saving", "Energy-saving operation",
+                        "Eco-mode facilities management: consolidated class schedules (-15% active slots) and aggressive HVAC thermal setpoint optimization (+35% efficiency).",
+                        "Non-critical classrooms aggregated, thermal deadbands widened by 2°C, lighting curtailed in empty wings.",
+                        List.of("Campus HVAC Plant", "All Academic Buildings", "Solar Microgrid"),
+                        Map.of("intakePercent", 0, "extraClassrooms", 0, "timetableLoadPercent", -15, "hvacEfficiencyPercent", 35, "busCapacityPercent", 0, "evAdoptionPercent", 0)),
+                preset("building-closure", "Building closure",
+                        "Simulates maintenance shutdown of an academic wing (-4 classrooms taken offline), compressing section allocations into remaining buildings.",
+                        "Civil/mechanical maintenance in Mechanical Wing, zero power in closed block, classes redistributed.",
+                        List.of("Mechanical Block", "Civil Engineering Lab", "Main Block"),
+                        Map.of("intakePercent", 0, "extraClassrooms", -4, "timetableLoadPercent", 10, "hvacEfficiencyPercent", 15, "busCapacityPercent", 0, "evAdoptionPercent", 0)),
+                preset("transport-electrification", "Transport fleet electrification",
+                        "Converts 60% of diesel campus fleet to electric vehicles, shifting Scope 1 fuel emissions to off-peak grid power with +20% route seat capacity.",
+                        "Electric bus fast-charging during overnight and mid-day lulls; 0 direct tailpipe emissions.",
+                        List.of("Campus Bus Fleet", "EV Charging Depot", "Scope 1 & 2 Emissions"),
+                        Map.of("intakePercent", 0, "extraClassrooms", 0, "timetableLoadPercent", 0, "hvacEfficiencyPercent", 0, "busCapacityPercent", 20, "evAdoptionPercent", 60)),
+                preset("emergency-crowd", "Emergency crowd-management",
+                        "Emergency crowd de-densification: rapid corridor evacuation routing, staggered dismissals, and expanded transit evacuation shuttle capacity.",
+                        "Maximum corridor density capped at 75%, staggered period dismissals, immediate bus dispatch.",
+                        List.of("Corridors", "Main Gates", "Assembly Areas", "Transit Fleet"),
+                        Map.of("intakePercent", -10, "extraClassrooms", 6, "seatsPerNewClassroom", 50, "timetableLoadPercent", -20, "busCapacityPercent", 40, "hvacEfficiencyPercent", 0, "evAdoptionPercent", 0)),
+                // Preserved legacy presets for backward compatibility
                 preset("intake-up", "Student intake +20%", "More students in sections that already have a timetable slot.",
                         Map.of("intakePercent", 20)),
                 preset("new-block", "Open new classroom block", "Adds assumed rooms and seats. They are not placed on the campus map and do not move any class.",
@@ -248,6 +289,16 @@ public class ScenarioSimulationService {
         metrics.put("resourceDemand", metric("Resource demand", shortfall, "seats short",
                 "Students in this hour minus campus seats, including assumed new rooms. Zero means the hour fits the seat total. It does not place students in a room.",
                 SourceClass.ESTIMATED));
+
+        double gridKw = energy != null ? energy : 250.0;
+        double gridCo2 = gridKw * 8.0 * 0.82;
+        double evFactor = 1.0 - (adjustments.evAdoptionPercent / 100.0);
+        double transitDieselLiters = (transport.seats > 0 ? transport.seats : 400) * 0.08;
+        double transitCo2 = transitDieselLiters * 2.68 * evFactor;
+        double totalCarbon = round(gridCo2 + transitCo2);
+        metrics.put("carbonEmissions", metric("Carbon emissions", totalCarbon, "kg CO2/day",
+                "Simulated daily footprint: modeled electrical demand (0.82 kg CO2/kWh) and diesel transit (2.68 kg CO2/L) discounted by " + adjustments.evAdoptionPercent + "% EV fleet adoption.",
+                SourceClass.SIMULATED));
 
         Picture picture = new Picture();
         picture.metrics = metrics;
@@ -512,10 +563,16 @@ public class ScenarioSimulationService {
     }
 
     private static Map<String, Object> preset(String id, String label, String because, Map<String, Object> values) {
+        return preset(id, label, because, "Standard campus timetable and facilities model.", List.of("Classrooms", "Academic Blocks"), values);
+    }
+
+    private static Map<String, Object> preset(String id, String label, String because, String assumptions, List<String> affectedEntities, Map<String, Object> values) {
         Map<String, Object> row = new LinkedHashMap<>();
         row.put("id", id);
         row.put("label", label);
         row.put("because", because);
+        row.put("assumptions", assumptions);
+        row.put("affectedEntities", affectedEntities);
         row.put("values", values);
         return row;
     }
@@ -584,9 +641,9 @@ public class ScenarioSimulationService {
 
     private record Adjustments(int intakePercent, int extraClassrooms, int seatsPerNewClassroom,
                                int busCapacityPercent, int hvacEfficiencyPercent, int timetableLoadPercent,
-                               String intakeNote) {
+                               int evAdoptionPercent, String intakeNote) {
         private static Adjustments none() {
-            return new Adjustments(0, 0, 60, 0, 0, 0, null);
+            return new Adjustments(0, 0, 60, 0, 0, 0, 0, null);
         }
 
         private static Adjustments from(Map<String, Object> raw, long enrolled) {
@@ -602,15 +659,17 @@ public class ScenarioSimulationService {
                     note = "Extra headcount was converted to a percent of enrolled students in stored sections.";
                 }
             }
-            int rooms = clamp(number(raw.get("extraClassrooms"), 0), 0, 40);
+            int rooms = clamp(number(raw.get("extraClassrooms"), 0), -20, 40);
             int seats = clamp(number(raw.get("seatsPerNewClassroom"), 60), 20, 200);
+            int ev = clamp(number(raw.get("evAdoptionPercent"), 0), 0, 100);
             return new Adjustments(
                     intake == null ? 0 : intake,
                     rooms,
                     seats,
                     clamp(number(raw.get("busCapacityPercent"), 0), -80, 100),
-                    clamp(number(raw.get("hvacEfficiencyPercent"), 0), 0, 40),
+                    clamp(number(raw.get("hvacEfficiencyPercent"), 0), 0, 50),
                     clamp(number(raw.get("timetableLoadPercent"), 0), -40, 50),
+                    ev,
                     note
             );
         }
@@ -623,6 +682,7 @@ public class ScenarioSimulationService {
             body.put("busCapacityPercent", busCapacityPercent);
             body.put("hvacEfficiencyPercent", hvacEfficiencyPercent);
             body.put("timetableLoadPercent", timetableLoadPercent);
+            body.put("evAdoptionPercent", evAdoptionPercent);
             if (intakeNote != null) {
                 body.put("intakeNote", intakeNote);
             }
@@ -634,20 +694,72 @@ public class ScenarioSimulationService {
             if (intakePercent != 0) {
                 parts.add((intakePercent > 0 ? "+" : "") + intakePercent + "% intake");
             }
-            if (extraClassrooms > 0) {
-                parts.add("+" + extraClassrooms + " classrooms (" + seatsPerNewClassroom + " seats)");
+            if (extraClassrooms != 0) {
+                parts.add((extraClassrooms > 0 ? "+" : "") + extraClassrooms + " classrooms (" + seatsPerNewClassroom + " seats)");
             }
             if (busCapacityPercent != 0) {
                 parts.add((busCapacityPercent > 0 ? "+" : "") + busCapacityPercent + "% bus seats");
             }
             if (hvacEfficiencyPercent > 0) {
-                parts.add(hvacEfficiencyPercent + "% HVAC on the class energy term");
+                parts.add(hvacEfficiencyPercent + "% HVAC on class energy");
             }
             if (timetableLoadPercent != 0) {
                 parts.add((timetableLoadPercent > 0 ? "+" : "") + timetableLoadPercent + "% timetable load");
             }
+            if (evAdoptionPercent > 0) {
+                parts.add(evAdoptionPercent + "% EV fleet adoption");
+            }
             return parts.isEmpty() ? "No lever changed" : String.join(" · ", parts);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> sweep(String parameter, int min, int max, int step, Map<String, Object> baseScenario) {
+        Context context = context();
+        List<Map<String, Object>> points = new ArrayList<>();
+        int safeStep = Math.max(1, step);
+        String paramKey = parameter != null ? parameter : "hvacEfficiencyPercent";
+        for (int val = min; val <= max; val += safeStep) {
+            Map<String, Object> copy = new LinkedHashMap<>(baseScenario != null ? baseScenario : Map.of());
+            copy.put(paramKey, val);
+            Adjustments adj = Adjustments.from(copy, context.enrolled);
+            Picture pic = picture(context, adj);
+            Map<String, Object> pt = new LinkedHashMap<>();
+            pt.put("parameter", paramKey);
+            pt.put("parameterValue", val);
+            pt.put("energy", valueOf(pic.metrics.get("energy")));
+            pt.put("utilization", valueOf(pic.metrics.get("utilization")));
+            pt.put("crowd", valueOf(pic.metrics.get("crowd")));
+            pt.put("overflowRooms", valueOf(pic.metrics.get("overflowRooms")));
+            pt.put("carbonEmissions", valueOf(pic.metrics.get("carbonEmissions")));
+            pt.put("resourceDemand", valueOf(pic.metrics.get("resourceDemand")));
+            points.add(pt);
+        }
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("parameter", paramKey);
+        result.put("min", min);
+        result.put("max", max);
+        result.put("step", safeStep);
+        result.put("points", points);
+        result.put("source", SourceClass.SIMULATED.name());
+        result.put("because", "Multi-objective parameter sweep evaluating trade-off curve across " + paramKey + ".");
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> history() {
+        List<DigitalTwinMetrics> records = metricsRepository.findTop50ByMetricTypeOrderByTimestampDesc("SCENARIO_RUN");
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (DigitalTwinMetrics m : records) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("id", m.getId());
+            row.put("scenarioName", m.getScenarioName());
+            row.put("timestamp", m.getTimestamp() == null ? null : m.getTimestamp().toString());
+            row.put("source", m.getSource());
+            row.put("isSimulated", m.getIsSimulated());
+            rows.add(row);
+        }
+        return rows;
     }
 
     private static Integer percent(Object raw, int min, int max) {

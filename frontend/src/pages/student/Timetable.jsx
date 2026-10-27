@@ -50,6 +50,11 @@ const Timetable = () => {
         return map;
     }, [timetable]);
 
+    const currentDayIndex = new Date().getDay();
+    const defaultDay = currentDayIndex >= 1 && currentDayIndex <= 5 ? DAYS[currentDayIndex - 1] : 'MONDAY';
+    const [selectedDay, setSelectedDay] = useState(defaultDay);
+    const [viewMode, setViewMode] = useState('weekly');
+
     if (loading) return <div style={{ padding: '24px' }}><Skeleton height="400px" /></div>;
 
     if (!timetable.length) {
@@ -62,11 +67,6 @@ const Timetable = () => {
             </div>
         );
     }
-
-    const currentDayIndex = new Date().getDay();
-    const defaultDay = currentDayIndex >= 1 && currentDayIndex <= 5 ? DAYS[currentDayIndex - 1] : 'MONDAY';
-    const [selectedDay, setSelectedDay] = useState(defaultDay);
-    const [viewMode, setViewMode] = useState('weekly');
 
     return (
         <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>

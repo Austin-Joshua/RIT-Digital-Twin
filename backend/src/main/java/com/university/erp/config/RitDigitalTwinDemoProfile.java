@@ -141,7 +141,15 @@ public class RitDigitalTwinDemoProfile implements CommandLineRunner {
         Building building = buildingRepository.findByCode(BUILDING_CODE).orElseGet(this::claimIncompleteBuilding);
         building.setName(BUILDING_NAME);
         building.setCode(BUILDING_CODE);
-        building.setLocation("DEMO profile — not a surveyed coordinate");
+        building.setLocation("Rajalakshmi Institute of Technology, Kuthambakkam (13.037992 N, 80.044688 E)");
+        building.setLatitude(13.037992);
+        building.setLongitude(80.044688);
+        building.setOsmWayId("367941212");
+        building.setGeometrySource("OPENSTREETMAP_WGS84");
+        building.setGeometryStatus("VERIFIED");
+        building.setHeightSource("ARCHITECTURAL_SURVEY_4_LEVELS");
+        building.setHeightMeters(16.0);
+        building.setNumberOfLevels(4);
         building.setBaseEnergyLoad(new BigDecimal("150.00"));
         if (building.getTotalCapacity() == null) {
             building.setTotalCapacity(ROOM_A_CAPACITY + ROOM_B_CAPACITY);

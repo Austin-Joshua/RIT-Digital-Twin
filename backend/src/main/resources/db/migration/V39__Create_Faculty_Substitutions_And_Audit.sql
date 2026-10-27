@@ -1,0 +1,26 @@
+-- V39: Faculty Substitution Workflow and Audit Table
+CREATE TABLE IF NOT EXISTS faculty_substitutions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    original_faculty_id BIGINT NOT NULL,
+    substitute_faculty_id BIGINT NOT NULL,
+    timetable_slot_id BIGINT NOT NULL,
+    substitution_date DATE NOT NULL,
+    reason VARCHAR(500),
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING_APPROVAL',
+    requested_by_id BIGINT NOT NULL,
+    requested_at DATETIME NOT NULL,
+    actioned_by_id BIGINT,
+    actioned_at DATETIME,
+    action_remarks VARCHAR(500),
+    created_at DATETIME,
+    updated_at DATETIME,
+    CONSTRAINT fk_fac_sub_orig FOREIGN KEY (original_faculty_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_fac_sub_subst FOREIGN KEY (substitute_faculty_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_fac_sub_slot FOREIGN KEY (timetable_slot_id) REFERENCES timetable_slots(id) ON DELETE CASCADE,
+    CONSTRAINT fk_fac_sub_reqby FOREIGN KEY (requested_by_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_fac_sub_actby FOREIGN KEY (actioned_by_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_sub_orig_date (original_faculty_id, substitution_date),
+    INDEX idx_sub_subst_date (substitute_faculty_id, substitution_date),
+    INDEX idx_sub_slot_date (timetable_slot_id, substitution_date),
+    INDEX idx_sub_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

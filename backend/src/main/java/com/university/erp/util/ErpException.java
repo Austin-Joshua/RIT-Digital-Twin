@@ -48,6 +48,16 @@ public class ErpException extends RuntimeException {
         }
     }
 
+    /**
+     * Specialized exception for request validation failures.
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public static class ValidationException extends ErpException {
+        public ValidationException(String message) {
+            super(message);
+        }
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public static class BadRequestException extends InvalidOperationException {
         public BadRequestException(String message) {

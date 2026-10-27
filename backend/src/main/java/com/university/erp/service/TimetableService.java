@@ -19,6 +19,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -58,6 +61,7 @@ public class TimetableService {
     private final TimetableSubjectRequirementRepository requirementRepository;
     private final UserRepository userRepository;
     private final SubjectRepository subjectRepository;
+    private final FacultySubstitutionRepository facultySubstitutionRepository;
     @Value("${app.timetable.generator-faculty-username:}")
     private String generatorFacultyUsername;
 
@@ -68,7 +72,9 @@ public class TimetableService {
             FacultySubjectRepository facultySubjectRepository,
             TimetableSubjectRequirementRepository requirementRepository,
             UserRepository userRepository,
-            SubjectRepository subjectRepository
+            SubjectRepository subjectRepository,
+            @org.springframework.beans.factory.annotation.Autowired(required = false)
+            FacultySubstitutionRepository facultySubstitutionRepository
     ) {
         this.timetableSlotRepository = timetableSlotRepository;
         this.studentRepository = studentRepository;
@@ -77,6 +83,7 @@ public class TimetableService {
         this.requirementRepository = requirementRepository;
         this.userRepository = userRepository;
         this.subjectRepository = subjectRepository;
+        this.facultySubstitutionRepository = facultySubstitutionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -102,11 +109,24 @@ public class TimetableService {
 
     @Transactional(readOnly = true)
     public List<TimetableSlot> getFacultyTimetable(Long facultyUserId) {
-        return timetableSlotRepository.findAll()
-                .stream()
-                .filter(slot -> slot.getFaculty() != null
-                        && slot.getFaculty().getUserId() != null
-                        && slot.getFaculty().getUserId().equals(facultyUserId))
+        List<TimetableSlot> directSlots = timetableSlotRepository.findByFaculty_UserId(facultyUserId);
+        List<TimetableSlot> slots = new ArrayList<>(directSlots != null ? directSlots : Collections.emptyList());
+
+        // Include slots where this faculty is assigned as approved substitute
+        if (facultySubstitutionRepository != null && facultyUserId != null) {
+            try {
+                List<FacultySubstitution> substitutions = facultySubstitutionRepository.findBySubstituteFaculty_UserIdAndStatus(facultyUserId, "APPROVED");
+                if (substitutions != null) {
+                    for (FacultySubstitution sub : substitutions) {
+                        if (sub.getSlot() != null && !slots.contains(sub.getSlot())) {
+                            slots.add(sub.getSlot());
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return slots.stream()
                 .sorted(Comparator.comparing((TimetableSlot slot) -> slot.getDayOfWeek()).thenComparing(slot -> slot.getStartTime()))
                 .toList();
     }
@@ -569,15 +589,33 @@ public class TimetableService {
     }
 
     private TimetableSlotViewDto toResponseSafeSlot(TimetableSlot slot) {
-        return TimetableSlotViewDto.builder()
+        TimetableSlotViewDto.TimetableSlotViewDtoBuilder builder = TimetableSlotViewDto.builder()
                 .id(slot.getId())
                 .dayOfWeek(slot.getDayOfWeek())
                 .startTime(slot.getStartTime())
                 .endTime(slot.getEndTime())
                 .section(slot.getSection())
                 .subject(toResponseSafeSubject(slot.getSubject()))
-                .faculty(toResponseSafeFaculty(slot.getFaculty()))
-                .build();
+                .faculty(toResponseSafeFaculty(slot.getFaculty()));
+
+        if (facultySubstitutionRepository != null && slot.getId() != null) {
+            try {
+                facultySubstitutionRepository.findByTimetableSlot_IdAndStatusIn(slot.getId(), List.of("APPROVED", "REQUESTED", "ASSIGNED"))
+                        .stream().findFirst().ifPresent(sub -> {
+                            builder.isSubstituted(true)
+                                    .substitutionStatus(sub.getStatus());
+                            if (sub.getSubstituteFaculty() != null) {
+                                String name = sub.getSubstituteFaculty().getFirstName();
+                                if (sub.getSubstituteFaculty().getLastName() != null) {
+                                    name += " " + sub.getSubstituteFaculty().getLastName();
+                                }
+                                builder.substituteFacultyName(name);
+                            }
+                        });
+            } catch (Exception ignored) {}
+        }
+
+        return builder.build();
     }
 
     private TimetableSlotSubjectViewDto toResponseSafeSubject(Subject subject) {
@@ -1212,31 +1250,46 @@ public class TimetableService {
 
     private byte[] buildDepartmentPdf(Department department, List<TimetableSlot> slots, List<String> sections, Integer semesterNumber) {
         try (PDDocument document = new PDDocument()) {
+            PDImageXObject logoImage = loadRitLogo(document);
             Map<String, List<TimetableSlot>> bySection = slots.stream()
                     .collect(Collectors.groupingBy(slot -> normalizeSection(slot.getSection())));
-            for (String section : sections) {
+            int totalSections = Math.max(1, sections.size());
+
+            for (int secIdx = 0; secIdx < sections.size(); secIdx++) {
+                String section = sections.get(secIdx);
                 PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
                 document.addPage(page);
+
                 try (PDPageContentStream content = new PDPageContentStream(document, page)) {
-                    float y = page.getMediaBox().getHeight() - 40;
+                    float width = page.getMediaBox().getWidth();
+                    float height = page.getMediaBox().getHeight();
+
+                    // Apply Official RIT College Branding: 24pt border, top-left logo, subtle watermark, footer
+                    drawPageBranding(document, content, page.getMediaBox(), secIdx + 1, totalSections, logoImage);
+
+                    // Document Header Details (Below branded banner line at height - 68)
+                    float y = height - 84;
+                    content.setNonStrokingColor(11 / 255f, 44 / 255f, 107 / 255f);
                     content.beginText();
                     content.setFont(HELVETICA_BOLD, 12);
-                    content.newLineAtOffset(40, y);
-                    content.showText(truncatePdfText("Department of " + (department.getDeptName() == null ? department.getCode() : department.getDeptName()), 80));
+                    content.newLineAtOffset(36, y);
+                    String deptTitle = "DEPARTMENT OF " + (department.getDeptName() == null ? department.getCode() : department.getDeptName()).toUpperCase();
+                    content.showText(truncatePdfText(deptTitle, 80));
                     content.endText();
 
-                    y -= 18;
+                    y -= 16;
+                    content.setNonStrokingColor(50 / 255f, 50 / 255f, 50 / 255f);
                     content.beginText();
-                    content.setFont(HELVETICA_BOLD, 11);
-                    content.newLineAtOffset(40, y);
+                    content.setFont(HELVETICA_BOLD, 10);
+                    content.newLineAtOffset(36, y);
                     content.showText(truncatePdfText("Class Timetable | Section: " + section + " | Semester: " + (semesterNumber == null ? "-" : semesterNumber), 90));
                     content.endText();
 
-                    float tableTop = y - 20;
-                    float left = 40;
+                    float tableTop = y - 18;
+                    float left = 36;
                     float rowHeight = 22;
-                    float[] colWidths = {80, 105, 105, 70, 105, 105, 70, 105, 105};
-                    String[] header = {"Day", "P1", "P2", "Break", "P3", "P4", "Lunch", "P5", "P6/P7"};
+                    float[] colWidths = {70, 75, 75, 50, 75, 75, 50, 75, 75, 75};
+                    String[] header = {"Day", "P1", "P2", "Break", "P3", "P4", "Lunch", "P5", "P6", "P7"};
                     drawRow(content, left, tableTop, colWidths, rowHeight, header, true);
 
                     List<TimetableSlot> sectionSlots = bySection.getOrDefault(section, Collections.emptyList());
@@ -1258,19 +1311,20 @@ public class TimetableService {
                                 rowHeight,
                                 new String[]{
                                         day.substring(0, 1) + day.substring(1).toLowerCase(),
-                                        p1, p2, "BREAK",
+                                        p1, p2, "TEA",
                                         p3, p4, "LUNCH",
-                                        p5, p6 + (p7.equals("-") ? "" : " | " + p7)
+                                        p5, p6, p7
                                 },
                                 false
                         );
                     }
 
-                    float summaryStart = tableTop - ((DEFAULT_DAYS.size() + 1) * rowHeight) - 28;
+                    float summaryStart = tableTop - ((DEFAULT_DAYS.size() + 1) * rowHeight) - 24;
+                    content.setNonStrokingColor(11 / 255f, 44 / 255f, 107 / 255f);
                     content.beginText();
                     content.setFont(HELVETICA_BOLD, 10);
-                    content.newLineAtOffset(40, summaryStart);
-                    content.showText("Allocation Summary");
+                    content.newLineAtOffset(36, summaryStart);
+                    content.showText("Subject Allocation & Faculty Summary");
                     content.endText();
 
                     Map<String, String> subjectFaculty = sectionSlots.stream()
@@ -1281,15 +1335,16 @@ public class TimetableService {
                                     (oldVal, newVal) -> oldVal,
                                     TreeMap::new
                             ));
-                    float sy = summaryStart - 16;
+                    float sy = summaryStart - 14;
+                    content.setNonStrokingColor(40 / 255f, 40 / 255f, 40 / 255f);
                     for (Map.Entry<String, String> entry : subjectFaculty.entrySet()) {
                         content.beginText();
-                        content.setFont(HELVETICA, 9);
-                        content.newLineAtOffset(42, sy);
-                        content.showText(entry.getKey() + " | " + entry.getValue());
+                        content.setFont(HELVETICA, 8.5f);
+                        content.newLineAtOffset(40, sy);
+                        content.showText(truncatePdfText(entry.getKey() + " | " + entry.getValue(), 120));
                         content.endText();
-                        sy -= 12;
-                        if (sy < 30) {
+                        sy -= 11;
+                        if (sy < 48) {
                             break;
                         }
                     }
@@ -1308,16 +1363,126 @@ public class TimetableService {
         content.setLineWidth(0.5f);
         for (int i = 0; i < colWidths.length; i++) {
             float width = colWidths[i];
-            content.addRect(x, y, width, rowHeight);
-            content.stroke();
+            if (header) {
+                content.setNonStrokingColor(11 / 255f, 44 / 255f, 107 / 255f);
+                content.addRect(x, y, width, rowHeight);
+                content.fill();
+                content.setStrokingColor(255 / 255f, 255 / 255f, 255 / 255f);
+                content.addRect(x, y, width, rowHeight);
+                content.stroke();
+                content.setNonStrokingColor(255 / 255f, 255 / 255f, 255 / 255f);
+            } else {
+                content.setStrokingColor(200 / 255f, 205 / 255f, 215 / 255f);
+                content.addRect(x, y, width, rowHeight);
+                content.stroke();
+                content.setNonStrokingColor(30 / 255f, 30 / 255f, 30 / 255f);
+            }
             String text = i < cells.length ? cells[i] : "";
             content.beginText();
-            content.setFont(header ? HELVETICA_BOLD : HELVETICA, header ? 9 : 8);
-            content.newLineAtOffset(x + 3, y + 7);
-            content.showText(text == null ? "" : truncatePdfText(text, 24));
+            content.setFont(header ? HELVETICA_BOLD : HELVETICA, header ? 8.5f : 7.5f);
+            content.newLineAtOffset(x + 3, y + 6);
+            content.showText(text == null ? "" : truncatePdfText(text, 22));
             content.endText();
             x += width;
         }
+    }
+
+    private void drawPageBranding(PDDocument doc, PDPageContentStream content, PDRectangle mediaBox, int pageNumber, int totalPages, PDImageXObject logoImage) throws IOException {
+        float width = mediaBox.getWidth();
+        float height = mediaBox.getHeight();
+
+        // 1. Page Border (24pt inset from page edges, 1.0pt solid black) - Source: BORDER.docx
+        content.setStrokingColor(0, 0, 0);
+        content.setLineWidth(1.0f);
+        content.addRect(24, 24, width - 48, height - 48);
+        content.stroke();
+
+        // 2. Subtle Centered Institutional Watermark (opacity 0.05)
+        if (logoImage != null) {
+            try {
+                PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+                gs.setNonStrokingAlphaConstant(0.05f);
+                content.setGraphicsStateParameters(gs);
+
+                float wmWidth = Math.min(width * 0.65f, 450f);
+                float wmHeight = wmWidth / 4.47f;
+                float wmX = (width - wmWidth) / 2.0f;
+                float wmY = (height - wmHeight) / 2.0f;
+                content.drawImage(logoImage, wmX, wmY, wmWidth, wmHeight);
+
+                PDExtendedGraphicsState resetGs = new PDExtendedGraphicsState();
+                resetGs.setNonStrokingAlphaConstant(1.0f);
+                content.setGraphicsStateParameters(resetGs);
+            } catch (Exception ignored) {}
+        }
+
+        // 3. Top-Left Official RIT Logo
+        if (logoImage != null) {
+            try {
+                float logoW = 110f;
+                float logoH = logoW / 4.47f; // ~24.6pt
+                content.drawImage(logoImage, 36, height - 24 - 8 - logoH, logoW, logoH);
+            } catch (Exception ignored) {}
+        }
+
+        // 3b. Header Institutional Identity on Right
+        content.setNonStrokingColor(20 / 255f, 20 / 255f, 20 / 255f);
+        content.beginText();
+        content.setFont(HELVETICA_BOLD, 10);
+        content.newLineAtOffset(width - 36 - 250, height - 38);
+        content.showText("RAJALAKSHMI INSTITUTE OF TECHNOLOGY");
+        content.endText();
+
+        content.setNonStrokingColor(90 / 255f, 90 / 255f, 90 / 255f);
+        content.beginText();
+        content.setFont(HELVETICA, 7.5f);
+        content.newLineAtOffset(width - 36 - 250, height - 48);
+        content.showText("An Autonomous Institution | Affiliated to Anna University");
+        content.endText();
+
+        content.beginText();
+        content.setFont(HELVETICA, 7.5f);
+        content.newLineAtOffset(width - 36 - 250, height - 57);
+        content.showText("Kuthambakkam, Chennai - 600 124, Tamil Nadu, India");
+        content.endText();
+
+        // Header bottom divider rule
+        content.setStrokingColor(11 / 255f, 44 / 255f, 107 / 255f);
+        content.setLineWidth(1.0f);
+        content.moveTo(36, height - 66);
+        content.lineTo(width - 36, height - 66);
+        content.stroke();
+
+        // 4. Footer at bottom
+        content.setStrokingColor(210 / 255f, 215 / 255f, 225 / 255f);
+        content.setLineWidth(0.5f);
+        content.moveTo(36, 40);
+        content.lineTo(width - 36, 40);
+        content.stroke();
+
+        content.setNonStrokingColor(100 / 255f, 100 / 255f, 100 / 255f);
+        content.beginText();
+        content.setFont(HELVETICA, 7.5f);
+        content.newLineAtOffset(36, 30);
+        content.showText("Rajalakshmi Institute of Technology • Digital Twin Academic ERP System");
+        content.endText();
+
+        content.beginText();
+        content.setFont(HELVETICA, 7.5f);
+        content.newLineAtOffset(width - 85, 30);
+        content.showText("Page " + pageNumber + " of " + totalPages);
+        content.endText();
+        content.setNonStrokingColor(0, 0, 0);
+    }
+
+    private PDImageXObject loadRitLogo(PDDocument doc) {
+        try (InputStream in = getClass().getResourceAsStream("/rit-logo.png")) {
+            if (in != null) {
+                byte[] bytes = in.readAllBytes();
+                return PDImageXObject.createFromByteArray(doc, bytes, "rit-logo");
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 
     private String truncatePdfText(String value, int max) {
@@ -1351,42 +1516,53 @@ public class TimetableService {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
             document.addPage(page);
+            PDImageXObject logoImage = loadRitLogo(document);
+
             try (PDPageContentStream content = new PDPageContentStream(document, page)) {
-                float y = page.getMediaBox().getHeight() - 60;
+                drawPageBranding(document, content, page.getMediaBox(), 1, 1, logoImage);
+
+                float y = page.getMediaBox().getHeight() - 84;
+                content.setNonStrokingColor(11 / 255f, 44 / 255f, 107 / 255f);
                 content.beginText();
                 content.setFont(HELVETICA_BOLD, 14);
-                content.newLineAtOffset(40, y);
+                content.newLineAtOffset(36, y);
                 content.showText("Department Timetable Export");
                 content.endText();
-                y -= 24;
+
+                y -= 22;
+                content.setNonStrokingColor(40 / 255f, 40 / 255f, 40 / 255f);
                 content.beginText();
-                content.setFont(HELVETICA, 11);
-                content.newLineAtOffset(40, y);
+                content.setFont(HELVETICA, 10.5f);
+                content.newLineAtOffset(36, y);
                 content.showText(truncatePdfText("Department: " + (department == null ? "-" : department.getCode()), 100));
                 content.endText();
+
                 y -= 16;
                 content.beginText();
-                content.setFont(HELVETICA, 11);
-                content.newLineAtOffset(40, y);
+                content.setFont(HELVETICA, 10.5f);
+                content.newLineAtOffset(36, y);
                 content.showText(truncatePdfText("Semester: " + (semesterNumber == null ? "-" : semesterNumber), 100));
                 content.endText();
+
                 y -= 16;
                 content.beginText();
-                content.setFont(HELVETICA, 11);
-                content.newLineAtOffset(40, y);
+                content.setFont(HELVETICA, 10.5f);
+                content.newLineAtOffset(36, y);
                 content.showText(truncatePdfText("Sections: " + String.join(", ", sections), 140));
                 content.endText();
+
                 y -= 22;
                 content.beginText();
                 content.setFont(HELVETICA_OBLIQUE, 10);
-                content.newLineAtOffset(40, y);
+                content.newLineAtOffset(36, y);
                 content.showText(truncatePdfText("Optimized timetable generated. Using simplified fallback export format.", 140));
                 content.endText();
+
                 if (reason != null && !reason.isBlank()) {
                     y -= 14;
                     content.beginText();
                     content.setFont(HELVETICA, 9);
-                    content.newLineAtOffset(40, y);
+                    content.newLineAtOffset(36, y);
                     content.showText(truncatePdfText("Note: " + reason, 140));
                     content.endText();
                 }

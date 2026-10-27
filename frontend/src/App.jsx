@@ -92,6 +92,7 @@ const ClubsPage = lazy(() => import('./pages/clubs/ClubsPage'));
 
 /* Lazy Loaded Enterprise ERP Pages (Student) */
 const WhatIfSimulator = lazy(() => import('./pages/enterprise/WhatIfSimulator'));
+const CampusAssistant = lazy(() => import('./features/ai/CampusAssistant'));
 
 const PageLoader = () => (
   <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'var(--theme-bg, #F8FAFC)', color: 'var(--theme-text, #0F172A)' }}>
@@ -202,6 +203,7 @@ const App = () => {
 
                     {/* Student ERP Additions */}
                     <Route path="simulator" element={<WhatIfSimulator />} />
+                    <Route path="copilot" element={<CampusAssistant />} />
                   </Route>
 
                   {/* Parent Mode */}
@@ -252,7 +254,7 @@ const App = () => {
                     <Route path="management/audit" element={<RouteRoleGuard allowedRoles={['ADMIN']}><AuditLogViewer /></RouteRoleGuard>} />
                     <Route path="management/exam-timetable" element={<RouteRoleGuard allowedRoles={['ADMIN']}><ExamTimetableGeneratorUI /></RouteRoleGuard>} />
                     <Route path="management/certificates" element={<RouteRoleGuard allowedRoles={['ADMIN']}><CertificateApprovalQueue /></RouteRoleGuard>} />
-                    <Route path="management/substitutions" element={<RouteRoleGuard allowedRoles={['ADMIN']}><SubstitutionOverridePanel /></RouteRoleGuard>} />
+                    <Route path="management/substitutions" element={<RouteRoleGuard allowedRoles={['ADMIN', 'HOD', 'FACULTY']}><SubstitutionOverridePanel /></RouteRoleGuard>} />
                     <Route path="management/results" element={<RouteRoleGuard allowedRoles={['ADMIN']}><AutomatedResultPublishing /></RouteRoleGuard>} />
                     <Route path="management/safety" element={<RouteRoleGuard allowedRoles={['ADMIN']}><EmergencyDashboard /></RouteRoleGuard>} />
                     <Route path="management/assets" element={<RouteRoleGuard allowedRoles={['ADMIN']}><MaintenanceModule /></RouteRoleGuard>} />
@@ -272,6 +274,7 @@ const App = () => {
                     <Route path="faculty/upload-marks" element={<RouteRoleGuard allowedRoles={['FACULTY']}><UploadMarks /></RouteRoleGuard>} />
                     <Route path="faculty/academics" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAcademics /></RouteRoleGuard>} />
                     <Route path="faculty/timetable" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyTimetable /></RouteRoleGuard>} />
+                    <Route path="faculty/substitutions" element={<RouteRoleGuard allowedRoles={['FACULTY', 'HOD', 'ADMIN']}><SubstitutionOverridePanel /></RouteRoleGuard>} />
                     <Route path="faculty/timetable-allocation" element={<RouteRoleGuard allowedRoles={['FACULTY']}><ExamTimetableGeneratorUI /></RouteRoleGuard>} />
                     <Route path="faculty/leaves" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyLeaves /></RouteRoleGuard>} />
                     <Route path="faculty/attendance" element={<RouteRoleGuard allowedRoles={['FACULTY']}><FacultyAttendance /></RouteRoleGuard>} />
@@ -285,6 +288,7 @@ const App = () => {
 
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="settings" element={<ThemeSettingsPage />} />
+                    <Route path="copilot" element={<CampusAssistant />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
                   </Route>

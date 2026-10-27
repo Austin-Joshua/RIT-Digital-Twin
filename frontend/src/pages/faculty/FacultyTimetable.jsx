@@ -49,7 +49,24 @@ const FacultyTimetable = () => {
 
     return (
         <div style={{ padding: '24px' }}>
-            <h2 style={{ marginBottom: '20px', color: 'var(--theme-text)' }}>My Timetable</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 style={{ margin: 0, color: 'var(--theme-text)' }}>My Timetable</h2>
+                <a
+                    href="/faculty/substitutions"
+                    style={{
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        background: 'var(--color-primary-navy)',
+                        color: '#fff',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        boxShadow: '0 2px 6px rgba(11, 44, 107, 0.2)'
+                    }}
+                >
+                    Class Substitutions & Log
+                </a>
+            </div>
             <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--theme-border)' }}>
                 <table style={{ width: '100%', minWidth: '760px', borderCollapse: 'collapse', textAlign: 'center', background: 'var(--card-bg)' }}>
                     <thead style={{ background: 'var(--color-primary-navy)', color: '#fff' }}>
@@ -69,9 +86,39 @@ const FacultyTimetable = () => {
                                     return (
                                         <td key={`${day}-${start}`} style={{ padding: '10px' }}>
                                             {slot ? (
-                                                <div style={{ border: '1px solid var(--theme-border)', borderRadius: '8px', padding: '8px', background: 'var(--theme-bg-muted)' }}>
-                                                    <div style={{ fontWeight: 700, color: 'var(--theme-text)' }}>{slot.subject?.subjectCode || slot.subject?.subjectName}</div>
-                                                    <div style={{ color: 'var(--theme-text-muted)', fontSize: '0.8rem' }}>{slot.section}</div>
+                                                <div style={{
+                                                    border: slot.isSubstituted ? '1.5px solid #16a34a' : '1px solid var(--theme-border)',
+                                                    borderRadius: '8px',
+                                                    padding: '8px',
+                                                    background: slot.isSubstituted ? 'rgba(22, 163, 74, 0.05)' : 'var(--theme-bg-muted)',
+                                                    position: 'relative'
+                                                }}>
+                                                    <div style={{ fontWeight: 700, color: 'var(--theme-text)' }}>
+                                                        {slot.subject?.subjectCode || slot.subject?.subjectName}
+                                                    </div>
+                                                    <div style={{ color: 'var(--theme-text-muted)', fontSize: '0.8rem' }}>
+                                                        {slot.section}
+                                                    </div>
+
+                                                    {slot.isSubstituted ? (
+                                                        <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, marginTop: '4px' }}>
+                                                            ✓ Sub: {slot.substituteFacultyName || 'Assigned'}
+                                                        </div>
+                                                    ) : (
+                                                        <a
+                                                            href={`/faculty/substitutions?slotId=${slot.id}`}
+                                                            style={{
+                                                                display: 'inline-block',
+                                                                fontSize: '0.7rem',
+                                                                color: 'var(--theme-brand-strong)',
+                                                                fontWeight: 700,
+                                                                marginTop: '4px',
+                                                                textDecoration: 'none'
+                                                            }}
+                                                        >
+                                                            + Request Sub
+                                                        </a>
+                                                    )}
                                                 </div>
                                             ) : <span style={{ opacity: 0.35 }}>--</span>}
                                         </td>

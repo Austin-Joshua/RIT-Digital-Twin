@@ -97,6 +97,92 @@ public class CampusSpatialService {
     }
 
     @Transactional(readOnly = true)
+    public List<com.university.erp.dto.CampusBuildingGeoDto> getGeospatialBuildings() {
+        LocalDateTime now = LocalDateTime.now(CAMPUS);
+        List<Building> buildings = buildingRepository.findAll();
+        List<Classroom> rooms = classroomRepository.findAllWithBuilding();
+        List<TimetableSlot> today = timetableSlotRepository.findByDayOfWeekIgnoreCase(now.getDayOfWeek().name());
+        Map<String, Long> sections = sectionCounts();
+
+        double refLat = 13.0389;
+        double refLng = 80.0449;
+        double latToM = 111320.0;
+        double lngToM = 111320.0 * Math.cos(Math.toRadians(refLat));
+
+        List<com.university.erp.dto.CampusBuildingGeoDto> result = new ArrayList<>();
+        for (Building b : buildings) {
+            List<Classroom> here = rooms.stream()
+                    .filter(r -> r.getBuilding() != null && b.getId().equals(r.getBuilding().getId()))
+                    .toList();
+            List<TimetableSlot> activeSlots = here.stream()
+                    .map(r -> slotFor(today, r.getId(), "NOW", now))
+                    .filter(java.util.Objects::nonNull)
+                    .toList();
+
+            long studentCount = activeSlots.stream()
+                    .mapToLong(s -> sections.getOrDefault(s.getSection(), 0L))
+                    .sum();
+
+            Double localX = b.getLongitude() != null ? Math.round((b.getLongitude() - refLng) * lngToM * 10.0) / 10.0 : null;
+            Double localZ = b.getLatitude() != null ? Math.round(-(b.getLatitude() - refLat) * latToM * 10.0) / 10.0 : null;
+
+            com.university.erp.dto.CampusBuildingGeoDto dto = com.university.erp.dto.CampusBuildingGeoDto.builder()
+                    .id(b.getId())
+                    .name(b.getName())
+                    .code(b.getCode())
+                    .totalCapacity(b.getTotalCapacity())
+                    .baseEnergyLoad(b.getBaseEnergyLoad())
+                    .location(b.getLocation())
+                    .latitude(b.getLatitude())
+                    .longitude(b.getLongitude())
+                    .localX(localX)
+                    .localZ(localZ)
+                    .footprintGeometry(b.getFootprintGeometry())
+                    .heightMeters(b.getHeightMeters())
+                    .numberOfLevels(b.getNumberOfLevels())
+                    .geometrySource(b.getGeometrySource() != null ? b.getGeometrySource() : "CAMPUS_SURVEY_APPROXIMATION")
+                    .geometryStatus(b.getGeometryStatus() != null ? b.getGeometryStatus() : "APPROXIMATE")
+                    .heightSource(b.getHeightSource() != null ? b.getHeightSource() : "ESTIMATED_LEVELS_4M")
+                    .osmWayId(b.getOsmWayId())
+                    .modelAssetUrl(b.getModelAssetUrl())
+                    .sourceUpdatedAt(b.getSourceUpdatedAt())
+                    .lastVerifiedAt(b.getLastVerifiedAt())
+                    .roomCount(here.size())
+                    .activeClasses(activeSlots.size())
+                    .availableRooms(Math.max(0, here.size() - activeSlots.size()))
+                    .scheduledStudents(studentCount)
+                    .energyKw(energyKw(b, activeSlots.size()))
+                    .energySource(b.getBaseEnergyLoad() != null ? SourceClass.SIMULATED.name() : null)
+                    .energyBecause(b.getBaseEnergyLoad() != null ? EnergyFormula.BECAUSE : EnergyFormula.UNAVAILABLE)
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<com.university.erp.dto.CampusBuildingGeoDto> getGeospatialBuilding(Long id) {
+        if (id == null) return Optional.empty();
+        return getGeospatialBuildings().stream()
+                .filter(b -> b.getId().equals(id))
+                .findFirst();
+    }
+
+    @Transactional
+    public Optional<com.university.erp.dto.CampusBuildingGeoDto> verifyGeometry(Long id, String status, String note) {
+        if (id == null) return Optional.empty();
+        return buildingRepository.findById(id).map(b -> {
+            b.setGeometryStatus(status);
+            b.setLastVerifiedAt(LocalDateTime.now(CAMPUS));
+            if (note != null && !note.isBlank()) {
+                b.setHeightSource(note);
+            }
+            buildingRepository.save(b);
+            return getGeospatialBuilding(id).orElse(null);
+        });
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Map<String, Object>> building(Long id, String horizon) {
         if (!operationalRole() || id == null) {
             return Optional.empty();
@@ -221,6 +307,13 @@ public class CampusSpatialService {
         row.put("id", building.getId());
         row.put("name", building.getName());
         row.put("code", building.getCode());
+        row.put("latitude", building.getLatitude());
+        row.put("longitude", building.getLongitude());
+        row.put("geometryStatus", building.getGeometryStatus() != null ? building.getGeometryStatus() : "APPROXIMATE");
+        row.put("geometrySource", building.getGeometrySource() != null ? building.getGeometrySource() : "CAMPUS_SURVEY_APPROXIMATION");
+        row.put("heightMeters", building.getHeightMeters());
+        row.put("numberOfLevels", building.getNumberOfLevels());
+        row.put("osmWayId", building.getOsmWayId());
         row.put("roomCount", rooms.size());
         row.put("activeClasses", relevant.size());
         row.put("availableRooms", Math.max(0, rooms.size() - relevant.size()));

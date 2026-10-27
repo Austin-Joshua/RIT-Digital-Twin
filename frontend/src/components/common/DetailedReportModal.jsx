@@ -8,56 +8,86 @@ const DetailedReportModal = ({ isOpen, onClose, title, value, label, icon, data,
     const resolvedDescription = description || `Based on the current ${(title || '').toLowerCase()} and previous 3-month trends, we predict a 4.2% improvement in the upcoming assessment cycle. Maintain current activity levels.`;
 
     const handleDownloadReport = async () => {
-        const { default: jsPDF } = await import('jspdf');
-        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-        const generatedAt = new Date().toLocaleString();
-        const reportTitle = `${title || 'Performance'} Detailed Insight Report`;
+        const [{ default: jsPDF }, { applyCollegePageLayout }] = await Promise.all([
+            import('jspdf'),
+            import('../../utils/collegePdfBranding')
+        ]);
+        const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+        const reportTitle = `${title || 'Campus Intelligence'} Analysis Report`;
         const reportFileName = `${(title || 'report').toString().trim().replace(/\s+/g, '-').toLowerCase()}-insight-report-${Date.now()}.pdf`;
 
+        // Content starts below branded header (Y = 95)
+        let currentY = 100;
+
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(18);
-        doc.text(reportTitle, 40, 50);
+        doc.setFontSize(11);
+        doc.setTextColor(11, 44, 107);
+        doc.text('1. CURRENT STATUS & TELEMETRY', 40, currentY);
+        currentY += 18;
+
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        doc.text(`Generated on: ${generatedAt}`, 40, 70);
+        doc.setTextColor(40, 40, 40);
+        doc.text(`Metric Category : ${label || 'Operational Value'}`, 48, currentY);
+        currentY += 16;
+        doc.text(`Observed Value  : ${value ?? 'N/A'}`, 48, currentY);
+        currentY += 24;
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.text('Current Status', 40, 110);
-        doc.setFont('helvetica', 'normal');
         doc.setFontSize(11);
-        doc.text(`Metric: ${label || 'Value'}`, 40, 130);
-        doc.text(`Current Value: ${value ?? 'N/A'}`, 40, 148);
+        doc.setTextColor(11, 44, 107);
+        doc.text('2. 5-DAY OPERATIONAL TREND', 40, currentY);
+        currentY += 18;
 
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.text('Weekly Trend', 40, 185);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
+        doc.setFontSize(10);
+        doc.setTextColor(40, 40, 40);
         weeklyTrend.forEach((v, i) => {
-            doc.text(`Day ${i + 1}: ${v}%`, 40, 205 + (i * 18));
+            doc.text(`Day ${i + 1} Assessment: ${v}% capacity / efficiency index`, 48, currentY);
+            currentY += 16;
         });
+        currentY += 12;
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.text('Recommendation', 40, 315);
-        doc.setFont('helvetica', 'normal');
         doc.setFontSize(11);
-        const wrappedRecommendation = doc.splitTextToSize(resolvedDescription, 515);
-        doc.text(wrappedRecommendation, 40, 335);
+        doc.setTextColor(11, 44, 107);
+        doc.text('3. AI COPILOT RECOMMENDATION & ACTION PLAN', 40, currentY);
+        currentY += 18;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(50, 50, 50);
+        const wrappedRecommendation = doc.splitTextToSize(resolvedDescription, 520);
+        doc.text(wrappedRecommendation, 48, currentY);
+        currentY += (wrappedRecommendation.length * 14) + 20;
 
         if (Array.isArray(data) && data.length > 0) {
-            const dataStartY = 335 + (wrappedRecommendation.length * 14) + 20;
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(12);
-            doc.text('Supporting Data Snapshot', 40, dataStartY);
+            doc.setFontSize(11);
+            doc.setTextColor(11, 44, 107);
+            doc.text('4. SUPPORTING DATA SNAPSHOT', 40, currentY);
+            currentY += 18;
+
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10);
+            doc.setFontSize(8.5);
+            doc.setTextColor(60, 60, 60);
             const keys = Object.keys(data[0] || {});
-            data.slice(0, 10).forEach((row, rowIndex) => {
+            data.slice(0, 8).forEach((row) => {
                 const line = keys.map((k) => `${k}: ${row?.[k] ?? '-'}`).join(' | ');
-                const wrapped = doc.splitTextToSize(line, 515);
-                doc.text(wrapped, 40, dataStartY + 20 + (rowIndex * 14));
+                const wrapped = doc.splitTextToSize(line, 520);
+                doc.text(wrapped, 48, currentY);
+                currentY += (wrapped.length * 12) + 4;
+            });
+        }
+
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            applyCollegePageLayout(doc, {
+                title: reportTitle,
+                documentSubtitle: `Metric: ${label || 'Value'} • Live Campus Telemetry`,
+                pageNumber: i,
+                totalPages
             });
         }
 

@@ -1,0 +1,1673 @@
+{
+  "center": {
+    "lat": 13.0389,
+    "lng": 80.0449
+  },
+  "crs": "WGS84 (EPSG:4326)",
+  "location": "Kuthambakkam, Chennai, Tamil Nadu, India",
+  "collegeName": "Rajalakshmi Institute of Technology (RIT)",
+  "officialBuildings": [
+    {
+      "id": "main_academic_block",
+      "code": "MAIN",
+      "name": "Main Academic Block (Admin)",
+      "shortName": "Main Block",
+      "osmWayId": "367941212",
+      "type": "ADMIN",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ARCHITECTURAL_SURVEY_4_LEVELS",
+      "levels": 4,
+      "heightMeters": 16,
+      "departments": [
+        "Administration",
+        "Principal Office",
+        "Admissions",
+        "Controller of Examinations"
+      ],
+      "color": "#C0B090",
+      "roofColor": "#8B7355",
+      "landmark": true,
+      "baseEnergyLoad": 150,
+      "totalCapacity": 1500,
+      "latitude": 13.037991699999997,
+      "longitude": 80.04468766000001,
+      "localX": -23,
+      "localZ": 101.1,
+      "footprint": [
+        [
+          -32.9,
+          89
+        ],
+        [
+          -9.6,
+          81.7
+        ],
+        [
+          -5.8,
+          129.8
+        ],
+        [
+          -33.9,
+          116.2
+        ],
+        [
+          -32.9,
+          89
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0445965,
+          13.0381009
+        ],
+        [
+          80.0448111,
+          13.0381664
+        ],
+        [
+          80.0448468,
+          13.0377343
+        ],
+        [
+          80.0445874,
+          13.037856
+        ],
+        [
+          80.0445965,
+          13.0381009
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "steve_jobs_tech_centre",
+      "code": "TECH_CENTRE",
+      "name": "Steve Jobs Future Tech Centre Block",
+      "shortName": "Tech Centre",
+      "osmWayId": "1186155495",
+      "type": "ACADEMIC",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "MICROSOFT_BUILDING_FOOTPRINTS_OSM",
+      "heightSource": "ARCHITECTURAL_SURVEY_5_LEVELS",
+      "levels": 5,
+      "heightMeters": 20,
+      "departments": [
+        "CSE",
+        "Artificial Intelligence & Data Science",
+        "Computer & Communication"
+      ],
+      "color": "#C5A882",
+      "roofColor": "#7A6348",
+      "landmark": true,
+      "baseEnergyLoad": 220,
+      "totalCapacity": 1200,
+      "latitude": 13.03845756,
+      "longitude": 80.04549784,
+      "localX": 64.8,
+      "localZ": 49.3,
+      "footprint": [
+        [
+          87.2,
+          58.6
+        ],
+        [
+          87.9,
+          29.6
+        ],
+        [
+          70.5,
+          29.2
+        ],
+        [
+          70.4,
+          33.2
+        ],
+        [
+          60.4,
+          33
+        ],
+        [
+          60.2,
+          38.3
+        ],
+        [
+          50.1,
+          38.1
+        ],
+        [
+          50,
+          42.6
+        ],
+        [
+          38.6,
+          42.3
+        ],
+        [
+          37.9,
+          74.4
+        ],
+        [
+          64.6,
+          75.1
+        ],
+        [
+          64.9,
+          63.7
+        ],
+        [
+          71.3,
+          63.9
+        ],
+        [
+          71.4,
+          58.2
+        ],
+        [
+          87.2,
+          58.6
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0457043,
+          13.0383736
+        ],
+        [
+          80.0457106,
+          13.0386337
+        ],
+        [
+          80.0455498,
+          13.0386374
+        ],
+        [
+          80.0455489,
+          13.0386019
+        ],
+        [
+          80.0454567,
+          13.038604
+        ],
+        [
+          80.0454555,
+          13.038556
+        ],
+        [
+          80.0453617,
+          13.0385581
+        ],
+        [
+          80.0453607,
+          13.0385173
+        ],
+        [
+          80.0452561,
+          13.0385197
+        ],
+        [
+          80.0452492,
+          13.0382314
+        ],
+        [
+          80.0454958,
+          13.0382258
+        ],
+        [
+          80.0454983,
+          13.0383277
+        ],
+        [
+          80.0455572,
+          13.0383263
+        ],
+        [
+          80.0455585,
+          13.0383769
+        ],
+        [
+          80.0457043,
+          13.0383736
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "cv_raman_block",
+      "code": "CV_RAMAN",
+      "name": "Sir C. V. Raman Block",
+      "shortName": "C.V. Raman",
+      "osmWayId": "1237712698",
+      "type": "ACADEMIC",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "MICROSOFT_BUILDING_FOOTPRINTS_OSM",
+      "heightSource": "ARCHITECTURAL_SURVEY_4_LEVELS",
+      "levels": 4,
+      "heightMeters": 16,
+      "departments": [
+        "ECE",
+        "Mechanical Engineering",
+        "Civil Engineering"
+      ],
+      "color": "#B8C4C8",
+      "roofColor": "#6B7C80",
+      "landmark": true,
+      "baseEnergyLoad": 180,
+      "totalCapacity": 1000,
+      "latitude": 13.03866448,
+      "longitude": 80.0445588,
+      "localX": -37,
+      "localZ": 26.2,
+      "footprint": [
+        [
+          -48,
+          38.1
+        ],
+        [
+          -24.5,
+          41
+        ],
+        [
+          -20.5,
+          8.4
+        ],
+        [
+          -44,
+          5.5
+        ],
+        [
+          -48,
+          38.1
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0444572,
+          13.0385576
+        ],
+        [
+          80.0446738,
+          13.0385314
+        ],
+        [
+          80.0447112,
+          13.0388248
+        ],
+        [
+          80.0444946,
+          13.038851
+        ],
+        [
+          80.0444572,
+          13.0385576
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "green_building",
+      "code": "GREEN",
+      "name": "Green Building (Research & Innovation)",
+      "shortName": "Green Building",
+      "osmWayId": "367941256",
+      "type": "RESEARCH",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ARCHITECTURAL_SURVEY_4_LEVELS",
+      "levels": 4,
+      "heightMeters": 16,
+      "departments": [
+        "Advanced Research",
+        "Space Tech Club",
+        "Incubation Cell",
+        "Seminar Halls"
+      ],
+      "color": "#7E9F7E",
+      "roofColor": "#4E6E4E",
+      "landmark": true,
+      "baseEnergyLoad": 110,
+      "totalCapacity": 600,
+      "latitude": 13.039190977777778,
+      "longitude": 80.0447404111111,
+      "localX": -17.3,
+      "localZ": -32.4,
+      "footprint": [
+        [
+          -5.1,
+          -37.6
+        ],
+        [
+          -7.3,
+          -17.1
+        ],
+        [
+          -16.6,
+          -18.1
+        ],
+        [
+          -16.5,
+          -18.3
+        ],
+        [
+          -45.2,
+          -22.1
+        ],
+        [
+          -41.1,
+          -53.4
+        ],
+        [
+          -8.7,
+          -49.1
+        ],
+        [
+          -10.2,
+          -38.2
+        ],
+        [
+          -5.1,
+          -37.6
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0448531,
+          13.0392378
+        ],
+        [
+          80.0448324,
+          13.0390538
+        ],
+        [
+          80.0447472,
+          13.0390629
+        ],
+        [
+          80.0447474,
+          13.0390647
+        ],
+        [
+          80.0444833,
+          13.0390987
+        ],
+        [
+          80.0445213,
+          13.0393793
+        ],
+        [
+          80.0448196,
+          13.0393409
+        ],
+        [
+          80.0448063,
+          13.0392429
+        ],
+        [
+          80.0448531,
+          13.0392378
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "alan_turing_block",
+      "code": "LAB_X",
+      "name": "Alan Turing Block (Advanced Research Labs)",
+      "shortName": "Turing Block",
+      "osmWayId": "1186155493",
+      "type": "LAB",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "MICROSOFT_BUILDING_FOOTPRINTS_OSM",
+      "heightSource": "ARCHITECTURAL_SURVEY_4_LEVELS",
+      "levels": 4,
+      "heightMeters": 16,
+      "departments": [
+        "IoT & Robotics Lab",
+        "High Performance Computing",
+        "Cybersecurity Lab"
+      ],
+      "color": "#9B8B7B",
+      "roofColor": "#5B4B3B",
+      "landmark": true,
+      "baseEnergyLoad": 350,
+      "totalCapacity": 800,
+      "latitude": 13.03856792,
+      "longitude": 80.04406404,
+      "localX": -90.7,
+      "localZ": 37,
+      "footprint": [
+        [
+          -114.1,
+          66.9
+        ],
+        [
+          -90.3,
+          76.6
+        ],
+        [
+          -55.6,
+          -7.9
+        ],
+        [
+          -79.3,
+          -17.6
+        ],
+        [
+          -114.1,
+          66.9
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0438483,
+          13.0382994
+        ],
+        [
+          80.0440672,
+          13.0382117
+        ],
+        [
+          80.0443877,
+          13.0389707
+        ],
+        [
+          80.0441687,
+          13.0390584
+        ],
+        [
+          80.0438483,
+          13.0382994
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "nikola_tesla_block",
+      "code": "TESLA",
+      "name": "Nikola Tesla Block",
+      "shortName": "Tesla Block",
+      "osmWayId": "367941219",
+      "type": "ACADEMIC",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ARCHITECTURAL_SURVEY_3_LEVELS",
+      "levels": 3,
+      "heightMeters": 12,
+      "departments": [
+        "Electrical & Electronics",
+        "Power Systems Lab",
+        "Smart Grid Research"
+      ],
+      "color": "#D0B894",
+      "roofColor": "#907854",
+      "landmark": false,
+      "baseEnergyLoad": 130,
+      "totalCapacity": 500,
+      "latitude": 13.0392331,
+      "longitude": 80.04563712,
+      "localX": 79.9,
+      "localZ": -37.1,
+      "footprint": [
+        [
+          84.4,
+          -55
+        ],
+        [
+          85.8,
+          -10.6
+        ],
+        [
+          73.3,
+          -10.2
+        ],
+        [
+          71.9,
+          -54.6
+        ],
+        [
+          84.4,
+          -55
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0456782,
+          13.0393939
+        ],
+        [
+          80.0456908,
+          13.0389954
+        ],
+        [
+          80.0455755,
+          13.0389919
+        ],
+        [
+          80.0455629,
+          13.0393904
+        ],
+        [
+          80.0456782,
+          13.0393939
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "central_library",
+      "code": "LIBRARY",
+      "name": "Central Library & Media Resource Centre",
+      "shortName": "Central Library",
+      "osmWayId": "367941218",
+      "type": "LIBRARY",
+      "geometryStatus": "VERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ARCHITECTURAL_SURVEY_3_LEVELS",
+      "levels": 3,
+      "heightMeters": 12,
+      "departments": [
+        "Digital Library",
+        "Periodicals",
+        "Reading Halls",
+        "IEEE E-Resource Access"
+      ],
+      "color": "#D4C4A0",
+      "roofColor": "#8C7C5C",
+      "landmark": false,
+      "baseEnergyLoad": 90,
+      "totalCapacity": 450,
+      "latitude": 13.03809488,
+      "longitude": 80.04448804,
+      "localX": -44.7,
+      "localZ": 89.6,
+      "footprint": [
+        [
+          -48.9,
+          72.5
+        ],
+        [
+          -32.7,
+          74.8
+        ],
+        [
+          -38.4,
+          115.3
+        ],
+        [
+          -54.5,
+          113
+        ],
+        [
+          -48.9,
+          72.5
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0444493,
+          13.0382484
+        ],
+        [
+          80.0445983,
+          13.0382281
+        ],
+        [
+          80.0445461,
+          13.0378646
+        ],
+        [
+          80.0443972,
+          13.0378849
+        ],
+        [
+          80.0444493,
+          13.0382484
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "student_canteen",
+      "code": "CANTEEN",
+      "name": "Student Amenities & Food Court",
+      "shortName": "Canteen",
+      "osmWayId": "367941216",
+      "type": "AMENITY",
+      "geometryStatus": "APPROXIMATE",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ESTIMATED_2_LEVELS",
+      "levels": 2,
+      "heightMeters": 8,
+      "departments": [
+        "Cafeteria",
+        "Student Lounge",
+        "Food Court"
+      ],
+      "color": "#E8A060",
+      "roofColor": "#A86020",
+      "landmark": false,
+      "baseEnergyLoad": 60,
+      "totalCapacity": 400,
+      "latitude": 13.039860620000002,
+      "longitude": 80.04462956,
+      "localX": -29.3,
+      "localZ": -106.9,
+      "footprint": [
+        [
+          -40.2,
+          -123.3
+        ],
+        [
+          -7.9,
+          -118.8
+        ],
+        [
+          -13,
+          -82.3
+        ],
+        [
+          -45.3,
+          -86.9
+        ],
+        [
+          -40.2,
+          -123.3
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0445294,
+          13.040008
+        ],
+        [
+          80.044827,
+          13.0399673
+        ],
+        [
+          80.0447798,
+          13.0396395
+        ],
+        [
+          80.0444822,
+          13.0396803
+        ],
+        [
+          80.0445294,
+          13.040008
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "sports_complex",
+      "code": "SPORTS",
+      "name": "Campus Sports Complex & Indoor Arena",
+      "shortName": "Sports Complex",
+      "osmWayId": "1186155494",
+      "type": "SPORTS",
+      "geometryStatus": "APPROXIMATE",
+      "geometrySource": "MICROSOFT_BUILDING_FOOTPRINTS_OSM",
+      "heightSource": "ESTIMATED_1_LEVEL",
+      "levels": 1,
+      "heightMeters": 7,
+      "departments": [
+        "Indoor Badminton",
+        "Table Tennis",
+        "Gymnasium",
+        "Sports Department"
+      ],
+      "color": "#78A860",
+      "roofColor": "#487830",
+      "landmark": false,
+      "baseEnergyLoad": 40,
+      "totalCapacity": 300,
+      "latitude": 13.040084100000001,
+      "longitude": 80.04536632,
+      "localX": 50.6,
+      "localZ": -131.8,
+      "footprint": [
+        [
+          41.9,
+          -113.4
+        ],
+        [
+          56.9,
+          -111.4
+        ],
+        [
+          63.5,
+          -159.4
+        ],
+        [
+          48.5,
+          -161.4
+        ],
+        [
+          41.9,
+          -113.4
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0452868,
+          13.0399191
+        ],
+        [
+          80.0454249,
+          13.0399006
+        ],
+        [
+          80.0454856,
+          13.0403316
+        ],
+        [
+          80.0453475,
+          13.0403501
+        ],
+        [
+          80.0452868,
+          13.0399191
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    },
+    {
+      "id": "rit_hostels",
+      "code": "HOSTEL",
+      "name": "RIT Student Hostels Residency",
+      "shortName": "Student Hostels",
+      "osmWayId": "367941211",
+      "type": "HOSTEL",
+      "geometryStatus": "APPROXIMATE",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "ESTIMATED_6_LEVELS",
+      "levels": 6,
+      "heightMeters": 24,
+      "departments": [
+        "Boys Residency",
+        "Girls Residency",
+        "Dining Facilities"
+      ],
+      "color": "#E8D5B0",
+      "roofColor": "#A89570",
+      "landmark": false,
+      "baseEnergyLoad": 170,
+      "totalCapacity": 900,
+      "latitude": 13.03908534,
+      "longitude": 80.04362966,
+      "localX": -137.8,
+      "localZ": -20.6,
+      "footprint": [
+        [
+          -142.7,
+          13.3
+        ],
+        [
+          -155.2,
+          9.4
+        ],
+        [
+          -130.3,
+          -71.5
+        ],
+        [
+          -117.8,
+          -67.6
+        ],
+        [
+          -142.7,
+          13.3
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0435839,
+          13.0387807
+        ],
+        [
+          80.0434686,
+          13.0388153
+        ],
+        [
+          80.0436983,
+          13.0395423
+        ],
+        [
+          80.0438136,
+          13.0395077
+        ],
+        [
+          80.0435839,
+          13.0387807
+        ]
+      ],
+      "iotSensors": [
+        "energy",
+        "occupancy",
+        "temperature",
+        "air_quality"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": "2026-10-28T00:00:00Z"
+    }
+  ],
+  "peripheralBuildings": [
+    {
+      "id": "osm_367941214",
+      "code": "PERI_367941214",
+      "name": "Peripheral Facility (367941214)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941214",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.039518760000002,
+      "longitude": 80.04324310000001,
+      "localX": -179.7,
+      "localZ": -68.9,
+      "footprint": [
+        [
+          -166.1,
+          -88.2
+        ],
+        [
+          -179.5,
+          -34.8
+        ],
+        [
+          -200,
+          -40
+        ],
+        [
+          -186.6,
+          -93.3
+        ],
+        [
+          -166.1,
+          -88.2
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0433682,
+          13.039692
+        ],
+        [
+          80.0432444,
+          13.0392126
+        ],
+        [
+          80.0430554,
+          13.0392589
+        ],
+        [
+          80.0431793,
+          13.0397383
+        ],
+        [
+          80.0433682,
+          13.039692
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941220",
+      "code": "PERI_367941220",
+      "name": "Peripheral Facility (367941220)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941220",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.03958046,
+      "longitude": 80.04298788,
+      "localX": -207.4,
+      "localZ": -75.7,
+      "footprint": [
+        [
+          -209.2,
+          -98.9
+        ],
+        [
+          -189.5,
+          -93.2
+        ],
+        [
+          -204.6,
+          -41.1
+        ],
+        [
+          -224.3,
+          -46.7
+        ],
+        [
+          -209.2,
+          -98.9
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0429706,
+          13.0397882
+        ],
+        [
+          80.0431523,
+          13.0397371
+        ],
+        [
+          80.0430138,
+          13.0392689
+        ],
+        [
+          80.0428321,
+          13.0393199
+        ],
+        [
+          80.0429706,
+          13.0397882
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941221",
+      "code": "PERI_367941221",
+      "name": "Peripheral Facility (367941221)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941221",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.040220780000002,
+      "longitude": 80.04339494,
+      "localX": -163.2,
+      "localZ": -147,
+      "footprint": [
+        [
+          -150.8,
+          -166.7
+        ],
+        [
+          -163.9,
+          -113.2
+        ],
+        [
+          -181.8,
+          -117.5
+        ],
+        [
+          -168.7,
+          -171.1
+        ],
+        [
+          -150.8,
+          -166.7
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0435093,
+          13.0403974
+        ],
+        [
+          80.0433887,
+          13.0399165
+        ],
+        [
+          80.0432234,
+          13.0399558
+        ],
+        [
+          80.043344,
+          13.0404368
+        ],
+        [
+          80.0435093,
+          13.0403974
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941225",
+      "code": "PERI_367941225",
+      "name": "Peripheral Facility (367941225)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941225",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.04044892,
+      "longitude": 80.04534957999999,
+      "localX": 48.8,
+      "localZ": -172.4,
+      "footprint": [
+        [
+          61.5,
+          -177.1
+        ],
+        [
+          59.4,
+          -161.5
+        ],
+        [
+          29.7,
+          -165.4
+        ],
+        [
+          31.7,
+          -181
+        ],
+        [
+          61.5,
+          -177.1
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.045467,
+          13.0404911
+        ],
+        [
+          80.045448,
+          13.0403506
+        ],
+        [
+          80.0451735,
+          13.0403856
+        ],
+        [
+          80.0451924,
+          13.0405262
+        ],
+        [
+          80.045467,
+          13.0404911
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941226",
+      "code": "PERI_367941226",
+      "name": "Peripheral Facility (367941226)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941226",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.03929234,
+      "longitude": 80.04340642,
+      "localX": -162,
+      "localZ": -43.7,
+      "footprint": [
+        [
+          -150.1,
+          -73
+        ],
+        [
+          -169.7,
+          2.9
+        ],
+        [
+          -179.8,
+          0.4
+        ],
+        [
+          -160.1,
+          -75.6
+        ],
+        [
+          -150.1,
+          -73
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0435157,
+          13.0395561
+        ],
+        [
+          80.0433348,
+          13.0388735
+        ],
+        [
+          80.0432425,
+          13.0388967
+        ],
+        [
+          80.0434234,
+          13.0395793
+        ],
+        [
+          80.0435157,
+          13.0395561
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941233",
+      "code": "PERI_367941233",
+      "name": "Peripheral Facility (367941233)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941233",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.037402839999999,
+      "longitude": 80.04354796,
+      "localX": -146.6,
+      "localZ": 166.7,
+      "footprint": [
+        [
+          -155.5,
+          155.6
+        ],
+        [
+          -127.5,
+          164.1
+        ],
+        [
+          -133.4,
+          183.3
+        ],
+        [
+          -161.3,
+          174.8
+        ],
+        [
+          -155.5,
+          155.6
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0434665,
+          13.0375024
+        ],
+        [
+          80.043724,
+          13.0374262
+        ],
+        [
+          80.0436701,
+          13.0372535
+        ],
+        [
+          80.0434127,
+          13.0373297
+        ],
+        [
+          80.0434665,
+          13.0375024
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941253",
+      "code": "PERI_367941253",
+      "name": "Peripheral Facility (367941253)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941253",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.037095375,
+      "longitude": 80.0433608625,
+      "localX": -166.9,
+      "localZ": 200.9,
+      "footprint": [
+        [
+          -176.9,
+          178.7
+        ],
+        [
+          -174.1,
+          172.2
+        ],
+        [
+          -157.8,
+          179.1
+        ],
+        [
+          -160.5,
+          185.6
+        ],
+        [
+          -127.6,
+          199.5
+        ],
+        [
+          -156.1,
+          267
+        ],
+        [
+          -205.4,
+          246.2
+        ],
+        [
+          -176.9,
+          178.7
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0432687,
+          13.0372946
+        ],
+        [
+          80.0432944,
+          13.0373533
+        ],
+        [
+          80.0434451,
+          13.0372908
+        ],
+        [
+          80.0434196,
+          13.0372325
+        ],
+        [
+          80.0437235,
+          13.0371075
+        ],
+        [
+          80.0434609,
+          13.0365013
+        ],
+        [
+          80.043006,
+          13.0366884
+        ],
+        [
+          80.0432687,
+          13.0372946
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_367941254",
+      "code": "PERI_367941254",
+      "name": "Peripheral Facility (367941254)",
+      "shortName": "Peripheral Facilit...",
+      "osmWayId": "367941254",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.036418755555555,
+      "longitude": 80.04308535555555,
+      "localX": -196.8,
+      "localZ": 276.2,
+      "footprint": [
+        [
+          -183.6,
+          269.3
+        ],
+        [
+          -185.2,
+          287.1
+        ],
+        [
+          -198,
+          286
+        ],
+        [
+          -198.7,
+          293.1
+        ],
+        [
+          -216.8,
+          291.2
+        ],
+        [
+          -213.6,
+          259.9
+        ],
+        [
+          -195.5,
+          261.8
+        ],
+        [
+          -196.1,
+          268.2
+        ],
+        [
+          -183.6,
+          269.3
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0432066,
+          13.036481
+        ],
+        [
+          80.043192,
+          13.0363206
+        ],
+        [
+          80.0430747,
+          13.0363308
+        ],
+        [
+          80.043068,
+          13.0362673
+        ],
+        [
+          80.0429011,
+          13.0362839
+        ],
+        [
+          80.0429304,
+          13.0365649
+        ],
+        [
+          80.0430974,
+          13.0365483
+        ],
+        [
+          80.0430914,
+          13.036491
+        ],
+        [
+          80.0432066,
+          13.036481
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    },
+    {
+      "id": "osm_1044410753",
+      "code": "PERI_1044410753",
+      "name": "Vels Theatre",
+      "shortName": "Vels Theatre",
+      "osmWayId": "1044410753",
+      "type": "FACILITY",
+      "geometryStatus": "UNVERIFIED",
+      "geometrySource": "OPENSTREETMAP_WGS84",
+      "heightSource": "UNVERIFIED_ESTIMATE_4M",
+      "levels": 1,
+      "heightMeters": 4,
+      "departments": [
+        "Campus Peripheral Utility"
+      ],
+      "color": "#888888",
+      "roofColor": "#666666",
+      "landmark": false,
+      "baseEnergyLoad": 15,
+      "totalCapacity": 50,
+      "latitude": 13.035831077777777,
+      "longitude": 80.04631646666667,
+      "localX": 153.6,
+      "localZ": 341.6,
+      "footprint": [
+        [
+          190.5,
+          328.3
+        ],
+        [
+          190.1,
+          358.2
+        ],
+        [
+          164.8,
+          382.6
+        ],
+        [
+          131.9,
+          382.3
+        ],
+        [
+          108,
+          359.5
+        ],
+        [
+          108.9,
+          329.1
+        ],
+        [
+          130.6,
+          303.4
+        ],
+        [
+          167.2,
+          303
+        ],
+        [
+          190.5,
+          328.3
+        ]
+      ],
+      "wgs84Footprint": [
+        [
+          80.0466566,
+          13.035951
+        ],
+        [
+          80.0466531,
+          13.0356821
+        ],
+        [
+          80.0464195,
+          13.0354631
+        ],
+        [
+          80.0461158,
+          13.0354655
+        ],
+        [
+          80.0458963,
+          13.0356705
+        ],
+        [
+          80.0459045,
+          13.0359436
+        ],
+        [
+          80.0461041,
+          13.0361745
+        ],
+        [
+          80.0464417,
+          13.0361784
+        ],
+        [
+          80.0466566,
+          13.035951
+        ]
+      ],
+      "iotSensors": [
+        "energy"
+      ],
+      "sourceUpdatedAt": "2026-05-16T17:42:48Z",
+      "lastVerifiedAt": null
+    }
+  ]
+}

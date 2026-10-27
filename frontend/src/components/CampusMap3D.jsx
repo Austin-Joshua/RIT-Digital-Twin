@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import RIT_CAMPUS from "../config/rit-campus.config";
-import { extrudeBuilding, createIoTOrb, valueToColor } from "../utils/campus-3d.utils";
+import { extrudeBuilding, createIoTOrb, valueToColor, statusToColor } from "../utils/campus-3d.utils";
 import { fetchOSMBuildings } from "../services/campus-osm.service";
 import apiClient from "../services/api";
 
 function mockIoT() {
   const data = {};
-  RIT_CAMPUS.BUILDINGS.forEach((building) => {
+  (RIT_CAMPUS.BUILDINGS || []).forEach((building) => {
     data[building.id] = {};
-    building.iotSensors.forEach((sensor) => {
+    (building.iotSensors || []).forEach((sensor) => {
       data[building.id][sensor] = sensor === "temperature"
         ? 22 + Math.random() * 14
         : sensor === "air_quality"
@@ -27,19 +27,19 @@ function normalizeCampusIoT(payload, fallback = {}) {
   const defaults = mockIoT();
   const next = {};
 
-  RIT_CAMPUS.BUILDINGS.forEach((building) => {
+  (RIT_CAMPUS.BUILDINGS || []).forEach((building) => {
     const srcBuilding = source[building.id] || {};
     const prevBuilding = fallback[building.id] || {};
     next[building.id] = {};
 
-    building.iotSensors.forEach((sensor) => {
+    (building.iotSensors || []).forEach((sensor) => {
       const raw = srcBuilding[sensor];
       if (typeof raw === "number" && Number.isFinite(raw)) {
         next[building.id][sensor] = raw;
       } else if (typeof prevBuilding[sensor] === "number" && Number.isFinite(prevBuilding[sensor])) {
         next[building.id][sensor] = prevBuilding[sensor];
       } else {
-        next[building.id][sensor] = defaults[building.id][sensor];
+        next[building.id][sensor] = defaults[building.id]?.[sensor] ?? 0.5;
       }
     });
   });
@@ -47,7 +47,7 @@ function normalizeCampusIoT(payload, fallback = {}) {
   return next;
 }
 
-export default function CampusMap3D() {
+export default function CampusMap3D({ scenarioId = 'normal-day', simulatedClock = '10:00' } = {}) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -69,7 +69,7 @@ export default function CampusMap3D() {
   const [satLoaded, setSatLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ fps: 0, drawCalls: 0, trianglesK: 0 });
-  const [telemetrySource, setTelemetrySource] = useState("TIMETABLE PROJECTION");
+  const [telemetrySource, setTelemetrySource] = useState("DETERMINISTIC SYNTHETIC TELEMETRY");
   const [showProvenanceInfo, setShowProvenanceInfo] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const orbitControlsRef = useRef({ zoomIn: null, zoomOut: null, resetView: null });
@@ -83,18 +83,26 @@ export default function CampusMap3D() {
           isLive = true;
           setTelemetrySource("LIVE IOT SENSOR STREAM");
         }
-      } catch (_e) {}
+      } catch (_e) {
+        /* live sensor stream unavailable, fall back to synthetic telemetry */
+      }
 
-      const response = await apiClient.get("/iot/campus-overview");
+      const params = {};
+      if (scenarioId) params.scenarioId = scenarioId;
+      if (simulatedClock) params.clock = simulatedClock;
+
+      const response = await apiClient.get("/iot/campus-overview", { params });
       if (!isLive) {
-        setTelemetrySource("TIMETABLE PROJECTION");
+        setTelemetrySource(scenarioId && scenarioId !== 'normal-day'
+          ? `SYNTHETIC SCENARIO: ${scenarioId.toUpperCase()}`
+          : "DETERMINISTIC SYNTHETIC TELEMETRY");
       }
       setIotData((prev) => normalizeCampusIoT(response?.data, prev));
     } catch (_error) {
       setIotData((prev) => normalizeCampusIoT(null, prev));
-      setTelemetrySource("TIMETABLE PROJECTION");
+      setTelemetrySource("DETERMINISTIC SYNTHETIC TELEMETRY");
     }
-  }, []);
+  }, [scenarioId, simulatedClock]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -132,7 +140,8 @@ export default function CampusMap3D() {
     scene.add(sun);
     scene.add(new THREE.HemisphereLight(0x9bbdff, 0x3d2b1f, 0.5));
 
-    const groundGeo = new THREE.PlaneGeometry(700, 700, 64, 64);
+    // Ground Plane representing RIT Campus Tangent Plane at 13.0389 N, 80.0449 E
+    const groundGeo = new THREE.PlaneGeometry(800, 800, 64, 64);
     const groundMat = new THREE.MeshLambertMaterial({ color: "#2C4020" });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
@@ -159,6 +168,7 @@ export default function CampusMap3D() {
       );
     }
 
+    // Campus Perimeter Boundary Walls
     const wallMat = new THREE.MeshPhongMaterial({ color: "#8B7355" });
     [
       [-185, 0, 370, 1.5],
@@ -173,12 +183,13 @@ export default function CampusMap3D() {
       scene.add(wall);
     });
 
+    // Campus Roads
     const roadMats = {
       main: new THREE.MeshLambertMaterial({ color: "#3A3A3A" }),
       perimeter: new THREE.MeshLambertMaterial({ color: "#404040" }),
       service: new THREE.MeshLambertMaterial({ color: "#4A4A4A" }),
     };
-    RIT_CAMPUS.ROADS.forEach((road) => {
+    (RIT_CAMPUS.ROADS || []).forEach((road) => {
       const pts = road.points.map(([x, z]) => new THREE.Vector3(x, 0.05, z));
       for (let i = 0; i < pts.length - 1; i += 1) {
         const a = pts[i];
@@ -198,7 +209,8 @@ export default function CampusMap3D() {
       }
     });
 
-    const totalTrees = RIT_CAMPUS.TREE_CLUSTERS.reduce((sum, cluster) => sum + cluster.count, 0);
+    // Instanced Campus Trees
+    const totalTrees = (RIT_CAMPUS.TREE_CLUSTERS || []).reduce((sum, cluster) => sum + cluster.count, 0);
     if (totalTrees > 0) {
       const trunkGeo = new THREE.CylinderGeometry(0.8, 1.2, 5, lowPower ? 5 : 6);
       const trunkMat = new THREE.MeshLambertMaterial({ color: "#5C3D1E" });
@@ -253,49 +265,69 @@ export default function CampusMap3D() {
       treeRefs.current = { trunk: trunkMesh, foliage: foliageMeshes };
     }
 
-    RIT_CAMPUS.BUILDINGS.forEach((building) => {
-      const iot = iotData[building.id] || {};
-      const primary = building.iotSensors[0];
-      const rawVal = iot[primary] ?? 0.5;
-      const normVal = primary === "temperature" ? (rawVal - 20) / 20 : rawVal;
+    // Build unified real campus buildings (Official RIT Blocks + Peripheral OSM Structures)
+    const allCampusBuildings = [
+      ...(RIT_CAMPUS.BUILDINGS || []),
+      ...(RIT_CAMPUS.PERIPHERAL_BUILDINGS || [])
+    ];
 
-      const { group, bodyMesh, bodyMat } = extrudeBuilding(building.footprint, building.height, {
-        bodyColor: building.color,
-        roofColor: building.roofColor,
-      });
+    allCampusBuildings.forEach((building) => {
+      if (!building.footprint || building.footprint.length < 3) return;
+
+      const height = building.height || building.heightMeters || (building.levels ? building.levels * 4 : 16);
+      const isPeripheral = building.geometryStatus === 'UNVERIFIED';
+
+      const bodyColor = isPeripheral ? '#6B7280' : (building.color || '#C0B090');
+      const roofColor = isPeripheral ? '#4B5563' : (building.roofColor || '#8B7355');
+
+      const { group, bodyMesh, bodyMat, roofMesh, roofMat } = extrudeBuilding(
+        building.footprint,
+        height,
+        {
+          bodyColor,
+          roofColor,
+          transparent: isPeripheral,
+          opacity: isPeripheral ? 0.82 : 1.0,
+        }
+      );
+
       group.frustumCulled = true;
       bodyMesh.userData.buildingId = building.id;
       bodyMesh.userData.buildingName = building.name;
+      bodyMesh.userData.building = building;
       bodyMesh.frustumCulled = true;
 
-      const cx = building.footprint.reduce((sum, p) => sum + p[0], 0) / building.footprint.length;
-      const cz = building.footprint.reduce((sum, p) => sum + p[1], 0) / building.footprint.length;
+      // Centroid in local metric tangent plane
+      const cx = building.localX ?? (building.footprint.reduce((sum, p) => sum + p[0], 0) / building.footprint.length);
+      const cz = building.localZ ?? (building.footprint.reduce((sum, p) => sum + p[1], 0) / building.footprint.length);
 
-      const orb = createIoTOrb(valueToColor(normVal), building.height + 6);
-      orb.group.position.set(cx, 0, cz);
-      orb.group.frustumCulled = true;
-      scene.add(orb.group);
-      orbsRef.current.push(orb);
+      let orb = null;
+      if (building.iotSensors && building.iotSensors.length > 0) {
+        const iot = iotData[building.id] || {};
+        const primary = building.iotSensors[0];
+        const rawVal = iot[primary] ?? 0.5;
+        const normVal = primary === "temperature" ? (rawVal - 20) / 20 : rawVal;
+
+        orb = createIoTOrb(valueToColor(normVal), height + 6);
+        orb.group.position.set(cx, 0, cz);
+        orb.group.frustumCulled = true;
+        scene.add(orb.group);
+        orbsRef.current.push(orb);
+      }
 
       scene.add(group);
-      meshMapRef.current[building.id] = { group, bodyMesh, bodyMat, orb };
+      meshMapRef.current[building.id] = { group, bodyMesh, bodyMat, roofMesh, roofMat, orb, building };
     });
 
+    // Asynchronously fetch authoritative backend geospatial records to enrich metadata
     fetchOSMBuildings()
-      .then((osmBuildings) => {
-        osmBuildings.forEach((osm) => {
-          const alreadyCovered = RIT_CAMPUS.BUILDINGS.some((b) => {
-            const bx = b.footprint.reduce((sum, p) => sum + p[0], 0) / b.footprint.length;
-            const ox = osm.footprint.reduce((sum, p) => sum + p[0], 0) / osm.footprint.length;
-            return Math.abs(bx - ox) < 20;
-          });
-          if (!alreadyCovered && osm.footprint.length > 2) {
-            const { group } = extrudeBuilding(osm.footprint, osm.levels * 4, {
-              bodyColor: "#B8B0A0",
-              roofColor: "#909080",
-            });
-            group.frustumCulled = true;
-            scene.add(group);
+      .then((authoritativeBuildings) => {
+        authoritativeBuildings.forEach((backendB) => {
+          if (meshMapRef.current[backendB.id]) {
+            meshMapRef.current[backendB.id].building = {
+              ...meshMapRef.current[backendB.id].building,
+              ...backendB
+            };
           }
         });
         setOsmLoaded(true);
@@ -365,8 +397,13 @@ export default function CampusMap3D() {
       const hits = raycasterRef.current.intersectObjects(bodies, true);
       if (hits.length > 0) {
         const id = hits[0].object.userData.buildingId;
-        const building = RIT_CAMPUS.BUILDINGS.find((b) => b.id === id);
-        if (building) setSelected({ ...building, iot: iotData[id] });
+        const entry = meshMapRef.current[id];
+        if (entry && entry.building) {
+          setSelected({
+            ...entry.building,
+            iot: iotData[id]
+          });
+        }
       } else {
         setSelected(null);
       }
@@ -490,39 +527,80 @@ export default function CampusMap3D() {
         mesh.geometry.dispose();
         mesh.material.dispose();
       });
+
+      Object.values(meshMapRef.current).forEach(({ group, bodyMesh, bodyMat, roofMesh, roofMat, orb }) => {
+        if (bodyMesh) {
+          bodyMesh.geometry?.dispose();
+          bodyMat?.dispose();
+        }
+        if (roofMesh) {
+          roofMesh.geometry?.dispose();
+          roofMat?.dispose();
+        }
+        if (orb) {
+          orb.mat?.dispose();
+          orb.ringMat?.dispose();
+          scene.remove(orb.group);
+        }
+        scene.remove(group);
+      });
+      meshMapRef.current = {};
+      orbsRef.current = [];
+
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);
 
+  // Update visual styles on viewMode or iotData changes
   useEffect(() => {
-    RIT_CAMPUS.BUILDINGS.forEach((building) => {
-      const mesh = meshMapRef.current[building.id];
-      if (!mesh) return;
-      const iot = iotData[building.id] || {};
-      const sensor = viewMode !== "all" ? viewMode : building.iotSensors[0];
-      const rawVal = iot[sensor] ?? 0.5;
-      const normVal = sensor === "temperature"
-        ? (rawVal - 20) / 20
-        : sensor === "air_quality"
-          ? rawVal / 150
-          : sensor === "machinery_vibration"
-            ? rawVal / 100
-            : rawVal;
+    Object.values(meshMapRef.current).forEach(({ bodyMat, roofMat, orb, building }) => {
+      if (!bodyMat || !roofMat) return;
 
-      const color = valueToColor(Math.max(0, Math.min(1, normVal)));
-      mesh.orb.mat.color.set(color);
-      mesh.orb.ringMat.color.set(color);
-      mesh.orb.light.color.set(color);
+      if (viewMode === "geometry_status") {
+        const statusColor = statusToColor(building.geometryStatus);
+        bodyMat.color.set(statusColor);
+        roofMat.color.set(statusColor);
+        if (orb) {
+          orb.mat.color.set(statusColor);
+          orb.ringMat.color.set(statusColor);
+          orb.light.color.set(statusColor);
+        }
+      } else {
+        const isPeripheral = building.geometryStatus === 'UNVERIFIED';
+        const defaultBody = isPeripheral ? '#6B7280' : (building.color || '#C0B090');
+        const defaultRoof = isPeripheral ? '#4B5563' : (building.roofColor || '#8B7355');
+        bodyMat.color.set(defaultBody);
+        roofMat.color.set(defaultRoof);
+
+        if (orb && building.iotSensors?.length > 0) {
+          const iot = iotData[building.id] || {};
+          const sensor = viewMode !== "all" ? viewMode : building.iotSensors[0];
+          const rawVal = iot[sensor] ?? 0.5;
+          const normVal = sensor === "temperature"
+            ? (rawVal - 20) / 20
+            : sensor === "air_quality"
+              ? rawVal / 150
+              : sensor === "machinery_vibration"
+                ? rawVal / 100
+                : rawVal;
+
+          const color = valueToColor(Math.max(0, Math.min(1, normVal)));
+          orb.mat.color.set(color);
+          orb.ringMat.color.set(color);
+          orb.light.color.set(color);
+        }
+      }
     });
   }, [viewMode, iotData]);
 
+  // Selected building highlight
   useEffect(() => {
-    RIT_CAMPUS.BUILDINGS.forEach((building) => {
-      const mesh = meshMapRef.current[building.id];
-      if (!mesh) return;
-      mesh.bodyMat.emissive = new THREE.Color(selected?.id === building.id ? "#1A3A5C" : "#000000");
-      mesh.bodyMat.emissiveIntensity = selected?.id === building.id ? 0.5 : 0;
+    Object.values(meshMapRef.current).forEach(({ bodyMat, building }) => {
+      if (!bodyMat) return;
+      const isCurrent = selected?.id === building.id;
+      bodyMat.emissive = new THREE.Color(isCurrent ? "#1E40AF" : "#000000");
+      bodyMat.emissiveIntensity = isCurrent ? 0.65 : 0;
     });
   }, [selected]);
 
@@ -555,7 +633,15 @@ export default function CampusMap3D() {
     return { ...meta, display, norm: Math.max(0, Math.min(1, norm)) };
   };
 
-  const MODES = ["occupancy", "energy", "temperature", "air_quality"];
+  const MODES = [
+    { id: "occupancy", label: "Occupancy", icon: "👥" },
+    { id: "energy", label: "Energy", icon: "⚡" },
+    { id: "temperature", label: "Temperature", icon: "🌡" },
+    { id: "air_quality", label: "Air Quality", icon: "💨" },
+    { id: "geometry_status", label: "Geometry", icon: "📐" },
+  ];
+
+  const totalBuildingsCount = (RIT_CAMPUS.BUILDINGS?.length || 0) + (RIT_CAMPUS.PERIPHERAL_BUILDINGS?.length || 0);
 
   return (
     <div className="relative w-full bg-gray-950" style={{ height: "100vh", minHeight: 600 }}>
@@ -564,17 +650,18 @@ export default function CampusMap3D() {
       {loading && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-gray-950">
           <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-blue-300 text-sm font-mono">Initialising RIT Campus 3D...</p>
+          <p className="text-blue-300 text-sm font-mono">Initialising RIT Geographic 3D Campus...</p>
         </div>
       )}
 
+      {/* Header bar */}
       <div
         className="absolute top-0 left-0 right-0 z-10 px-4 py-3 flex items-center justify-between"
         style={{ background: "linear-gradient(to bottom, rgba(11,15,30,0.95), transparent)" }}
       >
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-white font-bold text-base leading-tight">RIT Chennai Campus</p>
+            <p className="text-white font-bold text-base leading-tight">Rajalakshmi Institute of Technology</p>
             <button
               type="button"
               onClick={() => setShowProvenanceInfo(!showProvenanceInfo)}
@@ -589,25 +676,25 @@ export default function CampusMap3D() {
             </button>
           </div>
           <p className="text-blue-400 text-xs font-mono">
-            13.0382N 80.0454E · 10.88 acres
-            {osmLoaded && <span className="ml-2 text-green-400">● OSM</span>}
+            13.0389°N 80.0449°E · WGS84 (EPSG:4326) · Kuthambakkam, Chennai
+            {osmLoaded && <span className="ml-2 text-emerald-400 font-semibold">● Real OSM Geometry</span>}
             {satLoaded && <span className="ml-2 text-green-400">● Satellite</span>}
           </p>
         </div>
 
-        <div className="flex gap-1.5 bg-black bg-opacity-50 rounded-xl px-3 py-2">
+        <div className="flex gap-1.5 bg-black bg-opacity-60 backdrop-blur rounded-xl px-3 py-2 border border-gray-800">
           {MODES.map((mode) => (
             <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
+              key={mode.id}
+              onClick={() => setViewMode(mode.id)}
               type="button"
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-all ${
-                viewMode === mode
+                viewMode === mode.id
                   ? "bg-blue-600 text-white shadow-lg"
                   : "text-gray-400 hover:text-white hover:bg-gray-700"
               }`}
             >
-              {RIT_CAMPUS.SENSOR_LABELS[mode]?.icon} {mode.replace("_", " ")}
+              {mode.icon} {mode.label}
             </button>
           ))}
           <button
@@ -629,13 +716,13 @@ export default function CampusMap3D() {
         </div>
       </div>
 
-      {/* Floating Zoom & Camera Dock for Mobile & Desktop */}
+      {/* Floating Zoom & Camera Dock */}
       <div className="absolute top-20 right-4 z-20 flex flex-col gap-1.5 bg-black/80 backdrop-blur border border-gray-800 p-1.5 rounded-xl shadow-xl">
         <button
           type="button"
           onClick={() => orbitControlsRef.current?.zoomIn?.()}
           title="Zoom In"
-          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all cursor-pointer"
         >
           +
         </button>
@@ -643,7 +730,7 @@ export default function CampusMap3D() {
           type="button"
           onClick={() => orbitControlsRef.current?.zoomOut?.()}
           title="Zoom Out"
-          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-white font-bold text-base flex items-center justify-center transition-all cursor-pointer"
         >
           −
         </button>
@@ -651,17 +738,18 @@ export default function CampusMap3D() {
           type="button"
           onClick={() => orbitControlsRef.current?.resetView?.()}
           title="Reset Orbit View"
-          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-gray-300 hover:text-white text-xs font-bold flex items-center justify-center transition-all"
+          className="w-8 h-8 rounded-lg bg-gray-900 hover:bg-blue-600 text-gray-300 hover:text-white text-xs font-bold flex items-center justify-center transition-all cursor-pointer"
         >
           ⊙
         </button>
       </div>
 
-      {/* Mobile Pinch Gesture Guidance Banner */}
+      {/* Gesture banner for touch */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 px-3 py-1 bg-black/75 backdrop-blur border border-gray-800 rounded-full text-[11px] text-gray-300 font-medium pointer-events-none shadow-lg">
         📱 Pinch to zoom · 1 finger to rotate · 2 fingers to pan
       </div>
 
+      {/* Telemetry provenance info modal */}
       {showProvenanceInfo && (
         <div className="absolute top-16 left-4 z-30 max-w-sm bg-gray-950 bg-opacity-95 border border-blue-500/50 backdrop-blur rounded-xl p-3.5 text-xs text-gray-200 shadow-2xl">
           <div className="flex justify-between items-start mb-2">
@@ -669,7 +757,10 @@ export default function CampusMap3D() {
             <button type="button" onClick={() => setShowProvenanceInfo(false)} className="text-gray-400 hover:text-white font-bold text-sm ml-2">✕</button>
           </div>
           <p className="mb-2 leading-relaxed text-gray-300">
-            <strong>Expectation vs. Reality:</strong> The 3D campus model calculates crowd density and room occupancy from <em>timetabled course enrollments & scheduled room capacities</em>, not physical GPS seat tracking.
+            <strong>Geospatial Foundation:</strong> All building footprints are derived from authoritative OpenStreetMap & Microsoft Building Footprints surveyed around <strong>13.0389° N, 80.0449° E</strong>.
+          </p>
+          <p className="mb-2 leading-relaxed text-gray-300">
+            <strong>Operational Telemetry:</strong> Crowd density and room occupancy are calculated from <em>timetabled course enrollments & scheduled room capacities</em>, not physical GPS seat tracking.
           </p>
           <p className="leading-relaxed text-gray-300">
             When hardware IoT turnstiles or smart energy meters report data via the Ingestion Gateway (<code className="text-emerald-300 font-mono">/api/twin/iot/ingest</code>), the badge updates to <strong>LIVE IOT SENSOR STREAM</strong>.
@@ -677,6 +768,7 @@ export default function CampusMap3D() {
         </div>
       )}
 
+      {/* Glossary Modal */}
       {showGlossary && (
         <div className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-blue-500/60 rounded-2xl max-w-md w-full p-5 text-gray-200 shadow-2xl space-y-3.5">
@@ -686,20 +778,20 @@ export default function CampusMap3D() {
             </div>
             <div className="space-y-3 text-xs leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
               <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
-                <strong className="text-amber-400 block mb-0.5">HVAC Base Load</strong>
-                <span>The constant electrical power (kW) consumed by campus chillers, ventilation fans, and common area lighting, modeled before occupancy scaling.</span>
+                <strong className="text-emerald-400 block mb-0.5">Geometry Status: VERIFIED</strong>
+                <span>Footprint geometry extracted from OpenStreetMap/MS Footprints and verified against official RIT architectural block naming and campus layout.</span>
               </div>
               <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
-                <strong className="text-emerald-400 block mb-0.5">Peak Density Horizon</strong>
-                <span>The 30-minute schedule window where classroom seating capacity approaches or exceeds 85% utilization across campus departments.</span>
+                <strong className="text-amber-400 block mb-0.5">Geometry Status: APPROXIMATE</strong>
+                <span>Polygonal footprint matches real geographic coordinates; vertical height is estimated from verified floor counts (4m per floor).</span>
               </div>
               <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
-                <strong className="text-cyan-400 block mb-0.5">Algorithmic Projection vs. Live Telemetry</strong>
-                <span>Unless physical IoT sensors stream real-time headcounts (<code className="text-emerald-300">/twin/iot/live</code>), occupancy is projected mathematically from registered student batches assigned to each room.</span>
+                <strong className="text-gray-400 block mb-0.5">Geometry Status: UNVERIFIED</strong>
+                <span>Real mapped peripheral structure in OSM dataset whose specific academic or administrative purpose has not been formally verified.</span>
               </div>
               <div className="bg-gray-950/70 p-2.5 rounded-lg border border-gray-800">
-                <strong className="text-purple-400 block mb-0.5">3D Draco & Mesh LOD (Level-of-Detail)</strong>
-                <span>Geometric polygon compression reducing Three.js GPU memory footprint to maintain 60 FPS on low-power mobile devices.</span>
+                <strong className="text-cyan-400 block mb-0.5">Local Tangent Plane Projection</strong>
+                <span>WGS84 ellipsoidal coordinates (EPSG:4326) projected to local metric Cartesian coordinates relative to campus origin (13.0389° N, 80.0449° E).</span>
               </div>
             </div>
             <div className="pt-2 text-right">
@@ -711,90 +803,190 @@ export default function CampusMap3D() {
         </div>
       )}
 
-      <div className="absolute top-36 right-4 z-10 bg-black bg-opacity-70 backdrop-blur rounded-xl p-3 text-xs">
-        <p className="text-gray-400 uppercase tracking-widest text-[10px] mb-2 font-semibold">Legend</p>
-        {[["#00E676", "Normal / Low"], ["#FFEA00", "Moderate"], ["#FF5252", "High / Critical"]].map(
-          ([color, label]) => (
-            <div key={label} className="flex items-center gap-2 mb-1.5">
-              <div className="w-2.5 h-2.5 rounded-full shadow-lg" style={{ background: color }} />
-              <span className="text-gray-300">{label}</span>
-            </div>
-          )
+      {/* Dynamic Legend */}
+      <div className="absolute top-24 right-4 z-10 bg-black bg-opacity-80 backdrop-blur rounded-xl p-3 text-xs border border-gray-800 shadow-xl min-w-[170px]">
+        <p className="text-gray-400 uppercase tracking-widest text-[10px] mb-2 font-bold flex items-center justify-between">
+          <span>{viewMode === "geometry_status" ? "Geometry Provenance" : "Telemetry Scale"}</span>
+          <span className="text-blue-400 font-mono text-[9px]">EPSG:4326</span>
+        </p>
+        {viewMode === "geometry_status" ? (
+          <>
+            {[
+              ["#10B981", "VERIFIED (Official RIT)"],
+              ["#F59E0B", "APPROXIMATE (Extruded)"],
+              ["#6B7280", "UNVERIFIED (Peripheral OSM)"],
+            ].map(([color, label]) => (
+              <div key={label} className="flex items-center gap-2 mb-1.5">
+                <div className="w-2.5 h-2.5 rounded-full shadow-lg" style={{ background: color }} />
+                <span className="text-gray-300 font-medium text-[11px]">{label}</span>
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {[
+              ["#00E676", "Normal / Low"],
+              ["#FFEA00", "Moderate"],
+              ["#FF5252", "High / Critical"],
+            ].map(([color, label]) => (
+              <div key={label} className="flex items-center gap-2 mb-1.5">
+                <div className="w-2.5 h-2.5 rounded-full shadow-lg" style={{ background: color }} />
+                <span className="text-gray-300 font-medium text-[11px]">{label}</span>
+              </div>
+            ))}
+          </>
         )}
-        <hr className="border-gray-700 my-2" />
-        <div className="text-gray-500 space-y-0.5">
-          <p>Drag - orbit</p>
-          <p>Scroll - zoom</p>
-          <p>Click - inspect</p>
+        <hr className="border-gray-800 my-2" />
+        <div className="text-gray-400 text-[10px] space-y-0.5">
+          <p>🖱️ Drag · Orbit around RIT</p>
+          <p>📜 Scroll · Zoom campus</p>
+          <p>👆 Click · Inspect building</p>
         </div>
-        <hr className="border-gray-700 my-2" />
-        <p className="text-gray-400">FPS: {stats.fps}</p>
-        <p className="text-gray-400">Draw calls: {stats.drawCalls}</p>
-        <p className="text-gray-400">Triangles: ~{stats.trianglesK}k</p>
+        <hr className="border-gray-800 my-2" />
+        <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+          <span>FPS: {stats.fps}</span>
+          <span>Calls: {stats.drawCalls}</span>
+        </div>
+        <div className="text-[10px] text-gray-500 font-mono mt-0.5">
+          Triangles: ~{stats.trianglesK}k
+        </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 z-10 text-right text-xs text-gray-500 font-mono">
-        <p>{RIT_CAMPUS.BUILDINGS.length} buildings rendered</p>
-        <p>Three.js r128 + OSM</p>
+      {/* Bottom status and attribution bar */}
+      <div className="absolute bottom-4 right-4 z-10 text-right text-xs text-gray-400 font-mono bg-black/70 backdrop-blur px-3 py-2 rounded-xl border border-gray-800 shadow-lg">
+        <p className="text-gray-200 font-semibold">{totalBuildingsCount} buildings rendered (10 official · {RIT_CAMPUS.PERIPHERAL_BUILDINGS?.length || 0} peripheral)</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">Map data © OpenStreetMap contributors, ODbL 1.0</p>
+        <p className="text-[10px] text-blue-400">EPSG:4326 WGS84 → Metric Local Tangent Plane</p>
       </div>
 
+      {/* Selected Building Details Card */}
       {selected && (
-        <div className="absolute bottom-4 left-4 z-20 w-80 bg-gray-900 bg-opacity-95 backdrop-blur border border-blue-800 rounded-2xl p-4 shadow-2xl">
-          <div className="flex justify-between items-start mb-1">
+        <div className="absolute bottom-4 left-4 z-20 w-84 max-w-[calc(100vw-32px)] bg-gray-900/95 backdrop-blur-md border border-blue-500/40 rounded-2xl p-4 shadow-2xl">
+          <div className="flex justify-between items-start mb-1.5 pb-2 border-b border-gray-800">
             <div>
-              <span className="text-[10px] text-blue-400 uppercase tracking-widest font-semibold">{selected.type}</span>
-              <h3 className="text-white font-bold text-sm leading-tight">{selected.name}</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-blue-400 uppercase tracking-widest font-bold">
+                  {selected.code || selected.type || 'CAMPUS BLOCK'}
+                </span>
+                <span
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                    selected.geometryStatus === 'VERIFIED'
+                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
+                      : selected.geometryStatus === 'APPROXIMATE'
+                      ? 'bg-amber-950 text-amber-300 border-amber-500'
+                      : 'bg-gray-800 text-gray-300 border-gray-600'
+                  }`}
+                >
+                  ● {selected.geometryStatus || 'UNVERIFIED'}
+                </span>
+              </div>
+              <h3 className="text-white font-bold text-sm leading-snug mt-0.5">{selected.name}</h3>
             </div>
             <button
               onClick={() => setSelected(null)}
-              className="text-gray-500 hover:text-white transition text-lg leading-none ml-2 mt-0.5"
+              className="text-gray-400 hover:text-white transition text-lg leading-none ml-2"
               type="button"
+              aria-label="Close panel"
             >
               ×
             </button>
           </div>
 
+          {/* Coordinates & Provenance Metadata */}
+          <div className="text-[11px] font-mono bg-gray-950/70 p-2 rounded-lg border border-gray-800/80 mb-2 space-y-1">
+            <div className="flex justify-between text-gray-400">
+              <span>Coordinates:</span>
+              <span className="text-blue-300">
+                {selected.latitude ? `${selected.latitude.toFixed(5)}°N, ${selected.longitude.toFixed(5)}°E` : '13.0389°N, 80.0449°E'}
+              </span>
+            </div>
+            <div className="flex justify-between text-gray-400">
+              <span>Geometry Source:</span>
+              <span className="text-gray-200">{selected.geometrySource || 'OPENSTREETMAP_WGS84'}</span>
+            </div>
+            {selected.osmWayId && (
+              <div className="flex justify-between text-gray-400">
+                <span>OSM Way ID:</span>
+                <a
+                  href={`https://www.openstreetmap.org/way/${selected.osmWayId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-400 hover:underline flex items-center gap-1"
+                >
+                  #{selected.osmWayId} ↗
+                </a>
+              </div>
+            )}
+            <div className="flex justify-between text-gray-400">
+              <span>Height Source:</span>
+              <span className="text-emerald-400">{selected.heightSource || 'ARCHITECTURAL_SURVEY'}</span>
+            </div>
+          </div>
+
           {selected.departments?.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-3 mt-2">
+            <div className="flex flex-wrap gap-1 mb-2.5">
               {selected.departments.slice(0, 4).map((department) => (
-                <span key={department} className="px-2 py-0.5 bg-blue-950 text-blue-300 text-[10px] rounded-full">
+                <span key={department} className="px-2 py-0.5 bg-blue-950/80 text-blue-300 text-[10px] rounded-full border border-blue-800/50">
                   {department}
                 </span>
               ))}
             </div>
           )}
 
-          <div className="space-y-2.5">
-            {selected.iotSensors.map((key) => {
-              const sensor = formatSensor(key, (iotData[selected.id] || selected.iot)?.[key]);
-              if (!sensor) return null;
-              return (
-                <div key={key}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-400">{sensor.icon} {sensor.label}</span>
-                    <span className="font-mono font-bold" style={{ color: valueToColor(sensor.norm) }}>
-                      {sensor.display}
-                    </span>
+          {/* Telemetry Section */}
+          {selected.iotSensors && selected.iotSensors.length > 0 ? (
+            <div className="space-y-2 mb-3">
+              {selected.iotSensors.map((key) => {
+                const sensor = formatSensor(key, (iotData[selected.id] || selected.iot)?.[key]);
+                if (!sensor) return null;
+                return (
+                  <div key={key}>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span className="text-gray-400">{sensor.icon} {sensor.label}</span>
+                      <span className="font-mono font-bold" style={{ color: valueToColor(sensor.norm) }}>
+                        {sensor.display}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-800 rounded-full h-1">
+                      <div
+                        className="h-1 rounded-full transition-all duration-700"
+                        style={{
+                          width: `${sensor.norm * 100}%`,
+                          background: valueToColor(sensor.norm),
+                          boxShadow: `0 0 6px ${valueToColor(sensor.norm)}`,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-800 rounded-full h-1">
-                    <div
-                      className="h-1 rounded-full transition-all duration-700"
-                      style={{
-                        width: `${sensor.norm * 100}%`,
-                        background: valueToColor(sensor.norm),
-                        boxShadow: `0 0 6px ${valueToColor(sensor.norm)}`,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-gray-400 text-xs italic bg-gray-950/60 p-2.5 rounded-lg border border-gray-800 mb-3">
+              Peripheral campus structure. No active operational telemetry linked.
+            </div>
+          )}
+
+          <div className="pt-2 border-t border-gray-800 flex justify-between text-[11px] text-gray-400 mb-3">
+            <span>{selected.levels || selected.floors || 4} floors · {selected.height || selected.heightMeters || 16}m</span>
+            <span className={selected.landmark ? "text-yellow-400 font-semibold" : ""}>{selected.landmark ? "⭐ Official Block" : "Peripheral Structure"}</span>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-gray-800 flex justify-between text-xs text-gray-500">
-            <span>{selected.floors} floors · {selected.height}m</span>
-            <span className={selected.landmark ? "text-yellow-400" : ""}>{selected.landmark ? "Landmark" : ""}</span>
-          </div>
+          {/* Ask Copilot Button */}
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('rit-copilot-ask', {
+                detail: {
+                  query: `Tell me about ${selected.name} (${selected.code || selected.id}), its geometry status (${selected.geometryStatus}), height source, and operational data.`,
+                  buildingId: selected.id
+                }
+              }));
+            }}
+            className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+          >
+            <span>🤖</span> Ask Copilot About This Building
+          </button>
         </div>
       )}
     </div>

@@ -141,10 +141,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/assets/**", "/api/alumni/**").hasAnyRole("ADMIN", "HOD")
                         .requestMatchers("/api/hod/**").hasAnyRole("HOD", "ADMIN")
                         .requestMatchers("/api/faculty/leaves", "/api/faculty/leaves/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
-                        .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "ADMIN")
+                        .requestMatchers("/api/faculty/substitutions", "/api/faculty/substitutions/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
+                        .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
                         .requestMatchers("/api/parent/**").hasAnyRole("PARENT", "ADMIN")
                         // Method annotations decide the role. Do not lock these tighter than @PreAuthorize.
-                        .requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**")
+                        .requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**", "/api/ai/**", "/api/iot/**", "/api/campus/**")
                         .authenticated()
                         .requestMatchers("/api/placement/apply").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers("/api/placement/**").hasRole("ADMIN")

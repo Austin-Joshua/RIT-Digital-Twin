@@ -26,6 +26,8 @@ public class DigitalTwinController {
     private final SimulatedSourceService simulatedSourceService;
     private final IoTIngestionGatewayService ioTIngestionGatewayService;
     private final IoTTimeSeriesRollupService ioTTimeSeriesRollupService;
+    private final SyntheticTelemetryEngine syntheticTelemetryEngine;
+    private final CampusMissionService campusMissionService;
 
     @PostMapping("/iot/ingest")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
@@ -123,16 +125,74 @@ public class DigitalTwinController {
         return ResponseEntity.ok(resourceUtilizationService.analyzeResourceUtilization());
     }
 
-    @GetMapping("/simulate-scenario")
-    @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
+    @GetMapping({"/simulate-scenario", "/scenarios/catalog"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY', 'STUDENT')")
     public ResponseEntity<Map<String, Object>> simulationCatalog() {
         return ResponseEntity.ok(scenarioSimulationService.catalog());
     }
 
-    @PostMapping("/simulate-scenario")
-    @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
+    @PostMapping({"/simulate-scenario", "/scenarios/simulate"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
     public ResponseEntity<Map<String, Object>> runScenario(@RequestBody Map<String, Object> params) {
         return ResponseEntity.ok(scenarioSimulationService.simulate(params));
+    }
+
+    @PostMapping("/scenarios/preview")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY', 'STUDENT')")
+    public ResponseEntity<Map<String, Object>> previewScenario(@RequestBody Map<String, Object> params) {
+        return ResponseEntity.ok(scenarioSimulationService.preview(params));
+    }
+
+    @GetMapping("/scenarios/history")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
+    public ResponseEntity<List<Map<String, Object>>> scenarioHistory() {
+        return ResponseEntity.ok(scenarioSimulationService.history());
+    }
+
+    @PostMapping("/scenarios/sweep")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOD', 'FACULTY')")
+    public ResponseEntity<Map<String, Object>> parameterSweep(@RequestBody Map<String, Object> body) {
+        String parameter = String.valueOf(body.getOrDefault("parameter", "hvacEfficiencyPercent"));
+        int min = body.get("min") instanceof Number n ? n.intValue() : 0;
+        int max = body.get("max") instanceof Number n ? n.intValue() : 40;
+        int step = body.get("step") instanceof Number n ? n.intValue() : 5;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> base = (Map<String, Object>) body.get("baseScenario");
+        return ResponseEntity.ok(scenarioSimulationService.sweep(parameter, min, max, step, base));
+    }
+
+    @GetMapping("/telemetry/synthetic")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> syntheticTelemetry(
+            @RequestParam(defaultValue = "normal-day") String scenario,
+            @RequestParam(defaultValue = "ENERGY") String metric,
+            @RequestParam(defaultValue = "8") int startHour,
+            @RequestParam(defaultValue = "18") int endHour,
+            @RequestParam(defaultValue = "30") int stepMinutes) {
+        return ResponseEntity.ok(syntheticTelemetryEngine.generateTimeSeries(scenario, metric, startHour, endHour, stepMinutes));
+    }
+
+    @GetMapping({"/iot/campus-overview", "/overview"})
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> campusOverview(
+            @RequestParam(required = false) String scenario,
+            @RequestParam(required = false) String clock) {
+        java.time.LocalTime parsedClock = clock != null ? java.time.LocalTime.parse(clock) : null;
+        return ResponseEntity.ok(syntheticTelemetryEngine.getCampusOverview(scenario, parsedClock));
+    }
+
+    @GetMapping("/missions")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<CampusMissionService.MissionDef>> missions() {
+        return ResponseEntity.ok(campusMissionService.getMissions());
+    }
+
+    @PostMapping("/missions/evaluate")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> evaluateMission(
+            @RequestParam String missionId,
+            @RequestBody(required = false) Map<String, Object> candidateAdjustments) {
+        return ResponseEntity.ok(campusMissionService.evaluateMission(missionId, candidateAdjustments));
     }
 
     @GetMapping("/predictions/congestion")
