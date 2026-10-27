@@ -75,11 +75,8 @@ public class CompareScenariosTool implements CampusTool {
         List<Map<String, Object>> capped = selectedScenarios.subList(0, Math.min(3, selectedScenarios.size()));
         Map<String, Object> preview = scenarioSimulationService.preview(Map.of("scenarios", capped));
 
-        @SuppressWarnings("unchecked")
         Map<String, Object> current = (Map<String, Object>) preview.getOrDefault("current", Map.of());
-        @SuppressWarnings("unchecked")
         List<Map<String, Object>> scenarios = (List<Map<String, Object>>) preview.getOrDefault("scenarios", List.of());
-        @SuppressWarnings("unchecked")
         Map<String, Object> recommendation = (Map<String, Object>) preview.getOrDefault("recommendation", Map.of());
 
         // Build comparison table headers and rows

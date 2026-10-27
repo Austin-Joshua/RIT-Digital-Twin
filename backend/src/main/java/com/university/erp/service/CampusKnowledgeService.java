@@ -3,7 +3,6 @@ package com.university.erp.service;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Retrieval-Augmented Generation (RAG) service for official campus documentation,
