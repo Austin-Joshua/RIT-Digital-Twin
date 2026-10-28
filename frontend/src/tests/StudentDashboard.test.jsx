@@ -4,7 +4,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import StudentDashboard from '../pages/student/StudentDashboard';
 
-let mockUser = { id: 1, username: '2117240020044', firstName: 'Austin' };
+let mockUser = { id: 1, username: '2117240020001', firstName: 'Student' };
 let resolveCgpaPromise;
 
 vi.mock('../hooks/AuthContext', () => ({
@@ -35,20 +35,20 @@ vi.mock('../services/api', () => ({
 describe('StudentDashboard component', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    mockUser = { id: 1, username: '2117240020044', firstName: 'Austin' };
+    mockUser = { id: 1, username: '2117240020001', firstName: 'Student' };
     resolveCgpaPromise = null;
   });
 
   it('renders instantly from user-isolated sessionStorage cache while fresh data fetches', async () => {
     const cachedData = {
       ts: Date.now(),
-      user: '2117240020044',
+      user: '2117240020001',
       data: {
         kpi: { cgpa: 9.15, attendance: 92, arrear: 0, loading: false },
         timetable: [],
       },
     };
-    sessionStorage.setItem('rit_student_dashboard_2117240020044', JSON.stringify(cachedData));
+    sessionStorage.setItem('rit_student_dashboard_2117240020001', JSON.stringify(cachedData));
 
     render(
       <BrowserRouter>
@@ -89,18 +89,18 @@ describe('StudentDashboard component', () => {
       </BrowserRouter>
     );
 
-    // Should not show 5.50
+    // Should NOT show User B's 5.50
     expect(screen.queryByText('5.50')).toBeNull();
 
     // Resolve network request
     await act(async () => {
       if (resolveCgpaPromise) {
-        resolveCgpaPromise({ data: [{ gpa: 8.5 }] });
+        resolveCgpaPromise({ data: [{ gpa: 9.0 }] });
       }
     });
 
     await waitFor(() => {
-      expect(screen.getByText('8.50')).toBeTruthy();
+      expect(screen.getByText('9.00')).toBeTruthy();
     });
   });
 });

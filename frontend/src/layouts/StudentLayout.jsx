@@ -85,7 +85,7 @@ const StudentLayout = () => {
         .trim();
     const displayName = resolvedFullName
         ? resolvedFullName.toUpperCase()
-        : (user?.username || 'AUSTIN JOSHUA M').toUpperCase();
+        : (user?.username || 'STUDENT').toUpperCase();
 
     const navItems = [
         ...studentNav,

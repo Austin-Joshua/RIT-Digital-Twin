@@ -71,12 +71,12 @@ const ExamFee = () => {
         doc.setFont('helvetica', 'bold');
         doc.text('Student Name:', 55, startY + 52);
         doc.setFont('helvetica', 'normal');
-        doc.text('AUSTIN JOSHUA M', 145, startY + 52);
+        doc.text('STUDENT CANDIDATE', 145, startY + 52);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Register No:', 55, startY + 72);
         doc.setFont('helvetica', 'normal');
-        doc.text('2117240020044', 145, startY + 72);
+        doc.text('2117240020001', 145, startY + 72);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Degree / Branch:', 320, startY + 52);
@@ -132,7 +132,7 @@ const ExamFee = () => {
                         </span>
                     </div>
                     <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '4px 12px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
-                        Register No: 2117240020044
+                        Register No: 2117240020001
                     </span>
                 </div>
             </div>

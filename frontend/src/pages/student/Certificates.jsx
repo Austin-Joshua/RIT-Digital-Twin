@@ -146,7 +146,7 @@ const Certificates = () => {
         doc.setFontSize(12);
         doc.setLineHeightFactor(1.6);
         
-        const certText = `This is to certify that Mr. AUSTIN JOSHUA M (Register Number: 2117240020044) is a bonafide student of this institution, currently studying in V Semester, B.E. Computer Science and Engineering during the academic year 2026-2027.`;
+        const certText = `This is to certify that the candidate (Register Number: 2117240020001) is a bonafide student of this institution, currently studying in V Semester, B.E. Computer Science and Engineering during the academic year 2026-2027.`;
         const purposeText = `This certificate is issued on the request of the student for the purpose of "${cert.purpose || 'Official Use'}".`;
 
         doc.text(doc.splitTextToSize(certText, 500), 48, startY + 90);
@@ -625,7 +625,7 @@ const Certificates = () => {
                             </div>
 
                             <p style={{ fontSize: '1rem', lineHeight: '1.8', textAlign: 'justify', textIndent: '40px', color: '#212529', marginBottom: '20px' }}>
-                                This is to certify that <strong>Mr. AUSTIN JOSHUA M</strong> (Register Number: <strong>2117240020044</strong>) is a bonafide student of this institution, currently studying in <strong>V Semester</strong>, <strong>B.E. Computer Science and Engineering</strong> during the academic year <strong>2026-2027</strong>.
+                                This is to certify that <strong>STUDENT CANDIDATE</strong> (Register Number: <strong>2117240020001</strong>) is a bonafide student of this institution, currently studying in <strong>V Semester</strong>, <strong>B.E. Computer Science and Engineering</strong> during the academic year <strong>2026-2027</strong>.
                             </p>
 
                             <p style={{ fontSize: '1rem', lineHeight: '1.8', textAlign: 'justify', textIndent: '40px', color: '#212529', marginBottom: '60px' }}>

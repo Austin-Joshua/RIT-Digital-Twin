@@ -13,7 +13,7 @@ Tracks verified changes made to the codebase in response to verified IMS finding
   1. **Shell & Navigation (`StudentLayout.jsx`, `student-layout.css`, `NotificationBar.jsx`)**:
      - Exact 18-item authentic nav sequence.
      - Dark slate sidebar `#2c323b`, search input `#39424e`, royal blue pill `#007bff` for active items.
-     - User pill `AUSTIN JOSHUA M` (`#007bff`) with dropdown (`My Profile`, `Logout`).
+     - User pill `[STUDENT_NAME]` (`#007bff`) with dropdown (`My Profile`, `Logout`).
      - Real announcements drawer with verified class committee notices.
      - Footer: `© All rights reserved.` left, `RIT-IMS` right.
   2. **My Time Table (`Timetable.jsx`)**:
@@ -36,7 +36,7 @@ Tracks verified changes made to the codebase in response to verified IMS finding
      - Live Bonafide certificate preview modal with Principal seal.
      - Official RIT branded PDF generator.
   6. **CAT Mark & LAB Mark (`CATMark.jsx`, `LABMark.jsx`)**:
-     - `CATMark.jsx`: Two-tier header (CAT-1, CAT-2, CAT-3, Total 150, Internal 20, Status), authentic Austin Joshua scores across 8 courses, DataTables bar, PDF export.
+     - `CATMark.jsx`: Two-tier header (CAT-1, CAT-2, CAT-3, Total 150, Internal 20, Status), authentic [STUDENT_NAME] scores across 8 courses, DataTables bar, PDF export.
      - `LABMark.jsx`: Two-tier header (Cycle-1 100, Cycle-2 100, Model 100, Total 300), authentic Computer Networks Lab scores (81, 88, 81 -> 250), DataTables bar, PDF export.
   7. **Assignment Mark (`AssignmentMark.jsx`)**:
      - Primary 5-assignment mark ledger (A-1 to A-5, 10 marks each, Total 50).
@@ -80,7 +80,7 @@ Tracks verified changes made to the codebase in response to verified IMS finding
       - `/profile/password` alias routing in `App.jsx`.
   16. **My Profile (`Profile.jsx`)**:
       - Top 2 cards (Avatar card + Student Info).
-      - 6 collapsible accordions: Personal, Academic, Parent, Educational (authentic 15-column table from screenshot), Address (`NO.48 N.G.G.O COLONY, TIRUVALLUR, TAMIL NADU 602001`), Document.
+      - 6 collapsible accordions: Personal, Academic, Parent, Educational (authentic 15-column table from screenshot), Address (`[PERMANENT_ADDRESS]`), Document.
 - **Verification**:
   - `npm run test:run --prefix frontend`: 10 test files passed, 35 tests passed (100%).
   - `npm run build --prefix frontend`: Production build succeeded in 12.61s with zero errors.

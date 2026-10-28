@@ -85,8 +85,8 @@ const GradeBook = () => {
         // Student details strip
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        doc.text('Student Name: AUSTIN JOSHUA M', 40, 115);
-        doc.text('Register No: 2117240020044', 40, 130);
+        doc.text('Student Name: STUDENT CANDIDATE', 40, 115);
+        doc.text('Register No: 2117240020001', 40, 130);
         doc.text('Degree & Branch: B.E. Computer Science and Engineering', 320, 115);
         doc.text(`Semester: ${selectedSemester} | Session: ${selectedSemester % 2 === 1 ? 'Nov / Dec' : 'Apr / May'} 2025-2026`, 320, 130);
 

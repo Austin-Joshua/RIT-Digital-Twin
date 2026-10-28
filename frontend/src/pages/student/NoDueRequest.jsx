@@ -132,12 +132,12 @@ const NoDueRequest = () => {
         doc.setFontSize(10);
         doc.text('Candidate Name:', 55, startY + 22);
         doc.setFont('helvetica', 'normal');
-        doc.text('AUSTIN JOSHUA M', 155, startY + 22);
+        doc.text('STUDENT CANDIDATE', 155, startY + 22);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Register Number:', 55, startY + 42);
         doc.setFont('helvetica', 'normal');
-        doc.text('2117240020044', 155, startY + 42);
+        doc.text('2117240020001', 155, startY + 42);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Degree & Branch:', 55, startY + 62);

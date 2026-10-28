@@ -37,12 +37,12 @@ const Assessments = () => {
         doc.setFontSize(10);
         doc.text('Candidate Name:', 55, startY + 22);
         doc.setFont('helvetica', 'normal');
-        doc.text('AUSTIN JOSHUA M', 155, startY + 22);
+        doc.text('STUDENT CANDIDATE', 155, startY + 22);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Register Number:', 55, startY + 42);
         doc.setFont('helvetica', 'normal');
-        doc.text('2117240020044', 155, startY + 42);
+        doc.text('2117240020001', 155, startY + 42);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Degree & Branch:', 55, startY + 62);
@@ -186,7 +186,7 @@ const Assessments = () => {
                                     November / December 2026 Autonomous End Semester Examinations
                                 </h3>
                                 <span style={{ fontSize: '0.8125rem', color: '#6c757d' }}>
-                                    Candidate: AUSTIN JOSHUA M (2117240020044) | Class: B.E. CSE / 5 / A
+                                    Candidate: STUDENT CANDIDATE (2117240020001) | Class: B.E. CSE / 5 / A
                                 </span>
                             </div>
                             <button

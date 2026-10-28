@@ -16,7 +16,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
    - Background: Pure White (`#FFFFFF`), subtle bottom hairline border.
    - Left: Hamburger toggle button (`☰`), dark icon.
    - Right: Notification bell icon (`🔔`) with unread indicator dot.
-   - User Profile Button: Solid royal blue pill/rectangle (`#007bff` / `#0d6efd`) featuring a white user silhouette icon and the student's uppercase name: `AUSTIN JOSHUA M`.
+   - User Profile Button: Solid royal blue pill/rectangle (`#007bff` / `#0d6efd`) featuring a white user silhouette icon and the student's uppercase name: `[STUDENT_NAME]`.
 2. **Left Navigation Drawer (Sidebar)**:
    - Header: Official RIT Tree Logo + Text: "RAJALAKSHMI INSTITUTE OF TECHNOLOGY".
    - Search input: Rounded grey container `🔍 Search...`.
@@ -353,12 +353,12 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - Columns: `S.No`, `AY`, `Total Fee`, `Paid Fee`, `Download Receipt` (green `Receipt` button).
   - **Official `Fee Receipt` PDF Document**:
     - Header: RIT Tree Logo, `Rajalakshmi Institute of Technology`, `Accredited by NAAC...`, `Fee Receipt`.
-    - Meta box: `Receipt No : 2026-2027/1178`, `Date : 28-04-2026`, `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / III`.
+    - Meta box: `Receipt No : 2026-2027/1178`, `Date : 28-04-2026`, `[STUDENT_NAME]`, `[REGISTER_NO]`, `B.E. CSE / III`.
     - Table: `Particulars` (`Tuition Fee`, `Other Fee`, `AU / Library Fee`) | `Amount (₹)`.
     - Summary & Legal: `NEFT No`, `Rupees (₹) in words`, `Note : Cheque subject to realisation`, `Computer generated receipt, no signature required`.
   - **Official `Consolidated Receipt` PDF Document** (Evidence: `media_1793187997759_66589766.png`):
     - Document Title: `Consolidated Receipt (2026-2027)`.
-    - Metadata: `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / III`.
+    - Metadata: `[STUDENT_NAME]`, `[REGISTER_NO]`, `B.E. CSE / III`.
     - Ledger Table: `Date` (`28-04-2026`), `NEFT No` (`138736812`), `Particulars` (Tuition Fee, Other Fee, AU/Library Fee), `Amount` (87000, 138000, 625), `Total Amount (₹)` (`225625`), and a bottom `Summary` row.
     - Legal disclaimer: `Rupees (₹)` in words, `Cheque subject to realisation`, and computer generated disclaimer.
 
@@ -412,7 +412,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - `Date & Time : 2026-08-07 12:40:00 to 13:10:00` | `Venue : A202 Lab`
   - **Summary of Meeting Card**:
     - `Members Present (Faculties) *`: Blue tag pills with remove icons (`SARAVANAN M. (PH15)`, `ARAVINDH S (CS190)`, `VINITHA R (CS204)`, `HARSHANA B (CS218)`, `CHARUMATHY M (CS250)`). Toolbar: `[Select all]`, `[Deselect all]`.
-    - `Members Present (Students) *`: Blue tag pills (`AAKASH B K (2117240020001)`, `AKSHARA P (2117240020016)`, `AKSHAYA M (2117240020019)`, `ANISHA PATHAK (2117240020026)`, `AUSTIN JOSHUA M (2117240020044)`, `CHRIS ALAN (2117240020054)`, `CHRISTOPHER J (2117240020056)`).
+    - `Members Present (Students) *`: Blue tag pills (`AAKASH B K (2117240020001)`, `AKSHARA P (2117240020016)`, `AKSHAYA M (2117240020019)`, `ANISHA PATHAK (2117240020026)`, `[STUDENT_NAME] ([REGISTER_NO])`, `CHRIS ALAN (2117240020054)`, `CHRISTOPHER J (2117240020056)`).
   - **Syllabus Completion Status Table**:
     - Columns: `S.No`, `Subject Name`, `Faculty Name`, `Completion Percentage`.
     - Authentic Data Rows:
@@ -510,8 +510,8 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
           - `HALL TICKET (Page 01)`
         - Right: Box with student headshot photograph (`Photo of the Candidate`).
       - Student Metadata Grid:
-        - `Register Number`: `2117240020044` | `Current Semester`: `05`
-        - `Name`: `AUSTIN JOSHUA M` | `DOB`: `01.03.2006`
+        - `Register Number`: `[REGISTER_NO]` | `Current Semester`: `05`
+        - `Name`: `[STUDENT_NAME]` | `DOB`: `01.03.2006`
         - `Degree & Branch`: `B.E. Computer Science and Engineering` | `UMIS No`: `2403211710421044`
         - `Examination Centre`: `2117 : RAJALAKSHMI INSTITUTE OF TECHNOLOGY`
       - Registered Examination Schedule Table:
@@ -590,7 +590,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
         - `Class Committee MOM Has Been Generated`
         - `Class Committee Has Been Scheduled`
     - **User Profile Dropdown** (Evidence: `media_1793188498700_df62c3e2.png`):
-      - Royal blue rounded pill button with user icon and student name: `AUSTIN JOSHUA M`.
+      - Royal blue rounded pill button with user icon and student name: `[STUDENT_NAME]`.
       - Dropdown menu options:
         - `My Profile` (navigates to 6-tab profile)
         - `Logout` (invalidates session and redirects to `/login`)
@@ -603,25 +603,25 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
   - **Top Profile Header (2-Column Grid)**:
     - **Left Card (~35% width)**:
       - Centered circular student headshot with light blue circular ring.
-      - Name: **`AUSTIN JOSHUA M`** (bold centered).
+      - Name: **`[STUDENT_NAME]`** (bold centered).
       - Subtitle: `2024-2028/B.E. Computer Science and Engineering/2026-2027/5/A`.
     - **Right Card (`Student Info`) (~65% width)**:
       - Title: `Student Info` (blue text `#007bff`).
       - 2-Column Key-Value Grid with subtle bottom border lines:
-        - `Full Name`: `AUSTIN JOSHUA M` | `Register Number`: `2117240020044`
-        - `Email`: `austin.240044@cse.ritchennai.edu.in` | `Phone`: `9344208046`
+        - `Full Name`: `[STUDENT_NAME]` | `Register Number`: `[REGISTER_NO]`
+        - `Email`: `[STUDENT_EMAIL]` | `Phone`: `[PHONE_REDACTED]`
   - **Collapsible Accordion Architecture**:
     - Each section is rendered as an expandable/collapsible card with a blue title (`#007bff`) and right-aligned chevron arrow (pointing down `v` when open, left `<` when collapsed).
     - **1. Personal Details** (Accordion Item 1):
-      - `Full Name`: `AUSTIN JOSHUA M` | `Email`: `austin.240044@cse.ritchennai.edu.in`
-      - `Mobile`: `9344208046` | `Aadhar Number`: `968840382378`
+      - `Full Name`: `[STUDENT_NAME]` | `Email`: `[STUDENT_EMAIL]`
+      - `Mobile`: `[PHONE_REDACTED]` | `Aadhar Number`: `[AADHAR_REDACTED]`
       - `Date of Birth`: `2006-03-01` | `Age`: `20`
       - `GENDER`: `MALE` | `Blood Group`: `A+ve`
       - `Mother Tongue`: `TAMIL` | `Religion`: `CHRISTIAN`
       - `Community`: `MBC` | `State`: `TAMIL NADU`
       - `Country`: `INDIAN`
     - **2. Academic Details** (Accordion Item 2):
-      - `Register Number`: `2117240020044` | `Roll Number`: `-`
+      - `Register Number`: `[REGISTER_NO]` | `Roll Number`: `-`
       - `EMIS Number`: `2019796943` | `UMIS Number`: `2403211710421044`
       - `Admitted Mode`: `MANAGEMENT QUOTA` | `First Graduate`: `No`
       - `GQ GOVT`: `No` | `Scholarship`: `No`
@@ -630,22 +630,22 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
       - `Academic Year`: `2026-2027` | `Semester`: `5`
       - `Section`: `A`
     - **3. Parent Details** (Accordion Item 3):
-      - `Father Name`: `MARIA JUSTIN M` | `Mother Name`: `JESHEELA DE MELLO G`
+      - `Father Name`: `[PARENT_NAME_1]` | `Mother Name`: `[PARENT_NAME_2]`
       - `Father Mobile No`: `9444752053` | `Mother Mobile No`: `9444334155`
       - `Father's Occupation`: `BAKER` | `Mother's Occupation`: `TEACHER`
-      - `Father's Office Address`: `SELF` | `Mother's Office Address`: `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001`
+      - `Father's Office Address`: `SELF` | `Mother's Office Address`: `[INSTITUTION_LOCATION]`
       - `Guardian Name(If)`: `-` | `Guardian Mobile No`: `-`
       - `Guardian's Occupation`: `-` | `Guardian's Office Address`: `-`
     - **4. Educational Details** (Accordion Item 4 - Wide Horizontally Scrolling Table):
       - **Columns**: `Education Type` | `Institute Name` | `Institute Location` | `Board / University` | `Register Number` | `Total Marks` | `Cutoff Mark` | `Marks In Percentage / CGPA` | `Medium` | `Subject 1` | `Mark 1` | `Subject 2` | `Mark 2` | `Subject 3` | `Mark 3` | `Subject 4` | `Mark 4` | `Subject 5` | `Mark 5` | `Subject 6` | `Mark 6`.
       - **Rows**:
-        - **SSLC**: `SRI R.M.JAIN VIDHYASHRAM` | `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001` | `CBSE` | `-` | `468/500` | `-` | `93.60%` | `ENGLISH` | `TAMIL` (`96/100`) | `ENGLSIH` (`95/100`) | `MATHEMATICS` (`87/100`) | `SCIENCE` (`95/100`) | `SOCIAL SCIENCE` (`95/100`) | `-` (`-`).
-        - **HSC**: `SRI R.M.JAIN VIDHYASHRAM` | `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001` | `CBSE` | `-` | `418/500` | `-` | `83.60%` | `ENGLISH` | `-` (`-`) | `ENGLSIH` (`93/100`) | `MATHEMATICS` (`83/100`) | `PHYSICS` (`74/100`) | `CHEMISTRY` (`81/100`) | `COMPUTER SCIENCE` (`87/100`).
+        - **SSLC**: `[INSTITUTION_NAME]` | `[INSTITUTION_LOCATION]` | `CBSE` | `-` | `468/500` | `-` | `93.60%` | `ENGLISH` | `TAMIL` (`96/100`) | `ENGLSIH` (`95/100`) | `MATHEMATICS` (`87/100`) | `SCIENCE` (`95/100`) | `SOCIAL SCIENCE` (`95/100`) | `-` (`-`).
+        - **HSC**: `[INSTITUTION_NAME]` | `[INSTITUTION_LOCATION]` | `CBSE` | `-` | `418/500` | `-` | `83.60%` | `ENGLISH` | `-` (`-`) | `ENGLSIH` (`93/100`) | `MATHEMATICS` (`83/100`) | `PHYSICS` (`74/100`) | `CHEMISTRY` (`81/100`) | `COMPUTER SCIENCE` (`87/100`).
         - **DIPLOMA**: (blank row).
     - **5. Address Details** (Accordion Item 5 - Structured Address Table):
       - **Columns**: `Address Type` | `Room No & Street` | `Area` | `District` | `Pincode` | `State` | `Country`.
       - **Rows**:
-        - `Permanent` | `NO.48 N.G.G.O COLONY` | `-` | `TIRUVALLUR` | `602001` | `TAMIL NADU` | `INDIA`.
+        - `Permanent` | `[STREET_ADDRESS]` | `-` | `TIRUVALLUR` | `602001` | `TAMIL NADU` | `INDIA`.
         - `Temporary` | `-` | `-` | `-` | `-` | `-` | `-`.
     - **6. Document Details** (Accordion Item 6 - Verification Documents Table):
       - **Columns**: `File Name` | `File`.

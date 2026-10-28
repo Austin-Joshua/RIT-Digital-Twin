@@ -81,7 +81,7 @@ const LABMark = () => {
         const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
         applyCollegePageLayout(doc, {
             title: `LABORATORY (LAB) ASSESSMENT MARKS REPORT - SEMESTER ${semester}`,
-            documentSubtitle: `Student: AUSTIN JOSHUA M (2117240020044) | Class: B.E. CSE / 5 / A`
+            documentSubtitle: `Student: STUDENT CANDIDATE (2117240020001) | Class: B.E. CSE / 5 / A`
         });
 
         const tableData = filteredRows.map(r => [

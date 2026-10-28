@@ -8,7 +8,7 @@ const Profile = () => {
         personal: false,
         academic: false,
         parent: false,
-        educational: true, // expanded by default as in user's screenshot
+        educational: true, // expanded by default as in screenshot layout
         address: false,
         documents: false
     });
@@ -17,9 +17,19 @@ const Profile = () => {
         setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
+    const resolvedFullName = [user?.firstName, user?.lastName]
+        .filter(part => Boolean(part && String(part).trim()))
+        .join(' ')
+        .trim() || 'STUDENT CANDIDATE';
+    
+    const registerNo = user?.username || '2117240020001';
+    const studentEmail = user?.email || 'student.cse@ritchennai.edu.in';
+    const studentPhone = '+91 98401 XXXXX';
+    const initials = resolvedFullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'ST';
+
     return (
         <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            {/* Top Row: 2 Cards (Matches Screenshot Perfectly) */}
+            {/* Top Row: 2 Cards (Matches Layout Specification) */}
             <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', marginBottom: '24px' }}>
                 {/* Left Card: Student Avatar & Program */}
                 <div style={{
@@ -47,18 +57,12 @@ const Profile = () => {
                         border: '2px solid #ffffff',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                     }}>
-                        <img
-                            src="/assets/images/student-avatar.png"
-                            alt="Austin Joshua M"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.parentElement.innerHTML = '<span style="font-size: 2.2rem; font-weight: bold; color: white;">AJ</span>';
-                            }}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                        <span style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#ffffff' }}>
+                            {initials}
+                        </span>
                     </div>
                     <h3 style={{ margin: '0 0 6px 0', fontSize: '1.15rem', fontWeight: '600', color: '#212529', letterSpacing: '0.5px' }}>
-                        AUSTIN JOSHUA M
+                        {resolvedFullName.toUpperCase()}
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.8125rem', color: '#6c757d', lineHeight: '1.4' }}>
                         2024-2028/B.E. Computer Science and Engineering/2026-2027/5/A
@@ -82,7 +86,7 @@ const Profile = () => {
                                 Full Name
                             </span>
                             <span style={{ fontSize: '0.875rem', color: '#495057' }}>
-                                AUSTIN JOSHUA M
+                                {resolvedFullName.toUpperCase()}
                             </span>
                         </div>
                         <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
@@ -90,7 +94,7 @@ const Profile = () => {
                                 Register Number
                             </span>
                             <span style={{ fontSize: '0.875rem', color: '#495057' }}>
-                                2117240020044
+                                {registerNo}
                             </span>
                         </div>
                         <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
@@ -98,7 +102,7 @@ const Profile = () => {
                                 Email
                             </span>
                             <span style={{ fontSize: '0.875rem', color: '#495057' }}>
-                                austin.240044@cse.ritchennai.edu.in
+                                {studentEmail}
                             </span>
                         </div>
                         <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
@@ -106,14 +110,14 @@ const Profile = () => {
                                 Phone
                             </span>
                             <span style={{ fontSize: '0.875rem', color: '#495057' }}>
-                                9344208046
+                                {studentPhone}
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Accordion Sections (Matches Authentic IMS) */}
+            {/* Accordion Sections (Matches Structural Specification) */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {/* 1. Personal Details */}
                 <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
@@ -170,7 +174,7 @@ const Profile = () => {
                                 <div><span style={{ color: '#6c757d' }}>Department:</span> <strong>Computer Science and Engineering</strong></div>
                                 <div><span style={{ color: '#6c757d' }}>Current Semester:</span> <strong>Semester V</strong></div>
                                 <div><span style={{ color: '#6c757d' }}>Section:</span> <strong>A</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Roll Number:</span> <strong>24CS044</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Roll Number:</span> <strong>24CS001</strong></div>
                                 <div><span style={{ color: '#6c757d' }}>Hosteler / Day Scholar:</span> <strong>Day Scholar</strong></div>
                             </div>
                         </div>
@@ -196,18 +200,18 @@ const Profile = () => {
                     {openSections.parent && (
                         <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
-                                <div><span style={{ color: '#6c757d' }}>Father Name:</span> <strong>MARIA JUSTIN M</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Father Occupation:</span> <strong>Baker</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Mother Name:</span> <strong>JESHEELA DE MELLO G</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Mother Occupation:</span> <strong>Teacher</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Father Contact:</span> <strong>9840228046</strong></div>
-                                <div><span style={{ color: '#6c757d' }}>Annual Income:</span> <strong>₹ 3,50,000.00</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Father Name:</span> <strong>MUTHUKUMAR R</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Father Occupation:</span> <strong>Business Executive</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Mother Name:</span> <strong>LAKSHMI M</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Mother Occupation:</span> <strong>Academician / Teacher</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Parent Contact:</span> <strong>+91 98402 XXXXX</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Annual Income:</span> <strong>₹ 4,50,000.00</strong></div>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* 4. Educational Details (Matches User Screenshot 100%!) */}
+                {/* 4. Educational Details (Preserves full 15-column schema with anonymized institutional records) */}
                 <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
                     <div
                         onClick={() => toggleSection('educational')}
@@ -248,9 +252,9 @@ const Profile = () => {
                                 <tbody>
                                     <tr style={{ borderBottom: '1px solid #dee2e6', backgroundColor: '#ffffff' }}>
                                         <td style={{ padding: '12px 8px', fontWeight: '500', borderRight: '1px solid #dee2e6' }}>SSLC</td>
-                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>SRI R.M.JAIN VIDHYASHRAM</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>KENDRIYA VIDYALAYA</td>
                                         <td style={{ padding: '12px 8px', fontSize: '0.75rem', color: '#555', borderRight: '1px solid #dee2e6', lineHeight: '1.3' }}>
-                                            4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001
+                                            ANNA NAGAR, CHENNAI, TAMIL NADU 600040
                                         </td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>CBSE</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
@@ -260,16 +264,16 @@ const Profile = () => {
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>TAMIL</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>96/100</td>
-                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLSIH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>95/100</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>MATHEMATICS</td>
                                         <td style={{ padding: '12px 8px' }}>87/100</td>
                                     </tr>
                                     <tr style={{ borderBottom: '1px solid #dee2e6', backgroundColor: '#fcfcfc' }}>
                                         <td style={{ padding: '12px 8px', fontWeight: '500', borderRight: '1px solid #dee2e6' }}>HSC</td>
-                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>SRI R.M.JAIN VIDHYASHRAM</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>KENDRIYA VIDYALAYA</td>
                                         <td style={{ padding: '12px 8px', fontSize: '0.75rem', color: '#555', borderRight: '1px solid #dee2e6', lineHeight: '1.3' }}>
-                                            4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001
+                                            ANNA NAGAR, CHENNAI, TAMIL NADU 600040
                                         </td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>CBSE</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
@@ -279,7 +283,7 @@ const Profile = () => {
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
-                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLSIH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>93/100</td>
                                         <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>MATHEMATICS</td>
                                         <td style={{ padding: '12px 8px' }}>83/100</td>
@@ -329,17 +333,17 @@ const Profile = () => {
                                 <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
                                     <strong style={{ color: '#007bff', display: 'block', marginBottom: '8px' }}>Permanent Address:</strong>
                                     <p style={{ margin: 0, color: '#495057', lineHeight: '1.6' }}>
-                                        NO.48 N.G.G.O COLONY, <br />
-                                        TIRUVALLUR, <br />
-                                        TAMIL NADU 602001
+                                        NO. 25, ANNA NAGAR WEST, <br />
+                                        CHENNAI, <br />
+                                        TAMIL NADU 600040
                                     </p>
                                 </div>
                                 <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
                                     <strong style={{ color: '#007bff', display: 'block', marginBottom: '8px' }}>Communication Address:</strong>
                                     <p style={{ margin: 0, color: '#495057', lineHeight: '1.6' }}>
-                                        NO.48 N.G.G.O COLONY, <br />
-                                        TIRUVALLUR, <br />
-                                        TAMIL NADU 602001
+                                        NO. 25, ANNA NAGAR WEST, <br />
+                                        CHENNAI, <br />
+                                        TAMIL NADU 600040
                                     </p>
                                 </div>
                             </div>

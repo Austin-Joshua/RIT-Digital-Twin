@@ -53,12 +53,12 @@ const AcademicFee = () => {
         doc.setFont('helvetica', 'bold');
         doc.text('Student Name:', 55, startY + 52);
         doc.setFont('helvetica', 'normal');
-        doc.text('AUSTIN JOSHUA M', 145, startY + 52);
+        doc.text('STUDENT CANDIDATE', 145, startY + 52);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Register No:', 55, startY + 72);
         doc.setFont('helvetica', 'normal');
-        doc.text('2117240020044', 145, startY + 72);
+        doc.text('2117240020001', 145, startY + 72);
 
         doc.setFont('helvetica', 'bold');
         doc.text('Degree / Branch:', 320, startY + 52);
@@ -106,7 +106,7 @@ const AcademicFee = () => {
         const startY = 125;
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        doc.text(`Student: AUSTIN JOSHUA M (Reg No: 2117240020044)`, 40, startY);
+        doc.text(`Student: STUDENT CANDIDATE (Reg No: 2117240020001)`, 40, startY);
         doc.text(`Degree & Branch: B.E. Computer Science and Engineering (V / A)`, 40, startY + 16);
         doc.text(`Academic Session: 2026-2027`, 380, startY);
         doc.text(`Status: FULLY PAID (NO ARREARS)`, 380, startY + 16);
