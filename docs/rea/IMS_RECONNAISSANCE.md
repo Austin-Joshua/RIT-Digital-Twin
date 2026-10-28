@@ -580,14 +580,16 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ---
 
 ### 19. My Profile (`My Profile`)
-- **Status**: **OBSERVED** (Evidence: `media_1793188527873_d7a1e931.png`, `media_1793188548986_c130ee1b.png`, `media_1793188571725_5ed551c2.png`, `media_1793188599881_719e5866.png`, `media_1793188624678_4b5e636b.png`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188527873_d7a1e931.png` through `media_1793188769791_df66f467.png`)
 - **Visual Structure**:
-  - Top Profile Banner: Student avatar circle, `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / 5 / A`.
-  - Tab Navigation:
+  - Top Profile Banner: Student avatar circle, `AUSTIN JOSHUA M`, `2117240020044`, `austin.240044@cse.ritchennai.edu.in`, `9344208046`.
+  - Canonical Tab Navigation (6 Tabs):
     1. `Personal Details`
     2. `Academic Details`
     3. `Parent Details`
     4. `Educational Details`
+    5. `Address Details`
+    6. `Document Details`
   - **1. Personal Details**:
     - `Full Name`: `AUSTIN JOSHUA M`
     - `Mobile`: `9344208046`
@@ -599,7 +601,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - `Community`: `BC`
     - `State`: `TAMIL NADU`
     - `Country`: `INDIAN`
-    - `Email`: `austinjoshua2006@gmail.com`
+    - `Email`: `austin.240044@cse.ritchennai.edu.in`
     - `Aadhar Number`: `**** **** 2378`
   - **2. Academic Details**:
     - `Register Number`: `2117240020044`
@@ -628,8 +630,36 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - `Guardian's Occupation`: `-`
     - `Guardian's Office Address`: `-`
   - **4. Educational Details**:
-    - `SSLC / 10th`: Board, School Name, Passing Year, Percentage
-    - `HSC / 12th`: Board, School Name, Passing Year, Cutoff, Percentage
+    - **SSLC (10th Standard)**:
+      - Institute: `SRI R.M.JAIN VIDHYASHRAM`
+      - Board: `CBSE` | Medium: `ENGLISH`
+      - Total Marks: `468/500` | Percentage: `93.60%`
+      - Subjects:
+        - Subject 1: `TAMIL` (`96/100`)
+        - Subject 2: `ENGLISH` (`95/100`)
+        - Subject 3: `MATHEMATICS` (`87/100`)
+        - Subject 4: `SCIENCE` (`95/100`)
+        - Subject 5: `SOCIAL SCIENCE` (`95/100`)
+    - **HSC (12th Standard)**:
+      - Institute: `SRI R.M.JAIN VIDHYASHRAM`
+      - Board: `CBSE` | Medium: `ENGLISH`
+      - Total Marks: `418/500` | Cutoff: Calculated
+      - Subjects:
+        - Subject 1: `ENGLISH` (`93/100`)
+        - Subject 2: `MATHEMATICS` (`83/100`)
+        - Subject 3: `PHYSICS` (`74/100`)
+        - Subject 4: `CHEMISTRY` (`81/100`)
+        - Subject 5: `COMPUTER SCIENCE` (`87/100`)
+    - **DIPLOMA**: N/A
+  - **5. Address Details**:
+    - Address Types: `Permanent` and `Temporary`
+    - `Room No & Street`: `NO. 18`
+    - `City / District`: `TIRUVALLUR`
+    - `State`: `TAMIL NADU`
+    - `Pincode`: `602001`
+    - `Country`: `INDIA`
+  - **6. Document Details**:
+    - Uploaded Verification Documents (10th Marksheet, 12th Marksheet, Aadhar Card, Community Certificate) with preview and download options.
 
 ---
 
