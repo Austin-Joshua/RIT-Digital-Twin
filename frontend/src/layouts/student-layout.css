@@ -2226,7 +2226,7 @@ html.dark .ims-cal-table th {
 .ims-table-wrapper {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     border-radius: 14px;
     border: 1.5px solid var(--theme-border, #e2e8f0);
     background: var(--card-bg, #ffffff);
