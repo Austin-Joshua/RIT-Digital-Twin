@@ -364,4 +364,56 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 12. Exam Fee (`Exam Fee`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188024195_47ac0b12.png`, `media_1793188040722_5e73e10f.png`)
+- **Visual Structure**:
+  - Title: `Exam Fee` (centered clean heading).
+  - Action Header: Yellow/orange button `Payment History` (`#ffc107`).
+  - **Fee Details Card**:
+    - Multi-semester rows:
+      - `AY : 2025-2026` | `Semester : IV` | `Exam Fee : 2950` | `Due Date : 2026-05-05`
+      - `AY : 2026-2027` | `Semester : V` | `Exam Fee : 2950` | `Due Date : 2026-09-15`
+    - Summary row:
+      - `Total Fee : 5900` | `Paid Amount : 5900` | `Balance Amount : 0`
+  - **Payment History View**:
+    - Filtered sub-cards grouped by exam session:
+      - `Exam Month & Year : November 2026` (bold blue header)
+      - `Exam Month & Year : April 2026` (bold blue header)
+    - Columns: `S.No`, `Transaction ID`, `Paid Date`, `Paid Amount`, `Mode`, `By`, `Status` (green `Success` or amber `Initiated`), `Download Receipt` (green `Receipt` button).
+
+---
+
+### 13. Feedbacks (`Feedbacks`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188059944_c7932fc2.png`)
+- **Visual Structure**:
+  - Two distinct cards:
+    1. `Course FeedBack Forms` (Empty state: `No Data Available...`)
+    2. `Training FeedBack Forms` (Empty state: `No Data Available...`)
+
+---
+
+### 14. Class Committee (`Class Committee`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188087174_5db46879.png`, `media_1793188113086_b6ea955b.png`)
+- **Navigation**: Collapsible sidebar menu with items:
+  1. `Schedule`
+  2. `Minutes Of Meet` (white pill active state)
+- **Minutes Of Meet List View**:
+  - DataTables Toolbar: `Show entries`, `Select all`, `Deselect all`, `Copy`, `CSV`, `Excel`, `PDF`, `Print`, `Columns`, `Search`.
+  - Columns: Checkbox, `Batch` (`2024-2028`), `AY` (`2026-2027`), `Course` (`B.E. CSE`), `Semester` (`5`), `Section` (`A`), `Date` (`2026-08-07`), `Action`.
+  - Row Action: Teal button labeled **`View MOM`** (`#17a2b8`).
+- **View Course Committee's MOM View**:
+  - Action Header: Dark grey `Back To List` button.
+  - Heading: `View Course Committee's MOM`.
+  - Metadata Grid:
+    - `Meeting Name : Class Committee Meeting -II`
+    - `Batch : 2024-2028` | `AY : 2026-2027`
+    - `Course : B.E. CSE` | `Semester : 5` | `Section : A`
+    - `Chairman : GEETHA A (CS182)` | `Incharge : ARAVINDH S (CS190)`
+    - `Date & Time : 2026-08-07 12:40:00 to 13:10:00` | `Venue : A202 Lab`
+  - Summary of Meeting Card:
+    - `Members Present (Faculties) *`: Blue tag pills with remove icons (`SARAVANAN M. (PH15)`, `ARAVINDH S (CS190)`, `VINITHA R (CS204)`, etc.).
+    - `Members Present (Students) *`: Blue tag pills (`AAKASH B K (2117240020001)`, `AKSHARA P (2117240020016)`, etc.).
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*
