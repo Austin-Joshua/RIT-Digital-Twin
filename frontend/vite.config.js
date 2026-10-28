@@ -44,7 +44,8 @@ export default defineConfig(({ mode }) => {
 
             const chunkGroups = {
               'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-              'ui-vendor': ['framer-motion', 'recharts'],
+              'motion-vendor': ['framer-motion'],
+              'charts-vendor': ['recharts'],
               'three-vendor': ['three'],
               'pdf-vendor': ['jspdf', 'jspdf-autotable', 'html2canvas'],
               'xlsx-vendor': ['xlsx'],
@@ -76,7 +77,8 @@ export default defineConfig(({ mode }) => {
               !dep.includes('pdf-vendor') &&
               !dep.includes('maps-vendor') &&
               !dep.includes('three-vendor') &&
-              !dep.includes('xlsx-vendor')
+              !dep.includes('xlsx-vendor') &&
+              !dep.includes('charts-vendor')
           );
         },
       },

@@ -97,11 +97,7 @@ public class DataInitializer implements CommandLineRunner {
                         }
                 }
 
-                // Fast-path: If institutional baseline is already seeded, avoid redundant startup queries and BCrypt checks
-                if (userRepository.findByUsername("ADM-001").isPresent() && departmentRepository.count() >= 11) {
-                        log.info("RIT Digital Twin: Core institutional baseline already present. Fast-path startup active.");
-                        return;
-                }
+
 
                 // 2. Create missing demo accounts only. Never overwrite an existing password.
                 seedUserIfAbsent("ADM-001", "admin@ritchennai.edu.in", Role.UserRole.ADMIN, "System", "Admin");

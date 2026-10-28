@@ -30,19 +30,40 @@ const StudentDashboard = () => {
     const yearLabel = academicYearLabel(now);
     const semester = semesterWindow(now);
 
+    const userIdentifier = user?.username || user?.email || (user?.id ? String(user.id) : null);
+    const cacheKey = userIdentifier ? `rit_student_dashboard_${userIdentifier}` : null;
+
     const [kpiData, setKpiData] = useState(() => {
+        if (!cacheKey) return { cgpa: null, attendance: null, arrear: 0, loading: true };
         try {
-            const cached = sessionStorage.getItem('rit_student_kpi');
+            const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
                 const parsed = JSON.parse(cached);
-                if (Date.now() - parsed.ts < 120000) {
-                    return { ...parsed.data, loading: false };
+                if (Date.now() - parsed.ts < 120000 && parsed.user === userIdentifier) {
+                    return { ...parsed.data.kpi, loading: false };
                 }
             }
-        } catch {}
+        } catch (_err) {
+            /* ignore storage errors */
+        }
         return { cgpa: null, attendance: null, arrear: 0, loading: true };
     });
-    const [timetable, setTimetable] = useState([]);
+
+    const [timetable, setTimetable] = useState(() => {
+        if (!cacheKey) return [];
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.ts < 120000 && parsed.user === userIdentifier) {
+                    return Array.isArray(parsed.data.timetable) ? parsed.data.timetable : [];
+                }
+            }
+        } catch (_err) {
+            /* ignore storage errors */
+        }
+        return [];
+    });
     const [selectedDate, setSelectedDate] = useState(null);
     const feesPending = pendingAcademicFees();
     const academicTotal = academicFees
@@ -97,13 +118,21 @@ const StudentDashboard = () => {
             };
             setKpiData(fresh);
             setTimetable(ttData);
-            try {
-                sessionStorage.setItem('rit_student_kpi', JSON.stringify({ ts: Date.now(), data: fresh }));
-            } catch {}
+            if (cacheKey) {
+                try {
+                    sessionStorage.setItem(cacheKey, JSON.stringify({
+                        ts: Date.now(),
+                        user: userIdentifier,
+                        data: { kpi: fresh, timetable: ttData }
+                    }));
+                } catch (_err) {
+                    /* ignore storage errors */
+                }
+            }
         });
 
         return () => { isMounted = false; };
-    }, [user]);
+    }, [userIdentifier, cacheKey]);
 
     const calendar = useMemo(() => {
         const year = now.getFullYear();

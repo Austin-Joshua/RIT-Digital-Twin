@@ -84,6 +84,12 @@ public class StudentDataSeeder implements CommandLineRunner {
     @org.springframework.beans.factory.annotation.Autowired
     private com.university.erp.service.CampusCredentialAlignment campusCredentialAlignment;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.university.erp.repository.AttendanceRiskRepository attendanceRiskRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.university.erp.repository.PerformanceWarningRepository performanceWarningRepository;
+
     public StudentDataSeeder(
             UserRepository userRepository,
             StudentRepository studentRepository,
@@ -172,16 +178,7 @@ public class StudentDataSeeder implements CommandLineRunner {
 
         if (cancelled || Thread.currentThread().isInterrupted()) return;
 
-        // Fast-path: if student batches are already populated in DB, skip redundant student loops and heavy startup analytics
-        if (studentRepository.count() >= 122) {
-            log.info("StudentDataSeeder: Student batches already present. Skipping redundant startup seeding.");
-            if (cancelled || Thread.currentThread().isInterrupted()) return;
-            seedOperationsSuiteData(cse);
-            if (cancelled || Thread.currentThread().isInterrupted()) return;
-            seedPhysicalTwinData();
-            log.info("StudentDataSeeder: Fast-path initialization complete.");
-            return;
-        }
+
 
         seedCurriculum(cse, "B.E. CSE");
         if (cancelled || Thread.currentThread().isInterrupted()) return;
@@ -256,9 +253,15 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .build());
         }
 
-        // 3. Trigger initial Analytics
-        attendanceAnalyticsService.runAttendanceAnalysisForAllStudents();
-        studentSuccessService.runPerformanceAnalysisForAllStudents();
+        // 3. Trigger initial Analytics only if baseline not present
+        if (attendanceRiskRepository.count() == 0) {
+            log.info("StudentDataSeeder: Initial attendance risk baseline missing. Populating asynchronously...");
+            attendanceAnalyticsService.runAttendanceAnalysisForAllStudents();
+        }
+        if (performanceWarningRepository.count() == 0) {
+            log.info("StudentDataSeeder: Initial performance warning baseline missing. Populating asynchronously...");
+            studentSuccessService.runPerformanceAnalysisForAllStudents();
+        }
         log.info("Smart Campus Analytics run complete.");
     }
 
@@ -448,14 +451,18 @@ public class StudentDataSeeder implements CommandLineRunner {
     }
 
     private void seedSubject(String code, String name, int credits, Semester semester, Department dept, String deptName) {
-        Subject subject = subjectRepository.findBySubjectCode(code).orElseGet(Subject::new);
-        subject.setSubjectCode(code);
-        subject.setSubjectName(name);
-        subject.setCredits(credits);
-        subject.setDepartment(dept);
-        subject.setDepartmentName(deptName);
-        subject.setSemester(semester);
-        subject.setRegulation("R2024");
+        if (subjectRepository.findBySubjectCode(code).isPresent()) {
+            return;
+        }
+        Subject subject = Subject.builder()
+                .subjectCode(code)
+                .subjectName(name)
+                .credits(credits)
+                .department(dept)
+                .departmentName(deptName)
+                .semester(semester)
+                .regulation("R2024")
+                .build();
         subjectRepository.save(subject);
     }
 
@@ -473,6 +480,16 @@ public class StudentDataSeeder implements CommandLineRunner {
                 break;
             }
             User user = userRepository.findByUsername(info.regNo).orElse(null);
+            Student student = studentRepository.findByRegisterNo(info.regNo).orElse(null);
+
+            // Safe, entity-level idempotency check:
+            // If user, student, and semester 1 subject registrations already exist, skip.
+            if (user != null && student != null && user.getLinkedStudent() != null) {
+                if (studentSubjectRepository.existsByStudent_IdAndSemester_SemesterId(student.getId(), sem1.getSemesterId())) {
+                    continue;
+                }
+            }
+
             boolean isNew = false;
             
             if (user == null) {
@@ -492,7 +509,6 @@ public class StudentDataSeeder implements CommandLineRunner {
             user.setMustChangePassword(isNew); 
             user = userRepository.save(user);
 
-            Student student = studentRepository.findByRegisterNo(info.regNo).orElse(null);
             if (student == null) {
                 student = Student.builder().user(user).registerNo(info.regNo).build();
             }
@@ -519,9 +535,6 @@ public class StudentDataSeeder implements CommandLineRunner {
             
             user.setLinkedStudent(student);
             userRepository.save(user);
-
-            userRepository.flush();
-            studentRepository.flush();
 
             try {
                 assignSubjectsAndGrades(student, sem1, subjects, performanceFactor(info.regNo));

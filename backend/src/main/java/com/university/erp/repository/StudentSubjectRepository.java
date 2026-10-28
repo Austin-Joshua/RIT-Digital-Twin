@@ -17,4 +17,6 @@ public interface StudentSubjectRepository extends JpaRepository<StudentSubject, 
     List<StudentSubject> findByStudent_SectionIgnoreCaseAndSubject_IdAndSemester_SemesterNumber(String section, Long subjectId, Integer semester);
 
     Optional<StudentSubject> findByStudent_IdAndSubject_IdAndSemester_SemesterId(Long studentId, Long subjectId, Long semesterId);
+
+    boolean existsByStudent_IdAndSemester_SemesterId(Long studentId, Long semesterId);
 }

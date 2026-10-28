@@ -55,6 +55,14 @@ class StudentDataSeederRegressionTest {
     private ParentRepository parentRepository;
     @Mock
     private CampusCredentialAlignment campusCredentialAlignment;
+    @Mock
+    private AttendanceRiskRepository attendanceRiskRepository;
+    @Mock
+    private PerformanceWarningRepository performanceWarningRepository;
+    @Mock
+    private com.university.erp.service.AttendanceAnalyticsService attendanceAnalyticsService;
+    @Mock
+    private com.university.erp.service.StudentSuccessService studentSuccessService;
 
     @InjectMocks
     private StudentDataSeeder studentDataSeeder;
@@ -189,5 +197,45 @@ class StudentDataSeederRegressionTest {
         verify(departmentRepository, never()).findByCode(any());
         verify(userRepository, never()).findByEmail(any());
     }
-}
 
+    @Test
+    @DisplayName("Idempotency: seedBatch skips provisioning when student, user, and subject mappings exist")
+    void testSeedBatch_WhenStudentAlreadyFullyProvisioned_SkipsProcessing() throws Exception {
+        testUser.setLinkedStudent(testStudent);
+        when(semesterRepository.findBySemesterNumber(1)).thenReturn(Optional.of(sem1));
+        when(subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(anyInt(), anyString()))
+                .thenReturn(List.of(mathSubject));
+        when(userRepository.findByUsername("2117240020044")).thenReturn(Optional.of(testUser));
+        when(studentRepository.findByRegisterNo("2117240020044")).thenReturn(Optional.of(testStudent));
+        when(studentSubjectRepository.existsByStudent_IdAndSemester_SemesterId(200L, 1L)).thenReturn(true);
+
+        Department dept = Department.builder().id(10L).code("CSE").deptName("B.E. Computer Science and Engineering").build();
+        Role role = Role.builder().roleId(1L).roleName(Role.UserRole.STUDENT).build();
+
+        // Use reflection to access StudentInfo constructor or instantiate info
+        Class<?> infoClass = Class.forName("com.university.erp.config.StudentDataSeeder$StudentInfo");
+        java.lang.reflect.Constructor<?> ctor = infoClass.getDeclaredConstructor(String.class, String.class, String.class, boolean.class);
+        ctor.setAccessible(true);
+        Object studentInfo = ctor.newInstance("2117240020044", "Austin", "Joshua", false);
+
+        studentDataSeeder.seedBatch(dept, "CSE-A", "2024-2028", (List) List.of(studentInfo), role);
+
+        // Verify that existing user was never saved again
+        verify(userRepository, never()).save(any(User.class));
+        verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    @Test
+    @DisplayName("Idempotency: seedSubject skips saving when subject already exists")
+    void testSeedSubject_WhenAlreadyPresent_SkipsSaving() throws Exception {
+        when(subjectRepository.findBySubjectCode("MA1101-CSE")).thenReturn(Optional.of(mathSubject));
+
+        Department dept = Department.builder().id(10L).code("CSE").deptName("B.E. CSE").build();
+        Method method = StudentDataSeeder.class.getDeclaredMethod(
+                "seedSubject", String.class, String.class, int.class, Semester.class, Department.class, String.class);
+        method.setAccessible(true);
+        method.invoke(studentDataSeeder, "MA1101-CSE", "Mathematics I", 4, sem1, dept, "B.E. CSE");
+
+        verify(subjectRepository, never()).save(any(Subject.class));
+    }
+}

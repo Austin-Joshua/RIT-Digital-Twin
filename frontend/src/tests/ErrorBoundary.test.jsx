@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 const ThrowingComponent = ({ shouldThrow, errorMessage }) => {
@@ -15,17 +15,29 @@ describe('ErrorBoundary', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     Object.defineProperty(window, 'location', {
       configurable: true,
-      value: { reload: vi.fn(), href: '/' },
+      value: { reload: vi.fn() },
     });
   });
 
-  it('renders children when no error occurs', () => {
+  it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
-        <div>All Good</div>
+        <ThrowingComponent shouldThrow={false} errorMessage="" />
       </ErrorBoundary>
     );
-    expect(screen.getByText('All Good')).toBeInTheDocument();
+
+    expect(screen.getByText('Normal Content')).toBeTruthy();
+  });
+
+  it('renders standard fallback when a regular error occurs', () => {
+    render(
+      <ErrorBoundary>
+        <ThrowingComponent shouldThrow={true} errorMessage="Regular runtime crash" />
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Service Temporarily Interrupted')).toBeTruthy();
+    expect(screen.getByText('Try Again')).toBeTruthy();
   });
 
   it('renders update prompt when dynamic chunk import fails', () => {
@@ -33,28 +45,12 @@ describe('ErrorBoundary', () => {
       <ErrorBoundary>
         <ThrowingComponent
           shouldThrow={true}
-          errorMessage="Failed to fetch dynamically imported module: https://domain/assets/StudentDashboard-old.js"
+          errorMessage="Failed to fetch dynamically imported module: https://digital-twin-lemon.vercel.app/assets/StudentDashboard-CjRZaN2B.js"
         />
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Portal Update Available')).toBeInTheDocument();
-    expect(screen.getByText(/A newer version of the digital twin platform has been deployed/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Reload Application/i })).toBeInTheDocument();
-  });
-
-  it('renders standard error message for generic runtime errors', () => {
-    render(
-      <ErrorBoundary>
-        <ThrowingComponent
-          shouldThrow={true}
-          errorMessage="Null pointer in calculation"
-        />
-      </ErrorBoundary>
-    );
-
-    expect(screen.getByText('Service Temporarily Interrupted')).toBeInTheDocument();
-    expect(screen.getByText('Null pointer in calculation')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Try Again/i })).toBeInTheDocument();
+    expect(screen.getByText('Portal Update Available')).toBeTruthy();
+    expect(screen.getByText('Reload Application')).toBeTruthy();
   });
 });

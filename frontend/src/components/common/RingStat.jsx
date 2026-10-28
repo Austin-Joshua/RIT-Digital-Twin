@@ -1,3 +1,5 @@
+import React from 'react';
+
 function RingStat({ label, value, center, sub, percent, color, isCounter }) {
     const safe = Math.max(0, Math.min(100, Number(percent) || 0));
     const paid = typeof center === 'string' && center.includes('Paid');
