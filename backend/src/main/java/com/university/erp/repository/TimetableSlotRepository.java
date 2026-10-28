@@ -28,4 +28,8 @@ public interface TimetableSlotRepository extends JpaRepository<TimetableSlot, Lo
     List<TimetableSlot> findByFaculty_UserId(Long userId);
 
     List<TimetableSlot> findByFaculty_UserIdAndDayOfWeekIgnoreCaseAndStartTime(Long userId, String dayOfWeek, String startTime);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select s from TimetableSlot s where s.id = :id")
+    java.util.Optional<TimetableSlot> findByIdForUpdate(@org.springframework.data.repository.query.Param("id") Long id);
 }

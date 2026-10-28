@@ -173,7 +173,8 @@ public class FacultySubstitutionService {
             throw new ErpException.ValidationException("Substitution date is required.");
         }
 
-        TimetableSlot slot = timetableSlotRepository.findById(req.getTimetableSlotId())
+        TimetableSlot slot = timetableSlotRepository.findByIdForUpdate(req.getTimetableSlotId())
+                .or(() -> timetableSlotRepository.findById(req.getTimetableSlotId()))
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("Timetable slot not found with ID: " + req.getTimetableSlotId()));
 
         User originalFaculty = slot.getFaculty();
@@ -182,10 +183,10 @@ public class FacultySubstitutionService {
         }
 
         // Authorization check: User must be the slot's faculty, HOD of the department, or ADMIN
-        boolean isAdmin = currentUser.getRole() != null && "ROLE_ADMIN".equalsIgnoreCase(currentUser.getRole().getRoleName().name());
-        boolean isHod = currentUser.getRole() != null && "ROLE_HOD".equalsIgnoreCase(currentUser.getRole().getRoleName().name())
-                && currentUser.getDepartment() != null && slot.getDepartment() != null
-                && currentUser.getDepartment().getId().equals(slot.getDepartment().getId());
+        boolean isAdmin = isAdmin(currentUser);
+        Long userDeptId = getDepartmentId(currentUser);
+        Long slotDeptId = slot.getDepartment() != null ? slot.getDepartment().getId() : null;
+        boolean isHod = isHod(currentUser) && userDeptId != null && slotDeptId != null && userDeptId.equals(slotDeptId);
         boolean isAssignedFaculty = currentUser.getUserId().equals(originalFaculty.getUserId());
 
         if (!isAdmin && !isHod && !isAssignedFaculty) {
@@ -331,8 +332,7 @@ public class FacultySubstitutionService {
 
         boolean isRequester = sub.getRequestedBy() != null && sub.getRequestedBy().getUserId().equals(currentUser.getUserId());
         boolean isOriginal = sub.getOriginalFaculty() != null && sub.getOriginalFaculty().getUserId().equals(currentUser.getUserId());
-        boolean isAdmin = (currentUser.getAuthorities() != null && currentUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")))
-                || (currentUser.getRole() != null && ("ROLE_ADMIN".equalsIgnoreCase(currentUser.getRole().getRoleName().name()) || currentUser.getRole().getRoleName() == Role.UserRole.ADMIN));
+        boolean isAdmin = isAdmin(currentUser);
 
         if (!isRequester && !isOriginal && !isAdmin) {
             throw new AccessDeniedException("You are not authorized to cancel this substitution request.");
@@ -368,8 +368,8 @@ public class FacultySubstitutionService {
      */
     @Transactional(readOnly = true)
     public List<FacultySubstitutionDto.Response> getPendingSubstitutions(User currentUser) {
-        boolean isAdmin = currentUser.getRole() != null && "ROLE_ADMIN".equalsIgnoreCase(currentUser.getRole().getRoleName().name());
-        boolean isHod = currentUser.getRole() != null && "ROLE_HOD".equalsIgnoreCase(currentUser.getRole().getRoleName().name());
+        boolean isAdmin = isAdmin(currentUser);
+        boolean isHod = isHod(currentUser);
 
         if (isAdmin) {
             return substitutionRepository.findByStatusOrderBySubstitutionDateAscRequestedAtAsc("PENDING_APPROVAL")
@@ -378,11 +378,14 @@ public class FacultySubstitutionService {
                     .collect(Collectors.toList());
         }
 
-        if (isHod && currentUser.getDepartment() != null) {
-            return substitutionRepository.findPendingByDepartment(currentUser.getDepartment().getId())
-                    .stream()
-                    .map(this::toDto)
-                    .collect(Collectors.toList());
+        if (isHod) {
+            Long deptId = getDepartmentId(currentUser);
+            if (deptId != null) {
+                return substitutionRepository.findPendingByDepartment(deptId)
+                        .stream()
+                        .map(this::toDto)
+                        .collect(Collectors.toList());
+            }
         }
 
         return Collections.emptyList();
@@ -423,17 +426,15 @@ public class FacultySubstitutionService {
     }
 
     private void validateApproverAuthority(FacultySubstitution sub, User currentUser) {
-        boolean isAdmin = (currentUser.getAuthorities() != null && currentUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")))
-                || (currentUser.getRole() != null && ("ROLE_ADMIN".equalsIgnoreCase(currentUser.getRole().getRoleName().name()) || currentUser.getRole().getRoleName() == Role.UserRole.ADMIN));
-        boolean isHod = (currentUser.getAuthorities() != null && currentUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_HOD")))
-                || (currentUser.getRole() != null && ("ROLE_HOD".equalsIgnoreCase(currentUser.getRole().getRoleName().name()) || currentUser.getRole().getRoleName() == Role.UserRole.HOD));
+        boolean isAdmin = isAdmin(currentUser);
+        boolean isHod = isHod(currentUser);
 
         if (!isAdmin && !isHod) {
             throw new AccessDeniedException("Only HOD or Admin can approve or reject substitution requests.");
         }
 
         if (isHod && !isAdmin) {
-            Long userDeptId = currentUser.getDepartment() != null ? currentUser.getDepartment().getId() : null;
+            Long userDeptId = getDepartmentId(currentUser);
             Long slotDeptId = sub.getTimetableSlot() != null && sub.getTimetableSlot().getDepartment() != null
                     ? sub.getTimetableSlot().getDepartment().getId()
                     : null;
@@ -441,6 +442,52 @@ public class FacultySubstitutionService {
                 throw new AccessDeniedException("HODs can only approve substitutions within their own department.");
             }
         }
+    }
+
+    private boolean isAdmin(User user) {
+        if (user == null) return false;
+        if (user.getAuthorities() != null && user.getAuthorities().stream().anyMatch(a ->
+                "ROLE_ADMIN".equalsIgnoreCase(a.getAuthority()) || "ADMIN".equalsIgnoreCase(a.getAuthority()))) {
+            return true;
+        }
+        if (user.getRole() != null && user.getRole().getRoleName() != null) {
+            String roleStr = user.getRole().getRoleName().name();
+            return "ADMIN".equalsIgnoreCase(roleStr) || "ROLE_ADMIN".equalsIgnoreCase(roleStr);
+        }
+        return false;
+    }
+
+    private boolean isHod(User user) {
+        if (user == null) return false;
+        if (user.getAuthorities() != null && user.getAuthorities().stream().anyMatch(a ->
+                "ROLE_HOD".equalsIgnoreCase(a.getAuthority()) || "HOD".equalsIgnoreCase(a.getAuthority()))) {
+            return true;
+        }
+        if (user.getRole() != null && user.getRole().getRoleName() != null) {
+            String roleStr = user.getRole().getRoleName().name();
+            return "HOD".equalsIgnoreCase(roleStr) || "ROLE_HOD".equalsIgnoreCase(roleStr);
+        }
+        return false;
+    }
+
+    private Long getDepartmentId(User user) {
+        if (user == null) return null;
+        try {
+            if (user.getDepartment() != null) {
+                return user.getDepartment().getId();
+            }
+        } catch (Exception _ex) {
+            // Lazy proxy detached exception fallback
+        }
+        try {
+            User attached = userRepository.findById(user.getUserId()).orElse(null);
+            if (attached != null && attached.getDepartment() != null) {
+                return attached.getDepartment().getId();
+            }
+        } catch (Exception _ex) {
+            // Ignore
+        }
+        return null;
     }
 
     public FacultySubstitutionDto.Response toDto(FacultySubstitution sub) {

@@ -322,4 +322,86 @@ class FacultySubstitutionServiceTest {
         assertNotNull(resp);
         assertEquals("CANCELLED", resp.getStatus());
     }
+
+    @Test
+    void testGetPendingSubstitutions_AsAdmin() {
+        User adminUser = User.builder()
+                .userId(1L)
+                .username("admin.super")
+                .role(Role.builder().roleName(Role.UserRole.ADMIN).build())
+                .build();
+
+        FacultySubstitution sub1 = FacultySubstitution.builder()
+                .id(2001L)
+                .originalFaculty(originalFaculty)
+                .substituteFaculty(candidateFree)
+                .timetableSlot(targetSlot)
+                .substitutionDate(LocalDate.now().plusDays(1))
+                .status("PENDING_APPROVAL")
+                .requestedAt(LocalDateTime.now())
+                .build();
+
+        when(substitutionRepository.findByStatusOrderBySubstitutionDateAscRequestedAtAsc("PENDING_APPROVAL"))
+                .thenReturn(List.of(sub1));
+
+        List<FacultySubstitutionDto.Response> pending = substitutionService.getPendingSubstitutions(adminUser);
+
+        assertNotNull(pending);
+        assertEquals(1, pending.size());
+        assertEquals(2001L, pending.get(0).getId());
+        assertEquals("PENDING_APPROVAL", pending.get(0).getStatus());
+    }
+
+    @Test
+    void testGetPendingSubstitutions_AsHod() {
+        FacultySubstitution sub1 = FacultySubstitution.builder()
+                .id(2002L)
+                .originalFaculty(originalFaculty)
+                .substituteFaculty(candidateFree)
+                .timetableSlot(targetSlot)
+                .substitutionDate(LocalDate.now().plusDays(1))
+                .status("PENDING_APPROVAL")
+                .requestedAt(LocalDateTime.now())
+                .build();
+
+        when(substitutionRepository.findPendingByDepartment(1L))
+                .thenReturn(List.of(sub1));
+
+        List<FacultySubstitutionDto.Response> pending = substitutionService.getPendingSubstitutions(hodUser);
+
+        assertNotNull(pending);
+        assertEquals(1, pending.size());
+        assertEquals(2002L, pending.get(0).getId());
+    }
+
+    @Test
+    void testRequestSubstitution_PessimisticLockingAndDuplicatePrevention() {
+        LocalDate subDate = LocalDate.now().plusDays(1);
+        FacultySubstitutionDto.Request req = FacultySubstitutionDto.Request.builder()
+                .timetableSlotId(501L)
+                .substituteFacultyId(20L)
+                .substitutionDate(subDate)
+                .reason("Attending IEEE conference")
+                .build();
+
+        // Verify that findByIdForUpdate is called for concurrency safety
+        when(timetableSlotRepository.findByIdForUpdate(501L)).thenReturn(Optional.of(targetSlot));
+        when(userRepository.findById(20L)).thenReturn(Optional.of(candidateFree));
+
+        // Simulate an already existing active booking to verify duplicate prevention
+        FacultySubstitution existing = FacultySubstitution.builder()
+                .id(999L)
+                .timetableSlot(targetSlot)
+                .substitutionDate(subDate)
+                .status("PENDING_APPROVAL")
+                .build();
+        when(substitutionRepository.findByTimetableSlot_IdAndSubstitutionDateAndStatusIn(eq(501L), eq(subDate), anyCollection()))
+                .thenReturn(List.of(existing));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                substitutionService.requestSubstitution(req, originalFaculty));
+
+        assertTrue(ex.getMessage().contains("already requested or approved"));
+        verify(timetableSlotRepository, atLeastOnce()).findByIdForUpdate(501L);
+    }
 }
