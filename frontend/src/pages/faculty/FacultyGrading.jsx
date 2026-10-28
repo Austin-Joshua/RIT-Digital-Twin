@@ -113,25 +113,28 @@ const FacultyGrading = () => {
     };
 
     return (
-        <div className="p-6 space-y-6 animate-in fade-in duration-500">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                        <FaGraduationCap style={{ color: 'var(--color-accent-gold)' }} /> Performance Grading
-                    </h1>
-                    <p style={{ color: 'var(--theme-text-muted)' }}>Enter and manage student internal and end-semester scores</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaGraduationCap />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Performance Grading & Marks</h1>
+                        <p className="ims-header-subtitle">Enter CAT continuous assessments, assignments, end-sem grades, and publish directly to student portal</p>
+                    </div>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={saving || loading}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg"
-                    style={{ background: 'var(--color-primary-navy)', boxShadow: '0 4px 15px rgba(11, 44, 107, 0.3)' }}
+                    className="ims-candy-btn ims-candy-primary"
                 >
                     <FaSave /> {saving ? 'Publishing...' : 'Save & Publish'}
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl border mb-6" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
+            <div className="ims-card-elevated grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
                 <div>
                     <label className="block text-xs font-bold uppercase mb-2" style={{ color: 'var(--theme-text-muted)' }}>Subject</label>
                     <select
@@ -181,14 +184,14 @@ const FacultyGrading = () => {
                             placeholder="Reg No or Name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 p-2.5 rounded-lg border outline-none"
+                            className="ims-candy-search w-full pl-10"
                             style={{ background: 'var(--card-bg)', color: 'var(--theme-text)', borderColor: 'var(--theme-border)' }}
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="rounded-xl border overflow-x-auto shadow-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+            <div className="ims-card-elevated overflow-x-auto" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                 <table className="w-full border-collapse min-w-[700px]">
                     <thead>
                         <tr style={{ background: 'var(--theme-bg-muted)', borderBottom: '2px solid var(--theme-border)' }}>

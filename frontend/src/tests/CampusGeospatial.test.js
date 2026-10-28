@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import apiClient from '../services/api';
 import { fetchOSMBuildings, getCampusReference } from '../services/campus-osm.service';
 import { extrudeBuilding, statusToColor, valueToColor } from '../utils/campus-3d.utils';
 import RIT_CAMPUS from '../config/rit-campus.config';
+
+vi.mock('../services/api', () => ({
+  default: {
+    get: vi.fn().mockRejectedValue(new Error('Backend offline in test'))
+  }
+}));
 
 describe('Campus Geospatial & Real-World 3D Integration', () => {
   beforeEach(() => {

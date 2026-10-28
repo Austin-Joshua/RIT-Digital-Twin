@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/AuthContext';
 import { ThemeContext } from '../hooks/ThemeContext';
 import NotificationBar from '../components/NotificationBar';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import MobileBottomNav from '../components/common/MobileBottomNav';
 import './student-layout.css';
 import Sidebar from '../components/Sidebar';
 
@@ -165,6 +166,7 @@ const HODLayout = () => {
 
         {/* AI Assistant Integration */}
         <ChatbotWidget />
+        <MobileBottomNav />
       </div>
     </div>
   );

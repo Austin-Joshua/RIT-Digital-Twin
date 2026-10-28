@@ -30,13 +30,17 @@ const Library = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaBookOpen className="text-gold-500" /> Digital Library
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Reserve books, check availability, and track issue history</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaBookOpen />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Digital Library Catalog</h1>
+                        <p className="ims-header-subtitle">Reserve books, check availability, and track lending history</p>
+                    </div>
                 </div>
             </div>
 
@@ -116,7 +120,7 @@ const Library = () => {
                                                     </div>
                                                     <button
                                                         onClick={() => handleReserve(book)}
-                                                        className={`px-4 py-2 font-bold text-sm rounded-lg transition-colors ${book.copies > 0 ? 'bg-navy-900 text-white hover:bg-navy-800 dark:bg-gold-500 dark:text-navy-900 dark:hover:bg-gold-600 shadow-sm' : 'bg-gray-100 text-gray-500 dark:bg-navy-700 dark:text-gray-400 border border-gray-200 dark:border-navy-600'}`}
+                                                        className={`ims-candy-btn ${book.copies > 0 ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
                                                     >
                                                         {book.copies > 0 ? 'Reserve' : 'Join Waitlist'}
                                                     </button>

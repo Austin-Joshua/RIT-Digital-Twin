@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuDownload, LuPrinter, LuCopy, LuFileSpreadsheet, LuSearch } from 'react-icons/lu';
+import { LuGraduationCap, LuDownload, LuPrinter, LuCopy, LuFileSpreadsheet, LuSearch } from 'react-icons/lu';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { applyCollegePageLayout } from '../../utils/collegePdfBranding';
@@ -130,28 +130,44 @@ const GradeBook = () => {
         doc.save(`RIT_Grade_Report_Sem_${selectedSemester}.pdf`);
     };
 
-    return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuGraduationCap />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Grade Book</h1>
+                        <p className="ims-header-subtitle">Semester academic transcript, credit achievements, and grade distribution</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Regulation: 2021 Autonomous
+                    </span>
+                    <button
+                        onClick={handleDownloadPDF}
+                        className="ims-candy-btn ims-candy-success"
+                    >
+                        <LuDownload /> Official Grade Sheet
+                    </button>
+                </div>
+            </div>
+
             {/* Filter Card */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', marginBottom: '20px', padding: '16px 20px' }}>
-                <h2 style={{ margin: '0 0 16px 0', fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
-                    Grade Book
-                </h2>
+            <div className="ims-card-elevated" style={{ padding: '20px 24px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                            Academic Semester <span style={{ color: '#dc3545' }}>*</span> :
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                            Academic Semester <span style={{ color: '#dc2626' }}>*</span> :
                         </label>
                         <select
                             value={selectedSemester}
                             onChange={(e) => setSelectedSemester(e.target.value)}
-                            style={{
-                                padding: '6px 16px',
-                                border: '1px solid #ced4da',
-                                borderRadius: '4px',
-                                fontSize: '0.875rem',
-                                minWidth: '180px'
-                            }}
+                            className="ims-candy-search"
+                            style={{ minWidth: '220px', cursor: 'pointer' }}
                         >
                             <option value="1">Semester 1</option>
                             <option value="2">Semester 2</option>
@@ -162,134 +178,91 @@ const GradeBook = () => {
                     </div>
                     <button
                         type="submit"
-                        style={{
-                            backgroundColor: '#007bff',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '7px 20px',
-                            fontSize: '0.875rem',
-                            fontWeight: '500',
-                            cursor: 'pointer'
-                        }}
+                        className="ims-candy-btn ims-candy-primary"
                     >
                         Submit
                     </button>
                 </form>
             </div>
 
-            {/* Results Card */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                {/* DataTables Action Bar */}
-                <div style={{ padding: '12px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', backgroundColor: '#fafbfc' }}>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                        <button
-                            onClick={handleCopy}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                        >
+            {/* Results Card with DataTables Action Bar */}
+            <div className="ims-card-elevated">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button onClick={handleCopy} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                             <LuCopy /> Copy
                         </button>
-                        <button
-                            onClick={handleDownloadCSV}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                        >
+                        <button onClick={handleDownloadCSV} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                             <LuFileSpreadsheet /> CSV
                         </button>
-                        <button
-                            onClick={handleDownloadPDF}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                        >
+                        <button onClick={handleDownloadPDF} className="ims-candy-btn ims-candy-primary ims-candy-sm">
                             <LuDownload /> PDF
                         </button>
-                        <button
-                            onClick={() => window.print()}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                        >
+                        <button onClick={() => window.print()} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                             <LuPrinter /> Print
                         </button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <button
-                            onClick={handleDownloadPDF}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                backgroundColor: '#007bff',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '6px 14px',
-                                fontSize: '0.8125rem',
-                                fontWeight: '500',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <LuDownload /> Download Official Grade Sheet
-                        </button>
-                        <div style={{ position: 'relative' }}>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    padding: '6px 12px 6px 30px',
-                                    border: '1px solid #ced4da',
-                                    borderRadius: '4px',
-                                    fontSize: '0.875rem',
-                                    outline: 'none',
-                                    width: '180px'
-                                }}
-                            />
-                            <LuSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6c757d' }} />
-                        </div>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            placeholder="Search course or grade..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="ims-candy-search"
+                            style={{ paddingLeft: '36px', width: '220px' }}
+                        />
+                        <LuSearch style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                     </div>
                 </div>
 
-                {/* Table */}
-                <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                {/* Table with Curvy Outer Box */}
+                <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.86rem' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                <th style={{ padding: '10px 8px', textAlign: 'center', width: '50px' }}>S.No</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '120px' }}>Academic Year</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '70px' }}>Sem</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '110px' }}>Subject Code</th>
-                                <th style={{ padding: '10px 12px' }}>Subject Title</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '80px' }}>Credits</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '80px' }}>Grade</th>
-                                <th style={{ padding: '10px 10px', textAlign: 'center', width: '90px' }}>Result</th>
+                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '50px', fontWeight: '700' }}>S.No</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '100px', fontWeight: '700' }}>Academic Year</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '60px', fontWeight: '700' }}>Sem</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '110px', fontWeight: '700' }}>Course Code</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Course Title</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '80px', fontWeight: '700' }}>Credits</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '80px', fontWeight: '700' }}>Grade</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '90px', fontWeight: '700' }}>Result</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredRows.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8" style={{ textAlign: 'center', padding: '30px', color: '#6c757d' }}>
-                                        No grade records available for Semester {selectedSemester}.
+                                    <td colSpan="8" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>
+                                        No course records found for the selected semester.
                                     </td>
                                 </tr>
                             ) : (
                                 filteredRows.map((r, idx) => (
-                                    <tr key={r.code} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                        <td style={{ padding: '10px 8px', textAlign: 'center', color: '#6c757d' }}>{r.sno}</td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center', color: '#495057' }}>{r.year}</td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center', color: '#495057' }}>{r.sem}</td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center', fontWeight: '500', color: '#212529' }}>{r.code}</td>
-                                        <td style={{ padding: '10px 12px', color: '#212529', fontWeight: '500' }}>{r.title}</td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center', color: '#495057' }}>{r.credits}</td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center', fontWeight: 'bold', color: r.grade === 'O' ? '#28a745' : '#007bff' }}>
-                                            {r.grade}
+                                    <tr key={r.code} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#64748b' }}>{r.sno}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#64748b' }}>{r.year}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '600', color: '#0B2C6B' }}>{r.sem}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '600', color: '#0B2C6B' }}>{r.code}</td>
+                                        <td style={{ padding: '12px 14px', fontWeight: '600', color: '#1e293b' }}>{r.title}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#334155' }}>{r.credits}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <span className="ims-candy-badge" style={{
+                                                backgroundColor: r.grade === 'O' ? '#dcfce7' : r.grade.startsWith('A') ? '#e0f2fe' : '#fef3c7',
+                                                color: r.grade === 'O' ? '#166534' : r.grade.startsWith('A') ? '#0369a1' : '#92400e',
+                                                border: `1px solid ${r.grade === 'O' ? '#bbf7d0' : r.grade.startsWith('A') ? '#bae6fd' : '#fde68a'}`,
+                                                minWidth: '36px',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {r.grade}
+                                            </span>
                                         </td>
-                                        <td style={{ padding: '10px 10px', textAlign: 'center' }}>
-                                            <span style={{
-                                                padding: '3px 8px',
-                                                borderRadius: '3px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '600',
-                                                backgroundColor: r.result === 'PASS' ? '#28a745' : '#dc3545',
-                                                color: '#ffffff'
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <span className="ims-candy-badge" style={{
+                                                backgroundColor: r.result === 'PASS' ? '#dcfce7' : '#fee2e2',
+                                                color: r.result === 'PASS' ? '#166534' : '#991b1b',
+                                                border: `1px solid ${r.result === 'PASS' ? '#bbf7d0' : '#fecaca'}`
                                             }}>
                                                 {r.result}
                                             </span>
@@ -299,36 +272,6 @@ const GradeBook = () => {
                             )}
                         </tbody>
                     </table>
-                </div>
-
-                {/* Grade Calculation Summary */}
-                {filteredRows.length > 0 && (
-                    <div style={{ padding: '12px 20px', borderTop: '1px solid #dee2e6', backgroundColor: '#f8f9fa', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.875rem' }}>
-                        <span>Total Credits: <strong>{filteredRows.reduce((acc, c) => acc + (c.credits || 0), 0)}</strong></span>
-                        <div style={{ display: 'flex', gap: '20px' }}>
-                            <span>Semester SGPA: <strong style={{ color: '#28a745' }}>8.92</strong></span>
-                            <span>Cumulative CGPA: <strong style={{ color: '#007bff' }}>8.76</strong></span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Anna University Grade Legends */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', padding: '16px 20px', marginTop: '20px' }}>
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.875rem', fontWeight: '600', color: '#495057', textTransform: 'uppercase' }}>
-                    Grading System & Legend
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', fontSize: '0.8125rem', color: '#6c757d' }}>
-                    <div><strong>O</strong> (91-100) : Outstanding (10 Points)</div>
-                    <div><strong>A+</strong> (81-90) : Excellent (9 Points)</div>
-                    <div><strong>A</strong> (71-80) : Very Good (8 Points)</div>
-                    <div><strong>B+</strong> (61-70) : Good (7 Points)</div>
-                    <div><strong>B</strong> (50-60) : Average (6 Points)</div>
-                    <div><strong>RA</strong> (&lt; 50) : Reappearance Required</div>
-                    <div><strong>RA*</strong> : Absent in End Semester</div>
-                    <div><strong>W / WD</strong> : Withdrawal from Examination</div>
-                    <div><strong>SA</strong> : Shortage of Attendance</div>
-                    <div><strong>WH</strong> : Results Withheld</div>
                 </div>
             </div>
         </div>

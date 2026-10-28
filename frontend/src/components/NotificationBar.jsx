@@ -89,7 +89,7 @@ const NotificationBar = () => {
                         transition={{ duration: 0.15 }}
                         style={{
                             position: 'absolute', top: '40px', right: '-10px', width: '280px',
-                            background: '#ffffff', borderRadius: '4px',
+                            background: '#ffffff', borderRadius: '16px',
                             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                             border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden'
                         }}

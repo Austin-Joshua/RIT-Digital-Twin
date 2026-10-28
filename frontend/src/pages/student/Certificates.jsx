@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/AuthContext';
 import { useToast } from '../../hooks/ToastContext';
-import { LuPlus, LuSearch, LuPencil, LuTrash2, LuEye, LuPrinter, LuX, LuCheck } from 'react-icons/lu';
+import { LuAward, LuPlus, LuSearch, LuPencil, LuTrash2, LuEye, LuPrinter, LuX, LuCheck } from 'react-icons/lu';
 import jsPDF from 'jspdf';
 import { applyCollegePageLayout, COLLEGE_BRANDING } from '../../utils/collegePdfBranding';
+import { workflowApi } from '../../services/enterpriseApi';
 
 const INITIAL_CERTIFICATES = [
     {
@@ -39,6 +40,40 @@ const Certificates = () => {
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [previewCert, setPreviewCert] = useState(null);
     const [editingId, setEditingId] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadCertificates = async () => {
+            if (!user?.id) return;
+            try {
+                const res = await workflowApi.getCertificates(user.id);
+                if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
+                    const certNameMap = {
+                        BONAFIDE: 'Bonafide Certificate',
+                        TC: 'Transfer Certificate',
+                        COURSE_COMPLETION: 'Course Completion Certificate',
+                        MEDIUM_OF_INSTRUCTION: 'Medium of Instruction Certificate'
+                    };
+                    const mapped = res.data.map(c => ({
+                        id: c.id,
+                        date: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-') : new Date().toLocaleDateString('en-GB').replace(/\//g, '-'),
+                        certificate: c.certificateType || 'BONAFIDE',
+                        certificateName: certNameMap[c.certificateType] || c.certificateType || 'Bonafide Certificate',
+                        purpose: c.purpose || 'Official Institutional Verification',
+                        status: c.status ? (c.status.charAt(0).toUpperCase() + c.status.slice(1).toLowerCase()) : 'Pending',
+                        response: c.remarks || (c.status === 'APPROVED' ? 'Verified and signed by Principal Office' : 'Submitted for verification'),
+                        hosteler: c.hosteler || 'No',
+                        roomNo: c.roomNo || ''
+                    }));
+                    setCertificates(mapped);
+                }
+            } catch {
+                // Retain authentic demonstration records
+            }
+        };
+        loadCertificates();
+        return () => { isMounted = false; };
+    }, [user?.id]);
 
     // Form state
     const [certType, setCertType] = useState('BONAFIDE');
@@ -115,6 +150,9 @@ const Certificates = () => {
                 roomNo: isHosteler === 'Yes' ? hostelRoomNo : ''
             };
             setCertificates([newRecord, ...certificates]);
+            if (user?.id) {
+                workflowApi.requestCertificate(user.id, certType).catch(() => {});
+            }
             addToast('Certificate application submitted successfully.', 'success');
         }
         setShowApplyModal(false);
@@ -161,148 +199,112 @@ const Certificates = () => {
         doc.save(`RIT_Bonafide_${cert.date || 'certificate'}.pdf`);
     };
 
-    return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                {/* Card Header */}
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
-                        Apply Certificate
-                    </h2>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <div style={{ position: 'relative' }}>
-                            <input 
-                                type="text"
-                                placeholder="Search..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    padding: '6px 12px 6px 30px',
-                                    border: '1px solid #ced4da',
-                                    borderRadius: '4px',
-                                    fontSize: '0.875rem',
-                                    outline: 'none',
-                                    width: '180px'
-                                }}
-                            />
-                            <LuSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6c757d' }} />
-                        </div>
-                        <button
-                            onClick={() => openApplyModal()}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                backgroundColor: '#28a745',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '7px 16px',
-                                fontSize: '0.875rem',
-                                fontWeight: '500',
-                                cursor: 'pointer',
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            <LuPlus /> Apply Certificate
-                        </button>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuAward />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Apply Certificates</h1>
+                        <p className="ims-header-subtitle">Request bonafide, conduct, course completion, and institutional certificates</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                        onClick={() => openApplyModal()}
+                        className="ims-candy-btn ims-candy-success"
+                    >
+                        <LuPlus /> Apply Certificate
+                    </button>
+                </div>
+            </div>
+
+            {/* Main Elevated Card with Curvy Corners */}
+            <div className="ims-card-elevated">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span className="ims-candy-badge" style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1' }}>
+                            Total Records: {filteredCertificates.length}
+                        </span>
+                    </div>
+
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            placeholder="Search applications..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="ims-candy-search"
+                            style={{ paddingLeft: '36px', width: '220px' }}
+                        />
+                        <LuSearch style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                     </div>
                 </div>
 
-                {/* Table */}
-                <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                {/* Table with Curvy Outer Box */}
+                <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.86rem' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                <th style={{ padding: '12px 10px', width: '60px' }}>S.No</th>
-                                <th style={{ padding: '12px 10px', width: '120px' }}>Date</th>
-                                <th style={{ padding: '12px 10px' }}>Certificate</th>
-                                <th style={{ padding: '12px 10px' }}>Purpose</th>
-                                <th style={{ padding: '12px 10px', width: '120px', textAlign: 'center' }}>Status</th>
-                                <th style={{ padding: '12px 10px' }}>Response</th>
-                                <th style={{ padding: '12px 10px', width: '120px', textAlign: 'center' }}>Action</th>
+                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '50px', fontWeight: '700' }}>S.No</th>
+                                <th style={{ padding: '12px 14px', width: '110px', fontWeight: '700' }}>Date</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Certificate Name</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Purpose</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '110px', fontWeight: '700' }}>Status</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Response / Remarks</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '140px', fontWeight: '700' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredCertificates.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#6c757d' }}>
-                                        No certificate applications found.
+                                    <td colSpan="7" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>
+                                        No certificate applications recorded.
                                     </td>
                                 </tr>
                             ) : (
                                 filteredCertificates.map((cert, idx) => (
-                                    <tr key={cert.id} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                        <td style={{ padding: '12px 10px', color: '#6c757d' }}>{idx + 1}</td>
-                                        <td style={{ padding: '12px 10px', color: '#333333' }}>{cert.date}</td>
-                                        <td style={{ padding: '12px 10px', fontWeight: '500', color: '#212529' }}>{cert.certificateName}</td>
-                                        <td style={{ padding: '12px 10px', color: '#495057' }}>{cert.purpose}</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                            <span style={{
-                                                display: 'inline-block',
-                                                padding: '4px 10px',
-                                                borderRadius: '3px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '600',
-                                                backgroundColor: cert.status === 'Approved' ? '#28a745' : cert.status === 'Rejected' ? '#dc3545' : '#ffc107',
-                                                color: cert.status === 'Pending' ? '#212529' : '#ffffff'
+                                    <tr key={cert.id} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#64748b' }}>{idx + 1}</td>
+                                        <td style={{ padding: '12px 14px', color: '#334155' }}>{cert.date}</td>
+                                        <td style={{ padding: '12px 14px', fontWeight: '600', color: '#0B2C6B' }}>{cert.certificateName}</td>
+                                        <td style={{ padding: '12px 14px', color: '#1e293b' }}>{cert.purpose}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <span className="ims-candy-badge" style={{
+                                                backgroundColor: cert.status.toLowerCase() === 'approved' ? '#dcfce7' : '#fef3c7',
+                                                color: cert.status.toLowerCase() === 'approved' ? '#166534' : '#92400e',
+                                                border: `1px solid ${cert.status.toLowerCase() === 'approved' ? '#bbf7d0' : '#fde68a'}`
                                             }}>
                                                 {cert.status}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '12px 10px', color: '#6c757d', fontSize: '0.8125rem' }}>
-                                            {cert.response}
-                                        </td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                            <div style={{ display: 'inline-flex', gap: '6px' }}>
+                                        <td style={{ padding: '12px 14px', color: '#64748b', fontSize: '0.8125rem' }}>{cert.response}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', alignItems: 'center' }}>
                                                 <button
-                                                    onClick={() => triggerPreview(cert)}
-                                                    title="Preview / Print"
-                                                    style={{
-                                                        backgroundColor: '#ffc107',
-                                                        color: '#212529',
-                                                        border: 'none',
-                                                        borderRadius: '3px',
-                                                        padding: '5px 8px',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.8125rem',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center'
-                                                    }}
+                                                    onClick={() => openPreview(cert)}
+                                                    title="Preview & Generate Document"
+                                                    className="ims-candy-btn ims-candy-warning ims-candy-sm"
+                                                    style={{ padding: '6px 10px' }}
                                                 >
                                                     <LuEye />
                                                 </button>
                                                 <button
                                                     onClick={() => openApplyModal(cert)}
                                                     title="Edit Application"
-                                                    style={{
-                                                        backgroundColor: '#17a2b8',
-                                                        color: '#ffffff',
-                                                        border: 'none',
-                                                        borderRadius: '3px',
-                                                        padding: '5px 8px',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.8125rem',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center'
-                                                    }}
+                                                    className="ims-candy-btn ims-candy-teal ims-candy-sm"
+                                                    style={{ padding: '6px 10px' }}
                                                 >
                                                     <LuPencil />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(cert.id)}
                                                     title="Delete Application"
-                                                    style={{
-                                                        backgroundColor: '#dc3545',
-                                                        color: '#ffffff',
-                                                        border: 'none',
-                                                        borderRadius: '3px',
-                                                        padding: '5px 8px',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.8125rem',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center'
-                                                    }}
+                                                    className="ims-candy-btn ims-candy-danger ims-candy-sm"
+                                                    style={{ padding: '6px 10px' }}
                                                 >
                                                     <LuTrash2 />
                                                 </button>
@@ -316,7 +318,7 @@ const Certificates = () => {
                 </div>
             </div>
 
-            {/* Apply / Edit Modal */}
+            {/* Apply / Edit Modal with Curvy Styling */}
             {showApplyModal && (
                 <div style={{
                     position: 'fixed',
@@ -324,7 +326,8 @@ const Certificates = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(4px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -333,194 +336,125 @@ const Certificates = () => {
                 }}>
                     <div style={{
                         backgroundColor: '#ffffff',
-                        borderRadius: '4px',
+                        borderRadius: '20px',
                         width: '100%',
                         maxWidth: '560px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-                        overflow: 'hidden'
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                        overflow: 'hidden',
+                        border: '1px solid #e2e8f0'
                     }}>
                         <div style={{
-                            padding: '16px 20px',
-                            borderBottom: '1px solid #dee2e6',
+                            padding: '18px 24px',
+                            borderBottom: '1px solid #e2e8f0',
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            background: '#f8fafc'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '500', color: '#333333' }}>
-                                {editingId ? 'Edit Certificate Application' : 'Apply Certificate'}
+                            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#0f172a' }}>
+                                {editingId ? 'Edit Certificate Request' : 'Apply for Institutional Certificate'}
                             </h3>
                             <button
                                 onClick={() => setShowApplyModal(false)}
-                                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6c757d' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontSize: '18px', display: 'flex' }}
                             >
                                 <LuX />
                             </button>
                         </div>
-                        <form onSubmit={handleFormSubmit} style={{ padding: '20px' }}>
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Certificate Type <span style={{ color: '#dc3545' }}>*</span>
-                                </label>
-                                <select
-                                    value={certType}
-                                    onChange={(e) => setCertType(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
-                                    required
-                                >
-                                    <option value="BONAFIDE">Bonafide Certificate</option>
-                                    <option value="TC">Transfer Certificate</option>
-                                    <option value="COURSE_COMPLETION">Course Completion Certificate</option>
-                                    <option value="MEDIUM_OF_INSTRUCTION">Medium of Instruction Certificate</option>
-                                </select>
-                            </div>
 
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Date <span style={{ color: '#dc3545' }}>*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={certDate}
-                                    onChange={(e) => setCertDate(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
-                                    required
-                                />
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Purpose / Reason <span style={{ color: '#dc3545' }}>*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Passport Application, Education Loan, Visa"
-                                    value={purpose}
-                                    onChange={(e) => setPurpose(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
-                                    required
-                                />
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Hosteler
-                                </label>
-                                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                        <input
-                                            type="radio"
-                                            name="hosteler"
-                                            value="No"
-                                            checked={isHosteler === 'No'}
-                                            onChange={() => setIsHosteler('No')}
-                                        />
-                                        No (Day Scholar)
+                        <form onSubmit={handleApplySubmit} style={{ padding: '24px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                        Certificate Type <span style={{ color: '#dc2626' }}>*</span>
                                     </label>
-                                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                        <input
-                                            type="radio"
-                                            name="hosteler"
-                                            value="Yes"
-                                            checked={isHosteler === 'Yes'}
-                                            onChange={() => setIsHosteler('Yes')}
-                                        />
-                                        Yes (Hostel Resident)
-                                    </label>
+                                    <select
+                                        value={certType}
+                                        onChange={(e) => setCertType(e.target.value)}
+                                        className="ims-candy-search"
+                                        style={{ width: '100%', boxSizing: 'border-box' }}
+                                    >
+                                        <option value="BONAFIDE">Bonafide Certificate</option>
+                                        <option value="TC">Transfer Certificate</option>
+                                        <option value="COURSE_COMPLETION">Course Completion Certificate</option>
+                                        <option value="MEDIUM_OF_INSTRUCTION">Medium of Instruction</option>
+                                    </select>
                                 </div>
-                            </div>
-
-                            {isHosteler === 'Yes' && (
-                                <div style={{ marginBottom: '16px' }}>
-                                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                        Hostel Room No <span style={{ color: '#dc3545' }}>*</span>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                        Required Date <span style={{ color: '#dc2626' }}>*</span>
                                     </label>
                                     <input
-                                        type="text"
-                                        placeholder="e.g. Block-B Room 302"
-                                        value={hostelRoomNo}
-                                        onChange={(e) => setHostelRoomNo(e.target.value)}
-                                        style={{
-                                            width: '100%',
-                                            padding: '8px 12px',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ced4da',
-                                            fontSize: '0.875rem'
-                                        }}
+                                        type="date"
+                                        value={certDate}
+                                        onChange={(e) => setCertDate(e.target.value)}
+                                        className="ims-candy-search"
+                                        style={{ width: '100%', boxSizing: 'border-box' }}
                                         required
                                     />
                                 </div>
-                            )}
+                            </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid #dee2e6', paddingTop: '16px' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => triggerPreview({
-                                        certificate: certType,
-                                        certificateName: certType,
-                                        date: certDate.split('-').reverse().join('-'),
-                                        purpose
-                                    })}
-                                    style={{
-                                        backgroundColor: '#ffc107',
-                                        color: '#212529',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 16px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Preview
-                                </button>
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                    Purpose of Certificate <span style={{ color: '#dc2626' }}>*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={purpose}
+                                    onChange={(e) => setPurpose(e.target.value)}
+                                    placeholder="e.g., Passport Application, Education Loan..."
+                                    className="ims-candy-search"
+                                    style={{ width: '100%', boxSizing: 'border-box' }}
+                                    required
+                                />
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                        Are you a Hosteler?
+                                    </label>
+                                    <select
+                                        value={isHosteler}
+                                        onChange={(e) => setIsHosteler(e.target.value)}
+                                        className="ims-candy-search"
+                                        style={{ width: '100%', boxSizing: 'border-box' }}
+                                    >
+                                        <option value="No">No (Day Scholar)</option>
+                                        <option value="Yes">Yes (Hosteler)</option>
+                                    </select>
+                                </div>
+                                {isHosteler === 'Yes' && (
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                            Hostel Room Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={hostelRoomNo}
+                                            onChange={(e) => setHostelRoomNo(e.target.value)}
+                                            placeholder="e.g. Block B - 304"
+                                            className="ims-candy-search"
+                                            style={{ width: '100%', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '18px' }}>
                                 <button
                                     type="button"
                                     onClick={() => setShowApplyModal(false)}
-                                    style={{
-                                        backgroundColor: '#6c757d',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 16px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-neutral"
                                 >
-                                    Close
+                                    Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    style={{
-                                        backgroundColor: '#007bff',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 20px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-success"
                                 >
-                                    Request
+                                    {editingId ? 'Update Application' : 'Submit Application'}
                                 </button>
                             </div>
                         </form>
@@ -528,7 +462,7 @@ const Certificates = () => {
                 </div>
             )}
 
-            {/* Certificate Preview Modal */}
+            {/* Document Preview Modal with Curvy Styling */}
             {showPreviewModal && previewCert && (
                 <div style={{
                     position: 'fixed',
@@ -536,109 +470,106 @@ const Certificates = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(4px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    zIndex: 1060,
-                    padding: '20px'
+                    zIndex: 1050,
+                    padding: '16px'
                 }}>
                     <div style={{
                         backgroundColor: '#ffffff',
-                        borderRadius: '6px',
+                        borderRadius: '20px',
                         width: '100%',
-                        maxWidth: '720px',
+                        maxWidth: '680px',
                         maxHeight: '90vh',
-                        overflowY: 'auto',
-                        boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                        overflow: 'hidden',
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        border: '1px solid #e2e8f0'
                     }}>
                         <div style={{
-                            padding: '14px 20px',
-                            borderBottom: '1px solid #dee2e6',
+                            padding: '18px 24px',
+                            borderBottom: '1px solid #e2e8f0',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            backgroundColor: '#f8f9fa'
+                            background: '#f8fafc'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333333' }}>
-                                Certificate Preview
-                            </h3>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <button
-                                    onClick={() => generatePdf(previewCert)}
-                                    style={{
-                                        backgroundColor: '#28a745',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '6px 12px',
-                                        fontSize: '0.8125rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px'
-                                    }}
-                                >
-                                    <LuPrinter /> Download PDF
-                                </button>
-                                <button
-                                    onClick={() => setShowPreviewModal(false)}
-                                    style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6c757d' }}
-                                >
-                                    <LuX />
-                                </button>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#0f172a' }}>
+                                    Certificate Preview: {previewCert.certificateName}
+                                </h3>
+                                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                                    Official Institution Verification Mockup
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => setShowPreviewModal(false)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontSize: '18px', display: 'flex' }}
+                            >
+                                <LuX />
+                            </button>
+                        </div>
+
+                        <div style={{ padding: '28px', overflowY: 'auto', flex: 1, backgroundColor: '#fcfcfc' }}>
+                            <div style={{
+                                backgroundColor: '#ffffff',
+                                border: '2px solid #0B2C6B',
+                                borderRadius: '12px',
+                                padding: '36px',
+                                boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                                position: 'relative'
+                            }}>
+                                <div style={{ textAlign: 'center', marginBottom: '24px', borderBottom: '2px solid #e2e8f0', paddingBottom: '16px' }}>
+                                    <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0B2C6B', fontWeight: 'bold' }}>
+                                        RAJALAKSHMI INSTITUTE OF TECHNOLOGY
+                                    </h2>
+                                    <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                                        An Autonomous Institution | Affiliated to Anna University, Chennai
+                                    </p>
+                                    <h4 style={{ margin: '14px 0 0 0', fontSize: '1.05rem', color: '#d97706', textDecoration: 'underline', textTransform: 'uppercase' }}>
+                                        {previewCert.certificateName}
+                                    </h4>
+                                </div>
+
+                                <div style={{ fontSize: '0.95rem', lineHeight: '1.8', color: '#1e293b', marginBottom: '32px' }}>
+                                    <p>
+                                        This is to certify that <strong>STUDENT CANDIDATE</strong> (Register No: <strong>2117240020001</strong>) is a bona fide student of this institution, currently studying in the <strong>Fifth Semester</strong> of <strong>B.E. Computer Science and Engineering</strong> during the academic year <strong>2026-2027</strong>.
+                                    </p>
+                                    <p>
+                                        This certificate is issued on request for the purpose of <strong>{previewCert.purpose}</strong>.
+                                    </p>
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '20px', borderTop: '1px dashed #cbd5e1' }}>
+                                    <div>
+                                        <span style={{ fontSize: '0.8125rem', color: '#64748b' }}>Date of Issue:</span> <br />
+                                        <strong>{previewCert.date}</strong>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{ fontSize: '0.8125rem', color: '#64748b' }}>Authorized Signatory:</span> <br />
+                                        <strong>PRINCIPAL / DEAN</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Certificate Sheet Display */}
-                        <div style={{ padding: '40px', backgroundColor: '#ffffff', border: '2px solid #000', margin: '20px', position: 'relative' }}>
-                            <div style={{ textAlign: 'center', borderBottom: '2px solid #1a365d', paddingBottom: '16px', marginBottom: '24px' }}>
-                                <h2 style={{ margin: '0 0 6px 0', fontSize: '1.4rem', color: '#1a365d', letterSpacing: '0.5px' }}>
-                                    RAJALAKSHMI INSTITUTE OF TECHNOLOGY
-                                </h2>
-                                <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#555', fontStyle: 'italic' }}>
-                                    An Autonomous Institution | Affiliated to Anna University, Chennai
-                                </p>
-                                <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
-                                    Kuthambakkam Post, Chembarambakkam, Chennai - 600 124
-                                </p>
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginBottom: '30px' }}>
-                                <span><strong>Ref:</strong> RIT/BON/2026-27/{previewCert.id || '0044'}</span>
-                                <span><strong>Date:</strong> {previewCert.date || new Date().toLocaleDateString('en-GB')}</span>
-                            </div>
-
-                            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                                <span style={{
-                                    fontSize: '1.25rem',
-                                    fontWeight: 'bold',
-                                    textDecoration: 'underline',
-                                    letterSpacing: '1px',
-                                    color: '#212529'
-                                }}>
-                                    BONAFIDE CERTIFICATE
-                                </span>
-                            </div>
-
-                            <p style={{ fontSize: '1rem', lineHeight: '1.8', textAlign: 'justify', textIndent: '40px', color: '#212529', marginBottom: '20px' }}>
-                                This is to certify that <strong>STUDENT CANDIDATE</strong> (Register Number: <strong>2117240020001</strong>) is a bonafide student of this institution, currently studying in <strong>V Semester</strong>, <strong>B.E. Computer Science and Engineering</strong> during the academic year <strong>2026-2027</strong>.
-                            </p>
-
-                            <p style={{ fontSize: '1rem', lineHeight: '1.8', textAlign: 'justify', textIndent: '40px', color: '#212529', marginBottom: '60px' }}>
-                                This certificate is issued on the request of the student for the purpose of "<strong>{previewCert.purpose || 'Official Verification'}</strong>".
-                            </p>
-
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'center' }}>
-                                <div>
-                                    <div style={{ width: '120px', height: '40px', borderBottom: '1px solid #333', margin: '0 auto 8px auto' }} />
-                                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>PRINCIPAL</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#555' }}>Rajalakshmi Institute of Technology</div>
-                                </div>
-                            </div>
+                        <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
+                            <button
+                                onClick={() => setShowPreviewModal(false)}
+                                className="ims-candy-btn ims-candy-neutral"
+                            >
+                                Close Preview
+                            </button>
+                            <button
+                                onClick={() => handleGeneratePDF(previewCert)}
+                                className="ims-candy-btn ims-candy-primary"
+                            >
+                                <LuPrinter /> Download Official PDF
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -15,6 +15,7 @@ import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import MobileBottomNav from '../components/common/MobileBottomNav';
 import './student-layout.css';
 
 const studentNav = [
@@ -198,22 +199,12 @@ const StudentLayout = () => {
                         {/* 5. User Profile (Authentic IMS Royal Blue Pill) */}
                         <div style={{ position: 'relative' }} ref={dropdownRef}>
                             <button
-                                className="stu-user-badge"
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                className="stu-user-badge ims-candy-btn ims-candy-primary"
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    backgroundColor: '#007bff',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    padding: '6px 14px',
-                                    fontWeight: 600,
+                                    padding: '7px 18px',
                                     fontSize: '12.5px',
-                                    cursor: 'pointer',
-                                    letterSpacing: '0.3px',
-                                    transition: 'background 0.2s'
+                                    letterSpacing: '0.3px'
                                 }}
                             >
                                 <LuUser className="user-icon" style={{ fontSize: '15px' }} />
@@ -233,8 +224,8 @@ const StudentLayout = () => {
                                             right: 0,
                                             marginTop: '6px',
                                             background: isDarkMode ? '#1e293b' : '#ffffff',
-                                            borderRadius: '4px',
-                                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                                            borderRadius: '16px',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
                                             width: '180px',
                                             zIndex: 1000,
                                             border: isDarkMode ? '1px solid #444' : '1px solid #e9ecef',
@@ -302,6 +293,7 @@ const StudentLayout = () => {
 
                 {/* AI Assistant Integration */}
                 <ChatbotWidget studentId={user?.id} />
+                <MobileBottomNav />
             </div>
         </div>
     );

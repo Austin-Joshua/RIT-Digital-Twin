@@ -45,16 +45,21 @@ const FacultyLeaves = () => {
     };
 
     return (
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="ims-page-container">
             {/* Header Area */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ background: 'var(--color-primary-navy)', padding: '12px', borderRadius: '12px', color: 'white', display: 'flex', boxShadow: '0 4px 12px rgba(11, 44, 107, 0.2)' }}>
-                    <FaClipboardList size={22} />
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaClipboardList />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Faculty Leave & OD Approval Hub</h1>
+                        <p className="ims-header-subtitle">Monitor and process student leave and OD applications for your department</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 style={{ margin: 0, color: 'var(--theme-text)', fontSize: '1.4rem', fontWeight: '800' }}>Faculty Approval Hub</h2>
-                    <p style={{ margin: '4px 0 0', color: 'var(--theme-text-muted)', fontSize: '13px' }}>Monitor and manage student leave and OD applications for your department.</p>
-                </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    {requests.length} Requests in Queue
+                </span>
             </div>
 
             {/* KPI Row */}
@@ -86,7 +91,7 @@ const FacultyLeaves = () => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-                <div className="stu-info-card" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
+                <div className="ims-card-elevated" style={{ borderTop: '4px solid var(--color-primary-navy)' }}>
                     <div className="info-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>Active Student Requests Queue (Database SOT)</span>
                         <span style={{ fontSize: '12px', background: 'var(--theme-bg-muted)', padding: '4px 10px', borderRadius: '20px', color: 'var(--theme-text-muted)' }}>{requests.length} records</span>
@@ -122,14 +127,16 @@ const FacultyLeaves = () => {
                                                     <button 
                                                         disabled={actionId === req.id}
                                                         onClick={() => handleAction(req.id, 'Approved')} 
-                                                        style={{ flex: 1, background: 'var(--color-success)', color: 'white', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                                                        className="ims-candy-btn ims-candy-success ims-candy-sm"
+                                                        style={{ flex: 1 }}
                                                     >
                                                         {actionId === req.id ? '...' : 'Approve'}
                                                     </button>
                                                     <button 
                                                         disabled={actionId === req.id}
                                                         onClick={() => handleAction(req.id, 'Rejected')} 
-                                                        style={{ flex: 1, background: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', padding: '6px', cursor: 'pointer', fontWeight: '800', fontSize: '11px' }}
+                                                        className="ims-candy-btn ims-candy-danger ims-candy-sm"
+                                                        style={{ flex: 1 }}
                                                     >
                                                         {actionId === req.id ? '...' : 'Reject'}
                                                     </button>

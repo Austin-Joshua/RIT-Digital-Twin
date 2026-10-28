@@ -145,7 +145,7 @@ const EnergyPage = () => {
                         <button
                             onClick={handleSimulate}
                             disabled={loading}
-                            className="btn-accent w-full flex items-center justify-center gap-2"
+                            className="ims-candy-btn ims-candy-gold w-full flex items-center justify-center gap-2"
                         >
                             {loading ? 'Processing Sensor Data...' : <><FaChartLine /> Execute Analysis</>}
                         </button>

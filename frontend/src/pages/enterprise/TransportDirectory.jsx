@@ -114,7 +114,7 @@ const TransportPage = () => {
                             autoComplete="off"
                         />
                     </div>
-                    <button type="submit" disabled={searching} className="w-full sm:w-auto px-6 py-3 sm:py-[13px] rounded-lg border-none cursor-pointer text-[var(--theme-brand-strong)] font-bold text-sm shadow-md transition-all hover:opacity-90 active:scale-95 flex-shrink-0 whitespace-nowrap" style={{ background: '#D4AF37' }}>
+                    <button type="submit" disabled={searching} className="ims-candy-btn ims-candy-gold" style={{ border: 'none', cursor: 'pointer', padding: '12px 28px' }}>
                         {searching ? 'Searching...' : 'Search Route'}
                     </button>
                 </form>

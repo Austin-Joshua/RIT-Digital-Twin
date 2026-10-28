@@ -277,9 +277,9 @@ const StudentDashboard = () => {
                             </table>
                         )}
                     </div>
-                    <div className="info-footer">
-                        <Link to="/student/timetable">Open full timetable</Link>
-                        <Link to="/student/fee">Open academic fee</Link>
+                    <div className="info-footer" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', padding: '14px 20px', borderTop: '1px solid var(--theme-border, #e2e8f0)' }}>
+                        <Link to="/student/timetable" className="ims-candy-btn ims-candy-primary ims-candy-sm">Open full timetable</Link>
+                        <Link to="/student/fee" className="ims-candy-btn ims-candy-neutral ims-candy-sm">Open academic fee</Link>
                     </div>
                 </section>
             )}

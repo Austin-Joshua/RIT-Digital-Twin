@@ -158,90 +158,87 @@ const AcademicFee = () => {
         addToast(`Payment of ₹${Number(payAmount).toLocaleString('en-IN')} processed successfully!`, 'success');
     };
 
-    return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            {/* Top 3 Action Buttons Bar (Authentic RIT IMS) */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuCreditCard />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Academic Fee</h1>
+                        <p className="ims-header-subtitle">Official semester tuition, development, and academic composite fee ledger</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Academic Year : 2026-2027
+                    </span>
+                    <span className="ims-candy-badge" style={{ background: totalBalance === 0 ? 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)' : 'linear-gradient(180deg, #fbbf24 0%, #d97706 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(0,0,0,0.1)' }}>
+                        {totalBalance === 0 ? 'Fee Status: Cleared' : `Pending: ₹${totalBalance.toLocaleString('en-IN')}`}
+                    </span>
+                </div>
+            </div>
+
+            {/* Sandbox Notice Banner */}
+            <div style={{
+                backgroundColor: '#e8f4fd',
+                border: '1px solid #b6d4fe',
+                borderRadius: '12px',
+                padding: '12px 18px',
+                fontSize: '0.8125rem',
+                color: '#084298',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px'
+            }}>
+                <span><strong>Demonstration Sandbox:</strong> Fee ledger records and payment gateway are simulated for prototype verification. No real monetary transactions are processed.</span>
+                <span className="ims-candy-badge" style={{ fontSize: '0.72rem', background: '#cfe2ff', color: '#084298' }}>Simulation Mode</span>
+            </div>
+
+            {/* Top 3 Action Candy Buttons Bar (Authentic RIT IMS) */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button
                     onClick={() => {
                         setPayAmount(totalBalance > 0 ? String(totalBalance) : '10000');
                         setShowPayModal(true);
                     }}
-                    style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        backgroundColor: '#28a745',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '9px 20px',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                    }}
+                    className="ims-candy-btn ims-candy-success"
                 >
                     <LuCreditCard /> Pay Academic Fee
                 </button>
                 <button
                     onClick={() => setViewMode(viewMode === 'history' ? 'ledger' : 'history')}
-                    style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        backgroundColor: '#ffc107',
-                        color: '#212529',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '9px 20px',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                    }}
+                    className="ims-candy-btn ims-candy-warning"
                 >
                     <LuHistory /> {viewMode === 'history' ? 'View Fee Ledger' : 'Payment History'}
                 </button>
                 <button
                     onClick={handleDownloadConsolidated}
-                    style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        backgroundColor: '#dc3545',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '9px 20px',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                    }}
+                    className="ims-candy-btn ims-candy-danger"
                 >
                     <LuFileText /> Consolidated Receipt
                 </button>
             </div>
 
-            {/* Main Content Card */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
+            {/* Main Content Card with Elevated Curvy Styling */}
+            <div className="ims-card-elevated">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0f172a' }}>
                             {viewMode === 'history' ? 'Payment History' : 'Academic Fee Details'}
                         </h2>
-                        <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '3px 10px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
-                            Academic Year : 2026-2027
-                        </span>
                     </div>
                     {viewMode === 'ledger' && (
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
-                                Total Paid: <strong style={{ color: '#28a745' }}>₹{totalPaid.toLocaleString('en-IN')}.00</strong>
+                            <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                                Total Paid: <strong style={{ color: '#16a34a' }}>₹{totalPaid.toLocaleString('en-IN')}.00</strong>
                             </span>
-                            <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
-                                Outstanding: <strong style={{ color: totalBalance === 0 ? '#28a745' : '#dc3545' }}>₹{totalBalance.toLocaleString('en-IN')}.00</strong>
+                            <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                                Outstanding: <strong style={{ color: totalBalance === 0 ? '#16a34a' : '#dc2626' }}>₹{totalBalance.toLocaleString('en-IN')}.00</strong>
                             </span>
                         </div>
                     )}
@@ -249,34 +246,31 @@ const AcademicFee = () => {
 
                 {viewMode === 'ledger' ? (
                     /* Fee Ledger Table */
-                    <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                    <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.875rem' }}>
                             <thead>
-                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                    <th style={{ padding: '12px 10px', width: '60px' }}>S.No</th>
-                                    <th style={{ padding: '12px 10px' }}>Particulars</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Amount (₹)</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Paid (₹)</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Balance (₹)</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'center', width: '120px' }}>Status</th>
+                                <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                    <th style={{ padding: '12px 14px', width: '60px', fontWeight: '700' }}>S.No</th>
+                                    <th style={{ padding: '12px 14px', fontWeight: '700' }}>Particulars</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'right', width: '150px', fontWeight: '700' }}>Amount (₹)</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'right', width: '150px', fontWeight: '700' }}>Paid (₹)</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'right', width: '150px', fontWeight: '700' }}>Balance (₹)</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'center', width: '120px', fontWeight: '700' }}>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {FEE_BREAKDOWN.map((row, idx) => (
-                                    <tr key={row.id} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                        <td style={{ padding: '12px 10px', color: '#6c757d' }}>{row.id}</td>
-                                        <td style={{ padding: '12px 10px', fontWeight: '500', color: '#212529' }}>{row.particular}</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: '#495057' }}>₹{row.amount.toLocaleString('en-IN')}.00</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: '#28a745', fontWeight: '500' }}>₹{row.paid.toLocaleString('en-IN')}.00</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: row.balance === 0 ? '#6c757d' : '#dc3545', fontWeight: '500' }}>₹{row.balance.toLocaleString('en-IN')}.00</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                            <span style={{
-                                                padding: '4px 10px',
-                                                borderRadius: '3px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '600',
-                                                backgroundColor: row.balance === 0 ? '#28a745' : '#ffc107',
-                                                color: row.balance === 0 ? '#ffffff' : '#212529'
+                                    <tr key={row.id} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                        <td style={{ padding: '12px 14px', color: '#64748b' }}>{row.id}</td>
+                                        <td style={{ padding: '12px 14px', fontWeight: '600', color: '#1e293b' }}>{row.particular}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'right', color: '#334155' }}>₹{row.amount.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'right', color: '#16a34a', fontWeight: '600' }}>₹{row.paid.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'right', color: row.balance === 0 ? '#64748b' : '#dc2626', fontWeight: '600' }}>₹{row.balance.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <span className="ims-candy-badge" style={{
+                                                backgroundColor: row.balance === 0 ? '#dcfce7' : '#fef3c7',
+                                                color: row.balance === 0 ? '#166534' : '#92400e',
+                                                border: `1px solid ${row.balance === 0 ? '#bbf7d0' : '#fde68a'}`
                                             }}>
                                                 {row.balance === 0 ? 'Paid' : 'Pending'}
                                             </span>
@@ -285,13 +279,13 @@ const AcademicFee = () => {
                                 ))}
                             </tbody>
                             <tfoot>
-                                <tr style={{ backgroundColor: '#f1f3f5', fontWeight: 'bold', borderTop: '2px solid #dee2e6' }}>
-                                    <td colSpan="2" style={{ padding: '12px 10px', textAlign: 'right' }}>Total Fee :</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'right' }}>₹{totalAmount.toLocaleString('en-IN')}.00</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'right', color: '#28a745' }}>₹{totalPaid.toLocaleString('en-IN')}.00</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'right', color: totalBalance === 0 ? '#28a745' : '#dc3545' }}>₹{totalBalance.toLocaleString('en-IN')}.00</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                        <span style={{ color: '#28a745' }}>Clear</span>
+                                <tr style={{ backgroundColor: '#f1f5f9', fontWeight: 'bold', borderTop: '2px solid #cbd5e1' }}>
+                                    <td colSpan="2" style={{ padding: '12px 14px', textAlign: 'right', color: '#0f172a' }}>Total Fee :</td>
+                                    <td style={{ padding: '12px 14px', textAlign: 'right', color: '#0f172a' }}>₹{totalAmount.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 14px', textAlign: 'right', color: '#16a34a' }}>₹{totalPaid.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 14px', textAlign: 'right', color: totalBalance === 0 ? '#16a34a' : '#dc2626' }}>₹{totalBalance.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                        <span className="ims-candy-badge" style={{ background: '#dcfce7', color: '#166534' }}>Clear</span>
                                     </td>
                                 </tr>
                             </tfoot>
@@ -299,49 +293,38 @@ const AcademicFee = () => {
                     </div>
                 ) : (
                     /* Payment History Table */
-                    <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                    <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.875rem' }}>
                             <thead>
-                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                    <th style={{ padding: '12px 10px' }}>Receipt No</th>
-                                    <th style={{ padding: '12px 10px' }}>Transaction ID</th>
-                                    <th style={{ padding: '12px 10px' }}>Date</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'right' }}>Amount Paid</th>
-                                    <th style={{ padding: '12px 10px' }}>Payment Mode</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Status</th>
-                                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Action</th>
+                                <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                    <th style={{ padding: '12px 14px', fontWeight: '700' }}>Receipt No</th>
+                                    <th style={{ padding: '12px 14px', fontWeight: '700' }}>Transaction ID</th>
+                                    <th style={{ padding: '12px 14px', fontWeight: '700' }}>Date</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'right', fontWeight: '700' }}>Amount Paid</th>
+                                    <th style={{ padding: '12px 14px', fontWeight: '700' }}>Payment Mode</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '700' }}>Status</th>
+                                    <th style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '700' }}>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {PAYMENT_HISTORY.map((txn, idx) => (
-                                    <tr key={txn.receiptNo} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                        <td style={{ padding: '12px 10px', fontWeight: '500', color: '#007bff' }}>{txn.receiptNo}</td>
-                                        <td style={{ padding: '12px 10px', color: '#6c757d' }}>{txn.txnId}</td>
-                                        <td style={{ padding: '12px 10px', color: '#333333' }}>{txn.date}</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: 'bold', color: '#28a745' }}>
+                                    <tr key={txn.receiptNo} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                        <td style={{ padding: '12px 14px', fontWeight: '600', color: '#0B2C6B' }}>{txn.receiptNo}</td>
+                                        <td style={{ padding: '12px 14px', color: '#64748b' }}>{txn.txnId}</td>
+                                        <td style={{ padding: '12px 14px', color: '#1e293b' }}>{txn.date}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 'bold', color: '#16a34a' }}>
                                             ₹{txn.amount.toLocaleString('en-IN')}.00
                                         </td>
-                                        <td style={{ padding: '12px 10px', color: '#495057' }}>{txn.mode}</td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                            <span style={{ padding: '4px 8px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: '600', backgroundColor: '#28a745', color: '#ffffff' }}>
+                                        <td style={{ padding: '12px 14px', color: '#475569' }}>{txn.mode}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <span className="ims-candy-badge" style={{ backgroundColor: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }}>
                                                 {txn.status}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                                             <button
                                                 onClick={() => handleDownloadReceipt(txn)}
-                                                style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px',
-                                                    backgroundColor: '#17a2b8',
-                                                    color: '#ffffff',
-                                                    border: 'none',
-                                                    borderRadius: '3px',
-                                                    padding: '5px 10px',
-                                                    fontSize: '0.8125rem',
-                                                    cursor: 'pointer'
-                                                }}
+                                                className="ims-candy-btn ims-candy-teal ims-candy-sm"
                                             >
                                                 <LuDownload /> Receipt
                                             </button>
@@ -354,7 +337,7 @@ const AcademicFee = () => {
                 )}
             </div>
 
-            {/* Pay Fee Modal */}
+            {/* Pay Fee Modal with Curvy Candy Edges */}
             {showPayModal && (
                 <div style={{
                     position: 'fixed',
@@ -362,7 +345,8 @@ const AcademicFee = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(4px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -371,64 +355,60 @@ const AcademicFee = () => {
                 }}>
                     <div style={{
                         backgroundColor: '#ffffff',
-                        borderRadius: '4px',
+                        borderRadius: '20px',
                         width: '100%',
                         maxWidth: '480px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-                        overflow: 'hidden'
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                        overflow: 'hidden',
+                        border: '1px solid #e2e8f0'
                     }}>
                         <div style={{
-                            padding: '16px 20px',
-                            borderBottom: '1px solid #dee2e6',
+                            padding: '18px 24px',
+                            borderBottom: '1px solid #e2e8f0',
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            background: '#f8fafc'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '500', color: '#333333' }}>
-                                Pay Academic Fee
+                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>
+                                Pay Academic Fee Online
                             </h3>
                             <button
                                 onClick={() => setShowPayModal(false)}
-                                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6c757d' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontSize: '18px', display: 'flex' }}
                             >
                                 <LuX />
                             </button>
                         </div>
-                        <form onSubmit={handlePaySubmit} style={{ padding: '20px' }}>
+
+                        <form onSubmit={handlePaySubmit} style={{ padding: '24px' }}>
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Amount to Pay (INR) <span style={{ color: '#dc3545' }}>*</span>
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                    Amount to Pay (INR) <span style={{ color: '#dc2626' }}>*</span>
                                 </label>
                                 <input
                                     type="number"
+                                    min="100"
                                     value={payAmount}
                                     onChange={(e) => setPayAmount(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
+                                    className="ims-candy-search"
+                                    style={{ width: '100%', boxSizing: 'border-box' }}
                                     required
-                                    min="1"
                                 />
+                                <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px', display: 'block' }}>
+                                    Minimum payment: ₹100.00
+                                </span>
                             </div>
 
-                            <div style={{ marginBottom: '20px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Payment Mode
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b' }}>
+                                    Payment Method <span style={{ color: '#dc2626' }}>*</span>
                                 </label>
                                 <select
                                     value={paymentMethod}
                                     onChange={(e) => setPaymentMethod(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
+                                    className="ims-candy-search"
+                                    style={{ width: '100%', boxSizing: 'border-box' }}
                                 >
                                     <option value="UPI">UPI (Google Pay, PhonePe, Paytm)</option>
                                     <option value="NetBanking">Net Banking (HDFC, SBI, ICICI, Axis)</option>
@@ -436,34 +416,17 @@ const AcademicFee = () => {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #dee2e6', paddingTop: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '18px' }}>
                                 <button
                                     type="button"
                                     onClick={() => setShowPayModal(false)}
-                                    style={{
-                                        backgroundColor: '#6c757d',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 16px',
-                                        fontSize: '0.875rem',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-neutral"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    style={{
-                                        backgroundColor: '#28a745',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 20px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-success"
                                 >
                                     Proceed to Pay ₹{Number(payAmount).toLocaleString('en-IN')}
                                 </button>

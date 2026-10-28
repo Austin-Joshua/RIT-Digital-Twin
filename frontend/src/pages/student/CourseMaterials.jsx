@@ -66,25 +66,28 @@ const CourseMaterials = () => {
     );
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            {/* Header section */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaFolderOpen className="text-gold-500" /> Digital Library & Materials
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Download official lecture notes and previous year questions</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaFolderOpen />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Digital Library & Course Materials</h1>
+                        <p className="ims-header-subtitle">Download official lecture notes, curriculum documents, and previous year question papers</p>
+                    </div>
                 </div>
 
                 <div className="relative w-full md:w-64">
+                    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search by subject or title..."
+                        placeholder="Search materials..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy-900 dark:focus:ring-gold-500 bg-white dark:bg-navy-900 text-gray-900 dark:text-white"
+                        className="ims-candy-search w-full pl-11"
                     />
-                    <FaSearch className="absolute left-3 top-3 text-gray-400" />
                 </div>
             </div>
 

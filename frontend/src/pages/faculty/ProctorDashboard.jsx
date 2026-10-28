@@ -12,14 +12,21 @@ const ProctorDashboard = () => {
     ];
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 p-6 overflow-hidden">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                        <FaUsers style={{ color: 'var(--color-accent-gold)' }} /> Proctor & Mentorship Ward
-                    </h1>
-                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Track the psychological, academic, and disciplinary well-being of assigned students.</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaUsers />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Proctor & Mentorship Ward</h1>
+                        <p className="ims-header-subtitle">Track the psychological, academic, and disciplinary well-being of assigned mentee students</p>
+                    </div>
                 </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    {wards.length} Mentee Wards
+                </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,17 +80,15 @@ const ProctorDashboard = () => {
                             )}
                         </div>
 
-                        <div className="mt-4 pt-4 border-t flex gap-2" style={{ borderColor: 'var(--theme-border)' }}>
+                        <div className="mt-4 pt-4 border-t flex gap-2.5" style={{ borderColor: 'var(--theme-border)' }}>
                             <button
-                                className="flex-1 py-2 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2 hover:opacity-90"
-                                style={{ background: 'var(--color-primary-navy)', color: 'white' }}
+                                className="ims-candy-btn ims-candy-primary ims-candy-sm flex-1 flex items-center justify-center gap-2"
                                 onClick={(e) => { e.stopPropagation(); /* Log meeting logic */ }}
                             >
                                 <FaComments /> Log Meeting
                             </button>
                             <button
-                                className="flex-1 py-2 rounded-lg font-bold text-sm transition-colors flex justify-center items-center gap-2 hover:opacity-90"
-                                style={{ background: 'var(--color-accent-gold)', color: 'white' }}
+                                className="ims-candy-btn ims-candy-neutral ims-candy-sm flex-1 flex items-center justify-center gap-2"
                                 onClick={(e) => { e.stopPropagation(); setSelectedWard(ward); }}
                             >
                                 <FaFileAlt /> View Report

@@ -43,18 +43,21 @@ const ResearchTracker = () => {
     const totalCitations = allPapers.reduce((sum, p) => sum + (Number(p.citations) || 0), 0);
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 p-6 overflow-hidden">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                        <FaFlask style={{ color: 'var(--color-accent-gold)' }} /> Research & Publication Tracker
-                    </h1>
-                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Log journal publications, patents, and grants for appraisal metrics.</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaFlask />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Research & Publication Tracker</h1>
+                        <p className="ims-header-subtitle">Log journal publications, patents, Scopus indexing, and grants for institutional appraisal metrics</p>
+                    </div>
                 </div>
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2 hover:opacity-90 active:scale-95"
-                    style={{ background: 'var(--color-primary-navy)', color: 'white', textShadow: 'none', boxShadow: '0 4px 12px rgba(11,44,107,0.3)', border: 'none' }}
+                    className="ims-candy-btn ims-candy-primary"
                 >
                     <FaPlus /> Add Publication
                 </button>

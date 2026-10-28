@@ -678,24 +678,37 @@ const ClubsPage = () => {
     const pendingGlobal=myMemberships.filter(m=>m.status==="pending").length;
 
     return (
-        <div className="stu-dashboard" style={{display:"grid",gap:20}}>
-            {/* Header */}
-            <div className="stu-info-card" style={{borderTopColor:"var(--theme-brand-strong)"}}>
-                <div className="info-header" style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
-                    <div>
-                        <span style={{fontSize:"1.2rem",fontWeight:800}}>🏛️ Campus Organizations & Clubs</span>
-                        <div style={{fontSize:13,color:"var(--theme-text-muted)",fontWeight:400,marginTop:2}}>{clubs.length} organizations · {clubs.filter(c=>c.status==="active").length} active</div>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <span style={{ fontSize: '20px' }}>🏛️</span>
                     </div>
-                    {role==="STUDENT"&&pendingGlobal>0&&<span style={{background:"#f59e0b",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:13,fontWeight:700}}>⏳ {pendingGlobal} pending request{pendingGlobal!==1?"s":""}</span>}
+                    <div>
+                        <h1 className="ims-header-title">Campus Organizations & Clubs</h1>
+                        <p className="ims-header-subtitle">
+                            {clubs.length} campus organizations · {clubs.filter(c => c.status === "active").length} active · Technical societies & Centers of Excellence
+                        </p>
+                    </div>
                 </div>
-                {error&&<div style={{marginTop:10,padding:"10px 14px",background:"rgba(239,68,68,0.08)",border:"1px solid #ef4444",borderRadius:8,color:"#ef4444",fontSize:13}}>⚠️ {error}<button onClick={()=>setError("")} style={{marginLeft:10,background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontWeight:700}}>✕</button></div>}
-                {successMsg&&<div style={{marginTop:10,padding:"10px 14px",background:"rgba(34,197,94,0.08)",border:"1px solid #22c55e",borderRadius:8,color:"#22c55e",fontSize:13}}>✅ {successMsg}</div>}
+                {role === "STUDENT" && pendingGlobal > 0 && (
+                    <span className="ims-candy-badge ims-candy-warning">
+                        ⏳ {pendingGlobal} pending request{pendingGlobal !== 1 ? "s" : ""}
+                    </span>
+                )}
             </div>
+            {error && <div style={{ padding: "10px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid #ef4444", borderRadius: 12, color: "#ef4444", fontSize: 13 }}>⚠️ {error}<button onClick={() => setError("")} style={{ marginLeft: 10, background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontWeight: 700 }}>✕</button></div>}
+            {successMsg && <div style={{ padding: "10px 14px", background: "rgba(34,197,94,0.08)", border: "1px solid #22c55e", borderRadius: 12, color: "#22c55e", fontSize: 13 }}>✅ {successMsg}</div>}
 
             {/* Tabs */}
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {tabs.map(tab=>(
-                    <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{padding:"10px 18px",borderRadius:10,fontWeight:700,fontSize:14,cursor:"pointer",border:activeTab===tab.id?"2px solid var(--theme-brand-strong)":"2px solid var(--theme-border)",background:activeTab===tab.id?"var(--theme-brand-strong)":"var(--theme-surface)",color:activeTab===tab.id?"#fff":"var(--theme-text)",transition:"all 160ms ease"}}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`ims-candy-btn ${activeTab === tab.id ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
+                    >
                         {tab.label}
                     </button>
                 ))}

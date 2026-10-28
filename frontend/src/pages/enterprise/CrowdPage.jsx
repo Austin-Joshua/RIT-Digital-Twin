@@ -57,7 +57,7 @@ const CrowdPage = () => {
                 </div>
                 <button
                     onClick={handleSimulate}
-                    className="w-full bg-red-600 text-white rounded-md px-4 py-2.5 hover:bg-red-700 font-medium transition-colors"
+                    className="ims-candy-btn ims-candy-danger w-full py-2.5 font-medium"
                 >
                     Run Evacuation Simulation
                 </button>

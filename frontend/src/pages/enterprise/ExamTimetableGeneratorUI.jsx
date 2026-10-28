@@ -251,10 +251,18 @@ const ExamTimetableGeneratorUI = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div>
-                <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Faculty Timetable Allocation</h1>
-                <p style={{ color: 'var(--text-secondary)' }}>One-click optimized multi-class timetable generation and persistence for student and parent accounts.</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuFileCode />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Faculty Timetable Allocation</h1>
+                        <p className="ims-header-subtitle">One-click optimized multi-class timetable generation and persistence for student and parent accounts</p>
+                    </div>
+                </div>
             </div>
 
             {generateAccess?.message && (
@@ -425,7 +433,7 @@ const ExamTimetableGeneratorUI = () => {
                     </div>
                 </div>
             )}
-        </motion.div>
+        </div>
     );
 };
 

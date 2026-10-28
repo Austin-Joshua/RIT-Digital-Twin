@@ -35,13 +35,17 @@ const EventsClubs = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
-                        <FaRegStar className="text-gold-500" /> Campus Events, Clubs & Centers of Excellence
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Discover opportunities, research centers, join communities, and RSVP to events</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaRegStar />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Campus Events, Clubs & CoE</h1>
+                        <p className="ims-header-subtitle">Discover opportunities, research centers of excellence, join communities, and RSVP to events</p>
+                    </div>
                 </div>
             </div>
 
@@ -99,7 +103,7 @@ const EventsClubs = () => {
                                         </span>
                                         <button
                                             onClick={() => toggleRegistration(event.title)}
-                                            className={`text-sm font-bold px-4 py-2 rounded-lg transition-colors ${event.registered ? 'bg-gray-200 text-gray-600 dark:bg-navy-700 dark:text-gray-300 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400' : 'bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 hover:bg-navy-800 dark:hover:bg-gold-600'}`}
+                                            className={`ims-candy-btn ${event.registered ? 'ims-candy-neutral' : 'ims-candy-primary'} ims-candy-sm`}
                                         >
                                             {event.registered ? 'Cancel RSVP' : 'Register Now'}
                                         </button>

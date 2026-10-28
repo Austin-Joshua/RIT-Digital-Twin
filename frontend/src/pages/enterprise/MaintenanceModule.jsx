@@ -97,7 +97,7 @@ const MaintenanceModule = () => {
                             <div key={idx} className="p-3 bg-white border border-red-200 rounded-xl shadow-sm">
                                 <p className="font-bold text-red-900 text-xs">{asset.assetName}</p>
                                 <p className="text-[10px] text-red-700 mt-1">Status: {asset.status}</p>
-                                <button onClick={() => recordMaintenance(asset.id)} className="mt-2 w-full py-1.5 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg hover:bg-red-700">
+                                <button onClick={() => recordMaintenance(asset.id)} className="ims-candy-btn ims-candy-danger mt-2 w-full py-1.5 text-[10px] font-black uppercase">
                                     Schedule Repair
                                 </button>
                             </div>

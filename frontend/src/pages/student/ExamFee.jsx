@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuDownload, LuPrinter, LuCircleCheck, LuCreditCard, LuFileText } from 'react-icons/lu';
+import { LuReceiptText, LuDownload, LuPrinter, LuCircleCheck, LuCreditCard, LuFileText } from 'react-icons/lu';
 import { useToast } from '../../hooks/ToastContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -118,88 +118,92 @@ const ExamFee = () => {
         doc.save(`${item.receiptNo.replace(/\//g, '_')}.pdf`);
     };
 
-    return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            {/* Header Card */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', marginBottom: '20px', padding: '16px 20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <div>
-                        <h2 style={{ margin: '0 0 6px 0', fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
-                            Exam Fee
-                        </h2>
-                        <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
-                            Anna University Autonomous End-Semester & Arrear Examination Fee Ledger
-                        </span>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuReceiptText />
                     </div>
-                    <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '4px 12px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
+                    <div>
+                        <h1 className="ims-header-title">Exam Fee</h1>
+                        <p className="ims-header-subtitle">Anna University Autonomous End-Semester & Arrear Examination Fee Ledger</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
                         Register No: 2117240020001
+                    </span>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(22,163,74,0.25)' }}>
+                        Clearance: Completed
                     </span>
                 </div>
             </div>
 
-            {/* Session Cards */}
+            {/* Sandbox Notice Banner */}
+            <div style={{
+                backgroundColor: '#e8f4fd',
+                border: '1px solid #b6d4fe',
+                borderRadius: '12px',
+                padding: '12px 18px',
+                fontSize: '0.8125rem',
+                color: '#084298',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '8px'
+            }}>
+                <span><strong>Demonstration Sandbox:</strong> Examination fee schedule and payment receipts are simulated for institutional twin verification.</span>
+                <span className="ims-candy-badge" style={{ fontSize: '0.72rem', background: '#cfe2ff', color: '#084298' }}>Simulation Mode</span>
+            </div>
+
+            {/* Session Cards with Elevated Curvy Styling */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {sessions.map((item) => (
-                    <div key={item.id} style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                        <div style={{ padding: '14px 20px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div key={item.id} className="ims-card-elevated" style={{ padding: '0', overflow: 'hidden' }}>
+                        <div style={{ padding: '16px 24px', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <strong style={{ fontSize: '1rem', color: '#212529' }}>{item.session}</strong>
-                                <span style={{ backgroundColor: '#e9ecef', color: '#495057', padding: '2px 8px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{item.session}</strong>
+                                <span className="ims-candy-badge" style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1' }}>
                                     {item.semester}
                                 </span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    padding: '4px 10px',
-                                    borderRadius: '3px',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '600',
-                                    backgroundColor: '#28a745',
-                                    color: '#ffffff'
+                                <span className="ims-candy-badge" style={{
+                                    backgroundColor: '#dcfce7',
+                                    color: '#166534',
+                                    border: '1px solid #bbf7d0'
                                 }}>
                                     <LuCircleCheck /> {item.status}
                                 </span>
                                 <button
                                     onClick={() => handleDownloadReceipt(item)}
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        backgroundColor: '#28a745',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '3px',
-                                        padding: '5px 12px',
-                                        fontSize: '0.8125rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-success ims-candy-sm"
                                 >
                                     <LuDownload /> Download Receipt
                                 </button>
                             </div>
                         </div>
 
-                        <div style={{ padding: '16px 20px' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px', fontSize: '0.875rem' }}>
+                        <div style={{ padding: '20px 24px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
                                 <div>
-                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Total Registered Courses:</span>
-                                    <strong>{item.totalSubjects} Subjects ({item.theorySubjectsCount} Theory + {item.labSubjectsCount} Practical)</strong>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '4px' }}>Total Registered Courses:</span>
+                                    <strong style={{ color: '#1e293b' }}>{item.totalSubjects} Subjects ({item.theorySubjectsCount} Theory + {item.labSubjectsCount} Practical)</strong>
                                 </div>
                                 <div>
-                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Receipt Number:</span>
-                                    <strong style={{ color: '#007bff' }}>{item.receiptNo}</strong>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '4px' }}>Receipt Number:</span>
+                                    <strong style={{ color: '#0B2C6B' }}>{item.receiptNo}</strong>
                                 </div>
                                 <div>
-                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Date of Payment:</span>
-                                    <strong>{item.paymentDate}</strong>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '4px' }}>Date of Payment:</span>
+                                    <strong style={{ color: '#1e293b' }}>{item.paymentDate}</strong>
                                 </div>
                                 <div>
-                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Total Amount Paid:</span>
-                                    <strong style={{ color: '#28a745', fontSize: '1rem' }}>₹{item.amountPaid.toLocaleString('en-IN')}.00</strong>
+                                    <span style={{ color: '#64748b', display: 'block', marginBottom: '4px' }}>Total Amount Paid:</span>
+                                    <strong style={{ color: '#16a34a', fontSize: '1.05rem' }}>₹{item.amountPaid.toLocaleString('en-IN')}.00</strong>
                                 </div>
                             </div>
                         </div>

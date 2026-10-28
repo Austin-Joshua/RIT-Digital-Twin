@@ -86,34 +86,22 @@ const FacultyAcademics = () => {
     };
 
     return (
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ background: 'var(--color-primary-navy)', padding: '10px', borderRadius: '10px', color: 'white', display: 'flex' }}>
-                        <FaBook size={24} />
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaBook />
                     </div>
                     <div>
-                        <h2 style={{ margin: 0, color: 'var(--theme-text)', fontSize: '1.4rem', fontWeight: '800' }}>Academic Management</h2>
-                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--theme-text-muted)' }}>Manage course materials and syllabus progress</p>
+                        <h1 className="ims-header-title">Academic Management</h1>
+                        <p className="ims-header-subtitle">Manage course syllabus coverage, enrolled rosters, and digital course resources</p>
                     </div>
                 </div>
-                <button onClick={() => setIsUploadOpen(true)} className="table-btn" style={{ 
-                    background: 'var(--color-primary-navy)', 
-                    color: 'white', 
-                    padding: '12px 24px', 
-                    borderRadius: '10px', 
-                    border: 'none', 
-                    fontWeight: '800', 
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 4px 12px rgba(11, 44, 107, 0.2)'
-                }}>
+                <button
+                    onClick={() => setIsUploadOpen(true)}
+                    className="ims-candy-btn ims-candy-primary"
+                >
                     + New Material
                 </button>
             </div>
@@ -121,7 +109,7 @@ const FacultyAcademics = () => {
             {/* Premium Subject Cards Grid (3 Column for Tab) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                 {subjects.map((sub, idx) => (
-                    <div key={idx} className="stu-info-card" style={{ 
+                    <div key={idx} className="ims-card-elevated" style={{ 
                         borderTop: '4px solid var(--color-primary-navy)',
                         padding: '20px',
                         display: 'flex',

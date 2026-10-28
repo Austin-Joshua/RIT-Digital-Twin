@@ -23,28 +23,28 @@ const AutomatedResultPublishing = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '16px 12px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div>
-                    <h1 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.8rem)', fontWeight: '700', color: 'var(--theme-text)', margin: 0 }}>Result Publication Portal</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0', fontSize: '0.875rem' }}>Monitor faculty uploads and trigger global AI verification</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuActivity />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Result Publication Portal</h1>
+                        <p className="ims-header-subtitle">Monitor faculty marks submissions, run automated anomaly scans, and trigger institutional publishing</p>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
                     <button
                         onClick={handleVerify}
                         disabled={verifying}
-                        style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid var(--theme-border)', background: 'var(--card-bg)', color: 'var(--theme-text)', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        className="ims-candy-btn ims-candy-neutral ims-candy-sm flex items-center gap-2">
                         {verifying ? 'AI Scanning...' : <><LuActivity color="#3c8dbc" /> Run AI Audit</>}
                     </button>
                     <button
                         disabled={!verified}
-                        style={{
-                            padding: '10px 24px', borderRadius: '8px', border: 'none',
-                            background: verified ? 'var(--publish-btn-bg)' : 'var(--publish-btn-bg-disabled)',
-                            color: verified ? 'var(--publish-btn-text)' : 'var(--publish-btn-text-disabled)',
-                            fontWeight: '800', cursor: verified ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '8px'
-                        }}>
+                        className="ims-candy-btn ims-candy-primary ims-candy-sm flex items-center gap-2">
                         <LuSend /> Publish Globally
                     </button>
                 </div>
@@ -69,7 +69,7 @@ const AutomatedResultPublishing = () => {
             </div>
 
             {/* Department List */}
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', margin: '0 -4px' }}>
+            <div className="ims-card-elevated" style={{ overflow: 'hidden', padding: 0 }}>
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <LuActivity color="var(--theme-brand-strong)" />
                     <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>Departmental Upload Status</span>
@@ -149,7 +149,7 @@ const AutomatedResultPublishing = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </div>
     );
 };
 

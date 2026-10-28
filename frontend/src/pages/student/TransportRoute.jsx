@@ -70,11 +70,20 @@ const TransportRoute = ({ studentId }) => {
     if (!isLoaded) return <div>Loading Maps...</div>;
 
     return (
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ background: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <h2 style={{ margin: '0 0 16px 0', borderBottom: '2px solid #0B2C6B', paddingBottom: '10px' }}>
-                    <FaBus /> My Transport Route
-                </h2>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaBus />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">My Transport Route</h1>
+                        <p className="ims-header-subtitle">Real-time GPS bus tracking and designated pickup stop timetable</p>
+                    </div>
+                </div>
+            </div>
+            <div className="ims-card-elevated">
 
                 {routeData ? (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>

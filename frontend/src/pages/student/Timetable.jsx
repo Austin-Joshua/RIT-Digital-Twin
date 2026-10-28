@@ -1,3 +1,4 @@
+import { LuCalendar } from 'react-icons/lu';
 import React, { useMemo, useState, useEffect } from 'react';
 import api from '../../services/api';
 import Skeleton from '../../components/common/Skeleton';
@@ -126,211 +127,195 @@ const Timetable = () => {
 
     if (loading) return <div style={{ padding: '24px' }}><Skeleton height="500px" /></div>;
 
-    return (
-        <div style={{ padding: '16px 24px', maxWidth: '100%', margin: '0 auto' }}>
-            {/* Class Badge Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-                <div style={{
-                    background: '#007bff',
-                    color: '#ffffff',
-                    padding: '8px 18px',
-                    borderRadius: '4px',
-                    fontWeight: 700,
-                    fontSize: '14px',
-                    letterSpacing: '0.3px',
-                    boxShadow: '0 2px 4px rgba(0,123,255,0.2)'
-                }}>
-                    Class : B.E. CSE / 5 / A
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuCalendar />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">My Time Table</h1>
+                        <p className="ims-header-subtitle">Period-wise weekly academic schedule and laboratory allocations</p>
+                    </div>
                 </div>
-
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Class : B.E. CSE / 5 / A
+                    </span>
                     <button
                         type="button"
                         onClick={() => setViewMode('weekly')}
-                        style={{
-                            border: '1px solid #ced4da',
-                            background: viewMode === 'weekly' ? '#007bff' : '#ffffff',
-                            color: viewMode === 'weekly' ? '#ffffff' : '#495057',
-                            padding: '6px 14px',
-                            borderRadius: '4px',
-                            fontSize: '12.5px',
-                            fontWeight: 600,
-                            cursor: 'pointer'
-                        }}
+                        className={`ims-candy-btn ${viewMode === 'weekly' ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
                     >
                         Weekly Grid
                     </button>
                     <button
                         type="button"
                         onClick={() => setViewMode('daily')}
-                        style={{
-                            border: '1px solid #ced4da',
-                            background: viewMode === 'daily' ? '#007bff' : '#ffffff',
-                            color: viewMode === 'daily' ? '#ffffff' : '#495057',
-                            padding: '6px 14px',
-                            borderRadius: '4px',
-                            fontSize: '12.5px',
-                            fontWeight: 600,
-                            cursor: 'pointer'
-                        }}
+                        className={`ims-candy-btn ${viewMode === 'daily' ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
                     >
                         Daily View
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => window.print()}
+                        className="ims-candy-btn ims-candy-neutral ims-candy-sm"
+                    >
+                        Print
                     </button>
                 </div>
             </div>
 
-            {/* Authentic IMS 9-Period x 6-Day Grid */}
-            {viewMode === 'weekly' ? (
-                <div style={{
-                    background: '#ffffff',
-                    borderRadius: '4px',
-                    border: '1px solid #dee2e6',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    overflowX: 'auto'
-                }}>
-                    <table style={{
-                        width: '100%',
-                        borderCollapse: 'collapse',
-                        minWidth: '980px',
-                        fontSize: '12px'
+            {/* Main Elevated Card with Curvy Corners */}
+            <div className="ims-card-elevated" style={{ padding: '20px' }}>
+                {viewMode === 'weekly' ? (
+                    <div style={{
+                        borderRadius: '12px',
+                        border: '1.5px solid #e2e8f0',
+                        overflowX: 'auto'
                     }}>
-                        <thead>
-                            <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                                <th style={{
-                                    padding: '12px 14px',
-                                    textAlign: 'center',
-                                    fontWeight: 700,
-                                    color: '#495057',
-                                    borderRight: '1px solid #dee2e6',
-                                    width: '60px'
-                                }}>
-                                    DAY
-                                </th>
-                                {DAYS.map(d => (
-                                    <th
-                                        key={d.key}
-                                        style={{
-                                            padding: '12px 14px',
-                                            textAlign: 'center',
-                                            fontWeight: 700,
-                                            color: '#495057',
-                                            borderRight: '1px solid #dee2e6'
-                                        }}
-                                    >
-                                        {d.label}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {PERIODS.map(period => (
-                                <tr key={period} style={{ borderBottom: '1px solid #dee2e6' }}>
-                                    {/* Period Number */}
-                                    <td style={{
-                                        padding: '14px 10px',
+                        <table style={{
+                            width: '100%',
+                            borderCollapse: 'separate',
+                            borderSpacing: 0,
+                            minWidth: '980px',
+                            fontSize: '12px'
+                        }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc', borderBottom: '2px solid #dee2e6' }}>
+                                    <th style={{
+                                        padding: '12px 14px',
                                         textAlign: 'center',
                                         fontWeight: 700,
-                                        color: '#343a40',
-                                        background: '#fcfcfc',
+                                        color: '#475569',
                                         borderRight: '1px solid #dee2e6',
-                                        verticalAlign: 'middle',
-                                        fontSize: '13px'
+                                        width: '60px'
                                     }}>
-                                        {period}
-                                    </td>
+                                        DAY
+                                    </th>
+                                    {DAYS.map(d => (
+                                        <th
+                                            key={d.key}
+                                            style={{
+                                                padding: '12px 14px',
+                                                textAlign: 'center',
+                                                fontWeight: 700,
+                                                color: '#475569',
+                                                borderRight: '1px solid #dee2e6'
+                                            }}
+                                        >
+                                            {d.label}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {PERIODS.map(period => (
+                                    <tr key={period} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                        {/* Period Number */}
+                                        <td style={{
+                                            padding: '14px 10px',
+                                            textAlign: 'center',
+                                            fontWeight: 700,
+                                            color: '#0B2C6B',
+                                            background: '#f8fafc',
+                                            borderRight: '1px solid #dee2e6',
+                                            verticalAlign: 'middle',
+                                            fontSize: '13px'
+                                        }}>
+                                            {period}
+                                        </td>
 
-                                    {/* Day Cells */}
-                                    {DAYS.map(day => {
-                                        const slots = getSlots(period, day.key);
-                                        return (
-                                            <td
-                                                key={day.key}
-                                                style={{
-                                                    padding: '8px',
-                                                    borderRight: '1px solid #dee2e6',
-                                                    verticalAlign: 'top',
-                                                    background: '#ffffff'
-                                                }}
-                                            >
-                                                {slots.length === 0 ? null : (
-                                                    slots.map((s, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            style={{
-                                                                border: '1px solid #cce5ff',
-                                                                borderRadius: '4px',
-                                                                padding: '8px 10px',
-                                                                marginBottom: idx < slots.length - 1 ? '6px' : '0',
-                                                                background: '#f8fbff',
-                                                                textAlign: 'center'
-                                                            }}
-                                                        >
-                                                            {s.isSpecial ? (
-                                                                <>
-                                                                    <div style={{ color: '#007bff', fontWeight: 700, fontSize: '11px', marginBottom: '2px' }}>
-                                                                        {s.specialTitle}
+                                        {/* Day Cells */}
+                                        {DAYS.map(day => {
+                                            const slots = getSlots(period, day.key);
+                                            return (
+                                                <td
+                                                    key={day.key}
+                                                    style={{
+                                                        padding: '8px',
+                                                        borderRight: '1px solid #dee2e6',
+                                                        verticalAlign: 'top',
+                                                        background: '#ffffff'
+                                                    }}
+                                                >
+                                                    {slots.length === 0 ? null : (
+                                                        slots.map((s, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                style={{
+                                                                    border: '1px solid #bae6fd',
+                                                                    borderLeft: '4px solid #0B2C6B',
+                                                                    borderRadius: '8px',
+                                                                    background: '#f0f9ff',
+                                                                    padding: '8px 10px',
+                                                                    marginBottom: slots.length > 1 ? '6px' : 0,
+                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                                                                }}
+                                                            >
+                                                                {s.isSpecial ? (
+                                                                    <div style={{ color: '#d97706', fontWeight: 700, fontSize: '11.5px', marginBottom: '2px' }}>
+                                                                        ★ {s.specialTitle}
                                                                     </div>
-                                                                    <div style={{ color: '#6c757d', fontSize: '10px' }}>Staff</div>
-                                                                    <div style={{ color: '#0056b3', fontWeight: 600, fontSize: '10.5px' }}>
-                                                                        {s.staff}
-                                                                    </div>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <div style={{ color: '#007bff', fontWeight: 600, fontSize: '10.5px', marginBottom: '1px' }}>
-                                                                        Subject
-                                                                    </div>
-                                                                    <div style={{ color: '#0056b3', fontWeight: 700, fontSize: '11px', lineHeight: 1.3, marginBottom: '4px' }}>
+                                                                ) : (
+                                                                    <div style={{ color: '#0B2C6B', fontWeight: 600, fontSize: '12px', lineHeight: '1.3', marginBottom: '4px' }}>
                                                                         {s.subject}
                                                                     </div>
-                                                                    <div style={{ color: '#6c757d', fontSize: '10px' }}>Staff</div>
-                                                                    <div style={{ color: '#0056b3', fontWeight: 600, fontSize: '10.5px' }}>
-                                                                        {s.staff}
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    ))
-                                                )}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ) : (
-                /* Daily View */
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
-                    {PERIODS.map(period => {
-                        const todaySlots = getSlots(period, 'MON');
-                        return (
-                            <div key={period} style={{
-                                background: '#ffffff',
-                                border: '1px solid #dee2e6',
-                                borderRadius: '4px',
-                                padding: '14px',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                                )}
+                                                                <div style={{ color: '#64748b', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                    <span>👤</span> {s.staff}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    /* Daily View */
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                        {DAYS.map(day => (
+                            <div key={day.key} style={{
+                                border: '1.5px solid #e2e8f0',
+                                borderRadius: '12px',
+                                background: '#f8fafc',
+                                padding: '16px'
                             }}>
-                                <div style={{ fontSize: '12px', fontWeight: 700, color: '#007bff', marginBottom: '8px' }}>
-                                    Period {period}
+                                <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', color: '#0B2C6B', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', fontWeight: '700' }}>
+                                    {day.label}
+                                </h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {PERIODS.map(p => {
+                                        const slots = getSlots(p, day.key);
+                                        if (slots.length === 0) return null;
+                                        return slots.map((s, idx) => (
+                                            <div key={`${p}-${idx}`} style={{
+                                                padding: '8px 12px',
+                                                borderRadius: '8px',
+                                                background: '#ffffff',
+                                                border: '1px solid #e2e8f0'
+                                            }}>
+                                                <span className="ims-candy-badge" style={{ background: '#e0f2fe', color: '#0369a1', marginBottom: '4px', padding: '2px 8px', fontSize: '11px' }}>
+                                                    Period {p}
+                                                </span>
+                                                <div style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>{s.subject || s.specialTitle}</div>
+                                                <div style={{ fontSize: '11px', color: '#64748b' }}>{s.staff}</div>
+                                            </div>
+                                        ));
+                                    })}
                                 </div>
-                                {todaySlots.length === 0 ? (
-                                    <div style={{ color: '#adb5bd', fontSize: '12px' }}>Free Period</div>
-                                ) : (
-                                    todaySlots.map((s, idx) => (
-                                        <div key={idx} style={{ border: '1px solid #cce5ff', borderRadius: '4px', padding: '8px', background: '#f8fbff', textAlign: 'center' }}>
-                                            <div style={{ color: '#0056b3', fontWeight: 700, fontSize: '12px' }}>{s.subject || s.specialTitle}</div>
-                                            <div style={{ color: '#6c757d', fontSize: '11px', marginTop: '2px' }}>Staff: {s.staff}</div>
-                                        </div>
-                                    ))
-                                )}
                             </div>
-                        );
-                    })}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

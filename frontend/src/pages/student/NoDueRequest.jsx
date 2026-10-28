@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { LuCreditCard, LuDownload, LuCircleCheck, LuTriangleAlert, LuFileCheck } from 'react-icons/lu';
 import jsPDF from 'jspdf';
@@ -112,6 +113,19 @@ const AUTHENTIC_LABS = [
 ];
 
 const NoDueRequest = () => {
+    const [clearanceData, setClearanceData] = useState([]);
+
+    useEffect(() => {
+        let isMounted = true;
+        api.get('/nodue/my-requests')
+            .then(res => {
+                if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
+                    setClearanceData(res.data);
+                }
+            })
+            .catch(() => {});
+        return () => { isMounted = false; };
+    }, []);
     const navigate = useNavigate();
 
     const handleDownloadHallTicket = () => {
@@ -279,8 +293,8 @@ const NoDueRequest = () => {
                     <h3 style={{ fontSize: '1.05rem', fontWeight: '500', color: '#212529', marginBottom: '12px' }}>
                         Subjects
                     </h3>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8125rem', border: '1px solid #dee2e6' }}>
+                    <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.8125rem', border: '1px solid #dee2e6' }}>
                             <thead>
                                 <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid #dee2e6', color: '#495057' }}>
                                     <th rowSpan="2" style={{ padding: '8px 6px', textAlign: 'center', borderRight: '1px solid #dee2e6', width: '40px' }}>S.No</th>
@@ -358,8 +372,8 @@ const NoDueRequest = () => {
                     <h3 style={{ fontSize: '1.05rem', fontWeight: '500', color: '#212529', marginBottom: '12px' }}>
                         Labs / Projects
                     </h3>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8125rem', border: '1px solid #dee2e6' }}>
+                    <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.8125rem', border: '1px solid #dee2e6' }}>
                             <thead>
                                 <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid #dee2e6', color: '#495057' }}>
                                     <th rowSpan="2" style={{ padding: '8px 6px', textAlign: 'center', borderRight: '1px solid #dee2e6', width: '40px' }}>S.No</th>

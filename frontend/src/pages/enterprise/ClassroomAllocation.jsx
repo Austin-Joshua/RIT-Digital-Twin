@@ -77,8 +77,19 @@ export default function ClassroomAllocation() {
   if (loading) return <div style={{ padding: 20 }}>Loading classrooms...</div>;
 
   return (
-    <div style={{ padding: 20, color: "var(--theme-text)" }}>
-      <h2 style={{ fontSize: 24, marginBottom: 12 }}>Classroom Allocation</h2>
+    <div className="ims-page-container">
+      {/* Header Banner */}
+      <div className="ims-header-banner">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div className="ims-header-icon-box">
+            <span style={{ fontSize: '20px' }}>🏫</span>
+          </div>
+          <div>
+            <h1 className="ims-header-title">Classroom Allocation & Scheduling</h1>
+            <p className="ims-header-subtitle">Real-time room occupancy verification, venue booking, and capacity coordination</p>
+          </div>
+        </div>
+      </div>
       {error ? <div style={{ color: "var(--color-danger)", marginBottom: 8 }}>{error}</div> : null}
       {message ? <div style={{ color: "var(--color-success)", marginBottom: 8 }}>{message}</div> : null}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
@@ -110,8 +121,10 @@ export default function ClassroomAllocation() {
           <input type="time" required value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
           <input type="text" placeholder="Course code" value={form.courseCode} onChange={(e) => setForm({ ...form, courseCode: e.target.value })} />
           <textarea placeholder="Purpose" required value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} />
-          <button type="button" onClick={checkAvailability} disabled={!canCheck}>Check Availability</button>
-          <button type="submit" disabled={!canCheck}>Book Now</button>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+            <button type="button" onClick={checkAvailability} disabled={!canCheck} className="ims-candy-btn ims-candy-neutral ims-candy-sm flex-1">Check Availability</button>
+            <button type="submit" disabled={!canCheck} className="ims-candy-btn ims-candy-primary ims-candy-sm flex-1">Book Now</button>
+          </div>
         </form>
       </div>
     </div>

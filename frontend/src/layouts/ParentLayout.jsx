@@ -11,6 +11,7 @@ import Sidebar from '../components/Sidebar';
 import NotificationBar from '../components/NotificationBar';
 import { ThemeContext } from '../hooks/ThemeContext';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import MobileBottomNav from '../components/common/MobileBottomNav';
 import './student-layout.css';
 
 const parentNav = [
@@ -177,6 +178,7 @@ const ParentLayout = () => {
                 
                 {/* AI Assistant Integration */}
                 <ChatbotWidget studentId={null} />
+                <MobileBottomNav />
             </div>
         </div>
     );

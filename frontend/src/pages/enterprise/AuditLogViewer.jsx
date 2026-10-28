@@ -25,13 +25,24 @@ const AuditLogViewer = () => {
     }, [page]);
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div>
-                <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>System Audit Logs</h1>
-                <p style={{ color: 'var(--text-secondary)' }}>AOP-driven immutable record of all institutional data mutations.</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <span style={{ fontSize: '20px' }}>📋</span>
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">System Audit Logs</h1>
+                        <p className="ims-header-subtitle">AOP-driven immutable record of all institutional database mutations</p>
+                    </div>
+                </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    Enterprise Audit Active
+                </span>
             </div>
 
-            <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
                 {loading ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: 'var(--theme-brand-strong)' }}>Loading secure logs...</div>
                 ) : (
@@ -82,7 +93,7 @@ const AuditLogViewer = () => {
                     </>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 };
 

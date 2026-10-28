@@ -217,52 +217,38 @@ const SubstitutionOverridePanel = () => {
     }, [mySubstitutions, historyFilter]);
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-6 max-w-7xl mx-auto flex flex-col gap-6"
-        >
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--theme-border)]">
-                <div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-600/10 text-blue-600 dark:text-blue-400 font-bold">
-                            <LuRefreshCw className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-black text-[var(--theme-text)] m-0">Faculty Class Substitutions</h1>
-                            <p className="text-sm text-[var(--theme-text-muted)] m-0">
-                                Authoritative clash prevention, workload balancing, and institutional approval workflow
-                            </p>
-                        </div>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuRefreshCw />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Faculty Class Substitutions</h1>
+                        <p className="ims-header-subtitle">
+                            Authoritative clash prevention, workload balancing, and institutional approval workflow
+                        </p>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex items-center gap-2 p-1 bg-[var(--theme-bg-muted)] border border-[var(--theme-border)] rounded-xl">
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                     <button
                         onClick={() => setActiveTab('request')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                            activeTab === 'request'
-                                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                                : 'text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]'
-                        }`}
+                        className={`ims-candy-btn ${activeTab === 'request' ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm flex items-center gap-2`}
                     >
-                        <LuUserPlus className="w-4 h-4" /> Request Substitution
+                        <LuUserPlus /> Request Substitution
                     </button>
 
                     {isHodOrAdmin && (
                         <button
                             onClick={() => setActiveTab('pending')}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 relative ${
-                                activeTab === 'pending'
-                                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                                    : 'text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]'
-                            }`}
+                            className={`ims-candy-btn ${activeTab === 'pending' ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm flex items-center gap-2 relative`}
                         >
-                            <LuShieldCheck className="w-4 h-4" /> Pending Approvals
+                            <LuShieldCheck /> Pending Approvals
                             {pendingRequests.length > 0 && (
-                                <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center">
+                                <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                                     {pendingRequests.length}
                                 </span>
                             )}
@@ -271,13 +257,9 @@ const SubstitutionOverridePanel = () => {
 
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                            activeTab === 'history'
-                                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                                : 'text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]'
-                        }`}
+                        className={`ims-candy-btn ${activeTab === 'history' ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm flex items-center gap-2`}
                     >
-                        <LuClock className="w-4 h-4" /> My Log & Audit History
+                        <LuClock /> My Log & Audit History
                     </button>
                 </div>
             </div>
@@ -373,9 +355,9 @@ const SubstitutionOverridePanel = () => {
                                 <button
                                     type="submit"
                                     disabled={submitting || !selectedSlotId || !selectedCandidateId}
-                                    className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                                    className="ims-candy-btn ims-candy-primary w-full py-3 flex items-center justify-center gap-2"
                                 >
-                                    <LuSend className="w-4 h-4" />
+                                    <LuSend />
                                     {submitting ? 'Submitting Request...' : isHodOrAdmin ? 'Authorize & Assign Substitute' : 'Submit Substitution Request'}
                                 </button>
                             </form>
@@ -758,7 +740,7 @@ const SubstitutionOverridePanel = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </div>
     );
 };
 

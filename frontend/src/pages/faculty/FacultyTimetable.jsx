@@ -48,26 +48,26 @@ const FacultyTimetable = () => {
     }
 
     return (
-        <div style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2 style={{ margin: 0, color: 'var(--theme-text)' }}>My Timetable</h2>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <span style={{ fontSize: '20px' }}>📅</span>
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Faculty Timetable</h1>
+                        <p className="ims-header-subtitle">Weekly allocated lecture periods, laboratory slots, and assigned classroom venues</p>
+                    </div>
+                </div>
                 <a
                     href="/faculty/substitutions"
-                    style={{
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        background: 'var(--color-primary-navy)',
-                        color: '#fff',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                        boxShadow: '0 2px 6px rgba(11, 44, 107, 0.2)'
-                    }}
+                    className="ims-candy-btn ims-candy-primary ims-candy-sm"
                 >
                     Class Substitutions & Log
                 </a>
             </div>
-            <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--theme-border)' }}>
+            <div className="ims-card-elevated" style={{ overflowX: 'auto', padding: 0 }}>
                 <table style={{ width: '100%', minWidth: '760px', borderCollapse: 'collapse', textAlign: 'center', background: 'var(--card-bg)' }}>
                     <thead style={{ background: 'var(--color-primary-navy)', color: '#fff' }}>
                         <tr>

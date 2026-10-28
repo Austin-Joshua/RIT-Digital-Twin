@@ -108,26 +108,24 @@ const FacultyAttendance = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 p-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--theme-text)' }}>
-                        <FaUserClock style={{ color: 'var(--color-accent-gold)' }} /> Attendance Management
-                    </h1>
-                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Record daily attendance and monitor student risk levels</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaUserClock />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Attendance Management</h1>
+                        <p className="ims-header-subtitle">Record daily attendance, evaluate session rolls, and track students below 75% risk threshold</p>
+                    </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2.5 items-center">
                     <select
                         value={selectedCourse}
                         onChange={(e) => setSelectedCourse(e.target.value)}
-                        className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
-                        style={{
-                            background: 'var(--card-bg)',
-                            color: 'var(--theme-text)',
-                            borderColor: 'var(--theme-border)',
-                            '--tw-ring-color': 'var(--color-accent-gold)'
-                        }}
+                        className="ims-pill-select"
                     >
                         {assignments.length > 0 ? assignments.map(a => (
                             <option key={a.facultySubjectId} value={`${a.subjectCode} - ${a.subjectName}`}>
@@ -140,18 +138,13 @@ const FacultyAttendance = () => {
                             </>
                         )}
                     </select>
-                    <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition-colors">
+                    <button className="ims-candy-btn ims-candy-neutral ims-candy-sm flex items-center gap-2">
                         <FaDownload /> Export CSV
                     </button>
                     {!markingMode ? (
                         <button
                             onClick={() => setMarkingMode(true)}
-                            className="bg-primary-navy text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md hover:scale-105 active:scale-95"
-                            style={{
-                                backgroundcolor: 'var(--theme-brand-strong)',
-                                color: '#ffffff',
-                                border: '1px solid rgba(255,255,255,0.1)'
-                            }}
+                            className="ims-candy-btn ims-candy-primary ims-candy-sm flex items-center gap-2"
                         >
                             <FaUserClock /> Mark Attendance
                         </button>
@@ -159,12 +152,7 @@ const FacultyAttendance = () => {
                         <button
                             onClick={handleSave}
                             disabled={loading}
-                            className="bg-success text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-all shadow-md animate-pulse hover:scale-105 active:scale-95"
-                            style={{
-                                backgroundColor: 'var(--color-success)',
-                                color: '#ffffff',
-                                boxShadow: '0 0 15px rgba(22, 163, 74, 0.4)'
-                            }}
+                            className="ims-candy-btn ims-candy-success ims-candy-sm flex items-center gap-2"
                         >
                             <FaSave /> Save Register
                         </button>

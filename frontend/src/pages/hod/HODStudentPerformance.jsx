@@ -23,32 +23,32 @@ const HODStudentPerformance = () => {
   if (!data) return null;
 
   return (
-    <div style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
-      <button
-        type="button"
-        onClick={() => navigate('/hod')}
-        style={{
-          marginBottom: '16px',
-          padding: '8px 16px',
-          background: 'var(--theme-bg-muted)',
-          border: '1px solid var(--theme-border)',
-          borderRadius: '8px',
-          color: 'var(--theme-text)',
-          cursor: 'pointer',
-        }}
-      >
-        ← Back to Dashboard
-      </button>
-      <h1 className="page-header" style={{ fontSize: 'var(--font-size-h1)', color: 'var(--theme-text)' }}>
-        Student Performance
-      </h1>
-      <p style={{ color: 'var(--theme-text-muted)', marginBottom: '24px' }}>
-        {data.studentIdNumber} — Year {data.year}, Section {data.section}
-      </p>
+    <div className="ims-page-container">
+      {/* Header Banner */}
+      <div className="ims-header-banner">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div className="ims-header-icon-box">
+            <span style={{ fontSize: '20px' }}>🎓</span>
+          </div>
+          <div>
+            <h1 className="ims-header-title">Student Performance Evaluation</h1>
+            <p className="ims-header-subtitle">
+              Comprehensive academic transcript and attendance metrics for <strong style={{ color: 'var(--theme-text)' }}>{data.studentIdNumber}</strong> (Year {data.year}, Section {data.section})
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/hod')}
+          className="ims-candy-btn ims-candy-neutral ims-candy-sm"
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
 
       <section style={{ marginBottom: '24px' }}>
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px' }}>Marks</h2>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
@@ -83,7 +83,7 @@ const HODStudentPerformance = () => {
 
       <section>
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px' }}>Attendance</h2>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>

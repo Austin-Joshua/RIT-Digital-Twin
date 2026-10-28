@@ -83,21 +83,21 @@ const AdminDashboard = () => {
                 <form onSubmit={triggerBroadcast} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr auto', gap: '12px', alignItems: 'end' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <label style={{ fontSize: '0.8rem', fontWeight: '600' }}>Alert Title</label>
-                        <input name="title" placeholder="e.g. RESULTS OUT" required style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)' }} />
+                        <input name="title" placeholder="e.g. RESULTS OUT" required className="ims-candy-search" style={{ padding: '8px 16px', fontSize: '13px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <label style={{ fontSize: '0.8rem', fontWeight: '600' }}>Global Message</label>
-                        <input name="message" placeholder="Enter the institutional-wide message..." required style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)' }} />
+                        <input name="message" placeholder="Enter the institutional-wide message..." required className="ims-candy-search" style={{ padding: '8px 16px', fontSize: '13px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <label style={{ fontSize: '0.8rem', fontWeight: '600' }}>Priority</label>
-                        <select name="priority" style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg)' }}>
+                        <select name="priority" className="ims-candy-search" style={{ padding: '8px 16px', fontSize: '13px' }}>
                             <option value="info">Info (Navy)</option>
                             <option value="warning">Warning (Gold)</option>
                             <option value="urgent">Urgent (Red)</option>
                         </select>
                     </div>
-                    <button type="submit" className="ims-btn primary" style={{ height: '38px', padding: '0 20px', fontSize: '0.85rem' }}>Send Broadcast</button>
+                    <button type="submit" className="ims-candy-btn ims-candy-primary" style={{ height: '38px', padding: '0 24px', fontSize: '0.85rem' }}>Send Broadcast</button>
                 </form>
             </div>
 
@@ -159,7 +159,7 @@ const AdminDashboard = () => {
                          </div>
                     </div>
                     <div className="info-footer">
-                        <button className="table-btn" style={{ width: '100%', background: 'var(--color-primary-navy)', color: 'white', borderRadius: '8px', padding: '10px' }} onClick={() => navigate('/management/audit')}>Access Full Governance Logs</button>
+                        <button className="ims-candy-btn ims-candy-primary" style={{ width: '100%', padding: '10px 24px' }} onClick={() => navigate('/management/audit')}>Access Full Governance Logs</button>
                     </div>
                 </div>
                 

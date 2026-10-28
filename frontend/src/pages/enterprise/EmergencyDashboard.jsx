@@ -95,7 +95,7 @@ const EmergencyDashboard = () => {
                                 <h2 className="text-5xl font-black mt-2">{simulationResult.estimatedEvacuationTimeMinutes.toFixed(1)}m</h2>
                                 <p className="text-xs mt-3 text-red-300 italic">&quot;Congestion likely at Block B main stairs&quot;</p>
                             </div>
-                            <button onClick={() => setSimulationResult(null)} className="w-full py-3 bg-white/10 hover:bg-white/20 transition-colors rounded-xl font-bold">
+                            <button onClick={() => setSimulationResult(null)} className="ims-candy-btn ims-candy-outline w-full py-3 font-bold">
                                 Clear Simulation
                             </button>
                         </motion.div>

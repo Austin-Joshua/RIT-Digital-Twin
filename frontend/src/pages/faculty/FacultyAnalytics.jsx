@@ -12,13 +12,21 @@ const FacultyAnalytics = () => {
     ];
 
     return (
-        <div style={{ padding: '24px' }}>
-            <div style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: 0, color: 'var(--theme-text)' }}>Predictive Risk Analytics</h2>
-                <div className="breadcrumb-bar" style={{ marginTop: '8px' }}>
-                    <span className="breadcrumb-item" style={{ color: 'var(--theme-text-muted)' }}>Faculty</span>
-                    <span className="breadcrumb-item active" style={{ marginLeft: '8px', color: 'var(--theme-text)' }}>/ Analytics</span>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaBrain />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Predictive Risk Analytics</h1>
+                        <p className="ims-header-subtitle">AI-assisted dropout prediction, semester performance forecasting & risk demographics</p>
+                    </div>
                 </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    Ensemble AI Active
+                </span>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>

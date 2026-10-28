@@ -1,3 +1,4 @@
+import { LuBookOpen } from 'react-icons/lu';
 import React, { useState, useEffect } from 'react';
 import { FaBookOpen, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -63,15 +64,31 @@ const SubjectRegistration = () => {
 
     const isRegistered = (subId) => registrations.some(r => r.subject?.id === subId);
 
-    return (
-        <div className="stu-page" style={{ padding: '24px' }}>
-            <div className="stu-page-header" style={{ marginBottom: '24px' }}>
-                <h2>Elective Subject Registration Portal</h2>
-                <p>Register for open electives. Real-time capacity enforced.</p>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuBookOpen />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">My Subject Registration</h1>
+                        <p className="ims-header-subtitle">Open elective course registration with real-time seat capacity enforcement</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Regulation 2021 Autonomous
+                    </span>
+                    <span className="ims-candy-badge" style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' }}>
+                        Enrolled: {registrations.length} Electives
+                    </span>
+                </div>
             </div>
 
             {message && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '16px', background: message.type === 'success' ? '#DEF7EC' : '#FDE8E8', color: message.type === 'success' ? '#03543F' : '#9B1C1C', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '14px 20px', background: message.type === 'success' ? '#dcfce7' : '#fee2e2', color: message.type === 'success' ? '#166534' : '#991b1b', borderRadius: '12px', border: `1px solid ${message.type === 'success' ? '#bbf7d0' : '#fecaca'}`, display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 600, fontSize: '0.875rem' }}>
                     {message.type === 'success' ? <FaCheckCircle /> : <FaTimesCircle />} {message.text}
                 </motion.div>
             )}
@@ -83,26 +100,26 @@ const SubjectRegistration = () => {
                     const percentFull = (subject.enrolled / subject.capacity) * 100;
 
                     return (
-                        <motion.div key={subject.id} whileHover={{ y: -4 }} style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
+                        <div key={subject.id} className="ims-card-elevated" style={{ display: 'flex', flexDirection: 'column' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                                 <div>
-                                    <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{subject.name}</h3>
-                                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>{subject.code}</div>
+                                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>{subject.name}</h3>
+                                    <div style={{ color: '#0B2C6B', fontWeight: '600', fontSize: '0.85rem', marginTop: '4px' }}>{subject.code}</div>
                                 </div>
-                                <FaBookOpen style={{ color: 'var(--theme-brand-strong)', fontSize: '1.5rem', opacity: 0.2 }} />
+                                <FaBookOpen style={{ color: '#0B2C6B', fontSize: '1.5rem', opacity: 0.2 }} />
                             </div>
 
                             <div style={{ marginBottom: '20px', flex: 1 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>
-                                    <span>Capacity</span>
-                                    <span style={{ fontWeight: 'bold', color: isFull ? '#EF4444' : 'var(--text-primary)' }}>{subject.enrolled} / {subject.capacity}</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px', color: '#64748b' }}>
+                                    <span style={{ fontWeight: '600' }}>Enrollment Capacity</span>
+                                    <span style={{ fontWeight: 'bold', color: isFull ? '#dc2626' : '#1e293b' }}>{subject.enrolled} / {subject.capacity}</span>
                                 </div>
-                                <div style={{ height: '8px', background: 'var(--bg-light)', borderRadius: '4px', overflow: 'hidden' }}>
+                                <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '9999px', overflow: 'hidden' }}>
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${percentFull}%` }}
                                         transition={{ duration: 1, ease: 'easeOut' }}
-                                        style={{ height: '100%', background: isFull ? '#EF4444' : percentFull > 80 ? '#F59E0B' : '#10B981' }}
+                                        style={{ height: '100%', background: isFull ? '#dc2626' : percentFull > 80 ? '#f59e0b' : '#16a34a', borderRadius: '9999px' }}
                                     />
                                 </div>
                             </div>
@@ -110,15 +127,12 @@ const SubjectRegistration = () => {
                             <button
                                 disabled={isFull || registered || loading}
                                 onClick={() => handleRegister(subject.id)}
-                                style={{
-                                    padding: '12px', width: '100%', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: (isFull || registered) ? 'not-allowed' : 'pointer',
-                                    background: registered ? '#DEF7EC' : isFull ? '#F1F5F9' : 'var(--color-primary-navy)',
-                                    color: registered ? '#03543F' : isFull ? '#94A3B8' : 'white'
-                                }}
+                                className={`ims-candy-btn ${registered ? 'ims-candy-success' : isFull ? 'ims-candy-neutral' : 'ims-candy-primary'}`}
+                                style={{ width: '100%' }}
                             >
                                 {registered ? 'Registered ✓' : isFull ? 'Capacity Full' : 'Register Now'}
                             </button>
-                        </motion.div>
+                        </div>
                     );
                 })}
             </div>

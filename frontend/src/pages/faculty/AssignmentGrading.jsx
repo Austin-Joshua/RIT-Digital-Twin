@@ -59,17 +59,24 @@ const AssignmentGrading = () => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 p-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--color-accent-gold)' }}>
-                        <FaFileAlt /> Assignment Assessment Portal
-                    </h1>
-                    <p className="mt-1" style={{ color: 'var(--theme-text-muted)' }}>Review student submissions, provide feedback, and assign grades</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaFileAlt />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Assignment Assessment Portal</h1>
+                        <p className="ims-header-subtitle">Review student digital submissions, download reports, provide evaluations, and log scores</p>
+                    </div>
                 </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    {assignments.length} Submissions
+                </span>
             </div>
 
-            <div className="rounded-xl shadow-sm border overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
+            <div className="ims-card-elevated" style={{ padding: 0 }} style={{ background: 'var(--card-bg)', borderColor: 'var(--theme-border)' }}>
                 <div className="p-4 border-b" style={{ background: 'var(--theme-bg-muted)', borderColor: 'var(--theme-border)' }}>
                     <h3 className="font-bold" style={{ color: 'var(--theme-text)' }}>Department Course Submissions</h3>
                 </div>
@@ -143,8 +150,7 @@ const AssignmentGrading = () => {
                                                     <button
                                                         onClick={() => handleGrade(item.id)}
                                                         disabled={submittingId === item.id}
-                                                        className="font-bold px-4 py-1.5 rounded-lg hover:scale-105 transition-all text-sm disabled:opacity-50"
-                                                        style={{ background: 'var(--color-primary-navy)', color: 'white' }}
+                                                        className="ims-candy-btn ims-candy-primary ims-candy-sm"
                                                     >
                                                         {submittingId === item.id ? 'Saving...' : 'Submit'}
                                                     </button>

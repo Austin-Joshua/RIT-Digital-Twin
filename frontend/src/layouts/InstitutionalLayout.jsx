@@ -7,6 +7,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/layout/Header';
 import SystemBroadcastBar from '../components/layout/SystemBroadcastBar';
 import ChatbotWidget from '../features/ai/components/ChatbotWidget';
+import MobileBottomNav from '../components/common/MobileBottomNav';
 import {
     LuLayoutDashboard, LuTrendingUp, LuBriefcase,
     LuFileCode, LuCalendar, LuBook, LuRefreshCcw, LuAward,
@@ -185,6 +186,7 @@ const InstitutionalLayout = () => {
 
                 {/* AI Assistant Integration */}
                 <ChatbotWidget />
+                <MobileBottomNav />
             </div>
         </div>
     );

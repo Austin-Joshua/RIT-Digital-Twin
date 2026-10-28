@@ -103,8 +103,8 @@ const AppointmentModal = ({ student, onClose }) => {
                         </div>
 
                         <div className="pt-4 border-t border-gray-100 dark:border-navy-700 flex justify-end gap-3">
-                            <button type="button" onClick={onClose} className="px-4 py-2 font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Cancel</button>
-                            <button type="submit" className="px-4 py-2 font-bold bg-navy-900 text-white dark:bg-gold-500 dark:text-navy-900 rounded-lg hover:shadow-lg transition-all flex items-center gap-2">
+                            <button type="button" onClick={onClose} className="ims-candy-btn ims-candy-neutral ims-candy-sm">Cancel</button>
+                            <button type="submit" className="ims-candy-btn ims-candy-primary ims-candy-sm flex items-center gap-2">
                                 <FaClock /> Request Appointment
                             </button>
                         </div>
@@ -173,7 +173,8 @@ const PaymentModal = ({ pendingAmount, onClose, onSuccess }) => {
 
                                 <button
                                     onClick={handlePayment}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all hover:shadow-lg flex items-center justify-center gap-2"
+                                    className="ims-candy-btn ims-candy-primary"
+                                    style={{ width: '100%', padding: '12px' }}
                                 >
                                     Pay ₹{pendingAmount.toLocaleString()} Now
                                 </button>
@@ -313,14 +314,33 @@ const ParentDashboard = () => {
     }
 
     return (
-        <div className="stu-dashboard">
+        <div className="ims-page-container">
             {selectedDetail && <DetailModal detail={selectedDetail} onClose={() => setSelectedDetail(null)} />}
 
-            <div className="stu-welcome" style={{ marginBottom: 20 }}>
-                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Parent Guardian Portal</h2>
-                <p style={{ marginTop: 6, color: 'var(--theme-text-muted)', fontSize: '13px' }}>
-                    Linked Ward: <strong>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber || primary.user?.username})
-                </p>
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaChild />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Parent Guardian Portal</h1>
+                        <p className="ims-header-subtitle">
+                            Academic overview, real-time metrics & communication hub for ward: <strong style={{ color: 'var(--theme-text)' }}>{primary.user?.firstName} {primary.user?.lastName}</strong> ({primary.studentIdNumber || primary.user?.username})
+                        </p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                        AY {academicYearLabel()}
+                    </span>
+                    <button
+                        onClick={() => navigate('/parent/profile')}
+                        className="ims-candy-btn ims-candy-neutral ims-candy-sm"
+                    >
+                        Ward Profile
+                    </button>
+                </div>
             </div>
 
             {/* Unified KPI Row (3x2 in Tablet, 4+2 in Desktop) */}
@@ -357,7 +377,7 @@ const ParentDashboard = () => {
 
             {/* Academic + Communication Row */}
             <div className="stu-info-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px' }}>
-                <div className="stu-info-card">
+                <div className="ims-card-elevated">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <FaMagic color="var(--color-accent-gold)" />
                         Academic Snapshot – CAT & Assignments
@@ -393,7 +413,7 @@ const ParentDashboard = () => {
                     </div>
                 </div>
 
-                <div className="stu-info-card">
+                <div className="ims-card-elevated">
                     <div className="info-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <FaHandshake color="var(--theme-brand-strong)" />
                         Pastoral Communication (Notes to Advisor)
@@ -426,8 +446,7 @@ const ParentDashboard = () => {
                             </span>
                             <button 
                                 onClick={handleSaveNote}
-                                className="table-btn"
-                                style={{ background: 'var(--color-primary-navy)', color: 'white', padding: '10px 20px', borderRadius: '10px', fontWeight: '800' }}
+                                className="ims-candy-btn ims-candy-primary ims-candy-sm"
                             >
                                 Share with Advisor
                             </button>
@@ -438,7 +457,7 @@ const ParentDashboard = () => {
 
             {/* Semester highlights */}
             <div className="stu-info-row">
-                <div className="stu-info-card" style={{ borderTop: '4px solid var(--color-accent-gold)' }}>
+                <div className="ims-card-elevated" style={{ borderTop: '4px solid var(--color-accent-gold)' }}>
                      <div className="info-header flex items-center gap-2">
                         <FaStar style={{ color: 'var(--color-accent-gold)' }} /> Previous Semester Performance
                     </div>
@@ -462,7 +481,7 @@ const ParentDashboard = () => {
             </div>
 
             <div className="stu-info-row">
-                <div className="stu-info-card" style={{ borderTop: '4px solid #3b82f6' }}>
+                <div className="ims-card-elevated" style={{ borderTop: '4px solid #3b82f6' }}>
                     <div className="info-header">Ward Timetable Snapshot</div>
                     <div className="info-body" style={{ padding: '14px' }}>
                         {wardTimetable.length === 0 ? (

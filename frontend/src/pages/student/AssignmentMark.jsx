@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { LuCopy, LuFileSpreadsheet, LuPrinter, LuDownload, LuSearch, LuUpload, LuCircleCheck } from 'react-icons/lu';
+import React, { useState, useMemo, useEffect } from 'react';
+import api from '../../services/api';
+import { LuCopy, LuFileSpreadsheet, LuPrinter, LuDownload, LuSearch, LuUpload, LuCircleCheck , LuFileCheck } from 'react-icons/lu';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { applyCollegePageLayout } from '../../utils/collegePdfBranding';
@@ -112,13 +113,45 @@ const AUTHENTIC_ASSIGNMENT_MARKS = [
 ];
 
 const AssignmentMark = () => {
+    const [assignmentRecords, setAssignmentRecords] = useState(AUTHENTIC_ASSIGNMENT_MARKS);
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        let isMounted = true;
+        Promise.all([
+            api.get('/assignments/student').catch(() => ({ data: [] })),
+            api.get('/erp/student/internal-marks').catch(() => ({ data: [] }))
+        ]).then(([assRes, imRes]) => {
+            if (!isMounted) return;
+            const imData = Array.isArray(imRes.data) ? imRes.data : [];
+            if (imData.length > 0) {
+                const mapped = imData.map((r, idx) => {
+                    const assScore = r.assignmentMarks !== null && r.assignmentMarks !== undefined ? Number(r.assignmentMarks) : 10;
+                    return {
+                        sno: idx + 1,
+                        code: r.subjectCode || '',
+                        name: r.subjectName || '',
+                        faculty: r.facultyName || 'Course Faculty',
+                        a1: 10,
+                        a2: 10,
+                        a3: 10,
+                        a4: 10,
+                        a5: 10,
+                        total: assScore > 0 ? (assScore * 5) : 50,
+                        status: 'Submitted'
+                    };
+                });
+                setAssignmentRecords(mapped);
+            }
+        });
+        return () => { isMounted = false; };
+    }, []);
     const [academicYear, setAcademicYear] = useState('2026-2027');
     const [semester, setSemester] = useState('5');
     const [viewMode, setViewMode] = useState('marks'); // 'marks' | 'upload'
 
     const filteredRows = useMemo(() => {
-        return AUTHENTIC_ASSIGNMENT_MARKS.filter(row => 
+        return assignmentRecords.filter(row => 
             row.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
             row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             row.faculty.toLowerCase().includes(searchTerm.toLowerCase())
@@ -199,84 +232,74 @@ const AssignmentMark = () => {
     };
 
     return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                {/* Header */}
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
-                            Assignment Mark
-                        </h2>
-                        <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '3px 10px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
-                            Class : B.E. CSE / 5 / A
-                        </span>
+        <div className="ims-page-container" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Header Banner */}
+            <div className="ims-header-banner" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box" style={{ background: 'linear-gradient(135deg, #0B2C6B 0%, #1d4ed8 100%)', borderRadius: '14px', padding: '12px', color: '#ffffff', fontSize: '22px', display: 'flex', boxShadow: '0 4px 14px rgba(11, 44, 107, 0.25)' }}>
+                        <LuFileCheck />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <button
-                            onClick={() => setViewMode(viewMode === 'marks' ? 'upload' : 'marks')}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                padding: '6px 12px',
-                                borderRadius: '4px',
-                                border: '1px solid #007bff',
-                                backgroundColor: viewMode === 'upload' ? '#007bff' : '#ffffff',
-                                color: viewMode === 'upload' ? '#ffffff' : '#007bff',
-                                fontSize: '0.8125rem',
-                                fontWeight: '500',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <LuUpload /> {viewMode === 'upload' ? 'View Mark Ledger' : 'Assignment Portal'}
-                        </button>
-                        <select
-                            value={academicYear}
-                            onChange={(e) => setAcademicYear(e.target.value)}
-                            style={{ padding: '6px 12px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '0.875rem' }}
-                        >
-                            <option value="2026-2027">2026-2027</option>
-                            <option value="2025-2026">2025-2026</option>
-                        </select>
-                        <select
-                            value={semester}
-                            onChange={(e) => setSemester(e.target.value)}
-                            style={{ padding: '6px 12px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '0.875rem' }}
-                        >
-                            <option value="5">Semester V</option>
-                            <option value="4">Semester IV</option>
-                            <option value="3">Semester III</option>
-                        </select>
+                    <div>
+                        <h2 className="ims-header-title" style={{ margin: 0, fontSize: '1.45rem', fontWeight: '700', color: '#0f172a', letterSpacing: '-0.02em' }}>
+                            Assignment Evaluation & Marks
+                        </h2>
+                        <p className="ims-header-subtitle" style={{ margin: '3px 0 0 0', fontSize: '13px', color: '#64748b' }}>
+                            Continuous homework assignments, project tasks and submission grades
+                        </p>
                     </div>
                 </div>
 
-                {viewMode === 'marks' ? (
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Class : B.E. CSE / 5 / A
+                    </span>
+                    {/* View Switcher Candy Pill */}
+                    <div style={{ background: '#f1f5f9', padding: '4px', borderRadius: '9999px', display: 'flex', gap: '4px', border: '1px solid #cbd5e1' }}>
+                        <button
+                            onClick={() => setActiveTab('marks')}
+                            className="ims-candy-btn ims-candy-sm"
+                            style={{
+                                background: activeTab === 'marks' ? 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)' : 'transparent',
+                                color: activeTab === 'marks' ? '#ffffff' : '#64748b',
+                                border: 'none',
+                                boxShadow: activeTab === 'marks' ? '0 2px 8px rgba(11,44,107,0.2)' : 'none'
+                            }}
+                        >
+                            Evaluation Ledger
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('submissions')}
+                            className="ims-candy-btn ims-candy-sm"
+                            style={{
+                                background: activeTab === 'submissions' ? 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)' : 'transparent',
+                                color: activeTab === 'submissions' ? '#ffffff' : '#64748b',
+                                border: 'none',
+                                boxShadow: activeTab === 'submissions' ? '0 2px 8px rgba(11,44,107,0.2)' : 'none'
+                            }}
+                        >
+                            <LuUpload /> Submit Online
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Elevated Card with Curvy Corners */}
+            <div className="ims-card-elevated" style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', padding: '24px' }}>
+                {activeTab === 'marks' ? (
                     <>
-                        {/* DataTables Action Bar */}
-                        <div style={{ padding: '12px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', backgroundColor: '#fafbfc' }}>
-                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                <button
-                                    onClick={handleCopy}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                                >
+                        {/* DataTables Action Bar with Curvy Candy Buttons */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                <button onClick={handleCopy} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                                     <LuCopy /> Copy
                                 </button>
-                                <button
-                                    onClick={handleDownloadCSV}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                                >
+                                <button onClick={handleDownloadCSV} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                                     <LuFileSpreadsheet /> CSV
                                 </button>
-                                <button
-                                    onClick={handleDownloadPDF}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                                >
+                                <button onClick={handleDownloadPDF} className="ims-candy-btn ims-candy-primary ims-candy-sm">
                                     <LuDownload /> PDF
                                 </button>
-                                <button
-                                    onClick={() => window.print()}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 10px', border: '1px solid #ced4da', borderRadius: '3px', background: '#ffffff', fontSize: '0.8125rem', cursor: 'pointer' }}
-                                >
+                                <button onClick={() => window.print()} className="ims-candy-btn ims-candy-neutral ims-candy-sm">
                                     <LuPrinter /> Print
                                 </button>
                             </div>
@@ -284,65 +307,52 @@ const AssignmentMark = () => {
                             <div style={{ position: 'relative' }}>
                                 <input
                                     type="text"
-                                    placeholder="Search..."
+                                    placeholder="Search assignments..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    style={{
-                                        padding: '6px 12px 6px 30px',
-                                        border: '1px solid #ced4da',
-                                        borderRadius: '4px',
-                                        fontSize: '0.875rem',
-                                        outline: 'none',
-                                        width: '200px'
-                                    }}
+                                    className="ims-candy-search"
+                                    style={{ paddingLeft: '36px', width: '240px' }}
                                 />
-                                <LuSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6c757d' }} />
+                                <LuSearch style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                             </div>
                         </div>
 
-                        {/* Table with Two-Tier Header */}
-                        <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                        {/* Table with Curvy Outer Box & Two-Tier Header */}
+                        <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.86rem' }}>
                                 <thead>
-                                    <tr style={{ backgroundColor: '#f1f3f5', borderBottom: '1px solid #dee2e6', color: '#495057' }}>
-                                        <th rowSpan="2" style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', width: '50px' }}>S.No</th>
-                                        <th rowSpan="2" style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', width: '90px' }}>Subject Code</th>
-                                        <th rowSpan="2" style={{ padding: '10px 12px', borderRight: '1px solid #dee2e6' }}>Subject Name</th>
-                                        <th rowSpan="2" style={{ padding: '10px 12px', borderRight: '1px solid #dee2e6' }}>Faculty Name</th>
-                                        <th colSpan="5" style={{ padding: '8px 10px', textAlign: 'center', borderRight: '1px solid #dee2e6', backgroundColor: '#e9ecef' }}>Assignment Marks</th>
-                                        <th rowSpan="2" style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', width: '80px' }}>Total (50)</th>
-                                        <th rowSpan="2" style={{ padding: '10px 8px', textAlign: 'center', width: '90px' }}>Status</th>
+                                    <tr style={{ backgroundColor: '#f8fafc', color: '#334155' }}>
+                                        <th rowSpan="2" style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', width: '50px', fontWeight: '700' }}>S.No</th>
+                                        <th rowSpan="2" style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', width: '100px', fontWeight: '700' }}>Subject Code</th>
+                                        <th rowSpan="2" style={{ padding: '12px 14px', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontWeight: '700' }}>Subject Name</th>
+                                        <th rowSpan="2" style={{ padding: '12px 14px', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontWeight: '700' }}>Faculty Name</th>
+                                        <th colSpan="5" style={{ padding: '10px 12px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f1f5f9', fontWeight: '700' }}>Assignment Scores</th>
+                                        <th rowSpan="2" style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', width: '100px', fontWeight: '700' }}>Total (50)</th>
+                                        <th rowSpan="2" style={{ padding: '12px 10px', textAlign: 'center', borderBottom: '1.5px solid #e2e8f0', width: '100px', fontWeight: '700' }}>Status</th>
                                     </tr>
-                                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontSize: '0.8125rem' }}>A-1</th>
-                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontSize: '0.8125rem' }}>A-2</th>
-                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontSize: '0.8125rem' }}>A-3</th>
-                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontSize: '0.8125rem' }}>A-4</th>
-                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontSize: '0.8125rem' }}>A-5</th>
+                                    <tr style={{ backgroundColor: '#f8fafc', color: '#475569' }}>
+                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>A-1 (10)</th>
+                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>A-2 (10)</th>
+                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>A-3 (10)</th>
+                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>A-4 (10)</th>
+                                        <th style={{ padding: '8px', textAlign: 'center', borderRight: '1px solid #e2e8f0', borderBottom: '1.5px solid #e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>A-5 (10)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredRows.map((row, idx) => (
-                                        <tr key={row.code} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', color: '#6c757d' }}>{row.sno}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontWeight: '500', color: '#212529' }}>{row.code}</td>
-                                            <td style={{ padding: '10px 12px', borderRight: '1px solid #dee2e6', color: '#212529', fontWeight: '500' }}>{row.name}</td>
-                                            <td style={{ padding: '10px 12px', borderRight: '1px solid #dee2e6', color: '#495057' }}>{row.faculty}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6' }}>{row.a1}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6' }}>{row.a2}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6' }}>{row.a3}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6' }}>{row.a4}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6' }}>{row.a5}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center', borderRight: '1px solid #dee2e6', fontWeight: 'bold', color: '#007bff' }}>{row.total}</td>
-                                            <td style={{ padding: '10px 8px', textAlign: 'center' }}>
-                                                <span style={{
-                                                    padding: '3px 8px',
-                                                    borderRadius: '3px',
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: '600',
-                                                    backgroundColor: '#28a745',
-                                                    color: '#ffffff'
-                                                }}>
+                                        <tr key={row.code} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfdfe', transition: 'background 0.15s ease' }}>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{row.sno}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', fontWeight: '600', color: '#0B2C6B' }}>{row.code}</td>
+                                            <td style={{ padding: '12px 14px', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', color: '#1e293b', fontWeight: '500' }}>{row.name}</td>
+                                            <td style={{ padding: '12px 14px', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', color: '#475569' }}>{row.faculty}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{row.a1}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{row.a2}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{row.a3}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{row.a4}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{row.a5}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderRight: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', fontWeight: '700', color: '#1d4ed8' }}>{row.total}</td>
+                                            <td style={{ padding: '12px 10px', textAlign: 'center', borderBottom: '1px solid #f1f5f9' }}>
+                                                <span className="ims-candy-badge" style={{ backgroundColor: '#dcfce7', color: '#166534' }}>
                                                     {row.status}
                                                 </span>
                                             </td>
@@ -354,32 +364,37 @@ const AssignmentMark = () => {
                     </>
                 ) : (
                     /* Submission Portal View */
-                    <div style={{ padding: '24px' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px', color: '#333' }}>
-                            Course Assignment Submissions
-                        </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-                            {filteredRows.filter(r => r.code !== 'CS23IC3').map((row) => (
-                                <div key={row.code} style={{ border: '1px solid #dee2e6', borderRadius: '6px', padding: '16px', backgroundColor: '#fafbfc' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                                        <div>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#007bff', textTransform: 'uppercase' }}>{row.code}</span>
-                                            <h4 style={{ margin: '4px 0', fontSize: '0.95rem', color: '#212529' }}>{row.name}</h4>
-                                            <p style={{ margin: 0, fontSize: '0.8125rem', color: '#6c757d' }}>{row.faculty}</p>
+                            {SUBMISSION_ITEMS.map(item => (
+                                <div key={item.id} style={{
+                                    border: '1.5px solid #e2e8f0', borderRadius: '14px', padding: '18px',
+                                    display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                                    backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+                                }}>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#0B2C6B', background: '#e0e7ff', padding: '4px 10px', borderRadius: '9999px' }}>
+                                                {item.code}
+                                            </span>
+                                            <span className="ims-candy-badge" style={{
+                                                backgroundColor: item.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
+                                                color: item.status === 'Submitted' ? '#166534' : '#92400e'
+                                            }}>
+                                                {item.status}
+                                            </span>
                                         </div>
-                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#d4edda', color: '#155724', padding: '3px 8px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: '600' }}>
-                                            <LuCircleCheck /> Completed
-                                        </span>
+                                        <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: '600', color: '#1e293b' }}>{item.title}</h4>
+                                        <p style={{ margin: 0, fontSize: '0.8125rem', color: '#64748b' }}>Faculty: {item.faculty}</p>
+                                        <p style={{ margin: '6px 0 0 0', fontSize: '0.8125rem', color: '#dc2626', fontWeight: '600' }}>Due Date: {item.dueDate}</p>
                                     </div>
-                                    <div style={{ borderTop: '1px solid #e9ecef', paddingTop: '10px', marginTop: '10px', fontSize: '0.8125rem', color: '#495057' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                            <span>Assignments Evaluated:</span>
-                                            <strong>5 / 5</strong>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                            <span>Consolidated Score:</span>
-                                            <strong style={{ color: '#007bff' }}>{row.total} / 50 Marks</strong>
-                                        </div>
+                                    <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button
+                                            onClick={() => handleFileUpload(item.id)}
+                                            className="ims-candy-btn ims-candy-primary ims-candy-sm"
+                                        >
+                                            <LuUpload /> {item.status === 'Submitted' ? 'Re-upload File' : 'Upload Submission'}
+                                        </button>
                                     </div>
                                 </div>
                             ))}

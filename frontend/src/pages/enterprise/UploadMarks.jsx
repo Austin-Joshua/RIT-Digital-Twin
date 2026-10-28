@@ -134,15 +134,21 @@ const UploadMarks = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '24px', maxWidth: '1100px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                    <h1 style={{ fontSize: '26px', color: 'var(--theme-text)', fontWeight: '800', marginBottom: '8px' }}>Batch Marks Processing</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', fontSize: '15px' }}>Upload spreadsheet records to securely auto-sync marks directly into the core academic database.</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <FaCloudUploadAlt />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Batch Marks Processing</h1>
+                        <p className="ims-header-subtitle">Upload spreadsheet records to securely auto-sync marks directly into the core academic database</p>
+                    </div>
                 </div>
                 <button
                     onClick={downloadTemplate}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', background: 'var(--theme-bg-muted)', color: 'var(--theme-brand-strong)', border: '1px solid var(--theme-border)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}
+                    className="ims-candy-btn ims-candy-neutral ims-candy-sm"
                 >
                     <FaDownload /> Download Template
                 </button>
@@ -201,20 +207,22 @@ const UploadMarks = () => {
                     </div>
 
                     {file && (
-                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+                        <div style={{ marginTop: '24px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <button
                                 onClick={handleUpload}
                                 disabled={uploading}
-                                style={{ flex: 1, padding: '14px', borderRadius: '8px', background: 'var(--color-primary-navy)', color: 'white', fontWeight: '800', border: 'none', cursor: uploading ? 'not-allowed' : 'pointer', transition: '0.2s' }}
+                                className="ims-candy-btn ims-candy-primary"
+                                style={{ flex: 1, padding: '12px 24px' }}
                             >
                                 {uploading ? 'Processing Dataset...' : 'Sync to Academic DB'}
                             </button>
                             <button
                                 onClick={clearFile}
                                 disabled={uploading}
-                                style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                className="ims-candy-btn ims-candy-danger ims-candy-sm"
+                                title="Clear File"
                             >
-                                <FaTrash />
+                                <FaTrash /> Clear
                             </button>
                         </div>
                     )}
@@ -266,7 +274,7 @@ const UploadMarks = () => {
                     </motion.div>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 };
 

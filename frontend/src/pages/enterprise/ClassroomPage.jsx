@@ -116,7 +116,7 @@ const ClassroomPage = () => {
                             </div>
                             <button
                                 type="submit"
-                                className="btn-primary"
+                                className="ims-candy-btn ims-candy-primary"
                                 disabled={loading}
                                 style={{ width: '100%', marginTop: '10px' }}
                             >

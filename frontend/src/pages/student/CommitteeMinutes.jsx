@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LuEye, LuArrowLeft, LuCopy, LuFileSpreadsheet, LuPrinter, LuDownload, LuSearch, LuX } from 'react-icons/lu';
+import { LuFileText, LuEye, LuArrowLeft, LuCopy, LuFileSpreadsheet, LuPrinter, LuDownload, LuSearch, LuX } from 'react-icons/lu';
 
 const COMMITTEE_MINUTES_DATA = [
     {
@@ -54,132 +54,92 @@ const CommitteeMinutes = () => {
         m.date.includes(searchTerm)
     );
 
-    if (selectedMom) {
+        if (selectedMom) {
         return (
-            <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', padding: '24px' }}>
-                    {/* Header with Back button */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #dee2e6', paddingBottom: '16px', marginBottom: '24px' }}>
-                        <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: '500', color: '#212529' }}>
-                            Summary Of Meeting
-                        </h2>
-                        <button
-                            onClick={() => setSelectedMom(null)}
-                            style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                backgroundColor: '#6c757d',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '6px 14px',
-                                fontSize: '0.875rem',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <LuArrowLeft /> Back to List
-                        </button>
-                    </div>
-
-                    {/* Members Present Section */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '28px' }}>
-                        {/* Faculties */}
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                <label style={{ fontSize: '0.95rem', fontWeight: '600', color: '#212529' }}>
-                                    Members Present (Faculties) <span style={{ color: '#dc3545' }}>*</span>
-                                </label>
-                                <div style={{ display: 'flex', gap: '6px' }}>
-                                    <button style={{ backgroundColor: '#17a2b8', color: '#ffffff', border: 'none', borderRadius: '3px', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Select all</button>
-                                    <button style={{ backgroundColor: '#17a2b8', color: '#ffffff', border: 'none', borderRadius: '3px', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Deselect all</button>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', border: '1px solid #ced4da', borderRadius: '4px', padding: '12px', minHeight: '90px', backgroundColor: '#fdfdfd' }}>
-                                {selectedMom.faculties.map((f, i) => (
-                                    <span key={i} style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        backgroundColor: '#007bff',
-                                        color: '#ffffff',
-                                        borderRadius: '3px',
-                                        padding: '4px 8px',
-                                        fontSize: '0.8125rem'
-                                    }}>
-                                        <LuX style={{ cursor: 'pointer' }} /> {f}
-                                    </span>
-                                ))}
-                            </div>
+            <div className="ims-page-container">
+                <div className="ims-header-banner">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div className="ims-header-icon-box">
+                            <LuFileText />
                         </div>
-
-                        {/* Students */}
                         <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                <label style={{ fontSize: '0.95rem', fontWeight: '600', color: '#212529' }}>
-                                    Members Present (Students) <span style={{ color: '#dc3545' }}>*</span>
-                                </label>
-                                <div style={{ display: 'flex', gap: '6px' }}>
-                                    <button style={{ backgroundColor: '#17a2b8', color: '#ffffff', border: 'none', borderRadius: '3px', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Select all</button>
-                                    <button style={{ backgroundColor: '#17a2b8', color: '#ffffff', border: 'none', borderRadius: '3px', padding: '3px 8px', fontSize: '0.75rem', cursor: 'pointer' }}>Deselect all</button>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', border: '1px solid #ced4da', borderRadius: '4px', padding: '12px', minHeight: '90px', backgroundColor: '#fdfdfd' }}>
-                                {selectedMom.students.map((s, i) => (
-                                    <span key={i} style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        backgroundColor: '#007bff',
-                                        color: '#ffffff',
-                                        borderRadius: '3px',
-                                        padding: '4px 8px',
-                                        fontSize: '0.8125rem'
-                                    }}>
-                                        <LuX style={{ cursor: 'pointer' }} /> {s}
-                                    </span>
-                                ))}
-                            </div>
+                            <h1 className="ims-header-title">Summary Of Meeting</h1>
+                            <p className="ims-header-subtitle">{selectedMom.course} | Sem {selectedMom.sem} - Sec {selectedMom.section} | Date: {selectedMom.date}</p>
                         </div>
                     </div>
+                    <button
+                        onClick={() => setSelectedMom(null)}
+                        className="ims-candy-btn ims-candy-neutral"
+                    >
+                        <LuArrowLeft /> Back to Minutes List
+                    </button>
+                </div>
 
-                    {/* Syllabus Completion Status */}
-                    <div style={{ marginTop: '24px' }}>
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: '600', color: '#212529', marginBottom: '14px' }}>
-                            Syllabus Completion Status
+                <div className="ims-card-elevated" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* Attendees Section */}
+                    <div>
+                        <h3 style={{ margin: '0 0 14px 0', fontSize: '1.05rem', fontWeight: '700', color: '#0f172a' }}>
+                            Members Present
                         </h3>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', border: '1px solid #dee2e6' }}>
-                            <thead>
-                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                    <th style={{ padding: '10px', width: '60px', textAlign: 'center' }}>S.No</th>
-                                    <th style={{ padding: '10px', textAlign: 'center' }}>Subject Name</th>
-                                    <th style={{ padding: '10px', textAlign: 'center' }}>Faculty Name</th>
-                                    <th style={{ padding: '10px', textAlign: 'center', width: '180px' }}>Completion Percentage</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {selectedMom.syllabus.map((row, idx) => (
-                                    <tr key={row.sno} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
-                                        <td style={{ padding: '10px', textAlign: 'center', color: '#6c757d' }}>{row.sno}</td>
-                                        <td style={{ padding: '10px', textAlign: 'center', color: '#212529' }}>{row.subject}</td>
-                                        <td style={{ padding: '10px', textAlign: 'center', color: '#495057' }}>{row.faculty}</td>
-                                        <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#28a745' }}>{row.completion}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                            <div style={{ background: '#f8fafc', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                <strong style={{ color: '#0B2C6B', display: 'block', marginBottom: '10px', fontSize: '0.9rem' }}>Faculty Members:</strong>
+                                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.85rem', color: '#334155', lineHeight: '1.6' }}>
+                                    {selectedMom.faculties.map((f, i) => <li key={i}>{f}</li>)}
+                                </ul>
+                            </div>
+                            <div style={{ background: '#f8fafc', padding: '18px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                <strong style={{ color: '#0B2C6B', display: 'block', marginBottom: '10px', fontSize: '0.9rem' }}>Student Representatives:</strong>
+                                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.85rem', color: '#334155', lineHeight: '1.6' }}>
+                                    {selectedMom.students.map((s, i) => <li key={i}>{s}</li>)}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Points Discussed */}
-                    <div style={{ marginTop: '28px', backgroundColor: '#f8f9fa', padding: '16px 20px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
-                        <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95rem', fontWeight: '600', color: '#333' }}>
-                            Points Discussed & Corrective Actions
-                        </h4>
-                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.875rem', color: '#495057', lineHeight: '1.6' }}>
-                            {selectedMom.pointsDiscussed.map((pt, i) => (
-                                <li key={i} style={{ marginBottom: '6px' }}>{pt}</li>
-                            ))}
-                        </ul>
+                    {/* Syllabus Coverage Table */}
+                    <div>
+                        <h3 style={{ margin: '0 0 14px 0', fontSize: '1.05rem', fontWeight: '700', color: '#0f172a' }}>
+                            Syllabus Completion & Portions Covered
+                        </h3>
+                        <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.86rem' }}>
+                                <thead>
+                                    <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                        <th style={{ padding: '12px 14px', width: '50px', textAlign: 'center', fontWeight: '700' }}>S.No</th>
+                                        <th style={{ padding: '12px 14px', fontWeight: '700' }}>Course Title & Code</th>
+                                        <th style={{ padding: '12px 14px', fontWeight: '700' }}>Faculty Handling</th>
+                                        <th style={{ padding: '12px 14px', textAlign: 'center', width: '150px', fontWeight: '700' }}>Syllabus Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedMom.syllabus.map((row, idx) => (
+                                        <tr key={row.sno} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                            <td style={{ padding: '12px 14px', textAlign: 'center', color: '#64748b' }}>{row.sno}</td>
+                                            <td style={{ padding: '12px 14px', fontWeight: '600', color: '#0B2C6B' }}>{row.subject}</td>
+                                            <td style={{ padding: '12px 14px', color: '#334155' }}>{row.faculty}</td>
+                                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                                <span className="ims-candy-badge" style={{ background: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0' }}>
+                                                    {row.completion}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Discussions & Resolutions */}
+                    <div>
+                        <h3 style={{ margin: '0 0 14px 0', fontSize: '1.05rem', fontWeight: '700', color: '#0f172a' }}>
+                            Discussions & Key Action Items
+                        </h3>
+                        <div style={{ background: '#f8fafc', padding: '18px 24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.875rem', color: '#334155', lineHeight: '1.7' }}>
+                                {selectedMom.pointsDiscussed.map((pt, i) => <li key={i}>{pt}</li>)}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,79 +147,87 @@ const CommitteeMinutes = () => {
     }
 
     return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                {/* Header */}
-                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
-                        Minutes Of Meet (Class Committee)
-                    </h2>
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuFileText />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Minutes Of Meet (MOM)</h1>
+                        <p className="ims-header-subtitle">Official records, syllabus completion status, and feedback resolutions</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="ims-candy-badge" style={{ background: 'linear-gradient(180deg, #1d4ed8 0%, #0B2C6B 100%)', color: '#ffffff', padding: '7px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', boxShadow: '0 3px 10px rgba(11,44,107,0.25)' }}>
+                        Class : B.E. CSE / 5 / A
+                    </span>
+                </div>
+            </div>
+
+            {/* Main Elevated Card with Curvy Corners */}
+            <div className="ims-card-elevated">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#0f172a' }}>
+                        Committee Records
+                    </h3>
                     <div style={{ position: 'relative' }}>
                         <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Search records..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{
-                                padding: '6px 12px 6px 30px',
-                                border: '1px solid #ced4da',
-                                borderRadius: '4px',
-                                fontSize: '0.875rem',
-                                outline: 'none',
-                                width: '200px'
-                            }}
+                            className="ims-candy-search"
+                            style={{ paddingLeft: '36px', width: '220px' }}
                         />
-                        <LuSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6c757d' }} />
+                        <LuSearch style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                     </div>
                 </div>
 
-                {/* Table */}
-                <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                {/* Table with Curvy Outer Box */}
+                <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, textAlign: 'left', fontSize: '0.86rem' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
-                                <th style={{ width: '35px', padding: '12px 10px', textAlign: 'center' }}><input type="checkbox" /></th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Batch</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>AY</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Course</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Semester</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Section</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Date</th>
-                                <th style={{ padding: '12px 10px', textAlign: 'center', width: '120px' }}>Action</th>
+                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569' }}>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '50px', fontWeight: '700' }}>S.No</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Batch</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Academic Year</th>
+                                <th style={{ padding: '12px 14px', fontWeight: '700' }}>Course</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '60px', fontWeight: '700' }}>Sem</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '60px', fontWeight: '700' }}>Sec</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '120px', fontWeight: '700' }}>Meeting Date</th>
+                                <th style={{ padding: '12px 14px', textAlign: 'center', width: '120px', fontWeight: '700' }}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredMoms.map((row) => (
-                                <tr key={row.id} style={{ borderBottom: '1px solid #dee2e6' }}>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}><input type="checkbox" /></td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.batch}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.ay}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.course}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.sem}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.section}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>{row.date}</td>
-                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                                        <button
-                                            onClick={() => setSelectedMom(row)}
-                                            style={{
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: '4px',
-                                                backgroundColor: '#17a2b8',
-                                                color: '#ffffff',
-                                                border: 'none',
-                                                borderRadius: '3px',
-                                                padding: '5px 10px',
-                                                fontSize: '0.8125rem',
-                                                fontWeight: '500',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            <LuEye /> View MOM
-                                        </button>
+                            {filteredMoms.length === 0 ? (
+                                <tr>
+                                    <td colSpan="8" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>
+                                        No committee minutes found.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                filteredMoms.map((mom, idx) => (
+                                    <tr key={mom.id} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#64748b' }}>{idx + 1}</td>
+                                        <td style={{ padding: '12px 14px', color: '#334155' }}>{mom.batch}</td>
+                                        <td style={{ padding: '12px 14px', color: '#334155' }}>{mom.ay}</td>
+                                        <td style={{ padding: '12px 14px', fontWeight: '600', color: '#0B2C6B' }}>{mom.course}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '600', color: '#0B2C6B' }}>{mom.sem}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: '600', color: '#0B2C6B' }}>{mom.section}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center', color: '#334155' }}>{mom.date}</td>
+                                        <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => setSelectedMom(mom)}
+                                                className="ims-candy-btn ims-candy-teal ims-candy-sm"
+                                            >
+                                                <LuEye /> View MOM
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

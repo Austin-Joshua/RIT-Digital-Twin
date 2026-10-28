@@ -101,43 +101,34 @@ const HODDashboard = () => {
   const isHandS = stats?.isHandS === true;
 
   return (
-    <div className="space-y-6" style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
-      <div className="dashboard-welcome-banner" style={{ 
-          background: 'linear-gradient(135deg, var(--color-accent-gold) 0%, #b45309 100%)',
-          color: 'var(--theme-brand-strong)',
-          padding: '24px',
-          borderRadius: '16px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-      }}>
+    <div className="ims-page-container">
+      {/* Header Banner */}
+      <div className="ims-header-banner">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div className="ims-header-icon-box">
+            <FaChalkboardTeacher />
+          </div>
           <div>
-              <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>
-                  HOD Dashboard: {user?.firstName ? `Welcome, ${user.firstName}` : 'Administrative Overview'} 🛡️
-              </h1>
-              <p style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: '14px', fontWeight: '600' }}>
-                  Logged in as: <strong>{user?.username}</strong> | Department of {stats?.departmentName || 'Engineering'}
-              </p>
+            <h1 className="ims-header-title">HOD Department Overview</h1>
+            <p className="ims-header-subtitle">
+              Academic leadership, department analytics & faculty roster • Department of {stats?.departmentName || 'Engineering'}
+              {isHandS && ' (First Year Core Division)'}
+            </p>
           </div>
-          <div style={{ textAlign: 'right' }}>
-             <span style={{ fontSize: '12px', background: 'rgba(0,0,0,0.1)', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold' }}>Institutional Guardian Mode</span>
-          </div>
-      </div>
-
-      <h1 className="page-header" style={{ fontSize: 'var(--font-size-h1)', color: 'var(--theme-text)', display: 'none' }}>
-        HOD Dashboard
-        {stats?.departmentCode && (
-          <span style={{ fontSize: '0.75em', fontWeight: '600', color: 'var(--theme-text-muted)', marginLeft: '8px' }}>
-            {isHandS ? '— H&S (First year)' : `— ${stats.departmentCode} (Year 2–4)`}
+        </div>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+            {isHandS ? 'H&S Division' : (stats?.departmentCode || 'DEPT')}
           </span>
-        )}
-      </h1>
+          <span className="ims-candy-badge" style={{ background: 'rgba(22,163,74,0.1)', color: '#16a34a' }}>
+            Academic Year 2026–2027
+          </span>
+        </div>
+      </div>
 
       {error && (
         <div
-          className="card"
+          className="ims-card-elevated"
           style={{
             background: 'rgba(220, 38, 38, 0.1)',
             border: '1px solid #dc2626',
@@ -168,14 +159,14 @@ const HODDashboard = () => {
             gap: '16px',
           }}
         >
-          <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+          <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
             <FaChalkboardTeacher size={28} style={{ color: 'var(--theme-brand-strong)', marginBottom: '8px' }} />
             <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--theme-text)' }}>
               {stats?.totalFaculty ?? 0}
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>Total Faculty</div>
           </div>
-          <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+          <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
             <FaUserGraduate size={28} style={{ color: 'var(--theme-brand-strong)', marginBottom: '8px' }} />
             <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--theme-text)' }}>
               {stats?.totalStudents ?? 0}
@@ -185,7 +176,7 @@ const HODDashboard = () => {
             </div>
           </div>
           {isHandS ? (
-            <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+            <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--theme-text)' }}>
                 {stats?.year1Count ?? 0}
               </div>
@@ -193,26 +184,26 @@ const HODDashboard = () => {
             </div>
           ) : (
             <>
-              <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+              <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--theme-text)' }}>
                   {stats?.year2Count ?? 0}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>2nd Year</div>
               </div>
-              <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+              <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--theme-text)' }}>
                   {stats?.year3Count ?? 0}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>3rd Year</div>
               </div>
-              <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+              <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--theme-text)' }}>
                   {stats?.year4Count ?? 0}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--theme-text-muted)' }}>4th Year</div>
               </div>
               {stats?.newJoinersCount != null && (
-                <div className="card" style={{ padding: '20px', textAlign: 'center', borderLeft: '4px solid var(--color-accent-gold)' }}>
+                <div className="ims-card-elevated" style={{ padding: '20px', textAlign: 'center', borderLeft: '4px solid var(--color-accent-gold)' }}>
                   <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-accent-gold)' }}>
                     {stats.newJoinersCount}
                   </div>
@@ -236,7 +227,7 @@ const HODDashboard = () => {
             gap: '16px',
           }}
         >
-          <div className="card" style={{ padding: '16px' }}>
+          <div className="ims-card-elevated" style={{ padding: '16px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-muted)', marginBottom: '4px' }}>
               Average Marks
             </div>
@@ -244,7 +235,7 @@ const HODDashboard = () => {
               {analytics?.averageMarks != null ? Number(analytics.averageMarks).toFixed(2) : '—'}
             </div>
           </div>
-          <div className="card" style={{ padding: '16px' }}>
+          <div className="ims-card-elevated" style={{ padding: '16px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-muted)', marginBottom: '4px' }}>
               Pass %
             </div>
@@ -252,7 +243,7 @@ const HODDashboard = () => {
               {analytics?.passPercentage != null ? `${Number(analytics.passPercentage)}%` : '—'}
             </div>
           </div>
-          <div className="card" style={{ padding: '16px' }}>
+          <div className="ims-card-elevated" style={{ padding: '16px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-muted)', marginBottom: '4px' }}>
               Avg Attendance
             </div>
@@ -260,7 +251,7 @@ const HODDashboard = () => {
               {analytics?.averageAttendance != null ? `${Number(analytics.averageAttendance).toFixed(1)}%` : '—'}
             </div>
           </div>
-          <div className="card" style={{ padding: '16px' }}>
+          <div className="ims-card-elevated" style={{ padding: '16px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--theme-text-muted)', marginBottom: '4px' }}>
               Internal Marks Avg
             </div>
@@ -280,20 +271,14 @@ const HODDashboard = () => {
           <select
             value={classSort}
             onChange={(e) => setClassSort(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: '1px solid var(--theme-border)',
-              background: 'var(--card-bg)',
-              color: 'var(--theme-text)',
-            }}
+            className="ims-pill-select"
           >
             <option value="highest">Highest performing first</option>
             <option value="lowest">Lowest performing first</option>
             <option value="attendance">By attendance</option>
           </select>
         </div>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
@@ -367,7 +352,7 @@ const HODDashboard = () => {
             }}
           />
         </div>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
@@ -411,7 +396,7 @@ const HODDashboard = () => {
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px' }}>
           Faculty (View Only)
         </h2>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>
@@ -443,7 +428,7 @@ const HODDashboard = () => {
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px' }}>
           Subject Performance Heatmap
         </h2>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <div
             style={{
               display: 'grid',
@@ -490,7 +475,7 @@ const HODDashboard = () => {
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FaExclamationTriangle /> Weak Subject Alerts
         </h2>
-        <div className="card" style={{ padding: '16px' }}>
+        <div className="ims-card-elevated" style={{ padding: '16px' }}>
           {weakSubjects.length === 0 ? (
             <div style={{ color: 'var(--theme-text-muted)' }}>No weak subjects identified.</div>
           ) : (
@@ -515,19 +500,13 @@ const HODDashboard = () => {
           <select
             value={trendBy}
             onChange={(e) => setTrendBy(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: '1px solid var(--theme-border)',
-              background: 'var(--card-bg)',
-              color: 'var(--theme-text)',
-            }}
+            className="ims-pill-select"
           >
             <option value="semester">By Semester</option>
             <option value="year">By Year</option>
           </select>
         </div>
-        <div className="card" style={{ padding: '16px', minHeight: '280px' }}>
+        <div className="ims-card-elevated" style={{ padding: '16px', minHeight: '280px' }}>
           {trends.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart
@@ -556,7 +535,7 @@ const HODDashboard = () => {
         <h2 style={{ fontSize: 'var(--font-size-h2)', color: 'var(--color-accent-gold)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FaStar /> Class Ranking
         </h2>
-        <div className="card" style={{ overflowX: 'auto' }}>
+        <div className="ims-card-elevated" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--theme-border)' }}>

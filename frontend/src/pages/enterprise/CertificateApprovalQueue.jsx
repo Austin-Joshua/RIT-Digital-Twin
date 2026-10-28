@@ -19,25 +19,30 @@ const CertificateApprovalQueue = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '16px 12px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div>
-                    <h1 style={{ fontSize: 'clamp(1.25rem, 4vw, 1.8rem)', fontWeight: '800', color: 'var(--theme-text)', margin: 0 }}>Certificate Queue</h1>
-                    <p style={{ color: 'var(--theme-text-muted)', margin: '4px 0 0', fontSize: '0.875rem' }}>Batch process document requests with automated compliance checks</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuPenTool />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Certificate Approval Queue</h1>
+                        <p className="ims-header-subtitle">Batch process institutional certificate requests with automated compliance and fee clearance checks</p>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
                     <AnimatePresence>
                         {selected.length > 0 && (
                             <motion.button
                                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                                style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#16a34a', color: 'white', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                className="ims-candy-btn ims-candy-success ims-candy-sm flex items-center gap-2">
                                 <LuShieldCheck /> Approve {selected.length} Selected
                             </motion.button>
                         )}
                     </AnimatePresence>
-                    <button style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid var(--theme-border)', background: 'var(--card-bg)', color: 'var(--theme-text)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <LuPenTool color="var(--theme-brand-strong)" /> Manual Override
+                    <button className="ims-candy-btn ims-candy-neutral ims-candy-sm flex items-center gap-2">
+                        <LuPenTool /> Manual Override
                     </button>
                 </div>
             </div>
@@ -49,7 +54,8 @@ const CertificateApprovalQueue = () => {
                     <input
                         placeholder="Search student or certificate..."
                         value={search} onChange={e => setSearch(e.target.value)}
-                        style={{ width: '100%', padding: '10px 10px 10px 38px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--theme-bg-muted)', color: 'var(--theme-text)', outline: 'none' }} />
+                        className="ims-candy-search"
+                        style={{ width: '100%', paddingLeft: '38px' }} />
                 </div>
                 <button style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--theme-border)', background: 'var(--card-bg)', color: 'var(--theme-text-muted)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                     <LuFilter size={16} /> Filter
@@ -57,7 +63,7 @@ const CertificateApprovalQueue = () => {
             </div>
 
             {/* Table */}
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', overflow: 'hidden', margin: '0 -4px' }}>
+            <div className="ims-card-elevated" style={{ overflow: 'hidden', padding: 0 }}>
                 <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                     <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse' }}>
                         <thead>
@@ -159,7 +165,7 @@ const CertificateApprovalQueue = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </div>
     );
 };
 

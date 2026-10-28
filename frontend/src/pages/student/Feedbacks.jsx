@@ -19,50 +19,56 @@ const Feedbacks = () => {
         addToast('Feedback submitted successfully. Thank you for your response!', 'success');
     };
 
-    return (
-        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+        return (
+        <div className="ims-page-container">
+            {/* Header Banner following TransportDirectory & Simulator hierarchy */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuMessageSquare />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">Student Feedbacks</h1>
+                        <p className="ims-header-subtitle">Course exit surveys, faculty feedback forms, and training appraisals</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                        onClick={() => setShowCourseFeedbackModal(true)}
+                        className="ims-candy-btn ims-candy-primary"
+                    >
+                        Open Sample Form
+                    </button>
+                </div>
+            </div>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Course FeedBack Forms Card */}
-                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '500', color: '#333333' }}>
+                <div className="ims-card-elevated">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '14px', marginBottom: '20px' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>
                             Course FeedBack Forms
                         </h3>
-                        <button
-                            onClick={() => setShowCourseFeedbackModal(true)}
-                            style={{
-                                backgroundColor: '#007bff',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '3px',
-                                padding: '5px 12px',
-                                fontSize: '0.8125rem',
-                                fontWeight: '500',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            Open Sample Form
-                        </button>
                     </div>
-                    <div style={{ padding: '40px 20px', textAlign: 'center', color: '#6c757d', fontSize: '0.9375rem' }}>
+                    <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem' }}>
                         There are no feedback forms available.
                     </div>
                 </div>
 
                 {/* Training FeedBack Forms Card */}
-                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <div style={{ padding: '14px 20px', borderBottom: '1px solid #dee2e6' }}>
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '500', color: '#333333' }}>
+                <div className="ims-card-elevated">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '14px', marginBottom: '20px' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>
                             Training FeedBack Forms
                         </h3>
                     </div>
-                    <div style={{ padding: '40px 20px', textAlign: 'center', color: '#6c757d', fontSize: '0.9375rem' }}>
+                    <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem' }}>
                         There are no feedback forms available.
                     </div>
                 </div>
             </div>
 
-            {/* Course Feedback Modal */}
+            {/* Course Feedback Modal with Curvy Candy Styling */}
             {showCourseFeedbackModal && (
                 <div style={{
                     position: 'fixed',
@@ -70,7 +76,8 @@ const Feedbacks = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(4px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -79,140 +86,131 @@ const Feedbacks = () => {
                 }}>
                     <div style={{
                         backgroundColor: '#ffffff',
-                        borderRadius: '4px',
+                        borderRadius: '20px',
                         width: '100%',
-                        maxWidth: '600px',
+                        maxWidth: '580px',
                         maxHeight: '90vh',
-                        overflowY: 'auto',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        border: '1px solid #e2e8f0'
                     }}>
                         <div style={{
-                            padding: '16px 20px',
-                            borderBottom: '1px solid #dee2e6',
+                            padding: '18px 24px',
+                            borderBottom: '1px solid #e2e8f0',
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            background: '#f8fafc'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '500', color: '#333333' }}>
-                                Student Course Evaluation Feedback
-                            </h3>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#0f172a' }}>
+                                    Course Feedback: Computer Networks
+                                </h3>
+                                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                                    Faculty: ARAVINDH S (CS190)
+                                </span>
+                            </div>
                             <button
                                 onClick={() => setShowCourseFeedbackModal(false)}
-                                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6c757d' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', fontSize: '18px', display: 'flex' }}
                             >
                                 <LuX />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmitFeedback} style={{ padding: '20px' }}>
-                            <div style={{ marginBottom: '16px', backgroundColor: '#e8f4fd', padding: '12px', borderRadius: '4px', fontSize: '0.875rem', color: '#004085' }}>
-                                <strong>Course:</strong> CS23511 - Computer Networks (Semester V) <br />
-                                <strong>Faculty:</strong> ARAVINDH S (CS190)
-                            </div>
 
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    1. Punctuality and syllabus completion coverage (1-5 Scale)
-                                </label>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    {[1, 2, 3, 4, 5].map(num => (
-                                        <label key={num} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                            <input
-                                                type="radio"
-                                                name="q1"
-                                                checked={rating.q1 === num}
-                                                onChange={() => setRating({ ...rating, q1: num })}
-                                            />
-                                            {num}
-                                        </label>
-                                    ))}
+                        <form onSubmit={handleSubmitFeedback} style={{ padding: '24px', overflowY: 'auto' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '8px' }}>
+                                        1. The instructor covers syllabus topics thoroughly and clearly:
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {[1, 2, 3, 4, 5].map((val) => (
+                                            <button
+                                                type="button"
+                                                key={val}
+                                                onClick={() => setRating({ ...rating, q1: val })}
+                                                className={`ims-candy-btn ${rating.q1 === val ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
+                                            >
+                                                {val} {val === 5 ? '★ (Excellent)' : '★'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '8px' }}>
+                                        2. Clarity of explanations and practical demonstrations:
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {[1, 2, 3, 4, 5].map((val) => (
+                                            <button
+                                                type="button"
+                                                key={val}
+                                                onClick={() => setRating({ ...rating, q2: val })}
+                                                className={`ims-candy-btn ${rating.q2 === val ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
+                                            >
+                                                {val} {val === 5 ? '★ (Excellent)' : '★'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '8px' }}>
+                                        3. Course materials, notes, and question banks provided:
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {[1, 2, 3, 4, 5].map((val) => (
+                                            <button
+                                                type="button"
+                                                key={val}
+                                                onClick={() => setRating({ ...rating, q3: val })}
+                                                className={`ims-candy-btn ${rating.q3 === val ? 'ims-candy-primary' : 'ims-candy-neutral'} ims-candy-sm`}
+                                            >
+                                                {val} {val === 5 ? '★ (Excellent)' : '★'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#1e293b', marginBottom: '8px' }}>
+                                        Additional Suggestions / Comments (Optional):
+                                    </label>
+                                    <textarea
+                                        rows="3"
+                                        placeholder="Enter any constructive feedback..."
+                                        value={rating.remarks}
+                                        onChange={(e) => setRating({ ...rating, remarks: e.target.value })}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 16px',
+                                            borderRadius: '12px',
+                                            border: '1.5px solid #cbd5e1',
+                                            fontSize: '0.875rem',
+                                            color: '#334155',
+                                            outline: 'none',
+                                            boxSizing: 'border-box',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    />
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    2. Clarity in subject explanation and practical laboratory demonstrations
-                                </label>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    {[1, 2, 3, 4, 5].map(num => (
-                                        <label key={num} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                            <input
-                                                type="radio"
-                                                name="q2"
-                                                checked={rating.q2 === num}
-                                                onChange={() => setRating({ ...rating, q2: num })}
-                                            />
-                                            {num}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    3. Continuous evaluation transparency and feedback on assessments
-                                </label>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    {[1, 2, 3, 4, 5].map(num => (
-                                        <label key={num} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                                            <input
-                                                type="radio"
-                                                name="q3"
-                                                checked={rating.q3 === num}
-                                                onChange={() => setRating({ ...rating, q3: num })}
-                                            />
-                                            {num}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: '20px' }}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
-                                    Suggestions / Additional Remarks
-                                </label>
-                                <textarea
-                                    value={rating.remarks}
-                                    onChange={(e) => setRating({ ...rating, remarks: e.target.value })}
-                                    rows="3"
-                                    placeholder="Enter your constructive feedback here..."
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        borderRadius: '4px',
-                                        border: '1px solid #ced4da',
-                                        fontSize: '0.875rem'
-                                    }}
-                                />
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #dee2e6', paddingTop: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '18px', marginTop: '20px' }}>
                                 <button
                                     type="button"
                                     onClick={() => setShowCourseFeedbackModal(false)}
-                                    style={{
-                                        backgroundColor: '#6c757d',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 16px',
-                                        fontSize: '0.875rem',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-neutral"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    style={{
-                                        backgroundColor: '#007bff',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        padding: '8px 20px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="ims-candy-btn ims-candy-success"
                                 >
                                     Submit Feedback
                                 </button>

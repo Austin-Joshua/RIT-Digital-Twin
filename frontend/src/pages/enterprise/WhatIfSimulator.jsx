@@ -136,12 +136,7 @@ const WhatIfSimulator = () => {
                     <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--theme-border)', borderRadius: '14px', padding: '24px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
                             <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)' }}>Upcoming Subjects</h3>
-                            <button onClick={addSubject} style={{
-                                background: 'var(--color-accent-gold)', border: 'none', borderRadius: '8px',
-                                padding: '7px 14px', cursor: 'pointer', color: 'var(--theme-brand-strong)', fontWeight: '700',
-                                fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px',
-                                boxShadow: '0 2px 8px rgba(255, 193, 7, 0.2)'
-                            }} className="hover:opacity-90">
+                            <button onClick={addSubject} className="ims-candy-btn ims-candy-gold ims-candy-sm">
                                 <LuPlus strokeWidth={3} /> Add Subject
                             </button>
                         </div>
@@ -185,12 +180,7 @@ const WhatIfSimulator = () => {
                             ))}
                         </div>
 
-                        <button onClick={handleSimulate} disabled={simulating} style={{
-                            marginTop: '20px', width: '100%', padding: '13px', borderRadius: '10px', border: 'none',
-                            background: simulating ? '#ccc' : 'var(--color-primary-navy)', color: 'white',
-                            fontWeight: '700', fontSize: '15px', cursor: simulating ? 'not-allowed' : 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s'
-                        }}>
+                        <button onClick={handleSimulate} disabled={simulating} className="ims-candy-btn ims-candy-primary" style={{ marginTop: '20px', width: '100%', padding: '13px' }}>
                             {simulating ? <><LuRefreshCw style={{ animation: 'spin 1s linear infinite' }} /> Calculating...</> : <><LuTrendingUp /> Simulate Projected CGPA</>}
                         </button>
                         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

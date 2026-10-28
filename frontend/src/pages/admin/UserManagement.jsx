@@ -65,26 +65,35 @@ const UserManagement = () => {
     );
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-[var(--theme-text)]">User Account Management</h1>
-                    <p className="text-[var(--theme-text-muted)]">Manage security states and credentials for university accounts</p>
+        <div className="ims-page-container">
+            {/* Header Banner */}
+            <div className="ims-header-banner">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="ims-header-icon-box">
+                        <LuShieldAlert />
+                    </div>
+                    <div>
+                        <h1 className="ims-header-title">User Account Management</h1>
+                        <p className="ims-header-subtitle">Manage security states, password resets, and credentials for university accounts</p>
+                    </div>
                 </div>
+                <span className="ims-candy-badge" style={{ background: 'rgba(11,44,107,0.08)', color: 'var(--theme-brand-strong)' }}>
+                    {users.length} Total Users
+                </span>
             </div>
 
             <div className="mb-6 relative max-w-md">
-                <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input 
                     type="text" 
                     placeholder="Search by name, email, or username..."
-                    className="w-full pl-10 pr-4 py-2 bg-[var(--theme-bg-muted)] border border-[var(--theme-border)] rounded-lg text-[var(--theme-text)] outline-none focus:ring-2 focus:ring-blue-500"
+                    className="ims-candy-search w-full pl-11"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
 
-            <div className="bg-[var(--card-bg)] border border-[var(--theme-border)] rounded-xl overflow-hidden shadow-sm">
+            <div className="ims-card-elevated" style={{ padding: 0, overflow: 'hidden' }}>
                 <table className="w-full text-left">
                     <thead className="bg-[var(--theme-bg-muted)] text-[var(--theme-text-muted)] text-xs uppercase font-bold">
                         <tr>
