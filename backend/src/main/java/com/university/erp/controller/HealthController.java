@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
 public class HealthController {
 
     private final JdbcTemplate jdbcTemplate;
@@ -20,7 +19,7 @@ public class HealthController {
         this.jdbcTemplate.setQueryTimeout(3);
     }
 
-    @GetMapping("/health")
+    @GetMapping({"/health", "/api/health"})
     public ResponseEntity<Map<String, Object>> health() {
         try {
             jdbcTemplate.queryForObject("SELECT 1", Integer.class);

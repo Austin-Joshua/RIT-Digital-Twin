@@ -134,7 +134,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/actuator/health", "/api/health").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**", "/api/health", "/health").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
                         .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

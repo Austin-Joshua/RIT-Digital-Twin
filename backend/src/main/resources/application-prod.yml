@@ -43,6 +43,21 @@ logging:
     com.university.erp: WARN
     org.springframework: WARN
     org.flywaydb: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    mail:
+      enabled: false
+
 server:
   error:
     include-message: never
