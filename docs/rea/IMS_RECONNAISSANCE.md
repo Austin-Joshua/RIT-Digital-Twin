@@ -636,35 +636,20 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
       - `Father's Office Address`: `SELF` | `Mother's Office Address`: `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001`
       - `Guardian Name(If)`: `-` | `Guardian Mobile No`: `-`
       - `Guardian's Occupation`: `-` | `Guardian's Office Address`: `-`
-    - **4. Educational Details** (Accordion Item 4):
-      - **SSLC (10th Standard)**:
-        - Institute: `SRI R.M.JAIN VIDHYASHRAM`
-        - Board: `CBSE` | Medium: `ENGLISH`
-        - Total Marks: `468/500` | Percentage: `93.60%`
-        - Subject 1: `TAMIL` (`96/100`)
-        - Subject 2: `ENGLISH` (`95/100`)
-        - Subject 3: `MATHEMATICS` (`87/100`)
-        - Subject 4: `SCIENCE` (`95/100`)
-        - Subject 5: `SOCIAL SCIENCE` (`95/100`)
-      - **HSC (12th Standard)**:
-        - Institute: `SRI R.M.JAIN VIDHYASHRAM`
-        - Board: `CBSE` | Medium: `ENGLISH`
-        - Total Marks: `418/500` | Cutoff: Calculated
-        - Subject 1: `ENGLISH` (`93/100`)
-        - Subject 2: `MATHEMATICS` (`83/100`)
-        - Subject 3: `PHYSICS` (`74/100`)
-        - Subject 4: `CHEMISTRY` (`81/100`)
-        - Subject 5: `COMPUTER SCIENCE` (`87/100`)
-      - **DIPLOMA**: N/A
-    - **5. Address Details** (Accordion Item 5):
-      - Address Types: `Permanent` and `Temporary`
-      - `Room No & Street`: `NO. 18`
-      - `City / District`: `TIRUVALLUR`
-      - `State`: `TAMIL NADU`
-      - `Pincode`: `602001`
-      - `Country`: `INDIA`
-    - **6. Document Details** (Accordion Item 6):
-      - Uploaded Verification Documents (10th Marksheet, 12th Marksheet, Aadhar Card, Community Certificate).
+    - **4. Educational Details** (Accordion Item 4 - Wide Horizontally Scrolling Table):
+      - **Columns**: `Education Type` | `Institute Name` | `Institute Location` | `Board / University` | `Register Number` | `Total Marks` | `Cutoff Mark` | `Marks In Percentage / CGPA` | `Medium` | `Subject 1` | `Mark 1` | `Subject 2` | `Mark 2` | `Subject 3` | `Mark 3` | `Subject 4` | `Mark 4` | `Subject 5` | `Mark 5` | `Subject 6` | `Mark 6`.
+      - **Rows**:
+        - **SSLC**: `SRI R.M.JAIN VIDHYASHRAM` | `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001` | `CBSE` | `-` | `468/500` | `-` | `93.60%` | `ENGLISH` | `TAMIL` (`96/100`) | `ENGLSIH` (`95/100`) | `MATHEMATICS` (`87/100`) | `SCIENCE` (`95/100`) | `SOCIAL SCIENCE` (`95/100`) | `-` (`-`).
+        - **HSC**: `SRI R.M.JAIN VIDHYASHRAM` | `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001` | `CBSE` | `-` | `418/500` | `-` | `83.60%` | `ENGLISH` | `-` (`-`) | `ENGLSIH` (`93/100`) | `MATHEMATICS` (`83/100`) | `PHYSICS` (`74/100`) | `CHEMISTRY` (`81/100`) | `COMPUTER SCIENCE` (`87/100`).
+        - **DIPLOMA**: (blank row).
+    - **5. Address Details** (Accordion Item 5 - Structured Address Table):
+      - **Columns**: `Address Type` | `Room No & Street` | `Area` | `District` | `Pincode` | `State` | `Country`.
+      - **Rows**:
+        - `Permanent` | `NO.48 N.G.G.O COLONY` | `-` | `TIRUVALLUR` | `602001` | `TAMIL NADU` | `INDIA`.
+        - `Temporary` | `-` | `-` | `-` | `-` | `-` | `-`.
+    - **6. Document Details** (Accordion Item 6 - Verification Documents Table):
+      - **Columns**: `File Name` | `File`.
+      - Displayed with preview and download actions.
 
 ---
 
