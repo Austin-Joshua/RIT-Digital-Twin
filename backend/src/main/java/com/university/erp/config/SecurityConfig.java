@@ -132,26 +132,27 @@ public class SecurityConfig {
                         .contentTypeOptions(Customizer.withDefaults())
                         .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/health/**", "/api/health", "/health").permitAll()
-                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
-                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/assets/**", "/api/alumni/**").hasAnyRole("ADMIN", "HOD")
-                        .requestMatchers("/api/hod/**").hasAnyRole("HOD", "ADMIN")
-                        .requestMatchers("/api/faculty/leaves", "/api/faculty/leaves/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
-                        .requestMatchers("/api/faculty/substitutions", "/api/faculty/substitutions/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
-                        .requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "HOD", "ADMIN")
-                        .requestMatchers("/api/parent/**").hasAnyRole("PARENT", "ADMIN")
-                        // Method annotations decide the role. Do not lock these tighter than @PreAuthorize.
-                        .requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**", "/api/ai/**", "/api/iot/**", "/api/campus/**")
-                        .authenticated()
-                        .requestMatchers("/api/placement/apply").hasAnyRole("STUDENT", "ADMIN")
-                        .requestMatchers("/api/placement/**").hasRole("ADMIN")
-                        .requestMatchers("/api/academic/student/**", "/api/academics/student/**").hasAnyRole("STUDENT", "ADMIN")
-                        .requestMatchers("/api/academic/faculty/**", "/api/academics/faculty/**").hasAnyRole("FACULTY", "ADMIN")
-                        .anyRequest().authenticated());
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/api/auth/**").permitAll();
+                    auth.requestMatchers("/actuator/health", "/actuator/health/**", "/api/health", "/health").permitAll();
+                    auth.requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN");
+                    auth.requestMatchers("/ws/**").permitAll(); // WebSocket endpoint
+                    auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/assets/**", "/api/alumni/**").hasAnyRole("ADMIN", "HOD");
+                    auth.requestMatchers("/api/hod/**").hasAnyRole("HOD", "ADMIN");
+                    auth.requestMatchers("/api/faculty/leaves", "/api/faculty/leaves/**").hasAnyRole("FACULTY", "HOD", "ADMIN");
+                    auth.requestMatchers("/api/faculty/substitutions", "/api/faculty/substitutions/**").hasAnyRole("FACULTY", "HOD", "ADMIN");
+                    auth.requestMatchers("/api/faculty/**").hasAnyRole("FACULTY", "HOD", "ADMIN");
+                    auth.requestMatchers("/api/parent/**").hasAnyRole("PARENT", "ADMIN");
+                    // Method annotations decide the role. Do not lock these tighter than @PreAuthorize.
+                    auth.requestMatchers("/api/analytics/**", "/api/predictions/**", "/api/intelligence/**", "/api/twin/**", "/api/ai/**", "/api/iot/**", "/api/campus/**")
+                            .authenticated();
+                    auth.requestMatchers("/api/placement/apply").hasAnyRole("STUDENT", "ADMIN");
+                    auth.requestMatchers("/api/placement/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/academic/student/**", "/api/academics/student/**").hasAnyRole("STUDENT", "ADMIN");
+                    auth.requestMatchers("/api/academic/faculty/**", "/api/academics/faculty/**").hasAnyRole("FACULTY", "ADMIN");
+                    auth.anyRequest().authenticated();
+                });
 
         http.addFilterBefore(xssSanitizationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
