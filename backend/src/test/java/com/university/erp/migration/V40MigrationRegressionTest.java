@@ -153,6 +153,11 @@ class V40MigrationRegressionTest {
         boolean colSectionExists = true;
         boolean colSectionCodeExists = true;
 
+        String addSectionSql = (tblSlotsExists && !colSectionExists)
+                ? "ALTER TABLE timetable_slots ADD COLUMN section VARCHAR(50) NULL"
+                : "SELECT 1";
+        assertEquals("SELECT 1", addSectionSql, "Must be no-op since section already exists");
+
         String copySectionSql = (tblSlotsExists && colSectionCodeExists)
                 ? "UPDATE timetable_slots SET section = section_code WHERE (section IS NULL OR section = '') AND section_code IS NOT NULL"
                 : "SELECT 1";
