@@ -543,23 +543,23 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ### 17. Messages (`Messages`)
 - **Status**: **OBSERVED** (Evidence: `media_1793188390097_0be0c479.png`, `media_1793188404704_7b4fd34b.png`, `media_1793188419316_0dec6793.png`, `media_1793188434540_306caf16.png`)
 - **Visual Structure**:
-  - Title: `Messages`
-  - Action Header:
-    - Green button `New message` (`#28a745`)
-  - Sub-views / Tabs:
-    - `All Messages`
-    - `Inbox` (Active state badge/pill)
-    - `Outbox`
-  - Empty State: Centered grey banner `You have no messages.`
-  - **New Message Compose Modal / Card**:
-    - Heading: `New message`
-    - Form Fields:
-      - `Recipient *`: Dropdown (`ADMIN`, `HOD - CSE`, `Class Incharge - ARAVINDH S`, `Mentor`)
-      - `Subject *`: Text input
-      - `Content *`: Rich textarea
-    - Actions:
-      - Blue `Submit` button (`#007bff`)
-      - Grey `Cancel` button
+  - Top Breadcrumb/Heading changes dynamically based on selection: `All Messages` / `Inbox` / `Outbox` / `New message`.
+  - **Two-Column Master-Detail Layout**:
+    - **Left Navigation Column (~250px)**:
+      - Blue Action Button: **`New message`** (`#007bff`, full width of sidebar card).
+      - Folder Nav Card:
+        - `All Messages` (blue link)
+        - `Inbox` (blue link)
+        - `Outbox` (blue link)
+    - **Right Main Content Area**:
+      - **Empty State (All Messages / Inbox / Outbox)**:
+        - Clean white card displaying: `You have no messages.`
+      - **Compose View (`New message`)**:
+        - White rounded card with form fields:
+          - `Recipient`: Dropdown select (defaults to `ADMIN`).
+          - `Subject`: Single-line text input.
+          - `Content`: Multi-line textarea.
+          - Action: Green **`Submit`** button (`#28a745`) at bottom-left.
 
 ---
 
@@ -568,14 +568,23 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 - **Visual Structure**:
   - Card Heading: `Change password`
   - Form Fields:
-    - `Current Password *`: Password input with eye toggle
-    - `New Password *`: Password input with eye toggle
-    - `Repeat New Password *`: Password input with eye toggle
-  - Password Policy notice: Minimum 8 characters, uppercase, lowercase, number, special character.
-  - Action: Blue `Submit` button (`#007bff`).
-  - Top-Right Profile Dropdown:
-    - `My Profile`
-    - `Logout`
+    - `New Password *`: Password input.
+    - `Repeat New Password *`: Password input.
+    - *(Note: Authentic student portal omits Current Password and prompts directly for New and Repeat New Password).*
+  - **Password Requirements Notice Box**:
+    - Light blue alert banner (`#cff4fc` / `#e7f1ff`) with blue circle exclamation icon:
+    - Title: `Password requirements`
+    - Checklist items with blue checkmark icons:
+      - `✔ Must be atleast 8 characters long`
+      - `✔ Must include atleast one number (0-9)`
+      - `✔ Must include atleast one alphabet (A-Z or a-z)`
+      - `✔ Must include atleast one special character (e.g. ! @ # $ % ^ & *)`
+  - Action: Solid red **`Save`** button (`#dc3545` / `#c82333`).
+  - Top-Right Profile Dropdown (Evidence: `media_1793188498700_df62c3e2.png`):
+    - Blue pill user button: `AUSTIN JOSHUA M`
+    - Dropdown menu options:
+      - `My Profile`
+      - `Logout`
 
 ---
 
