@@ -564,7 +564,8 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ---
 
 ### 18. Change Password (`Change password`)
-- **Status**: **OBSERVED** (Evidence: `media_1793188455371_8a98a1a3.png`, `media_1793188498700_df62c3e2.png`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188455371_8a98a1a3.png`, `media_1793188474107_f964c4eb.png`, `media_1793188498700_df62c3e2.png`)
+- **Authentic Route**: `/profile/password` (observed in browser status bar: `https://ims.ritchennai.edu.in/profile/password#`)
 - **Visual Structure**:
   - Card Heading: `Change password`
   - Form Fields:
@@ -580,11 +581,19 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
       - `✔ Must include atleast one alphabet (A-Z or a-z)`
       - `✔ Must include atleast one special character (e.g. ! @ # $ % ^ & *)`
   - Action: Solid red **`Save`** button (`#dc3545` / `#c82333`).
-  - Top-Right Profile Dropdown (Evidence: `media_1793188498700_df62c3e2.png`):
-    - Blue pill user button: `AUSTIN JOSHUA M`
-    - Dropdown menu options:
-      - `My Profile`
-      - `Logout`
+  - **Topbar Controls**:
+    - **Notification Bell Dropdown** (Evidence: `media_1793188474107_f964c4eb.png`):
+      - Clicking the bell icon toggles a white dropdown list with a scrollbar containing recent announcements:
+        - `Class Committee MOM Has Been Generated`
+        - `Class Committee Schedule Has Been Modified`
+        - `Class Committee MOM Has Been Generated`
+        - `Class Committee MOM Has Been Generated`
+        - `Class Committee Has Been Scheduled`
+    - **User Profile Dropdown** (Evidence: `media_1793188498700_df62c3e2.png`):
+      - Royal blue rounded pill button with user icon and student name: `AUSTIN JOSHUA M`.
+      - Dropdown menu options:
+        - `My Profile` (navigates to 6-tab profile)
+        - `Logout` (invalidates session and redirects to `/login`)
 
 ---
 
