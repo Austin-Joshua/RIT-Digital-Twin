@@ -600,84 +600,71 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ### 19. My Profile (`My Profile`)
 - **Status**: **OBSERVED** (Evidence: `media_1793188527873_d7a1e931.png` through `media_1793188769791_df66f467.png`)
 - **Visual Structure**:
-  - Top Profile Banner: Student avatar circle, `AUSTIN JOSHUA M`, `2117240020044`, `austin.240044@cse.ritchennai.edu.in`, `9344208046`.
-  - Canonical Tab Navigation (6 Tabs):
-    1. `Personal Details`
-    2. `Academic Details`
-    3. `Parent Details`
-    4. `Educational Details`
-    5. `Address Details`
-    6. `Document Details`
-  - **1. Personal Details**:
-    - `Full Name`: `AUSTIN JOSHUA M`
-    - `Mobile`: `9344208046`
-    - `Date of Birth`: `2006-03-01`
-    - `Gender`: `MALE`
-    - `Blood Group`: `O+ve`
-    - `Mother Tongue`: `TAMIL`
-    - `Religion`: `CHRISTIAN`
-    - `Community`: `BC`
-    - `State`: `TAMIL NADU`
-    - `Country`: `INDIAN`
-    - `Email`: `austin.240044@cse.ritchennai.edu.in`
-    - `Aadhar Number`: `**** **** 2378`
-  - **2. Academic Details**:
-    - `Register Number`: `2117240020044`
-    - `Roll Number`: `24CS044`
-    - `EMIS Number`: `2019796943`
-    - `UMIS Number`: `2403211710421044`
-    - `Admitted Mode`: `MANAGEMENT QUOTA`
-    - `Department`: `Computer Science and Engineering`
-    - `Degree / Course`: `B.E. CSE`
-    - `Batch`: `2024-2028`
-    - `Semester`: `5` | `Section`: `A`
-    - `First Graduate`: `No`
-    - `Scholarship`: `No`
-    - `Lateral Entry`: `No`
-  - **3. Parent Details**:
-    - `Father Name`: `MARIA JUSTIN M`
-    - `Father Mobile No`: `9444752053`
-    - `Father's Occupation`: `BAKER`
-    - `Father's Office Address`: `SELF`
-    - `Mother Name`: `DE MELLO G`
-    - `Mother Mobile No`: `9444334155`
-    - `Mother's Occupation`: `TEACHER`
-    - `Mother's Office Address`: `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001`
-    - `Guardian Name`: `-`
-    - `Guardian Mobile No`: `-`
-    - `Guardian's Occupation`: `-`
-    - `Guardian's Office Address`: `-`
-  - **4. Educational Details**:
-    - **SSLC (10th Standard)**:
-      - Institute: `SRI R.M.JAIN VIDHYASHRAM`
-      - Board: `CBSE` | Medium: `ENGLISH`
-      - Total Marks: `468/500` | Percentage: `93.60%`
-      - Subjects:
+  - **Top Profile Header (2-Column Grid)**:
+    - **Left Card (~35% width)**:
+      - Centered circular student headshot with light blue circular ring.
+      - Name: **`AUSTIN JOSHUA M`** (bold centered).
+      - Subtitle: `2024-2028/B.E. Computer Science and Engineering/2026-2027/5/A`.
+    - **Right Card (`Student Info`) (~65% width)**:
+      - Title: `Student Info` (blue text `#007bff`).
+      - 2-Column Key-Value Grid with subtle bottom border lines:
+        - `Full Name`: `AUSTIN JOSHUA M` | `Register Number`: `2117240020044`
+        - `Email`: `austin.240044@cse.ritchennai.edu.in` | `Phone`: `9344208046`
+  - **Collapsible Accordion Architecture**:
+    - Each section is rendered as an expandable/collapsible card with a blue title (`#007bff`) and right-aligned chevron arrow (pointing down `v` when open, left `<` when collapsed).
+    - **1. Personal Details** (Accordion Item 1):
+      - `Full Name`: `AUSTIN JOSHUA M` | `Email`: `austin.240044@cse.ritchennai.edu.in`
+      - `Mobile`: `9344208046` | `Aadhar Number`: `968840382378`
+      - `Date of Birth`: `2006-03-01` | `Age`: `20`
+      - `GENDER`: `MALE` | `Blood Group`: `A+ve`
+      - `Mother Tongue`: `TAMIL` | `Religion`: `CHRISTIAN`
+      - `Community`: `MBC` | `State`: `TAMIL NADU`
+      - `Country`: `INDIAN`
+    - **2. Academic Details** (Accordion Item 2):
+      - `Register Number`: `2117240020044` | `Roll Number`: `-`
+      - `EMIS Number`: `2019796943` | `UMIS Number`: `2403211710421044`
+      - `Admitted Mode`: `MANAGEMENT QUOTA` | `First Graduate`: `No`
+      - `GQ GOVT`: `No` | `Scholarship`: `No`
+      - `Hosteler`: `No` | `Late Entry`: `No`
+      - `Course`: `B.E. Computer Science and Engineering` | `Batch`: `2024-2028`
+      - `Academic Year`: `2026-2027` | `Semester`: `5`
+      - `Section`: `A`
+    - **3. Parent Details** (Accordion Item 3):
+      - `Father Name`: `MARIA JUSTIN M` | `Mother Name`: `JESHEELA DE MELLO G`
+      - `Father Mobile No`: `9444752053` | `Mother Mobile No`: `9444334155`
+      - `Father's Occupation`: `BAKER` | `Mother's Occupation`: `TEACHER`
+      - `Father's Office Address`: `SELF` | `Mother's Office Address`: `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001`
+      - `Guardian Name(If)`: `-` | `Guardian Mobile No`: `-`
+      - `Guardian's Occupation`: `-` | `Guardian's Office Address`: `-`
+    - **4. Educational Details** (Accordion Item 4):
+      - **SSLC (10th Standard)**:
+        - Institute: `SRI R.M.JAIN VIDHYASHRAM`
+        - Board: `CBSE` | Medium: `ENGLISH`
+        - Total Marks: `468/500` | Percentage: `93.60%`
         - Subject 1: `TAMIL` (`96/100`)
         - Subject 2: `ENGLISH` (`95/100`)
         - Subject 3: `MATHEMATICS` (`87/100`)
         - Subject 4: `SCIENCE` (`95/100`)
         - Subject 5: `SOCIAL SCIENCE` (`95/100`)
-    - **HSC (12th Standard)**:
-      - Institute: `SRI R.M.JAIN VIDHYASHRAM`
-      - Board: `CBSE` | Medium: `ENGLISH`
-      - Total Marks: `418/500` | Cutoff: Calculated
-      - Subjects:
+      - **HSC (12th Standard)**:
+        - Institute: `SRI R.M.JAIN VIDHYASHRAM`
+        - Board: `CBSE` | Medium: `ENGLISH`
+        - Total Marks: `418/500` | Cutoff: Calculated
         - Subject 1: `ENGLISH` (`93/100`)
         - Subject 2: `MATHEMATICS` (`83/100`)
         - Subject 3: `PHYSICS` (`74/100`)
         - Subject 4: `CHEMISTRY` (`81/100`)
         - Subject 5: `COMPUTER SCIENCE` (`87/100`)
-    - **DIPLOMA**: N/A
-  - **5. Address Details**:
-    - Address Types: `Permanent` and `Temporary`
-    - `Room No & Street`: `NO. 18`
-    - `City / District`: `TIRUVALLUR`
-    - `State`: `TAMIL NADU`
-    - `Pincode`: `602001`
-    - `Country`: `INDIA`
-  - **6. Document Details**:
-    - Uploaded Verification Documents (10th Marksheet, 12th Marksheet, Aadhar Card, Community Certificate) with preview and download options.
+      - **DIPLOMA**: N/A
+    - **5. Address Details** (Accordion Item 5):
+      - Address Types: `Permanent` and `Temporary`
+      - `Room No & Street`: `NO. 18`
+      - `City / District`: `TIRUVALLUR`
+      - `State`: `TAMIL NADU`
+      - `Pincode`: `602001`
+      - `Country`: `INDIA`
+    - **6. Document Details** (Accordion Item 6):
+      - Uploaded Verification Documents (10th Marksheet, 12th Marksheet, Aadhar Card, Community Certificate).
 
 ---
 
