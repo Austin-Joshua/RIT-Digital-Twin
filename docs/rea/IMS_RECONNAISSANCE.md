@@ -459,42 +459,84 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ### 15. No Due Request (`No Due Request`)
 - **Status**: **OBSERVED** (Evidence: `media_1793188238496_0d2215ac.png`, `media_1793188254760_b54a5f02.png`)
 - **Visual Structure**:
-  - Title: `No Due Request`
+  - Title: `No Due Request` (clean centered heading)
+  - Top Action: Yellow button **`Pay Exam Fee`** (`#ffc107` / `#f0ad4e`) in top-right.
   - Multi-tier clearances grid:
   - **1. Subjects Table**:
-    - Columns: `S.No`, `Subject Code`, `Subject Name`, `CAT Marks` (CAT-1, CAT-2, CAT-3), `Assignment Marks`, `Total Atten %`, `Dues`, `Action`.
+    - **Two-Tier Header**:
+      - Level 1: `S.No` | `Subject Code` | `Subject Name` | `Assignment Marks` (spans A-1 to A-5) | `CAT Marks` (spans CAT-1, CAT-2, CAT-3) | `Total` | `Atten %` | `Status` | `Remarks`
+      - Level 2: `A-1` | `A-2` | `A-3` | `A-4` | `A-5` | `CAT-1` | `CAT-2` | `CAT-3`
+    - **Visual Highlighting Rule**: `Atten %` cells with attendance `< 75%` are highlighted with a **solid red background (`#dc3545`) and white text** (e.g. Compiler Design `71%`, DWDM `67%`).
     - Rows:
-      - `CS23511` | `Computer Networks` | CAT 15/20/23 | 10 | 92% | `No Dues` | Green `Approved` pill
-      - `CS23512` | `Compiler Design` | CAT 23/23/22 | 10 | 90% | `No Dues` | Green `Approved` pill
-      - `AD23V13` | `Data Warehousing and Data Mining` | CAT 16/14/14 | 10 | 88% | `No Dues` | Green `Approved` pill
-      - `AD23531` | `Deep Learning Techniques` | CAT 20/16/15 | 9 | 94% | `No Dues` | Green `Approved` pill
-      - `AD23532` | `Data Exploration and Visualization` | CAT 22/19/21 | 9 | 91% | `No Dues` | Green `Approved` pill
-      - `CS23IC3` | `AZURE for Data Analytics` | CAT 21/20/19 | 10 | 89% | `No Dues` | Green `Approved` pill
-      - `MX23511` | `Disaster Risk Reduction and Management` | CAT 24/18/16 | 10 | 95% | `No Dues` | Green `Approved` pill
+      - 1: `CS23511` | `Computer Networks` | 10, 10, 8, 9, 9 | 35, 23, 33 | `137` | `82%` | Green `Approved` badge | `Approved`
+      - 2: `CS23512` | `Compiler Design` | 10, 9, 8, 10, 10 | 46, 22, 42 | `157` | **`71%` (Red `#dc3545`)** | Green `Approved` badge | `Approved`
+      - 3: `AD23V14` | `Health Care Analytics` | 10, 10, 10, 10, 10 | 31, 17, 37 | `135` | `76%` | Green `Approved` badge | `Approved`
+      - 4: `AD23V13` | `Data Warehousing and Data Mining` | 10, 10, 10, 10, 10 | 30, 14, 33 | `127` | **`67%` (Red `#dc3545`)** | Green `Approved` badge | `Approved`
+      - 5: `MX23511` | `Disaster Risk Reduction and Management` | 10, 10, 10, 8, 8 | 42, 16, 38 | `142` | `100%` | Green `Approved` badge | `Approved`
+      - 6: `AD23531` | `Deep Learning Techniques` | 9, 10, 10, 10, 9 | 36, 15, 36 | `135` | `97%` | Green `Approved` badge | `Approved`
+      - 7: `AD23532` | `Data Exploration and Visualization` | 9, 10, 10, 10, 10 | 25, 18, 28 | `120` | `83%` | Green `Approved` badge | `Approved`
+      - 8: `CS23IC3` | `AZURE for Data Analytics` | `-`, `-`, `-`, `-`, `-` | `-`, `-`, `-` | `-` | `100%` | Green `Approved` badge | `Approved`
   - **2. Labs / Projects Table**:
-    - Columns: `S.No`, `Subject Code`, `Subject Name`, `Cycle / Review Marks`, `Total Atten %`, `Dues`, `Action`.
+    - **Two-Tier Header**:
+      - Level 1: `S.No` | `Subject Code` | `Subject Name` | `Cycle/Review Marks` (spans Cycle/Review-1, Cycle/Review-2, Model/Review-3) | `Total` | `Atten %` | `Status` | `Remarks`
+      - Level 2: `Cycle/Review-1` | `Cycle/Review-2` | `Model/Review-3`
     - Rows:
-      - `CS23521` | `Computer Networks Laboratory` | 100/100 | 100% | `No Dues` | Green `Approved` pill
-  - **3. Department Clearances**:
-    - Clearances checklist card:
-      - `HOD of the Department`: `Cleared` (Green badge)
-      - `Central Library`: `Cleared` (0 books due)
-      - `Accounts Department`: `Cleared` (Balance: ₹0)
-      - `Hostel Office`: `N/A (Day Scholar)`
-      - `Placement & Training Cell`: `Cleared`
+      - 1: `CS23521` | `Computer Networks Laboratory` | `81` | `88` | `81` | `250` | `87%` | Green `Approved` badge | `Approved`
+  - **3. Departments Table**:
+    - Columns: `S.No` | `Department Name` | `Fees/Book Dues` | `Status` | `Remarks`
+    - Rows:
+      - 1: `Accounts` | `₹ 0.00` | Green `Approved` badge | `Approved`
+      - 2: `HOD of the Department` | `-` | Green `Approved` badge | `Approved`
+  - **Bottom Action Bar**:
+    - Blue button: **`All Submitted`** (`#007bff` / `#5dade2`)
+    - Green button: **`Download Hall Ticket`** (`#28a745`) with download tray icon.
 
 ---
 
-### 16. Assessments (`Assessments`)
+### 16. Assessments (`Assessments`) & Official Hall Ticket PDF Document
 - **Status**: **OBSERVED** (Evidence: `media_1793188327598_f417de84.png`, `media_1793188341710_a829d00f.png`, `media_1793188365719_e6d9b6a0.png`)
 - **Visual Structure**:
-  - Title: `Assessments`
-  - Sub-modules:
-    - **`Hall Tickets`**:
-      - Session Card: `Nov / Dec 2026 End Semester Examinations`
-      - Status: `Eligible`
-      - Action: Green `Download Hall Ticket` button
-      - Regulatory disclaimer: *"Students must bring official college ID along with the printed hall ticket."*
+  - Title: `Assessments` / `Hall Tickets`
+  - Action trigger: Green `Download Hall Ticket` button.
+  - **Official 2-Page Institutional `Hall Ticket` PDF Document**:
+    - **Page 1: Student & Examination Schedule Details**:
+      - Header Letterhead:
+        - Left: Official RIT Tree Logo.
+        - Center:
+          - `RAJALAKSHMI INSTITUTE OF TECHNOLOGY`
+          - `(An Autonomous Institution, Affiliated to Anna University, Chennai)`
+          - `KUTHAMBAKKAM, CHENNAI - 600124.`
+          - `End Semester Examinations - November 2026`
+          - `HALL TICKET (Page 01)`
+        - Right: Box with student headshot photograph (`Photo of the Candidate`).
+      - Student Metadata Grid:
+        - `Register Number`: `2117240020044` | `Current Semester`: `05`
+        - `Name`: `AUSTIN JOSHUA M` | `DOB`: `01.03.2006`
+        - `Degree & Branch`: `B.E. Computer Science and Engineering` | `UMIS No`: `2403211710421044`
+        - `Examination Centre`: `2117 : RAJALAKSHMI INSTITUTE OF TECHNOLOGY`
+      - Registered Examination Schedule Table:
+        - Columns: `Date` | `Session` | `Semester` | `Subject Code` | `Subject Name`
+        - Verified Timetable Entries:
+          - `29-09-2026` | `FN` | `05` | `CS23511` | `Computer Networks`
+          - `03-10-2026` | `FN` | `05` | `AD23V13` | `Data Warehousing and Data Mining`
+          - `06-10-2026` | `FN` | `05` | `CS23512` | `Compiler Design`
+          - `10-10-2026` | `FN` | `05` | `AD23531` | `Deep Learning Techniques`
+          - `12-10-2026` | `FN` | `05` | `AD23V14` | `Health Care Analytics`
+          - `14-10-2026` | `AM` | `05` | `AD23532` | `Data Exploration and Visualization`
+          - `-` | `-` | `05` | `CS23521` | `Computer Networks Laboratory`
+          - `-` | `-` | `05` | `CS23IC3` | `AZURE for Data Analytics`
+          - `-` | `-` | `05` | `MX23511` | `Disaster Risk Reduction and Management`
+      - Summary & Legal Disclaimers:
+        - `No of Subjects Registered: 9 (Page 1/1 Hall Ticket permits per Page Maximum 20 Subjects only)`
+        - `NOTE :`
+          - `1. Correction in the Name / Date of Birth and missing of Photograph or incorrect Photograph, if any is to be updated in the IMS Portal when it is opened for correction.`
+          - `2. Instructions printed overleaf are to be followed strictly.`
+        - Signatures: Candidate Signature and Controller of Examinations Signature.
+    - **Page 2: Instructions to the Candidate**:
+      - Title: `INSTRUCTIONS TO THE CANDIDATE`
+      - Contains all 21 official Anna University / Autonomous examination rules (admittance rules, timing, dress code, prohibited electronic devices, answer sheet coding, invigilator compliance).
+      - Bottom Left: Verification QR Code.
+      - Bottom Right: `CONTROLLER OF EXAMINATIONS` signature and `Page(1/2)`.
 
 ---
 
