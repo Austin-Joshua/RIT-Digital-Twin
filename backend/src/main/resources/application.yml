@@ -64,6 +64,7 @@ spring:
     name: rit-university-erp
   main:
     allow-circular-references: true
+    allow-bean-definition-overriding: true
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:rit_digital_twin}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&rewriteBatchedStatements=true}
     username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:ritapp}}

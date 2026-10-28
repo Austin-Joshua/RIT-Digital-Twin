@@ -4,23 +4,31 @@ import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Runs Flyway repair before every migration in prod.
+ * Runs Flyway repair before every migration.
  * This clears any "FAILED" rows in flyway_schema_history so that
  * the application can start cleanly even if a previous migration was
- * interrupted (e.g. V11__Ultra_Performance_Optimization.sql).
+ * interrupted or schema checksums were realigned.
  */
 @Configuration
-@Profile("prod")
+@Slf4j
 public class FlywayRepairConfig {
 
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return (Flyway flyway) -> {
-            flyway.repair();   // removes failed migration records
-            flyway.migrate();  // runs any pending migrations
+            log.info("Flyway: Executing repair prior to migration to ensure clean schema history...");
+            try {
+                flyway.repair();
+                log.info("Flyway: Repair completed successfully.");
+            } catch (Exception e) {
+                log.warn("Flyway: Repair notice: {}", e.getMessage());
+            }
+            log.info("Flyway: Executing migrate...");
+            flyway.migrate();
+            log.info("Flyway: Migration completed successfully.");
         };
     }
 }
