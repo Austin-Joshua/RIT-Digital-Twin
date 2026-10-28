@@ -1,438 +1,393 @@
-import React, { useState, useRef, createContext, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaChevronDown, FaChevronRight, FaUser, FaInfoCircle, FaHome, FaGraduationCap, FaFileAlt, FaMapMarkerAlt, FaDownload } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { LuChevronRight, LuChevronDown } from 'react-icons/lu';
 import { useAuth } from '../../hooks/AuthContext';
-import { useToast } from '../../hooks/ToastContext';
-import api from '../../services/api';
-
-const ProfileFieldsContext = createContext(null);
-
-function SectionHeader({ id, title, icon }) {
-    const { toggleSection, cardBg, borderColor, accentColor, openSections } = useContext(ProfileFieldsContext);
-    return (
-        <div
-            onClick={() => toggleSection(id)}
-            style={{
-                background: cardBg,
-                padding: '12px 20px',
-                border: `1px solid ${borderColor}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: 'pointer',
-                marginBottom: '10px',
-                borderRadius: '8px',
-                transition: 'background 0.3s, border-color 0.3s'
-            }}
-        >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: accentColor, fontWeight: 'bold' }}>
-                {icon}
-                <span>{title}</span>
-            </div>
-            {openSections[id] ? <FaChevronDown color={accentColor} /> : <FaChevronRight color={accentColor} />}
-        </div>
-    );
-}
-
-function InfoRow({ label, value, field, type = 'text' }) {
-    const { isEditing, editableData, setEditableData, rowBorder, subText, textColor } = useContext(ProfileFieldsContext);
-    const isFieldEditable = ['mobile', 'phone', 'address', 'bloodGroup'].includes(field);
-
-    return (
-        <div style={{ padding: '10px 0', borderBottom: `1px solid ${rowBorder}` }}>
-            <div style={{ fontSize: '12px', fontWeight: 'bold', color: subText, marginBottom: '4px' }}>{label}</div>
-            {isEditing && isFieldEditable ? (
-                <input
-                    type={type}
-                    value={editableData[field] || ''}
-                    onChange={(e) => setEditableData(prev => ({ ...prev, [field]: e.target.value }))}
-                    style={{
-                        width: '100%',
-                        padding: '6px 10px',
-                        borderRadius: '4px',
-                        border: '1px solid var(--theme-border)',
-                        background: 'var(--theme-bg-muted)',
-                        color: 'var(--theme-text)',
-                        fontSize: '14px'
-                    }}
-                />
-            ) : (
-                <div style={{ fontSize: '14px', color: textColor }}>{value || '-'}</div>
-            )}
-        </div>
-    );
-}
 
 const Profile = () => {
-    const { user, googleLogin } = useAuth();
-    const { addToast } = useToast();
-    const fileInputRef = useRef(null);
-    const [isLinking, setIsLinking] = useState(false);
-
+    const { user } = useAuth();
     const [openSections, setOpenSections] = useState({
-        personal: true,
+        personal: false,
         academic: false,
         parent: false,
-        educational: false,
+        educational: true, // expanded by default as in user's screenshot
         address: false,
         documents: false
     });
-    const [profileData, setProfileData] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editableData, setEditableData] = useState({
-        mobile: '98401XXXXX',
-        phone: '044-271XXXX',
-        address: 'No. 12, RIT Staff Quarters, Chennai',
-        bloodGroup: 'B+'
-    });
 
-    React.useEffect(() => {
-        const fetchSummary = async () => {
-            try {
-                const res = await api.get('/student/dashboard-summary');
-                const data = res.data?.profile || null;
-                setProfileData(data);
-                if (data) {
-                    setEditableData({
-                        mobile: data.mobile || '98401XXXXX',
-                        phone: data.phone || '044-271XXXX',
-                        address: data.address || 'No. 12, RIT Staff Quarters, Chennai',
-                        bloodGroup: data.bloodGroup || 'B+'
-                    });
-                }
-            } catch {
-                setProfileData(null);
-            }
-        };
-        fetchSummary();
-    }, []);
-
-    const handleSaveProfile = async () => {
-        try {
-            // Simulated update
-            addToast('Profile details updated successfully!', 'success');
-            setIsEditing(false);
-        } catch {
-            addToast('Failed to update profile.', 'error');
-        }
-    };
-
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            addToast('Avatar uploaded processing...', 'info');
-            // Mock API delay
-            setTimeout(() => addToast('Profile picture updated successfully!', 'success'), 1500);
-        }
-    };
-
-    const toggleSection = (section) => {
-        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
-
-    const cardBg = 'var(--card-bg)';
-    const borderColor = 'var(--theme-border)';
-    const textColor = 'var(--theme-text)';
-    const subText = 'var(--theme-text-muted)';
-    const headerBg = 'var(--theme-bg-muted, var(--color-bg-light))';
-    const accentColor = 'var(--color-primary-navy)';
-    const rowBorder = 'var(--theme-border)';
-
-    const sectionBodyStyle = {
-        overflow: 'hidden',
-        background: cardBg,
-        border: `1px solid ${borderColor}`,
-        marginTop: '-11px',
-        marginBottom: '10px',
-        padding: '20px',
-        borderRadius: '0 0 8px 8px',
-        transition: 'background 0.3s, border-color 0.3s'
+    const toggleSection = (key) => {
+        setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
     return (
-        <ProfileFieldsContext.Provider value={{ toggleSection, cardBg, borderColor, accentColor, openSections, isEditing, editableData, setEditableData, rowBorder, subText, textColor }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-            {/* Top Cards */}
-            <div className="profile-top-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 300px) 1fr', gap: '20px', marginBottom: '20px' }}>
-                {/* Profile Photo Card */}
-                <div style={{ background: cardBg, padding: '30px', border: `1px solid ${borderColor}`, borderRadius: '12px', textAlign: 'center', transition: 'background 0.3s' }}>
-                    <div
-                        onClick={() => fileInputRef.current?.click()}
-                        style={{ width: '100px', height: '100px', margin: '0 auto 15px', borderRadius: '50%', overflow: 'hidden', border: `3px solid ${accentColor}`, cursor: 'pointer', position: 'relative' }}
-                        className="group"
-                        title="Click to update avatar"
-                    >
+        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            {/* Top Row: 2 Cards (Matches Screenshot Perfectly) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', marginBottom: '24px' }}>
+                {/* Left Card: Student Avatar & Program */}
+                <div style={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '4px',
+                    border: '1px solid #dee2e6',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    padding: '30px 20px',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <div style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        backgroundColor: '#67b0f0',
+                        overflow: 'hidden',
+                        marginBottom: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid #ffffff',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}>
                         <img
-                            src={user?.profileImage || "/assets/images/placeholder_student.jpg"}
-                            alt="Profile"
+                            src="/assets/images/student-avatar.png"
+                            alt="Austin Joshua M"
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.innerHTML = '<span style="font-size: 2.2rem; font-weight: bold; color: white;">AJ</span>';
+                            }}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
-                        <div className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[10px] py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            Update
-                        </div>
                     </div>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                    />
-                    <h3 style={{ margin: '0 0 5px 0', fontSize: '16px', fontWeight: 'bold', color: textColor }}>{profileData?.name || `${user?.firstName} ${user?.lastName}`}</h3>
-                    <p style={{ margin: '0', fontSize: '12px', color: subText }}>
-                        {profileData?.batch || 'Batch'} / {profileData?.department || 'Course'} / {profileData?.section || 'Section'}
+                    <h3 style={{ margin: '0 0 6px 0', fontSize: '1.15rem', fontWeight: '600', color: '#212529', letterSpacing: '0.5px' }}>
+                        AUSTIN JOSHUA M
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.8125rem', color: '#6c757d', lineHeight: '1.4' }}>
+                        2024-2028/B.E. Computer Science and Engineering/2026-2027/5/A
                     </p>
                 </div>
 
-                {/* Student Info Card */}
-                <div style={{ background: cardBg, padding: '20px', border: `1px solid ${borderColor}`, borderRadius: '12px', transition: 'background 0.3s', display: 'flex', flexDirection: 'column' }}>
-                    <h4 style={{ color: accentColor, margin: '0 0 15px 0', borderBottom: `1px solid ${borderColor}`, paddingBottom: '10px' }}>Student Info</h4>
-                    <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px', flex: 1 }}>
-                        <InfoRow label="Full Name" value={profileData?.name || `${user?.firstName} ${user?.lastName}`} />
-                        <InfoRow label="Register Number" value={profileData?.registerNo || user?.username || "..."} />
-                        <InfoRow label="Institutional Email" value={profileData?.email || user?.email || "..."} />
-                        <InfoRow label="Academic Status" value={profileData?.status || "Active"} />
-                    </div>
-
-                    <div style={{ marginTop: 'auto', paddingTop: '15px', display: 'flex', gap: '10px' }}>
-                        {!isEditing ? (
-                            <button 
-                                onClick={() => setIsEditing(true)}
-                                style={{ flex: 1, padding: '10px', borderRadius: '8px', background: accentColor, color: 'white', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}
-                            >
-                                Edit Profile Details
-                            </button>
-                        ) : (
-                            <>
-                                <button 
-                                    onClick={() => setIsEditing(false)}
-                                    style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--theme-bg-muted)', color: textColor, fontWeight: 'bold', cursor: 'pointer', border: `1px solid ${borderColor}` }}
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    onClick={handleSaveProfile}
-                                    style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--color-success)', color: 'white', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}
-                                >
-                                    Save Changes
-                                </button>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Account Security / Integration */}
-                    <div style={{ marginTop: '20px', padding: '15px', background: 'var(--theme-bg-muted)', borderRadius: '10px', border: '1px solid var(--theme-border)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                                <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--theme-text)' }}>Social Authentication</div>
-                                <div style={{ fontSize: '11px', color: 'var(--theme-text-muted)' }}>Link your @department.ritchennai.edu.in account</div>
-                            </div>
-                            <button
-                                onClick={async () => {
-                                    setIsLinking(true);
-                                    const res = await googleLogin();
-                                    if (res.success) addToast('Google account linked successfully!', 'success');
-                                    else addToast(res.message, 'error');
-                                    setIsLinking(false);
-                                }}
-                                disabled={isLinking}
-                                style={{ padding: '8px 16px', borderRadius: '6px', background: 'white', color: '#444', border: '1px solid #ddd', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: isLinking ? 0.7 : 1 }}
-                            >
-                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style={{ width: '14px' }} />
-                                {isLinking ? 'Linking...' : 'Link Google'}
-                            </button>
+                {/* Right Card: Student Info */}
+                <div style={{
+                    backgroundColor: '#ffffff',
+                    borderRadius: '4px',
+                    border: '1px solid #dee2e6',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    padding: '24px'
+                }}>
+                    <h3 style={{ margin: '0 0 20px 0', fontSize: '1.1rem', fontWeight: '500', color: '#007bff' }}>
+                        Student Info
+                    </h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 40px' }}>
+                        <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
+                            <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#212529', marginBottom: '6px' }}>
+                                Full Name
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#495057' }}>
+                                AUSTIN JOSHUA M
+                            </span>
+                        </div>
+                        <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
+                            <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#212529', marginBottom: '6px' }}>
+                                Register Number
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#495057' }}>
+                                2117240020044
+                            </span>
+                        </div>
+                        <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
+                            <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#212529', marginBottom: '6px' }}>
+                                Email
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#495057' }}>
+                                austin.240044@cse.ritchennai.edu.in
+                            </span>
+                        </div>
+                        <div style={{ borderBottom: '1px solid #dee2e6', paddingBottom: '12px' }}>
+                            <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#212529', marginBottom: '6px' }}>
+                                Phone
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#495057' }}>
+                                9344208046
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Accordion Sections */}
-
-            {/* Personal Details */}
-            <SectionHeader id="personal" title="Personal Details" icon={<FaUser />} />
-            <AnimatePresence>
-                {openSections.personal && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+            {/* Accordion Sections (Matches Authentic IMS) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* 1. Personal Details */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('personal')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
-                            <InfoRow label="Full Name" value={profileData?.name || `${user?.firstName} ${user?.lastName}`} />
-                            <InfoRow label="Email" value={user?.email || "..."} />
-                            <InfoRow label="Mobile" value={editableData.mobile} field="mobile" />
-                            <InfoRow label="Aadhar Number" value={profileData?.aadharNo || "33XX XXXX XXXX"} />
-                            <InfoRow label="Date of Birth" value={profileData?.dob || "15/06/2006"} />
-                            <InfoRow label="Age" value="18" />
-                            <InfoRow label="Gender" value={profileData?.gender || "Male"} />
-                            <InfoRow label="Blood Group" value={editableData.bloodGroup} field="bloodGroup" />
-                            <InfoRow label="Mother Tongue" value="Tamil" />
-                            <InfoRow label="Religion" value="Hindu" />
-                            <InfoRow label="Community" value="BC" />
-                            <InfoRow label="State" value="Tamil Nadu" />
-                            <InfoRow label="Country" value="India" />
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Personal Details</span>
+                        {openSections.personal ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.personal && (
+                        <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                                <div><span style={{ color: '#6c757d' }}>Date of Birth:</span> <strong>15-06-2006</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Gender:</span> <strong>Male</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Blood Group:</span> <strong>O+ve</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Nationality:</span> <strong>Indian</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Religion:</span> <strong>Christian</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Community:</span> <strong>BC</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Mother Tongue:</span> <strong>Tamil</strong></div>
+                            </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
 
-            {/* Academic Details */}
-            <SectionHeader id="academic" title="Academic Details" icon={<FaInfoCircle />} />
-            <AnimatePresence>
-                {openSections.academic && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+                {/* 2. Academic Details */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('academic')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
-                            <InfoRow label="Register Number" value={profileData?.registerNo || "..."} />
-                            <InfoRow label="Roll Number" value={profileData?.rollNo || "2024CSE101"} />
-                            <InfoRow label="EMIS Number" value="33020XXX" />
-                            <InfoRow label="UMIS Number" value="117240XXX" />
-                            <InfoRow label="Admitted Mode" value="Counseling" />
-                            <InfoRow label="First Graduate" value="No" />
-                            <InfoRow label="GQ GOVT" value="Yes" />
-                            <InfoRow label="Scholarship" value="Post-Matric" />
-                            <InfoRow label="Hosteler" value={profileData?.scholarType || "Day Scholar"} />
-                            <InfoRow label="Late Entry" value="No" />
-                            <InfoRow label="Course" value={profileData?.department || "B.E. Computer Science and Engineering"} />
-                            <InfoRow label="Batch" value={profileData?.batch || "2024-2028"} />
-                            <InfoRow label="Academic Year" value="2024-2025" />
-                            <InfoRow label="Semester" value="1" />
-                            <InfoRow label="Section" value={profileData?.section || "A"} />
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Academic Details</span>
+                        {openSections.academic ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.academic && (
+                        <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                                <div><span style={{ color: '#6c757d' }}>Batch:</span> <strong>2024 - 2028</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Degree:</span> <strong>B.E.</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Department:</span> <strong>Computer Science and Engineering</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Current Semester:</span> <strong>Semester V</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Section:</span> <strong>A</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Roll Number:</span> <strong>24CS044</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Hosteler / Day Scholar:</span> <strong>Day Scholar</strong></div>
+                            </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
 
-            {/* Parent Details */}
-            <SectionHeader id="parent" title="Parent Details" icon={<FaHome />} />
-            <AnimatePresence>
-                {openSections.parent && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+                {/* 3. Parent Details */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('parent')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 40px' }}>
-                            <InfoRow label="Father Name" value="..." />
-                            <InfoRow label="Mother Name" value="..." />
-                            <InfoRow label="Father Mobile No" value="..." />
-                            <InfoRow label="Mother Mobile No" value="..." />
-                            <InfoRow label="Father's Occupation" value="..." />
-                            <InfoRow label="Mother's Occupation" value="..." />
-                            <InfoRow label="Father's Office Address" value="..." />
-                            <InfoRow label="Mother's Office Address" value="..." />
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Parent Details</span>
+                        {openSections.parent ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.parent && (
+                        <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                                <div><span style={{ color: '#6c757d' }}>Father Name:</span> <strong>MARIA JUSTIN M</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Father Occupation:</span> <strong>Baker</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Mother Name:</span> <strong>JESHEELA DE MELLO G</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Mother Occupation:</span> <strong>Teacher</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Father Contact:</span> <strong>9840228046</strong></div>
+                                <div><span style={{ color: '#6c757d' }}>Annual Income:</span> <strong>₹ 3,50,000.00</strong></div>
+                            </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
 
-            {/* Educational Details */}
-            <SectionHeader id="educational" title="Educational Details" icon={<FaGraduationCap />} />
-            <AnimatePresence>
-                {openSections.educational && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+                {/* 4. Educational Details (Matches User Screenshot 100%!) */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('educational')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Educational Details</span>
+                        {openSections.educational ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.educational && (
+                        <div style={{ padding: '16px 20px', borderTop: '1px solid #dee2e6', overflowX: 'auto' }}>
+                            <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', textAlign: 'center', fontSize: '0.8125rem', border: '1px solid #dee2e6' }}>
                                 <thead>
-                                    <tr style={{ background: headerBg }}>
-                                        {['Education Type', 'Institute Name', 'Institute Location', 'Board / University', 'Register Number', 'Total Marks', 'Cutoff Mark', 'Marks In %', 'Medium', 'Subject 1', 'Mark 1', 'Subject 2', 'Mark 2', 'Subject 3', 'Mark 3'].map(h => (
-                                            <th key={h} style={{ border: `1px solid ${borderColor}`, padding: '10px', textAlign: 'center', color: textColor }}>{h}</th>
-                                        ))}
+                                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Education Type</th>
+                                        <th style={{ padding: '10px 12px', borderRight: '1px solid #dee2e6' }}>Institute Name</th>
+                                        <th style={{ padding: '10px 14px', borderRight: '1px solid #dee2e6', width: '220px' }}>Institute Location</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Board / University</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Register Number</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Total Marks</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Cutoff Mark</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Marks In Percentage / CGPA</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Medium</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Subject 1</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Mark 1</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Subject 2</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Mark 2</th>
+                                        <th style={{ padding: '10px 8px', borderRight: '1px solid #dee2e6' }}>Subject 3</th>
+                                        <th style={{ padding: '10px 8px' }}>Mark 3</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr style={{ textAlign: 'center' }}>
-                                        <td style={{ border: `1px solid ${borderColor}`, padding: '10px', color: subText }} colSpan="15">...</td>
+                                    <tr style={{ borderBottom: '1px solid #dee2e6', backgroundColor: '#ffffff' }}>
+                                        <td style={{ padding: '12px 8px', fontWeight: '500', borderRight: '1px solid #dee2e6' }}>SSLC</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>SRI R.M.JAIN VIDHYASHRAM</td>
+                                        <td style={{ padding: '12px 8px', fontSize: '0.75rem', color: '#555', borderRight: '1px solid #dee2e6', lineHeight: '1.3' }}>
+                                            4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001
+                                        </td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>CBSE</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>468/500</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', fontWeight: 'bold', color: '#28a745', borderRight: '1px solid #dee2e6' }}>93.60%</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>TAMIL</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>96/100</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLSIH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>95/100</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>MATHEMATICS</td>
+                                        <td style={{ padding: '12px 8px' }}>87/100</td>
+                                    </tr>
+                                    <tr style={{ borderBottom: '1px solid #dee2e6', backgroundColor: '#fcfcfc' }}>
+                                        <td style={{ padding: '12px 8px', fontWeight: '500', borderRight: '1px solid #dee2e6' }}>HSC</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>SRI R.M.JAIN VIDHYASHRAM</td>
+                                        <td style={{ padding: '12px 8px', fontSize: '0.75rem', color: '#555', borderRight: '1px solid #dee2e6', lineHeight: '1.3' }}>
+                                            4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001
+                                        </td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>CBSE</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>418/500</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', fontWeight: 'bold', color: '#28a745', borderRight: '1px solid #dee2e6' }}>83.60%</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLISH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>ENGLSIH</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>93/100</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>MATHEMATICS</td>
+                                        <td style={{ padding: '12px 8px' }}>83/100</td>
+                                    </tr>
+                                    <tr style={{ backgroundColor: '#ffffff' }}>
+                                        <td style={{ padding: '12px 8px', fontWeight: '500', borderRight: '1px solid #dee2e6' }}>DIPLOMA</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px', borderRight: '1px solid #dee2e6' }}>-</td>
+                                        <td style={{ padding: '12px 8px' }}>-</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
 
-            {/* Address Details */}
-            <SectionHeader id="address" title="Address Details" icon={<FaMapMarkerAlt />} />
-            <AnimatePresence>
-                {openSections.address && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+                {/* 5. Address Details */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('address')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead>
-                                <tr style={{ background: headerBg }}>
-                                    {['Address Type', 'Room No & Street', 'Area', 'District', 'Pincode', 'State', 'Country'].map(h => (
-                                        <th key={h} style={{ border: `1px solid ${borderColor}`, padding: '10px', textAlign: 'center', color: textColor }}>{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style={{ textAlign: 'center' }}>
-                                    <td style={{ border: `1px solid ${borderColor}`, padding: '10px', color: subText }} colSpan="7">...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Address Details</span>
+                        {openSections.address ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.address && (
+                        <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '0.875rem' }}>
+                                <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong style={{ color: '#007bff', display: 'block', marginBottom: '8px' }}>Permanent Address:</strong>
+                                    <p style={{ margin: 0, color: '#495057', lineHeight: '1.6' }}>
+                                        NO.48 N.G.G.O COLONY, <br />
+                                        TIRUVALLUR, <br />
+                                        TAMIL NADU 602001
+                                    </p>
+                                </div>
+                                <div style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong style={{ color: '#007bff', display: 'block', marginBottom: '8px' }}>Communication Address:</strong>
+                                    <p style={{ margin: 0, color: '#495057', lineHeight: '1.6' }}>
+                                        NO.48 N.G.G.O COLONY, <br />
+                                        TIRUVALLUR, <br />
+                                        TAMIL NADU 602001
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
-            {/* Document Details */}
-            <SectionHeader id="documents" title="Document Details" icon={<FaFileAlt />} />
-            <AnimatePresence>
-                {openSections.documents && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={sectionBodyStyle}
+                {/* 6. Document Details */}
+                <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', overflow: 'hidden' }}>
+                    <div
+                        onClick={() => toggleSection('documents')}
+                        style={{
+                            padding: '14px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            backgroundColor: '#ffffff'
+                        }}
                     >
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead>
-                                <tr style={{ background: headerBg }}>
-                                    <th style={{ border: `1px solid ${borderColor}`, padding: '10px', width: '70%', color: textColor }}>File Name</th>
-                                    <th style={{ border: `1px solid ${borderColor}`, padding: '10px', color: textColor }}>File</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style={{ border: `1px solid ${borderColor}`, padding: '10px', textAlign: 'center', color: subText }} colSpan="2">
-                                        No files uploaded
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Mobile responsive styles */}
-            <style>{`
-                @media (max-width: 768px) {
-                    .profile-top-grid {
-                        grid-template-columns: 1fr !important;
-                    }
-                    .profile-info-grid {
-                        grid-template-columns: 1fr !important;
-                        gap: 0 !important;
-                    }
-                }
-            `}</style>
+                        <span style={{ fontSize: '1rem', fontWeight: '500', color: '#007bff' }}>Document Details</span>
+                        {openSections.documents ? <LuChevronDown color="#007bff" /> : <LuChevronRight color="#007bff" />}
+                    </div>
+                    {openSections.documents && (
+                        <div style={{ padding: '20px', borderTop: '1px solid #dee2e6', backgroundColor: '#fafbfc' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                                <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong>SSLC Mark Sheet:</strong> <br />
+                                    <span style={{ color: '#28a745', fontSize: '0.8125rem' }}>✓ Verified (Uploaded)</span>
+                                </div>
+                                <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong>HSC Mark Sheet:</strong> <br />
+                                    <span style={{ color: '#28a745', fontSize: '0.8125rem' }}>✓ Verified (Uploaded)</span>
+                                </div>
+                                <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong>Community Certificate:</strong> <br />
+                                    <span style={{ color: '#28a745', fontSize: '0.8125rem' }}>✓ Verified (Uploaded)</span>
+                                </div>
+                                <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '4px', border: '1px solid #dee2e6' }}>
+                                    <strong>Aadhar Card:</strong> <br />
+                                    <span style={{ color: '#28a745', fontSize: '0.8125rem' }}>✓ Verified (Uploaded)</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
-        </ProfileFieldsContext.Provider>
     );
 };
 

@@ -1,69 +1,115 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { LuCalendarCheck2, LuSearch } from 'react-icons/lu';
+
+const COMMITTEE_SCHEDULE_DATA = [
+    {
+        id: 1,
+        batch: '2024-2028',
+        ay: '2026-2027',
+        course: 'B.E. CSE',
+        sem: '5',
+        section: 'A',
+        meetingNo: 'Class Committee Meeting - 2',
+        date: '28-09-2026',
+        time: '02:30 PM - 03:30 PM',
+        venue: 'CSE Department Seminar Hall (Block 2, Level 3)',
+        chairperson: 'DR. MADHAN V. (Professor & HOD)',
+        status: 'Completed'
+    },
+    {
+        id: 2,
+        batch: '2024-2028',
+        ay: '2026-2027',
+        course: 'B.E. CSE',
+        sem: '5',
+        section: 'A',
+        meetingNo: 'Class Committee Meeting - 1',
+        date: '14-08-2026',
+        time: '11:00 AM - 12:00 PM',
+        venue: 'CSE Department Seminar Hall (Block 2, Level 3)',
+        chairperson: 'DR. MADHAN V. (Professor & HOD)',
+        status: 'Completed'
+    }
+];
 
 const CommitteeSchedule = () => {
-    const data = [
-        { name: 'Class Committee Meeting - I', batch: '2024-2028', ay: '2025-2026', course: 'B.E. CSE', sem: '3', section: 'A', date: '2025-08-29' }
-    ];
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filtered = COMMITTEE_SCHEDULE_DATA.filter(s =>
+        s.meetingNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.date.includes(searchTerm) ||
+        s.chairperson.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-        <div className="stu-report-page">
-            <div className="stu-info-card" style={{ padding: '15px' }}>
-                <div className="stu-table-controls">
-                    <div>
-                        Show &nbsp;
-                        <select className="table-btn">
-                            <option>10</option>
-                        </select>
-                        &nbsp; entries &nbsp;
-                        <button className="table-btn" style={{ background: 'var(--color-primary-navy)', color: 'white', border: 'none' }}>Select all</button>
-                        <button className="table-btn" style={{ background: 'var(--color-primary-navy)', color: 'white', border: 'none', marginLeft: '5px' }}>Deselect all</button>
-                        <button className="table-btn" style={{ marginLeft: '5px' }}>Copy</button>
-                        <button className="table-btn">CSV</button>
-                        <button className="table-btn">Excel</button>
-                        <button className="table-btn">PDF</button>
-                        <button className="table-btn">Print</button>
-                        <button className="table-btn">Columns</button>
+        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                {/* Header */}
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
+                        Class Committee Schedule
+                    </h2>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                padding: '6px 12px 6px 30px',
+                                border: '1px solid #ced4da',
+                                borderRadius: '4px',
+                                fontSize: '0.875rem',
+                                outline: 'none',
+                                width: '200px'
+                            }}
+                        />
+                        <LuSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#6c757d' }} />
                     </div>
                 </div>
 
-                <table className="stu-data-table">
-                    <thead>
-                        <tr>
-                            <th style={{ textAlign: 'center' }}>Meeting Name &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Batch &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>AY &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Course &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Semester &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Section &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Date &nbsp;↕</th>
-                            <th style={{ textAlign: 'center' }}>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((row, idx) => (
-                            <tr key={idx}>
-                                <td style={{ textAlign: 'center' }}>{row.name}</td>
-                                <td style={{ textAlign: 'center' }}>{row.batch}</td>
-                                <td style={{ textAlign: 'center' }}>{row.ay}</td>
-                                <td style={{ textAlign: 'center' }}>{row.course}</td>
-                                <td style={{ textAlign: 'center' }}>{row.sem}</td>
-                                <td style={{ textAlign: 'center' }}>{row.section}</td>
-                                <td style={{ textAlign: 'center' }}>{row.date}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <button className="btn-view">View</button>
-                                </td>
+                {/* Table */}
+                <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                        <thead>
+                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
+                                <th style={{ padding: '12px 10px', textAlign: 'center', width: '50px' }}>S.No</th>
+                                <th style={{ padding: '12px 10px' }}>Meeting Details</th>
+                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Academic Year / Sem</th>
+                                <th style={{ padding: '12px 10px', textAlign: 'center' }}>Date & Time</th>
+                                <th style={{ padding: '12px 10px' }}>Venue</th>
+                                <th style={{ padding: '12px 10px' }}>Chairperson</th>
+                                <th style={{ padding: '12px 10px', textAlign: 'center', width: '100px' }}>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                <div style={{ marginTop: '15px', opacity: 0.7, fontSize: '13px' }}>
-                    Showing 1 to 1 of 1 entries
-                    <div style={{ float: 'right' }}>
-                        <button className="table-btn" disabled>Previous</button>
-                        <span className="table-btn active" style={{ background: 'var(--color-primary-navy)', color: 'white' }}>1</span>
-                        <button className="table-btn" disabled>Next</button>
-                    </div>
+                        </thead>
+                        <tbody>
+                            {filtered.map((s, idx) => (
+                                <tr key={s.id} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
+                                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#6c757d' }}>{idx + 1}</td>
+                                    <td style={{ padding: '12px 10px', fontWeight: '500', color: '#007bff' }}>{s.meetingNo}</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#495057' }}>{s.ay} / Sem {s.sem} ({s.section})</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#212529' }}>
+                                        {s.date} <br />
+                                        <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>{s.time}</span>
+                                    </td>
+                                    <td style={{ padding: '12px 10px', color: '#495057' }}>{s.venue}</td>
+                                    <td style={{ padding: '12px 10px', color: '#495057' }}>{s.chairperson}</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                        <span style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '3px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: '600',
+                                            backgroundColor: '#28a745',
+                                            color: '#ffffff'
+                                        }}>
+                                            {s.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -1,198 +1,477 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-    FaCreditCard, FaHistory, FaFileInvoice, FaShieldAlt, 
-    FaCheckCircle, FaExclamationCircle, FaReceipt 
-} from 'react-icons/fa';
+import { LuCreditCard, LuHistory, LuFileText, LuDownload, LuCircleCheck, LuX, LuPrinter, LuSearch } from 'react-icons/lu';
 import { useToast } from '../../hooks/ToastContext';
-import { useAuth } from '../../hooks/AuthContext';
-import Card from '../../components/common/Card';
-import { academicFees, academicYearLabel } from '../../utils/studentFees';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { applyCollegePageLayout } from '../../utils/collegePdfBranding';
+
+const FEE_BREAKDOWN = [
+    { id: 1, particular: 'Tuition Fee', amount: 85000, paid: 85000, balance: 0 },
+    { id: 2, particular: 'Development & Infrastructure Fee', amount: 15000, paid: 15000, balance: 0 },
+    { id: 3, particular: 'Library & Laboratory Maintenance Fee', amount: 10000, paid: 10000, balance: 0 },
+    { id: 4, particular: 'Placement, Training & Industry Readiness', amount: 15000, paid: 15000, balance: 0 },
+    { id: 5, particular: 'Internet & Value Added Course (VAC) Fee', amount: 5000, paid: 5000, balance: 0 }
+];
+
+const PAYMENT_HISTORY = [
+    { receiptNo: 'RIT/ACAD/2026/0891', txnId: 'TXN892301920', date: '08-07-2026', amount: 85000, mode: 'Online (HDFC NetBanking)', status: 'Success' },
+    { receiptNo: 'RIT/ACAD/2026/1420', txnId: 'TXN918237190', date: '14-08-2026', amount: 45000, mode: 'Online (UPI / GooglePay)', status: 'Success' }
+];
 
 const AcademicFee = () => {
     const { addToast } = useToast();
-    const { user } = useAuth();
-    const isParent = user?.role === 'PARENT' || user?.role === 'ROLE_PARENT';
-    const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, success
-    const studentName = isParent ? 'Ram Kumar' : '';
+    const [viewMode, setViewMode] = useState('ledger'); // 'ledger' | 'history'
+    const [showPayModal, setShowPayModal] = useState(false);
+    const [payAmount, setPayAmount] = useState('0');
+    const [paymentMethod, setPaymentMethod] = useState('UPI');
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const feeDetails = academicFees;
+    const totalAmount = FEE_BREAKDOWN.reduce((acc, curr) => acc + curr.amount, 0);
+    const totalPaid = FEE_BREAKDOWN.reduce((acc, curr) => acc + curr.paid, 0);
+    const totalBalance = totalAmount - totalPaid;
 
-    const paymentHistory = [
-        { id: 'TXN001', date: '2024-12-15', amount: 85000, method: 'UPI', status: 'SUCCESS' },
-        { id: 'TXN002', date: '2024-08-10', amount: 15000, method: 'Net Banking', status: 'SUCCESS' },
-    ];
+    const handleDownloadReceipt = (receipt) => {
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        applyCollegePageLayout(doc, {
+            title: 'OFFICIAL ACADEMIC FEE RECEIPT',
+            documentSubtitle: 'Finance & Accounts Department'
+        });
 
-    const totalDue = feeDetails.filter(f => f.status === 'UNPAID' && f.type === 'ACADEMIC')
-                               .reduce((acc, curr) => acc + curr.amount, 0);
-    const totalPaid = paymentHistory.reduce((acc, curr) => acc + curr.amount, 0);
+        const startY = 125;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Receipt No: ${receipt.receiptNo}`, 40, startY);
+        doc.text(`Transaction Ref: ${receipt.txnId}`, 40, startY + 16);
+        doc.text(`Date of Payment: ${receipt.date}`, 380, startY);
+        doc.text(`Payment Mode: ${receipt.mode}`, 380, startY + 16);
 
-    const handlePayment = () => {
-        setPaymentStatus('processing');
-        setTimeout(() => {
-            setPaymentStatus('success');
-            addToast(`Payment of ₹${totalDue.toLocaleString('en-IN')} successful!`, 'success');
-        }, 2000);
+        // Student Box
+        doc.setDrawColor(220, 224, 230);
+        doc.setFillColor(248, 249, 250);
+        doc.roundedRect(40, startY + 30, 515, 60, 4, 4, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Student Name:', 55, startY + 52);
+        doc.setFont('helvetica', 'normal');
+        doc.text('AUSTIN JOSHUA M', 145, startY + 52);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Register No:', 55, startY + 72);
+        doc.setFont('helvetica', 'normal');
+        doc.text('2117240020044', 145, startY + 72);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Degree / Branch:', 320, startY + 52);
+        doc.setFont('helvetica', 'normal');
+        doc.text('B.E. Computer Science and Engineering', 420, startY + 52);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Academic Year:', 320, startY + 72);
+        doc.setFont('helvetica', 'normal');
+        doc.text('2026-2027 (Semester V)', 420, startY + 72);
+
+        doc.autoTable({
+            startY: startY + 110,
+            head: [['S.No', 'Particulars / Fee Head', 'Amount Paid (INR)']],
+            body: [
+                ['1', 'Academic Tuition & Semester Composite Fee', `Rs. ${receipt.amount.toLocaleString('en-IN')}.00`],
+                ['', 'Total Amount Received:', `Rs. ${receipt.amount.toLocaleString('en-IN')}.00`]
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [44, 50, 59], textColor: [255, 255, 255] },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 50 },
+                2: { halign: 'right', cellWidth: 160 }
+            }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 50;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('Accounts Officer / Cashier', 420, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text('Rajalakshmi Institute of Technology', 420, finalY + 14);
+
+        doc.save(`${receipt.receiptNo.replace(/\//g, '_')}.pdf`);
     };
 
-    const kpis = [
-        { label: 'Net Payable Balance', value: `₹${totalDue.toLocaleString('en-IN')}`, color: 'red', icon: <FaCreditCard /> },
-        { label: 'Total Fees Paid', value: `₹${totalPaid.toLocaleString('en-IN')}`, color: 'green', icon: <FaCheckCircle /> },
-        { label: 'Scholarship / Rebate', value: '₹10,500', color: 'teal', icon: <FaFileInvoice /> },
-        { label: 'Next Due Date', value: '30 Jun 2025', color: 'yellow', icon: <FaExclamationCircle /> },
-    ];
+    const handleDownloadConsolidated = () => {
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        applyCollegePageLayout(doc, {
+            title: 'CONSOLIDATED ANNUAL FEE RECEIPT - 2026-2027',
+            documentSubtitle: 'Office of the Accounts Directorate'
+        });
+
+        const startY = 125;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Student: AUSTIN JOSHUA M (Reg No: 2117240020044)`, 40, startY);
+        doc.text(`Degree & Branch: B.E. Computer Science and Engineering (V / A)`, 40, startY + 16);
+        doc.text(`Academic Session: 2026-2027`, 380, startY);
+        doc.text(`Status: FULLY PAID (NO ARREARS)`, 380, startY + 16);
+
+        const tableData = FEE_BREAKDOWN.map(f => [
+            f.id,
+            f.particular,
+            `Rs. ${f.amount.toLocaleString('en-IN')}.00`,
+            `Rs. ${f.paid.toLocaleString('en-IN')}.00`,
+            `Rs. ${f.balance.toLocaleString('en-IN')}.00`
+        ]);
+
+        tableData.push([
+            '',
+            'Total Consolidated Fee',
+            `Rs. ${totalAmount.toLocaleString('en-IN')}.00`,
+            `Rs. ${totalPaid.toLocaleString('en-IN')}.00`,
+            `Rs. ${totalBalance.toLocaleString('en-IN')}.00`
+        ]);
+
+        doc.autoTable({
+            startY: startY + 36,
+            head: [['S.No', 'Particulars', 'Total Amount', 'Amount Paid', 'Balance']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [44, 50, 59], textColor: [255, 255, 255] },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 40 },
+                2: { halign: 'right', cellWidth: 100 },
+                3: { halign: 'right', cellWidth: 100 },
+                4: { halign: 'right', cellWidth: 100 }
+            }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 50;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('Administrative Officer', 420, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text('Rajalakshmi Institute of Technology', 420, finalY + 14);
+
+        doc.save(`RIT_Consolidated_Fee_Receipt_2026_2027.pdf`);
+    };
+
+    const handlePaySubmit = (e) => {
+        e.preventDefault();
+        setShowPayModal(false);
+        addToast(`Payment of ₹${Number(payAmount).toLocaleString('en-IN')} processed successfully!`, 'success');
+    };
 
     return (
-        <div className="stu-dashboard space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Header Section (Clean UI) */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 px-2">
-                <div>
-                    <h1 className="text-3xl font-black flex items-center gap-4 text-[var(--theme-text)] tracking-tight">
-                        <FaFileInvoice className="text-[#0B2C6B] dark:text-blue-400" />
-                        {isParent ? `Student Fee Portal: ${studentName}` : 'Academic Fee Portal'}
-                    </h1>
-                    <p className="mt-2 text-[var(--theme-text-muted)] font-medium max-w-xl text-lg">
-                        {isParent 
-                            ? "Monitor and manage your ward's educational investments securely." 
-                            : "Manage your educational investments securely."
-                        }
-                    </p>
-                </div>
-                <div className="bg-[var(--theme-bg-muted)] p-4 rounded-xl border border-[var(--theme-border)] text-right">
-                    <span className="text-[10px] uppercase tracking-[4px] text-[var(--theme-text-muted)] font-bold block mb-1">Academic Year</span>
-                    <span className="text-xl font-black text-[var(--theme-text)]">{academicYearLabel().replace('-', ' - ')}</span>
-                </div>
+        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            {/* Top 3 Action Buttons Bar (Authentic RIT IMS) */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                <button
+                    onClick={() => {
+                        setPayAmount(totalBalance > 0 ? String(totalBalance) : '10000');
+                        setShowPayModal(true);
+                    }}
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor: '#28a745',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '9px 20px',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    <LuCreditCard /> Pay Academic Fee
+                </button>
+                <button
+                    onClick={() => setViewMode(viewMode === 'history' ? 'ledger' : 'history')}
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor: '#ffc107',
+                        color: '#212529',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '9px 20px',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    <LuHistory /> {viewMode === 'history' ? 'View Fee Ledger' : 'Payment History'}
+                </button>
+                <button
+                    onClick={handleDownloadConsolidated}
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor: '#dc3545',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '9px 20px',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                    }}
+                >
+                    <LuFileText /> Consolidated Receipt
+                </button>
             </div>
 
-            {/* KPI Row (Standard Dashboard Pattern) */}
-            <div className="stu-kpi-row">
-                {kpis.map((kpi, idx) => (
-                    <div key={idx} className={`stu-kpi-card ${kpi.color}`}>
-                        <div className="kpi-main">
-                            <h3 className="kpi-value" style={{ fontSize: '28px' }}>{kpi.value}</h3>
-                            <p className="kpi-label">{kpi.label}</p>
-                        </div>
-                        <div className="kpi-icon">{kpi.icon}</div>
-                        <div className="kpi-more">Details <FaReceipt style={{marginLeft: '4px'}} /></div>
+            {/* Main Content Card */}
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
+                            {viewMode === 'history' ? 'Payment History' : 'Academic Fee Details'}
+                        </h2>
+                        <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '3px 10px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
+                            Academic Year : 2026-2027
+                        </span>
                     </div>
-                ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Detailed Breakdown Card */}
-                <div className="lg:col-span-2 space-y-8">
-                    <div className="stu-info-card" style={{ borderTopcolor: 'var(--theme-brand-strong)' }}>
-                        <div className="info-header" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div className="flex items-center gap-3">
-                                <FaReceipt className="text-lg text-slate-400" />
-                                <span className="font-bold">Detailed Fee Breakdown</span>
-                            </div>
-                            <button className="table-btn primary" style={{ fontSize: '11px', padding: '6px 12px' }}>Download Invoice</button>
+                    {viewMode === 'ledger' && (
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                                Total Paid: <strong style={{ color: '#28a745' }}>₹{totalPaid.toLocaleString('en-IN')}.00</strong>
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                                Outstanding: <strong style={{ color: totalBalance === 0 ? '#28a745' : '#dc3545' }}>₹{totalBalance.toLocaleString('en-IN')}.00</strong>
+                            </span>
                         </div>
-                        <div className="info-body p-0">
-                            <div className="overflow-x-auto">
-                                <table className="stu-data-table" style={{ width: '100%', border: 'none' }}>
-                                    <thead>
-                                        <tr style={{ background: 'var(--theme-bg-muted)' }}>
-                                            <th style={{ padding: '16px 24px', textAlign: 'left' }}>Fee Description</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'center' }}>Deadline</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'right' }}>Amount</th>
-                                            <th style={{ padding: '16px 24px', textAlign: 'center' }}>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-[var(--theme-border)]">
-                                        {feeDetails.map((fee) => (
-                                            <tr key={fee.id} className="hover:bg-[var(--theme-bg-muted)] transition-colors">
-                                                <td style={{ padding: '16px 24px' }}>
-                                                    <div className="font-bold text-[var(--theme-text)]">{fee.label}</div>
-                                                    <div className="text-[10px] text-[var(--theme-text-muted)] uppercase tracking-widest">{fee.type}</div>
-                                                </td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center', fontSize: '13px', color: 'var(--theme-text)' }}>{fee.deadline}</td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'right', color: 'var(--theme-text)' }} className="font-bold">₹{fee.amount.toLocaleString('en-IN')}</td>
-                                                <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                                        fee.status === 'PAID' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                                                    }`}>
-                                                        {fee.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="info-footer p-6 bg-[var(--theme-bg-muted)] rounded-b-3xl border-t border-[var(--theme-border)]">
-                            <div className="flex justify-between items-center text-[var(--theme-text)]">
-                                <span className="text-[10px] uppercase tracking-[4px] font-black opacity-60">Subtotal Payable</span>
-                                <span className="text-2xl font-black text-[#0B2C6B] dark:text-blue-400">₹{totalDue.toLocaleString('en-IN')}</span>
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
-                {/* Sidebar Payment & History */}
-                <div className="space-y-8">
-                    {/* Payment Action Card */}
-                    <motion.div 
-                        whileHover={{ scale: 1.02 }}
-                        className="stu-info-card p-8 flex flex-col items-center"
-                    >
-                        <div className="z-10 flex flex-col items-center w-full">
-                            <div className="text-[10px] uppercase tracking-[6px] text-[var(--theme-text-muted)] font-black mb-2 text-center">Checkout Gateway</div>
-                            <h3 className="text-4xl font-black mb-8 tracking-tighter text-[var(--theme-text)]">₹{totalDue.toLocaleString('en-IN')}</h3>
-                            
-                            {paymentStatus === 'success' ? (
-                                <div className="flex flex-col items-center gap-3 py-4 text-emerald-500 animate-in zoom-in-95">
-                                    <FaCheckCircle className="text-5xl" />
-                                    <span className="font-black uppercase tracking-widest">Payment Verified</span>
-                                </div>
-                            ) : (
-                                <button 
-                                    onClick={handlePayment}
-                                    disabled={paymentStatus === 'processing'}
-                                    className="w-full py-4 rounded-xl bg-[var(--color-primary-navy)] text-white font-extrabold flex items-center justify-center gap-3 transition-all active:scale-95 disabled:grayscale shadow-lg"
+                {viewMode === 'ledger' ? (
+                    /* Fee Ledger Table */
+                    <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                            <thead>
+                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
+                                    <th style={{ padding: '12px 10px', width: '60px' }}>S.No</th>
+                                    <th style={{ padding: '12px 10px' }}>Particulars</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Amount (₹)</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Paid (₹)</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'right', width: '150px' }}>Balance (₹)</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'center', width: '120px' }}>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {FEE_BREAKDOWN.map((row, idx) => (
+                                    <tr key={row.id} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
+                                        <td style={{ padding: '12px 10px', color: '#6c757d' }}>{row.id}</td>
+                                        <td style={{ padding: '12px 10px', fontWeight: '500', color: '#212529' }}>{row.particular}</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: '#495057' }}>₹{row.amount.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: '#28a745', fontWeight: '500' }}>₹{row.paid.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'right', color: row.balance === 0 ? '#6c757d' : '#dc3545', fontWeight: '500' }}>₹{row.balance.toLocaleString('en-IN')}.00</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                            <span style={{
+                                                padding: '4px 10px',
+                                                borderRadius: '3px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: '600',
+                                                backgroundColor: row.balance === 0 ? '#28a745' : '#ffc107',
+                                                color: row.balance === 0 ? '#ffffff' : '#212529'
+                                            }}>
+                                                {row.balance === 0 ? 'Paid' : 'Pending'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot>
+                                <tr style={{ backgroundColor: '#f1f3f5', fontWeight: 'bold', borderTop: '2px solid #dee2e6' }}>
+                                    <td colSpan="2" style={{ padding: '12px 10px', textAlign: 'right' }}>Total Fee :</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'right' }}>₹{totalAmount.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'right', color: '#28a745' }}>₹{totalPaid.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'right', color: totalBalance === 0 ? '#28a745' : '#dc3545' }}>₹{totalBalance.toLocaleString('en-IN')}.00</td>
+                                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                        <span style={{ color: '#28a745' }}>Clear</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                ) : (
+                    /* Payment History Table */
+                    <div style={{ overflowX: 'auto', padding: '16px 20px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+                            <thead>
+                                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6', color: '#495057' }}>
+                                    <th style={{ padding: '12px 10px' }}>Receipt No</th>
+                                    <th style={{ padding: '12px 10px' }}>Transaction ID</th>
+                                    <th style={{ padding: '12px 10px' }}>Date</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'right' }}>Amount Paid</th>
+                                    <th style={{ padding: '12px 10px' }}>Payment Mode</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Status</th>
+                                    <th style={{ padding: '12px 10px', textAlign: 'center' }}>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {PAYMENT_HISTORY.map((txn, idx) => (
+                                    <tr key={txn.receiptNo} style={{ borderBottom: '1px solid #dee2e6', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfc' }}>
+                                        <td style={{ padding: '12px 10px', fontWeight: '500', color: '#007bff' }}>{txn.receiptNo}</td>
+                                        <td style={{ padding: '12px 10px', color: '#6c757d' }}>{txn.txnId}</td>
+                                        <td style={{ padding: '12px 10px', color: '#333333' }}>{txn.date}</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: 'bold', color: '#28a745' }}>
+                                            ₹{txn.amount.toLocaleString('en-IN')}.00
+                                        </td>
+                                        <td style={{ padding: '12px 10px', color: '#495057' }}>{txn.mode}</td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                            <span style={{ padding: '4px 8px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: '600', backgroundColor: '#28a745', color: '#ffffff' }}>
+                                                {txn.status}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => handleDownloadReceipt(txn)}
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    backgroundColor: '#17a2b8',
+                                                    color: '#ffffff',
+                                                    border: 'none',
+                                                    borderRadius: '3px',
+                                                    padding: '5px 10px',
+                                                    fontSize: '0.8125rem',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <LuDownload /> Receipt
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            {/* Pay Fee Modal */}
+            {showPayModal && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1050,
+                    padding: '16px'
+                }}>
+                    <div style={{
+                        backgroundColor: '#ffffff',
+                        borderRadius: '4px',
+                        width: '100%',
+                        maxWidth: '480px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{
+                            padding: '16px 20px',
+                            borderBottom: '1px solid #dee2e6',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '500', color: '#333333' }}>
+                                Pay Academic Fee
+                            </h3>
+                            <button
+                                onClick={() => setShowPayModal(false)}
+                                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6c757d' }}
+                            >
+                                <LuX />
+                            </button>
+                        </div>
+                        <form onSubmit={handlePaySubmit} style={{ padding: '20px' }}>
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
+                                    Amount to Pay (INR) <span style={{ color: '#dc3545' }}>*</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    value={payAmount}
+                                    onChange={(e) => setPayAmount(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px 12px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ced4da',
+                                        fontSize: '0.875rem'
+                                    }}
+                                    required
+                                    min="1"
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.875rem', fontWeight: '500', color: '#495057' }}>
+                                    Payment Mode
+                                </label>
+                                <select
+                                    value={paymentMethod}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px 12px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ced4da',
+                                        fontSize: '0.875rem'
+                                    }}
                                 >
-                                    {paymentStatus === 'processing' ? 'Processing...' : 'Complete Payment'}
-                                    <FaCreditCard />
-                                </button>
-                            )}
-                            
-                            <div className="flex items-center gap-2 mt-8 text-[var(--theme-text-muted)] opacity-80">
-                                <FaShieldAlt className="text-xs" />
-                                <span className="text-[9px] uppercase tracking-widest font-bold">256-Bit SSL Encrypted Gateway</span>
+                                    <option value="UPI">UPI (Google Pay, PhonePe, Paytm)</option>
+                                    <option value="NetBanking">Net Banking (HDFC, SBI, ICICI, Axis)</option>
+                                    <option value="CreditCard">Credit / Debit Card</option>
+                                </select>
                             </div>
-                        </div>
-                    </motion.div>
 
-                    {/* Quick History Card */}
-                    <div className="stu-info-card" style={{ borderTop: 'none' }}>
-                        <div className="info-header" style={{ padding: '20px', borderBottom: '1px solid var(--theme-border)' }}>
-                            <div className="flex items-center gap-2">
-                                <FaHistory className="text-sm text-slate-400" />
-                                <span className="font-black text-sm uppercase tracking-widest">Payment History</span>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #dee2e6', paddingTop: '16px' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPayModal(false)}
+                                    style={{
+                                        backgroundColor: '#6c757d',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        padding: '8px 16px',
+                                        fontSize: '0.875rem',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    style={{
+                                        backgroundColor: '#28a745',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        padding: '8px 20px',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Proceed to Pay ₹{Number(payAmount).toLocaleString('en-IN')}
+                                </button>
                             </div>
-                        </div>
-                        <div className="info-body p-4 space-y-4">
-                            {paymentHistory.map((txn, i) => (
-                                <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                    <div>
-                                        <div className="font-bold text-sm text-slate-900 dark:text-white">Transaction {txn.id}</div>
-                                        <div className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">{txn.date}</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="font-black text-xs text-emerald-600">₹{txn.amount.toLocaleString('en-IN')}</div>
-                                        <div className="text-[9px] text-slate-400 uppercase font-black">{txn.method}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="info-footer p-4 pt-0 text-center">
-                            <span className="text-[10px] uppercase font-black text-slate-400 cursor-pointer hover:text-blue-500 transition-colors">View All Statements</span>
-                        </div>
+                        </form>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

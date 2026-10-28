@@ -1,125 +1,210 @@
 import React, { useState } from 'react';
-import { FaFileInvoice, FaReceipt, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { LuDownload, LuPrinter, LuCircleCheck, LuCreditCard, LuFileText } from 'react-icons/lu';
 import { useToast } from '../../hooks/ToastContext';
-import { useAuth } from '../../hooks/AuthContext';
-import { academicYearLabel, examFees } from '../../utils/studentFees';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { applyCollegePageLayout } from '../../utils/collegePdfBranding';
+
+const EXAM_FEE_SESSIONS = [
+    {
+        id: 'EXAM-2026-NOV',
+        session: 'November / December 2026 Examinations',
+        semester: 'Semester V',
+        theorySubjectsCount: 8,
+        labSubjectsCount: 1,
+        totalSubjects: 9,
+        theoryFee: 1800,
+        labFee: 450,
+        markSheetFee: 150,
+        totalFee: 2400,
+        amountPaid: 2400,
+        balance: 0,
+        paymentDate: '15-10-2026',
+        receiptNo: 'RIT/COE/REC/2026/0541',
+        txnId: 'PAY20261015091244',
+        status: 'PAID'
+    },
+    {
+        id: 'EXAM-2026-APR',
+        session: 'April / May 2026 Examinations',
+        semester: 'Semester IV',
+        theorySubjectsCount: 4,
+        labSubjectsCount: 2,
+        totalSubjects: 6,
+        theoryFee: 900,
+        labFee: 900,
+        markSheetFee: 150,
+        totalFee: 1950,
+        amountPaid: 1950,
+        balance: 0,
+        paymentDate: '12-04-2026',
+        receiptNo: 'RIT/COE/REC/2026/0122',
+        txnId: 'PAY20260412081190',
+        status: 'PAID'
+    }
+];
 
 const ExamFee = () => {
     const { addToast } = useToast();
-    const { user } = useAuth();
-    const [feesList, setFeesList] = useState(examFees);
-    const year = academicYearLabel();
+    const [sessions, setSessions] = useState(EXAM_FEE_SESSIONS);
 
-    const pendingTotal = feesList
-        .filter((fee) => fee.status === 'PENDING')
-        .reduce((sum, fee) => sum + (fee.amount - fee.paid), 0);
+    const handleDownloadReceipt = (item) => {
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        applyCollegePageLayout(doc, {
+            title: 'OFFICIAL EXAMINATION FEE RECEIPT',
+            documentSubtitle: 'Office of the Controller of Examinations'
+        });
 
-    const paidTotal = feesList.reduce((sum, fee) => sum + fee.paid, 0);
-    const grandTotal = feesList.reduce((sum, fee) => sum + fee.amount, 0);
+        const startY = 125;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Receipt No: ${item.receiptNo}`, 40, startY);
+        doc.text(`Transaction Ref: ${item.txnId}`, 40, startY + 16);
+        doc.text(`Payment Date: ${item.paymentDate}`, 380, startY);
+        doc.text(`Session: ${item.session}`, 380, startY + 16);
 
-    const payExamFee = (id) => {
-        setFeesList(prev => prev.map(f => f.id === id ? { ...f, status: 'PAID', paid: f.amount } : f));
-        const fee = feesList.find(f => f.id === id);
-        addToast(`Exam fee payment of ₹${fee?.amount.toLocaleString('en-IN')} successful for ${fee?.semester}!`, 'success');
+        // Student Box
+        doc.setDrawColor(220, 224, 230);
+        doc.setFillColor(248, 249, 250);
+        doc.roundedRect(40, startY + 30, 515, 60, 4, 4, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Student Name:', 55, startY + 52);
+        doc.setFont('helvetica', 'normal');
+        doc.text('AUSTIN JOSHUA M', 145, startY + 52);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Register No:', 55, startY + 72);
+        doc.setFont('helvetica', 'normal');
+        doc.text('2117240020044', 145, startY + 72);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Degree / Branch:', 320, startY + 52);
+        doc.setFont('helvetica', 'normal');
+        doc.text('B.E. Computer Science and Engineering', 420, startY + 52);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Semester:', 320, startY + 72);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${item.semester} / Section A`, 420, startY + 72);
+
+        doc.autoTable({
+            startY: startY + 110,
+            head: [['S.No', 'Exam Fee Component', 'Rate (INR)', 'Qty', 'Total Amount (INR)']],
+            body: [
+                ['1', 'Theory Examination Fee', 'Rs. 225.00', String(item.theorySubjectsCount), `Rs. ${item.theoryFee.toLocaleString('en-IN')}.00`],
+                ['2', 'Practical / Laboratory Exam Fee', 'Rs. 450.00', String(item.labSubjectsCount), `Rs. ${item.labFee.toLocaleString('en-IN')}.00`],
+                ['3', 'Statement of Marks Fee', 'Rs. 150.00', '1', `Rs. ${item.markSheetFee.toLocaleString('en-IN')}.00`],
+                ['', 'Total Examination Fee Paid:', '', '', `Rs. ${item.amountPaid.toLocaleString('en-IN')}.00`]
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [44, 50, 59], textColor: [255, 255, 255] },
+            columnStyles: {
+                0: { halign: 'center', cellWidth: 40 },
+                2: { halign: 'right', cellWidth: 90 },
+                3: { halign: 'center', cellWidth: 50 },
+                4: { halign: 'right', cellWidth: 120 }
+            }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 50;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('Controller of Examinations', 420, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text('Rajalakshmi Institute of Technology', 420, finalY + 14);
+
+        doc.save(`${item.receiptNo.replace(/\//g, '_')}.pdf`);
     };
 
     return (
-        <div className="stu-dashboard space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-3 text-[var(--theme-text)]">
-                        <FaFileInvoice className="text-[#0B2C6B] dark:text-gold-500" /> Exam Fee Portal
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                        Anna University End-Semester & Arrear Exam Fee Management for Register No: <strong>{user?.username || '2117240020044'}</strong>
-                    </p>
-                </div>
-                <div className="bg-blue-50 dark:bg-navy-900 px-4 py-2 rounded-xl border border-blue-200 dark:border-navy-700 text-right">
-                    <span className="text-xs text-gray-500 dark:text-gray-400 block font-bold">Academic Session</span>
-                    <strong className="text-navy-900 dark:text-gold-500">{year}</strong>
-                </div>
-            </div>
-
-            {/* Overview KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="bg-white dark:bg-navy-800 p-5 rounded-xl border border-gray-100 dark:border-navy-700 shadow-sm">
-                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1">Total Exam Fee</span>
-                    <h3 className="text-2xl font-black text-navy-900 dark:text-white">₹{grandTotal.toLocaleString('en-IN')}</h3>
-                </div>
-                <div className="bg-white dark:bg-navy-800 p-5 rounded-xl border border-gray-100 dark:border-navy-700 shadow-sm">
-                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1">Amount Paid</span>
-                    <h3 className="text-2xl font-black text-green-600 dark:text-green-400 flex items-center gap-2">
-                        ₹{paidTotal.toLocaleString('en-IN')} <FaCheckCircle className="text-lg" />
-                    </h3>
-                </div>
-                <div className="bg-white dark:bg-navy-800 p-5 rounded-xl border border-gray-100 dark:border-navy-700 shadow-sm">
-                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1">Balance Due</span>
-                    <h3 className="text-2xl font-black text-amber-600 dark:text-amber-400 flex items-center gap-2">
-                        ₹{pendingTotal.toLocaleString('en-IN')} {pendingTotal > 0 && <FaExclamationCircle className="text-lg" />}
-                    </h3>
-                </div>
-            </div>
-
-            {/* Exam Fee Table */}
-            <div className="stu-info-card" style={{ borderTopColor: '#0b2c6b' }}>
-                <div className="info-header" style={{ padding: '16px 20px' }}>
-                    <span className="font-bold text-lg">Semester Exam Fee Breakdown</span>
-                </div>
-                <div className="info-body" style={{ padding: 0 }}>
-                    <div className="overflow-x-auto">
-                        <table className="stu-data-table" style={{ width: '100%' }}>
-                            <thead>
-                                <tr>
-                                    <th>Semester</th>
-                                    <th>Fee Description</th>
-                                    <th>Due Date</th>
-                                    <th>Total Amount</th>
-                                    <th>Paid Amount</th>
-                                    <th>Balance</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {feesList.map((fee) => {
-                                    const isPaid = fee.status === 'PAID';
-                                    const balance = fee.amount - fee.paid;
-                                    return (
-                                        <tr key={fee.id}>
-                                            <td><strong>{fee.semester}</strong></td>
-                                            <td>{fee.title}</td>
-                                            <td>{fee.dueDate}</td>
-                                            <td>₹{fee.amount.toLocaleString('en-IN')}</td>
-                                            <td className="text-green-600 font-bold">₹{fee.paid.toLocaleString('en-IN')}</td>
-                                            <td className={balance > 0 ? 'text-amber-600 font-bold' : 'text-gray-400'}>₹{balance.toLocaleString('en-IN')}</td>
-                                            <td>
-                                                <span className={`status-badge ${isPaid ? 'approved' : 'pending'}`}>
-                                                    {fee.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {!isPaid ? (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => payExamFee(fee.id)}
-                                                        className="table-btn primary"
-                                                        style={{ padding: '4px 12px', fontSize: '12px' }}
-                                                    >
-                                                        <FaReceipt /> Pay ₹{balance.toLocaleString('en-IN')}
-                                                    </button>
-                                                ) : (
-                                                    <span className="text-xs text-green-600 dark:text-green-400 font-bold flex items-center gap-1">
-                                                        <FaCheckCircle /> Paid
-                                                    </span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+        <div style={{ padding: '20px 24px', backgroundColor: '#f4f6f9', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+            {/* Header Card */}
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', marginBottom: '20px', padding: '16px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div>
+                        <h2 style={{ margin: '0 0 6px 0', fontSize: '1.25rem', fontWeight: '500', color: '#333333' }}>
+                            Exam Fee
+                        </h2>
+                        <span style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                            Anna University Autonomous End-Semester & Arrear Examination Fee Ledger
+                        </span>
                     </div>
+                    <span style={{ backgroundColor: '#007bff', color: '#ffffff', padding: '4px 12px', borderRadius: '3px', fontSize: '0.8125rem', fontWeight: '500' }}>
+                        Register No: 2117240020044
+                    </span>
                 </div>
+            </div>
+
+            {/* Session Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {sessions.map((item) => (
+                    <div key={item.id} style={{ backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #dee2e6', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                        <div style={{ padding: '14px 20px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #dee2e6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <strong style={{ fontSize: '1rem', color: '#212529' }}>{item.session}</strong>
+                                <span style={{ backgroundColor: '#e9ecef', color: '#495057', padding: '2px 8px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                    {item.semester}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    padding: '4px 10px',
+                                    borderRadius: '3px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '600',
+                                    backgroundColor: '#28a745',
+                                    color: '#ffffff'
+                                }}>
+                                    <LuCircleCheck /> {item.status}
+                                </span>
+                                <button
+                                    onClick={() => handleDownloadReceipt(item)}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        backgroundColor: '#28a745',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '3px',
+                                        padding: '5px 12px',
+                                        fontSize: '0.8125rem',
+                                        fontWeight: '500',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <LuDownload /> Download Receipt
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ padding: '16px 20px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px', fontSize: '0.875rem' }}>
+                                <div>
+                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Total Registered Courses:</span>
+                                    <strong>{item.totalSubjects} Subjects ({item.theorySubjectsCount} Theory + {item.labSubjectsCount} Practical)</strong>
+                                </div>
+                                <div>
+                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Receipt Number:</span>
+                                    <strong style={{ color: '#007bff' }}>{item.receiptNo}</strong>
+                                </div>
+                                <div>
+                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Date of Payment:</span>
+                                    <strong>{item.paymentDate}</strong>
+                                </div>
+                                <div>
+                                    <span style={{ color: '#6c757d', display: 'block', marginBottom: '2px' }}>Total Amount Paid:</span>
+                                    <strong style={{ color: '#28a745', fontSize: '1rem' }}>₹{item.amountPaid.toLocaleString('en-IN')}.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

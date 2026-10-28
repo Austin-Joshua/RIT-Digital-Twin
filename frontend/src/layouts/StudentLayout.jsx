@@ -3,11 +3,11 @@ import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/AuthContext';
 import {
-    LuLayoutDashboard, LuClock, LuBookOpen, LuFileText, LuCalendarCheck2,
-    LuAward, LuPenTool, LuTestTube, LuClipboardList,
+    LuLayoutDashboard, LuCalendar, LuBookOpen, LuFileText, LuCalendarCheck2,
+    LuAward, LuPenTool, LuSquareCheck, LuClipboardList,
     LuBook, LuBanknote, LuMessageSquare, LuUsers,
-    LuFileCheck, LuMail, LuKey, LuLogOut,
-    LuMenu, LuBell, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
+    LuFileCheck, LuMail, LuKey, LuLogOut, LuListChecks,
+    LuMenu, LuUser, LuChevronDown, LuChevronRight, LuBus, LuCalculator, LuSettings, LuMap,
     LuSun, LuMoon, LuMonitor
 } from 'react-icons/lu';
 import GlobalSearch from '../components/common/GlobalSearch';
@@ -19,22 +19,18 @@ import './student-layout.css';
 
 const studentNav = [
     { path: '/student', label: 'Dashboard', icon: <LuLayoutDashboard />, end: true },
-    { path: '/student/timetable', label: 'My Time Table', icon: <LuClock /> },
+    { path: '/student/timetable', label: 'My Time Table', icon: <LuCalendar /> },
     { path: '/student/registration', label: 'My Subject Registration', icon: <LuBookOpen /> },
     { path: '/student/leave', label: 'Apply Leave / OD', icon: <LuFileText /> },
     { path: '/student/attendance', label: 'Attendance', icon: <LuCalendarCheck2 /> },
     { path: '/student/certificates', label: 'Apply Certificates', icon: <LuAward /> },
     { path: '/student/cat-mark', label: 'CAT Mark', icon: <LuPenTool /> },
-    { path: '/student/lab-mark', label: 'LAB Mark', icon: <LuTestTube /> },
+    { path: '/student/lab-mark', label: 'LAB Mark', icon: <LuSquareCheck /> },
     { path: '/student/assignment', label: 'Assignment Mark', icon: <LuClipboardList /> },
     { path: '/student/gradebook', label: 'Grade Book', icon: <LuBook /> },
     { path: '/student/fee', label: 'Academic Fee', icon: <LuBanknote /> },
     { path: '/student/exam-fee', label: 'Exam Fee', icon: <LuBanknote /> },
     { path: '/student/feedbacks', label: 'Feedbacks', icon: <LuMessageSquare /> },
-    { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
-    { path: '/student/clubs', label: 'Club Management', icon: <LuUsers /> },
-    { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
-    { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
 ];
 
 const LG_BREAKPOINT = 1024;
@@ -45,6 +41,7 @@ const StudentLayout = () => {
     const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= LG_BREAKPOINT);
     const [committeeOpen, setCommitteeOpen] = useState(false);
+    const [digitalTwinOpen, setDigitalTwinOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -88,11 +85,7 @@ const StudentLayout = () => {
         .trim();
     const displayName = resolvedFullName
         ? resolvedFullName.toUpperCase()
-        : (user?.username || 'STUDENT').toUpperCase();
-    const signedInPrimary = resolvedFullName || user?.username || 'Student';
-    const signedInSecondary = user?.registerNo
-        ? `Reg No: ${user.registerNo}`
-        : (user?.email || 'student@ritchennai.edu.in');
+        : (user?.username || 'AUSTIN JOSHUA M').toUpperCase();
 
     const navItems = [
         ...studentNav,
@@ -104,13 +97,26 @@ const StudentLayout = () => {
             onToggle: () => setCommitteeOpen(!committeeOpen),
             subItems: [
                 { path: '/student/committee/schedule', label: 'Schedule', icon: <LuCalendarCheck2 /> },
-                { path: '/student/committee/minutes', label: 'Minutes of Meeting', icon: <LuFileText /> },
+                { path: '/student/committee/minutes', label: 'Minutes Of Meet', icon: <LuFileText /> },
             ]
         },
-        { path: '/student/profile', label: 'My Profile', icon: <LuUser /> },
-        { path: '/student/nodue', label: 'No Due Request', icon: <LuFileCheck /> },
+        { path: '/student/no-due', label: 'No Due Request', icon: <LuFileCheck /> },
+        { path: '/student/assessments', label: 'Assessments', icon: <LuListChecks /> },
         { path: '/student/messages', label: 'Messages', icon: <LuMail /> },
-        { path: '/student/change-password', label: 'Change Password', icon: <LuKey /> },
+        { path: '/student/change-password', label: 'Change password', icon: <LuKey /> },
+        {
+            label: 'Digital Twin Labs',
+            icon: <LuMap />,
+            isDropdown: true,
+            isOpen: digitalTwinOpen,
+            onToggle: () => setDigitalTwinOpen(!digitalTwinOpen),
+            subItems: [
+                { path: '/student/simulator', label: 'CGPA Simulator', icon: <LuCalculator /> },
+                { path: '/student/clubs', label: 'Club Management', icon: <LuUsers /> },
+                { path: '/student/transport', label: 'Transport Directory', icon: <LuBus /> },
+                { path: '/student/map', label: 'Campus IoT Map', icon: <LuMap /> },
+            ]
+        }
     ];
 
     return (
@@ -142,8 +148,7 @@ const StudentLayout = () => {
 
             {/* ── Main ── */}
             <div className="stu-main">
-                {/* Top Bar — exact IMS: white topbar, gray icons */}
-                {/* Top Bar — refined visibility */}
+                {/* Top Bar — exact IMS: white topbar, gray icons, blue user pill */}
                 <header className="stu-topbar">
                     <div className="stu-topbar-left lg:hidden desktop-hidden" style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px' }}>
                         {/* 1. Hamburger Toggle (Mobile Only) */}
@@ -171,103 +176,94 @@ const StudentLayout = () => {
                         </Link>
                     </div>
 
-                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', padding: '0 8px' }}>
+                    <div className="stu-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto', padding: '0 16px' }}>
 
                         {/* 3. Theme Toggle */}
                         <button
                             onClick={toggleTheme}
                             className="stu-topbar-icon-btn"
                             style={{
-                                background: 'none', border: 'none', fontSize: '22px',
-                                cursor: 'pointer', color: 'var(--ims-icon-color)',
+                                background: 'none', border: 'none', fontSize: '20px',
+                                cursor: 'pointer', color: '#6c757d',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                             title={`Theme: ${themePreference}`}
                         >
-                            {themePreference === 'system' ? <LuMonitor size={22} /> : isDarkMode ? <LuMoon size={22} /> : <LuSun size={22} />}
+                            {themePreference === 'system' ? <LuMonitor size={20} /> : isDarkMode ? <LuMoon size={20} /> : <LuSun size={20} />}
                         </button>
 
                         {/* 4. Notifications */}
                         <NotificationBar />
 
-                        {/* 5. User Profile */}
+                        {/* 5. User Profile (Authentic IMS Royal Blue Pill) */}
                         <div style={{ position: 'relative' }} ref={dropdownRef}>
                             <button
                                 className="stu-user-badge"
                                 onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    backgroundColor: '#007bff',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    padding: '6px 14px',
+                                    fontWeight: 600,
+                                    fontSize: '12.5px',
+                                    cursor: 'pointer',
+                                    letterSpacing: '0.3px',
+                                    transition: 'background 0.2s'
+                                }}
                             >
-                                <LuUser className="user-icon" />
-                                <span className="hidden md:inline">{displayName}</span>
+                                <LuUser className="user-icon" style={{ fontSize: '15px' }} />
+                                <span>{displayName}</span>
                             </button>
 
                             <AnimatePresence>
                                 {userMenuOpen && (
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        initial={{ opacity: 0, scale: 0.95, y: -6 }}
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: -6 }}
                                         transition={{ duration: 0.15 }}
                                         style={{
                                             position: 'absolute',
                                             top: '100%',
                                             right: 0,
-                                            marginTop: '8px',
-                                            background: isDarkMode ? 'var(--ims-topbar-bg)' : 'white',
+                                            marginTop: '6px',
+                                            background: isDarkMode ? '#1e293b' : '#ffffff',
                                             borderRadius: '4px',
-                                            boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.15)',
+                                            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                                             width: '180px',
                                             zIndex: 1000,
-                                            border: isDarkMode ? '1px solid #444' : '1px solid #eee'
+                                            border: isDarkMode ? '1px solid #444' : '1px solid #e9ecef',
+                                            overflow: 'hidden'
                                         }}
                                     >
-                                        <div style={{ padding: '12px 16px', borderBottom: '1px solid #f4f4f4', background: isDarkMode ? 'var(--ims-bg-dark)' : '#f8fafc' }}>
-                                            <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', marginBottom: '2px', fontWeight: 'bold' }}>Signed in as</div>
-                                            <div style={{ fontSize: '13px', color: isDarkMode ? '#e2e8f0' : '#333', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInPrimary}</div>
-                                            <div style={{ fontSize: '11px', color: isDarkMode ? '#94a3b8' : '#64748b', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signedInSecondary}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--color-accent-gold)', marginTop: '4px', fontWeight: 'bold' }}>{user?.role === 'ADMIN' ? 'Principal' : user?.role}</div>
-                                        </div>
                                         <NavLink
                                             to="/student/profile"
                                             style={{
-                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
-                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                padding: '10px 16px', textDecoration: 'none',
+                                                color: isDarkMode ? '#e2e8f0' : '#333333', fontSize: '13px',
+                                                borderBottom: isDarkMode ? '1px solid #334155' : '1px solid #f1f5f9'
                                             }}
                                             onClick={() => setUserMenuOpen(false)}
                                         >
-                                            <LuUser style={{ marginRight: '8px', verticalAlign: 'middle' }} /> My Profile
-                                        </NavLink>
-                                        <NavLink
-                                            to="/student/change-password"
-                                            style={{
-                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
-                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
-                                            }}
-                                            onClick={() => setUserMenuOpen(false)}
-                                        >
-                                            <LuKey style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Change Password
-                                        </NavLink>
-                                        <NavLink
-                                            to="/student/settings"
-                                            style={{
-                                                display: 'block', padding: '12px 16px', textDecoration: 'none',
-                                                color: isDarkMode ? '#e2e8f0' : '#333', fontSize: '14px', borderBottom: '1px solid #f4f4f4'
-                                            }}
-                                            onClick={() => setUserMenuOpen(false)}
-                                        >
-                                            <LuSettings style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Settings
+                                            <LuUser size={15} /> My Profile
                                         </NavLink>
                                         <button
                                             onClick={handleLogout}
                                             className="app-logout"
                                             style={{
-                                                width: '100%', textAlign: 'left', padding: '12px 16px',
-                                                border: 'none', borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.12)' : '#e2e8f0'}`,
-                                                background: 'transparent', color: '#ef4444',
-                                                fontSize: '14px', cursor: 'pointer', fontWeight: '800',
-                                                display: 'flex', alignItems: 'center', gap: '8px'
+                                                width: '100%', textAlign: 'left', padding: '10px 16px',
+                                                border: 'none', background: 'transparent',
+                                                color: '#ef4444', fontSize: '13px', cursor: 'pointer',
+                                                fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px'
                                             }}
                                         >
-                                            <LuLogOut size={18} style={{ color: 'inherit', flexShrink: 0 }} /> <span>Logout</span>
+                                            <LuLogOut size={15} /> <span>Logout</span>
                                         </button>
                                     </motion.div>
                                 )}
@@ -276,17 +272,32 @@ const StudentLayout = () => {
                     </div>
                 </header>
 
-
                 {/* Content */}
-                <div className="stu-content">
-                    <Suspense fallback={
-                        <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
-                            <div className="app-soft-loader" />
-                            Loading page...
+                <div className="stu-content" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 56px)' }}>
+                    <div style={{ flex: 1 }}>
+                        <Suspense fallback={
+                            <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', color: 'var(--theme-text)', opacity: 0.9, fontWeight: 700 }}>
+                                <div className="app-soft-loader" />
+                                Loading page...
+                            </div>
+                        }>
+                            <Outlet />
+                        </Suspense>
+                    </div>
+
+                    {/* Authentic Institutional Footer */}
+                    <footer className="stu-footer" style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '12px 24px', fontSize: '12.5px', color: '#6c757d',
+                        borderTop: '1px solid #e9ecef', background: isDarkMode ? '#1e293b' : '#ffffff',
+                        marginTop: 'auto'
+                    }}>
+                        <span>&copy; All rights reserved.</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: isDarkMode ? '#f8fafc' : '#333333' }}>
+                            <img src="/assets/images/RIT_LOGO.webp" alt="RIT" style={{ width: '18px', height: '18px', borderRadius: '50%' }} />
+                            <span>RIT-IMS</span>
                         </div>
-                    }>
-                        <Outlet />
-                    </Suspense>
+                    </footer>
                 </div>
 
                 {/* AI Assistant Integration */}

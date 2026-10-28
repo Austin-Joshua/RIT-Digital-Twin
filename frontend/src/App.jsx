@@ -80,6 +80,7 @@ const Feedbacks = lazy(() => import('./pages/student/Feedbacks'));
 const CommitteeSchedule = lazy(() => import('./pages/student/CommitteeSchedule'));
 const CommitteeMinutes = lazy(() => import('./pages/student/CommitteeMinutes'));
 const NoDueRequest = lazy(() => import('./pages/student/NoDueRequest'));
+const Assessments = lazy(() => import('./pages/student/Assessments'));
 const Messages = lazy(() => import('./pages/student/Messages'));
 const ChangePassword = lazy(() => import('./pages/auth/ChangePassword'));
 const TransportRoute = lazy(() => import('./pages/student/TransportRoute'));
@@ -168,6 +169,7 @@ const App = () => {
                   <Route element={<AuthLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/profile/password" element={<Navigate to="/student/change-password" replace />} />
                   </Route>
                   <Route element={<Suspense fallback={<PageLoader />}><Outlet /></Suspense>}>
                   {/* Student Mode */}
@@ -190,6 +192,8 @@ const App = () => {
                     <Route path="committee/schedule" element={<CommitteeSchedule />} />
                     <Route path="committee/minutes" element={<CommitteeMinutes />} />
                     <Route path="nodue" element={<NoDueRequest />} />
+                    <Route path="no-due" element={<NoDueRequest />} />
+                    <Route path="assessments" element={<Assessments />} />
                     <Route path="messages" element={<Messages />} />
                     <Route path="change-password" element={<ChangePassword />} />
                     <Route path="transport" element={<TransportDirectory />} />

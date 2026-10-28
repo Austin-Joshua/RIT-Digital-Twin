@@ -6,9 +6,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell } from 'react-icons/fa';
 import { getSockJsEndpoint } from '../utils/websocketUrls';
 
+const DEFAULT_NOTIFICATIONS = [
+    { title: 'Class Committee MOM Has Been Generated', link: '/student/committee/minutes' },
+    { title: 'Class Committee Schedule Has Been Modified', link: '/student/committee/schedule' },
+    { title: 'Class Committee MOM Has Been Generated', link: '/student/committee/minutes' },
+    { title: 'Class Committee MOM Has Been Generated', link: '/student/committee/minutes' },
+    { title: 'Class Committee Has Been Scheduled', link: '/student/committee/schedule' },
+];
+
 const NotificationBar = () => {
     const { user } = useAuth();
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState(DEFAULT_NOTIFICATIONS);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -19,13 +27,17 @@ const NotificationBar = () => {
             webSocketFactory: () => new SockJS(getSockJsEndpoint('/ws-notifications')),
             onConnect: () => {
                 client.subscribe('/topic/global', (message) => {
-                    const notif = JSON.parse(message.body);
-                    setNotifications(prev => [notif, ...prev]);
+                    try {
+                        const notif = JSON.parse(message.body);
+                        setNotifications(prev => [notif, ...prev]);
+                    } catch (_) {}
                 });
 
                 client.subscribe(`/user/${user.userId}/topic/notifications`, (message) => {
-                    const notif = JSON.parse(message.body);
-                    setNotifications(prev => [notif, ...prev]);
+                    try {
+                        const notif = JSON.parse(message.body);
+                        setNotifications(prev => [notif, ...prev]);
+                    } catch (_) {}
                 });
             }
         });
@@ -45,65 +57,46 @@ const NotificationBar = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const dismissNotif = (idx) => {
-        setNotifications(prev => prev.filter((_, i) => i !== idx));
-    };
-
     return (
         <div style={{ position: 'relative' }} ref={dropdownRef}>
             <button
                 className="stu-topbar-icon-btn"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    background: 'none', border: 'none', fontSize: '22px',
-                    cursor: 'pointer', color: 'var(--ims-icon-color)',
+                    background: 'none', border: 'none', fontSize: '18px',
+                    cursor: 'pointer', color: '#6c757d',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    position: 'relative', width: '38px', height: '38px', minWidth: '38px', minHeight: '38px', borderRadius: '8px'
+                    position: 'relative', width: '36px', height: '36px', borderRadius: '4px'
                 }}
                 title="Notifications"
             >
-                <FaBell style={{ fontSize: '22px', width: '22px', height: '22px' }} />
+                <FaBell style={{ fontSize: '18px' }} />
                 {notifications.length > 0 && (
                     <span style={{
-                        position: 'absolute', top: '-8px', right: '-8px',
-                        background: '#ef4444', color: 'white', fontSize: '10px',
-                        fontWeight: 'bold', padding: '2px 6px', borderRadius: '10px'
-                    }}>
-                        {notifications.length}
-                    </span>
+                        position: 'absolute', top: '4px', right: '4px',
+                        width: '7px', height: '7px',
+                        background: '#007bff', borderRadius: '50%'
+                    }} />
                 )}
             </button>
 
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 4, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                        transition={{ duration: 0.2 }}
+                        exit={{ opacity: 0, scale: 0.98, y: 4 }}
+                        transition={{ duration: 0.15 }}
                         style={{
-                            position: 'absolute', top: '45px', right: '-10px', width: '320px',
-                            background: 'var(--card-bg)', borderRadius: '16px',
-                            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-                            border: '1px solid var(--theme-border)', zIndex: 9999, overflow: 'hidden'
+                            position: 'absolute', top: '40px', right: '-10px', width: '280px',
+                            background: '#ffffff', borderRadius: '4px',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                            border: '1px solid #e2e8f0', zIndex: 9999, overflow: 'hidden'
                         }}
                     >
-                        <div style={{
-                            padding: '16px 20px',
-                            background: '#0B2C6B',
-                            color: 'white',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{ fontWeight: 'bold' }}>Notifications</span>
-                            <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '10px' }}>
-                                {notifications.length} New
-                            </span>
-                        </div>
-                        <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                        <div style={{ maxHeight: '280px', overflowY: 'auto' }}>
                             {notifications.length === 0 ? (
-                                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--theme-text-muted)', fontSize: '14px' }}>
+                                <div style={{ padding: '16px', textAlign: 'center', color: '#6c757d', fontSize: '13px' }}>
                                     No new notifications
                                 </div>
                             ) : (
@@ -111,17 +104,20 @@ const NotificationBar = () => {
                                     <div
                                         key={idx}
                                         style={{
-                                            padding: '16px', borderBottom: '1px solid var(--theme-border)',
-                                            color: 'var(--theme-text)', cursor: 'pointer',
-                                            transition: 'background 0.2s',
-                                            background: 'var(--card-bg)'
+                                            padding: '12px 16px', borderBottom: '1px solid #f1f5f9',
+                                            cursor: 'pointer', transition: 'background 0.15s',
+                                            background: '#ffffff'
                                         }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--theme-bg-muted)'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--card-bg)'; }}
-                                        onClick={() => dismissNotif(idx)}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
+                                        onClick={() => {
+                                            if (notif.link) window.location.href = notif.link;
+                                            setIsOpen(false);
+                                        }}
                                     >
-                                        <strong style={{ display: 'block', fontSize: '14px', marginBottom: '4px', color: 'var(--theme-text)' }}>{notif.title}</strong>
-                                        <span style={{ fontSize: '12px', color: 'var(--theme-text-muted)' }}>{notif.message}</span>
+                                        <div style={{ fontSize: '12.5px', color: '#007bff', lineHeight: 1.4, fontWeight: 500 }}>
+                                            {notif.title || notif.message}
+                                        </div>
                                     </div>
                                 ))
                             )}
