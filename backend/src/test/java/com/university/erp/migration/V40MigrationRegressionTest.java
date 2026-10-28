@@ -24,7 +24,6 @@ class V40MigrationRegressionTest {
         String sql = loadV40Sql();
 
         // Must NOT contain direct unconditioned statements referencing section_code
-        // e.g., "SET @sql = 'UPDATE timetable_slots SET section = section_code..." without IF guard
         assertFalse(sql.contains("SET @sql = 'UPDATE timetable_slots SET section = section_code WHERE"),
                 "V40 must not unconditionally assign an UPDATE containing section_code");
 
@@ -33,6 +32,40 @@ class V40MigrationRegressionTest {
                 "V40 must condition section_code UPDATE on @col_section_code_exists = 1");
         assertTrue(sql.contains("@col_section_code_exists = (SELECT COUNT(*) FROM information_schema.columns"),
                 "V40 must query information_schema.columns for section_code");
+    }
+
+    @Test
+    @DisplayName("Verify V40 SQL guards legacy faculty and subject foreign key backfills")
+    void testV40SqlGuardsLegacyFacultyAndSubjectForeignKeys() throws Exception {
+        String sql = loadV40Sql();
+
+        // Must guard faculty_username
+        assertTrue(sql.contains("@col_fac_user_exists = (SELECT COUNT(*) FROM information_schema.columns"),
+                "V40 must check for faculty_username column before querying it");
+        assertTrue(sql.contains("IF(@tbl_slots = 1 AND @col_fac_user_exists = 1,"),
+                "V40 must use IF guard for faculty_username backfill");
+
+        // Must guard subject_code
+        assertTrue(sql.contains("@col_subj_code_exists = (SELECT COUNT(*) FROM information_schema.columns"),
+                "V40 must check for subject_code column before querying it");
+        assertTrue(sql.contains("IF(@tbl_slots = 1 AND @col_subj_code_exists = 1,"),
+                "V40 must use IF guard for subject_code backfill");
+    }
+
+    @Test
+    @DisplayName("Verify V40 SQL guards indexes against duplicate key creation")
+    void testV40SqlGuardsIndexesAgainstDuplicates() throws Exception {
+        String sql = loadV40Sql();
+
+        // Foreign key indexes on timetable_slots
+        assertTrue(sql.contains("index_name = 'idx_timetable_faculty_id'"),
+                "V40 must check information_schema.statistics for idx_timetable_faculty_id");
+        assertTrue(sql.contains("index_name = 'idx_timetable_subject_id'"),
+                "V40 must check information_schema.statistics for idx_timetable_subject_id");
+        assertTrue(sql.contains("@idx_fac_exists = 0"),
+                "V40 must only create faculty index if not already present");
+        assertTrue(sql.contains("@idx_subj_exists = 0"),
+                "V40 must only create subject index if not already present");
     }
 
     @Test

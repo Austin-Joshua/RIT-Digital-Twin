@@ -3,7 +3,9 @@ package com.university.erp.config;
 import com.university.erp.model.*;
 import com.university.erp.repository.*;
 import com.university.erp.security.LoginCredentials;
+import com.university.erp.service.AttendanceAnalyticsService;
 import com.university.erp.service.CampusCredentialAlignment;
+import com.university.erp.service.StudentSuccessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -60,9 +63,17 @@ class StudentDataSeederRegressionTest {
     @Mock
     private PerformanceWarningRepository performanceWarningRepository;
     @Mock
-    private com.university.erp.service.AttendanceAnalyticsService attendanceAnalyticsService;
+    private AttendanceAnalyticsService attendanceAnalyticsService;
     @Mock
-    private com.university.erp.service.StudentSuccessService studentSuccessService;
+    private StudentSuccessService studentSuccessService;
+    @Mock
+    private HostelRepository hostelRepository;
+    @Mock
+    private RoomRepository roomRepository;
+    @Mock
+    private CompanyRepository companyRepository;
+    @Mock
+    private PlacementOpportunityRepository opportunityRepository;
 
     @InjectMocks
     private StudentDataSeeder studentDataSeeder;
@@ -75,6 +86,16 @@ class StudentDataSeederRegressionTest {
 
     @BeforeEach
     void setUp() {
+        studentDataSeeder.setSelf(studentDataSeeder);
+        ReflectionTestUtils.setField(studentDataSeeder, "hostelRepository", hostelRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "roomRepository", roomRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "companyRepository", companyRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "opportunityRepository", opportunityRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "attendanceRiskRepository", attendanceRiskRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "performanceWarningRepository", performanceWarningRepository);
+        ReflectionTestUtils.setField(studentDataSeeder, "attendanceAnalyticsService", attendanceAnalyticsService);
+        ReflectionTestUtils.setField(studentDataSeeder, "studentSuccessService", studentSuccessService);
+
         testUser = User.builder()
                 .userId(100L)
                 .username("2117240020044")
@@ -200,7 +221,7 @@ class StudentDataSeederRegressionTest {
 
     @Test
     @DisplayName("Idempotency: seedBatch skips provisioning when student, user, and subject mappings exist")
-    void testSeedBatch_WhenStudentAlreadyFullyProvisioned_SkipsProcessing() throws Exception {
+    void testSeedBatch_WhenStudentAlreadyFullyProvisioned_SkipsProcessing() {
         testUser.setLinkedStudent(testStudent);
         when(semesterRepository.findBySemesterNumber(1)).thenReturn(Optional.of(sem1));
         when(subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(anyInt(), anyString()))
@@ -212,15 +233,10 @@ class StudentDataSeederRegressionTest {
         Department dept = Department.builder().id(10L).code("CSE").deptName("B.E. Computer Science and Engineering").build();
         Role role = Role.builder().roleId(1L).roleName(Role.UserRole.STUDENT).build();
 
-        // Use reflection to access StudentInfo constructor or instantiate info
-        Class<?> infoClass = Class.forName("com.university.erp.config.StudentDataSeeder$StudentInfo");
-        java.lang.reflect.Constructor<?> ctor = infoClass.getDeclaredConstructor(String.class, String.class, String.class, boolean.class);
-        ctor.setAccessible(true);
-        Object studentInfo = ctor.newInstance("2117240020044", "Austin", "Joshua", false);
+        StudentDataSeeder.StudentInfo studentInfo = new StudentDataSeeder.StudentInfo("2117240020044", "Austin", "Joshua", false);
+        studentDataSeeder.seedBatch(dept, "CSE-A", "2024-2028", List.of(studentInfo), role);
 
-        studentDataSeeder.seedBatch(dept, "CSE-A", "2024-2028", (List) List.of(studentInfo), role);
-
-        // Verify that existing user was never saved again
+        // Verify that existing user was never saved again and password was never re-hashed
         verify(userRepository, never()).save(any(User.class));
         verify(passwordEncoder, never()).encode(anyString());
     }
@@ -237,5 +253,39 @@ class StudentDataSeederRegressionTest {
         method.invoke(studentDataSeeder, "MA1101-CSE", "Mathematics I", 4, sem1, dept, "B.E. CSE");
 
         verify(subjectRepository, never()).save(any(Subject.class));
+    }
+
+    @Test
+    @DisplayName("Analytics Optimization: seedSmartCampusSuiteData skips expensive calculations when baseline exists")
+    void testSeedSmartCampusSuiteData_WhenAnalyticsAlreadyExist_SkipsExecution() throws Exception {
+        // Analytics repositories already have data
+        when(attendanceRiskRepository.count()).thenReturn(122L);
+        when(performanceWarningRepository.count()).thenReturn(122L);
+        when(hostelRepository.count()).thenReturn(1L);
+        when(companyRepository.count()).thenReturn(1L);
+
+        Method method = StudentDataSeeder.class.getDeclaredMethod("seedSmartCampusSuiteData");
+        method.setAccessible(true);
+        method.invoke(studentDataSeeder);
+
+        // Verify that full O(N) attendance analysis and performance analysis are never triggered
+        verify(attendanceAnalyticsService, never()).runAttendanceAnalysisForAllStudents();
+        verify(studentSuccessService, never()).runPerformanceAnalysisForAllStudents();
+    }
+
+    @Test
+    @DisplayName("Analytics Initial Seed: seedSmartCampusSuiteData populates baseline when empty")
+    void testSeedSmartCampusSuiteData_WhenAnalyticsEmpty_RunsInitialAnalytics() throws Exception {
+        when(attendanceRiskRepository.count()).thenReturn(0L);
+        when(performanceWarningRepository.count()).thenReturn(0L);
+        when(hostelRepository.count()).thenReturn(1L);
+        when(companyRepository.count()).thenReturn(1L);
+
+        Method method = StudentDataSeeder.class.getDeclaredMethod("seedSmartCampusSuiteData");
+        method.setAccessible(true);
+        method.invoke(studentDataSeeder);
+
+        verify(attendanceAnalyticsService, times(1)).runAttendanceAnalysisForAllStudents();
+        verify(studentSuccessService, times(1)).runPerformanceAnalysisForAllStudents();
     }
 }

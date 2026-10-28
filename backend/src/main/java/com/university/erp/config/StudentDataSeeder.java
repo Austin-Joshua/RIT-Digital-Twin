@@ -119,6 +119,17 @@ public class StudentDataSeeder implements CommandLineRunner {
     @org.springframework.context.annotation.Lazy
     private StudentDataSeeder self; // Self-injection for proxy-aware @Transactional calls from async
 
+    void setSelf(StudentDataSeeder self) {
+        this.self = self;
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        if (this.self == null) {
+            this.self = this;
+        }
+    }
+
     private volatile boolean cancelled = false;
     private CompletableFuture<Void> seedingFuture;
 
@@ -813,7 +824,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         return list;
     }
 
-    private static class StudentInfo {
+    static class StudentInfo {
         String regNo;
         String firstName;
         String lastName;
