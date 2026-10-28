@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "timetable_slots")
+@Table(name = "timetable_slots", indexes = {
+        @Index(name = "idx_ts_dept_day_sec", columnList = "dept_id, dayOfWeek, section"),
+        @Index(name = "idx_ts_ay_sem_dept", columnList = "academic_year_id, semester_id, dept_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,4 +44,12 @@ public class TimetableSlot extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "classroom_id")
     private Classroom classroom;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "academic_year_id")
+    private AcademicYear academicYear;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "semester_id")
+    private Semester semester;
 }

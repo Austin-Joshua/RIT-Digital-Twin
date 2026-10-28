@@ -3,6 +3,9 @@ package com.university.erp.controller;
 import com.university.erp.dto.CseAStudentImportDto;
 import com.university.erp.service.StudentAcademicOnboardingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +23,34 @@ public class AdminStudentController {
 
     private final StudentAcademicOnboardingService onboardingService;
 
+    @PostMapping("/import")
+    public ResponseEntity<Map<String, Object>> importStudents(
+            @RequestParam(required = false, defaultValue = "CSE") String departmentCode,
+            @RequestParam(required = false, defaultValue = "CSE-A") String section,
+            @RequestParam(required = false, defaultValue = "2024-2028") String batch,
+            @RequestParam(required = false, defaultValue = "2024-2025") String academicYear,
+            @RequestBody List<CseAStudentImportDto> payload) {
+        return ResponseEntity.ok(onboardingService.importStudents(departmentCode, section, batch, academicYear, payload));
+    }
+
     @PostMapping("/import-cse-a")
     public ResponseEntity<Map<String, Object>> importCseA(@RequestBody List<CseAStudentImportDto> payload) {
         return ResponseEntity.ok(onboardingService.importCseAStudents(payload));
     }
 
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> list(
-            @RequestParam(required = false, defaultValue = "CSE-A") String section) {
-        return ResponseEntity.ok(onboardingService.listStudentsBySection(section));
+    public ResponseEntity<?> list(
+            @RequestParam(required = false) String section,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null) {
+            int pageSize = (size != null && size > 0 && size <= 200) ? size : 20;
+            Pageable pageable = PageRequest.of(page, pageSize, Sort.by("id").ascending());
+            return ResponseEntity.ok(onboardingService.listStudentsPaginated(section, department, pageable));
+        }
+        String targetSection = (section == null || section.isBlank()) ? "CSE-A" : section;
+        return ResponseEntity.ok(onboardingService.listStudentsBySection(targetSection));
     }
 
     @PutMapping("/{studentId}")
@@ -70,18 +92,13 @@ public class AdminStudentController {
                     .append(q(s.get("cgpa"))).append("\n");
         }
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students-" + section + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"students-" + section + ".csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(csv.toString());
     }
 
-    @PostMapping("/repair-demo-links")
-    public ResponseEntity<Map<String, Object>> repairDemoLinks() {
-        return ResponseEntity.ok(onboardingService.repairDemoAcademicLinks());
-    }
-
-    private static String q(Object o) {
-        String v = String.valueOf(o == null ? "" : o);
-        return "\"" + v.replace("\"", "\"\"") + "\"";
+    private String q(Object val) {
+        if (val == null) return "\"\"";
+        return "\"" + String.valueOf(val).replace("\"", "\"\"") + "\"";
     }
 }

@@ -26,22 +26,12 @@ public class HODService {
     private final AttendanceRepository attendanceRepository;
     private final DepartmentRepository departmentRepository;
 
-    /**
-     * H&S (Science and Humanities) is a reporting view only. No students have department_id = SANDH.
-     * All students belong to their branch (CSE, ECE, etc.) from year 1. First-year records are
-     * shown to the H&S HOD; from second year they are shown to their branch department HOD.
-     */
     private boolean isHandSDepartment(Long departmentId) {
         return departmentRepository.findById(departmentId)
                 .map(d -> H_AND_S_DEPARTMENT_CODE.equalsIgnoreCase(d.getCode()))
                 .orElse(false);
     }
 
-    /**
-     * Students under this HOD for reporting:
-     * - H&S HOD: all first-year students (year=1) from every branch — no separate "H&S students".
-     * - Branch HOD: students in that department from second year onward (year >= 2).
-     */
     private List<Student> getStudentsUnderHod(Long departmentId) {
         if (isHandSDepartment(departmentId)) {
             return studentRepository.findByYear(1);
@@ -50,7 +40,7 @@ public class HODService {
     }
 
     private Set<Long> getStudentIdsUnderHod(Long departmentId) {
-        return getStudentsUnderHod(departmentId).stream().map(student -> student.getId()).collect(Collectors.toSet());
+        return getStudentsUnderHod(departmentId).stream().map(Student::getId).collect(Collectors.toSet());
     }
 
     @Cacheable(value = "dept_stats", key = "#departmentId")
@@ -58,7 +48,7 @@ public class HODService {
         ensureDepartmentExists(departmentId);
         Map<String, Object> stats = new LinkedHashMap<>();
         stats.put("departmentId", departmentId);
-        stats.put("departmentCode", departmentRepository.findById(departmentId).map(department -> department.getCode()).orElse(null));
+        stats.put("departmentCode", departmentRepository.findById(departmentId).map(Department::getCode).orElse(null));
         stats.put("isHandS", isHandSDepartment(departmentId));
         stats.put("totalFaculty", userRepository.countByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId));
 
@@ -69,7 +59,7 @@ public class HODService {
             stats.put("year2Count", 0L);
             stats.put("year3Count", 0L);
             stats.put("year4Count", 0L);
-            stats.put("newJoinersCount", null); // N/A for H&S
+            stats.put("newJoinersCount", null);
         } else {
             long y2 = studentRepository.countByDepartment_IdAndYear(departmentId, 2);
             long y3 = studentRepository.countByDepartment_IdAndYear(departmentId, 3);
@@ -79,7 +69,7 @@ public class HODService {
             stats.put("year2Count", y2);
             stats.put("year3Count", y3);
             stats.put("year4Count", y4);
-            stats.put("newJoinersCount", y2); // students who joined this department (first year in dept = year 2)
+            stats.put("newJoinersCount", y2);
         }
         return stats;
     }
@@ -87,126 +77,97 @@ public class HODService {
     @Cacheable(value = "dept_analytics", key = "#departmentId")
     public Map<String, Object> getDepartmentAnalytics(Long departmentId) {
         ensureDepartmentExists(departmentId);
-        Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
-        if (studentIds.isEmpty()) {
-            Map<String, Object> empty = new LinkedHashMap<>();
-            empty.put("departmentId", departmentId);
-            empty.put("averageMarks", null);
-            empty.put("passPercentage", null);
-            empty.put("internalMarksAverage", null);
-            empty.put("averageAttendance", null);
-            return empty;
-        }
-        List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
-        List<Attendance> deptAttendance = attendanceRepository.findByStudent_IdIn(studentIds);
+        boolean isHandS = isHandSDepartment(departmentId);
 
         Map<String, Object> analytics = new LinkedHashMap<>();
         analytics.put("departmentId", departmentId);
-        analytics.put("isHandS", isHandSDepartment(departmentId));
+        analytics.put("isHandS", isHandS);
 
-        if (deptMarks.isEmpty()) {
-            analytics.put("averageMarks", null);
-            analytics.put("passPercentage", null);
-            analytics.put("internalMarksAverage", null);
-        } else {
-            BigDecimal totalScoreSum = BigDecimal.ZERO;
-            int totalScoreCount = 0;
-            BigDecimal internalSum = BigDecimal.ZERO;
-            int internalCount = 0;
-            int passed = 0;
-            int totalWithGrade = 0;
-            for (Marks m : deptMarks) {
-                if (m.getTotalScore() != null) {
-                    totalScoreSum = totalScoreSum.add(m.getTotalScore());
-                    totalScoreCount++;
-                }
-                if (m.getCalculatedInternal() != null) {
-                    internalSum = internalSum.add(m.getCalculatedInternal());
-                    internalCount++;
-                }
-                if (m.getGrade() != null && !m.getGrade().isEmpty()) {
-                    totalWithGrade++;
-                    if (!"F".equalsIgnoreCase(m.getGrade()) && !"AB".equalsIgnoreCase(m.getGrade())) {
-                        passed++;
-                    }
-                }
+        // Compute marks metrics directly via database-level aggregation
+        List<Object[]> marksRows = isHandS
+                ? marksRepository.getFirstYearMarksSummary()
+                : marksRepository.getDepartmentMarksSummary(departmentId, 2);
+
+        BigDecimal avgMarks = null;
+        BigDecimal avgInternal = null;
+        BigDecimal passPercentage = null;
+
+        if (marksRows != null && !marksRows.isEmpty() && marksRows.get(0) != null) {
+            Object[] row = marksRows.get(0);
+            Double avgMarksVal = row[0] != null ? ((Number) row[0]).doubleValue() : null;
+            Double avgInternalVal = row[1] != null ? ((Number) row[1]).doubleValue() : null;
+            long passCount = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+            long totalGraded = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+
+            if (avgMarksVal != null) {
+                avgMarks = BigDecimal.valueOf(avgMarksVal).setScale(2, RoundingMode.HALF_UP);
             }
-            analytics.put("averageMarks", totalScoreCount > 0 ? totalScoreSum.divide(BigDecimal.valueOf(totalScoreCount), 2, RoundingMode.HALF_UP) : null);
-            analytics.put("passPercentage", totalWithGrade > 0 ? BigDecimal.valueOf(100.0 * passed / totalWithGrade).setScale(2, RoundingMode.HALF_UP) : null);
-            analytics.put("internalMarksAverage", internalCount > 0 ? internalSum.divide(BigDecimal.valueOf(internalCount), 2, RoundingMode.HALF_UP) : null);
+            if (avgInternalVal != null) {
+                avgInternal = BigDecimal.valueOf(avgInternalVal).setScale(2, RoundingMode.HALF_UP);
+            }
+            if (totalGraded > 0) {
+                passPercentage = BigDecimal.valueOf(100.0 * passCount / totalGraded).setScale(2, RoundingMode.HALF_UP);
+            }
         }
 
-        if (deptAttendance.isEmpty()) {
-            analytics.put("averageAttendance", null);
-        } else {
-            BigDecimal attSum = BigDecimal.ZERO;
-            int attCount = 0;
-            for (Attendance a : deptAttendance) {
-                if (a.getPercentage() != null) {
-                    attSum = attSum.add(a.getPercentage());
-                    attCount++;
-                }
-            }
-            analytics.put("averageAttendance", attCount > 0 ? attSum.divide(BigDecimal.valueOf(attCount), 2, RoundingMode.HALF_UP) : null);
-        }
+        analytics.put("averageMarks", avgMarks);
+        analytics.put("passPercentage", passPercentage);
+        analytics.put("internalMarksAverage", avgInternal);
+
+        // Compute attendance metrics directly via database-level aggregation
+        Double avgAtt = isHandS
+                ? attendanceRepository.getFirstYearAverageAttendance()
+                : attendanceRepository.getDepartmentAverageAttendance(departmentId, 2);
+
+        analytics.put("averageAttendance", avgAtt != null ? BigDecimal.valueOf(avgAtt).setScale(2, RoundingMode.HALF_UP) : null);
         return analytics;
     }
 
     @Cacheable(value = "class_performance", key = "#departmentId + '-' + #sortBy")
     public List<Map<String, Object>> getClassPerformance(Long departmentId, String sortBy) {
         ensureDepartmentExists(departmentId);
-        List<Student> students = getStudentsUnderHod(departmentId);
-        if (students.isEmpty()) return Collections.emptyList();
+        boolean isHandS = isHandSDepartment(departmentId);
 
-        Map<String, List<Student>> byClass = students.stream()
-                .filter(s -> s.getYear() != null && s.getSection() != null)
-                .collect(Collectors.groupingBy(s -> s.getYear() + "-" + s.getSection(), LinkedHashMap::new, Collectors.toList()));
+        List<Object[]> marksRows = isHandS
+                ? marksRepository.getFirstYearClassPerformanceMarksSummary()
+                : marksRepository.getClassPerformanceMarksSummary(departmentId);
 
-        Set<Long> studentIds = students.stream().map(student -> student.getId()).collect(Collectors.toSet());
-        List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
-        List<Attendance> deptAttendance = attendanceRepository.findByStudent_IdIn(studentIds);
+        List<Object[]> attRows = isHandS
+                ? attendanceRepository.getFirstYearClassAttendanceAverages()
+                : attendanceRepository.getClassAttendanceAverages(departmentId);
 
-        Map<Long, List<Marks>> marksByStudent = deptMarks.stream().collect(Collectors.groupingBy(m -> m.getStudent().getId()));
-        Map<Long, List<Attendance>> attByStudent = deptAttendance.stream().collect(Collectors.groupingBy(a -> a.getStudent().getId()));
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<String, List<Student>> e : byClass.entrySet()) {
-            String classKey = e.getKey();
-            List<Student> classStudents = e.getValue();
-            List<Long> ids = classStudents.stream().map(student -> student.getId()).collect(Collectors.toList());
-
-            BigDecimal totalScoreSum = BigDecimal.ZERO;
-            int totalScoreCount = 0;
-            int failed = 0;
-            int totalGraded = 0;
-            BigDecimal attSum = BigDecimal.ZERO;
-            int attCount = 0;
-            for (Long sid : ids) {
-                for (Marks m : marksByStudent.getOrDefault(sid, Collections.emptyList())) {
-                    if (m.getTotalScore() != null) {
-                        totalScoreSum = totalScoreSum.add(m.getTotalScore());
-                        totalScoreCount++;
-                    }
-                    if (m.getGrade() != null && !m.getGrade().isEmpty()) {
-                        totalGraded++;
-                        if ("F".equalsIgnoreCase(m.getGrade()) || "AB".equalsIgnoreCase(m.getGrade())) failed++;
-                    }
-                }
-                for (Attendance a : attByStudent.getOrDefault(sid, Collections.emptyList())) {
-                    if (a.getPercentage() != null) {
-                        attSum = attSum.add(a.getPercentage());
-                        attCount++;
-                    }
+        Map<String, Double> attendanceMap = new HashMap<>();
+        if (attRows != null) {
+            for (Object[] r : attRows) {
+                if (r[0] != null && r[1] != null) {
+                    String key = r[0] + "-" + r[1];
+                    Double avg = r[2] != null ? ((Number) r[2]).doubleValue() : null;
+                    attendanceMap.put(key, avg);
                 }
             }
-            Map<String, Object> row = new LinkedHashMap<>();
-            row.put("class", classKey);
-            row.put("studentCount", classStudents.size());
-            row.put("academicAverage", totalScoreCount > 0 ? totalScoreSum.divide(BigDecimal.valueOf(totalScoreCount), 2, RoundingMode.HALF_UP) : null);
-            row.put("attendanceAverage", attCount > 0 ? attSum.divide(BigDecimal.valueOf(attCount), 2, RoundingMode.HALF_UP) : null);
-            row.put("failingCount", failed);
-            row.put("totalGraded", totalGraded);
-            result.add(row);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        if (marksRows != null) {
+            for (Object[] r : marksRows) {
+                if (r[0] == null || r[1] == null) continue;
+                String classKey = r[0] + "-" + r[1];
+                int studentCount = r[2] != null ? ((Number) r[2]).intValue() : 0;
+                Double avgScore = r[3] != null ? ((Number) r[3]).doubleValue() : null;
+                long failCount = r[4] != null ? ((Number) r[4]).longValue() : 0L;
+                long totalGraded = r[5] != null ? ((Number) r[5]).longValue() : 0L;
+
+                Double classAtt = attendanceMap.get(classKey);
+
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("class", classKey);
+                row.put("studentCount", studentCount);
+                row.put("academicAverage", avgScore != null ? BigDecimal.valueOf(avgScore).setScale(2, RoundingMode.HALF_UP) : null);
+                row.put("attendanceAverage", classAtt != null ? BigDecimal.valueOf(classAtt).setScale(2, RoundingMode.HALF_UP) : null);
+                row.put("failingCount", (int) failCount);
+                row.put("totalGraded", (int) totalGraded);
+                result.add(row);
+            }
         }
 
         if ("highest".equalsIgnoreCase(sortBy)) {
@@ -244,12 +205,36 @@ public class HODService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getStudents(Long departmentId, Integer year, String section) {
         ensureDepartmentExists(departmentId);
-        List<Student> students = getStudentsUnderHod(departmentId);
-        if (year != null) students = students.stream().filter(s -> year.equals(s.getYear())).collect(Collectors.toList());
-        if (section != null && !section.isEmpty()) students = students.stream().filter(s -> section.equals(s.getSection())).collect(Collectors.toList());
+        boolean isHandS = isHandSDepartment(departmentId);
 
-        List<Map<String, Object>> list = new ArrayList<>();
-        final boolean isHandS = isHandSDepartment(departmentId);
+        List<Student> students;
+        if (isHandS) {
+            if (section != null && !section.isBlank()) {
+                students = studentRepository.findBySectionIgnoreCase(section).stream()
+                        .filter(s -> s.getYear() != null && s.getYear() == 1)
+                        .toList();
+            } else {
+                students = studentRepository.findByYear(1);
+            }
+        } else {
+            if (year != null && section != null && !section.isBlank()) {
+                students = studentRepository.findBySectionIgnoreCase(section).stream()
+                        .filter(s -> s.getDepartment() != null && s.getDepartment().getId().equals(departmentId) && year.equals(s.getYear()))
+                        .toList();
+            } else if (year != null) {
+                students = studentRepository.findByDepartmentId(departmentId).stream()
+                        .filter(s -> year.equals(s.getYear()))
+                        .toList();
+            } else if (section != null && !section.isBlank()) {
+                students = studentRepository.findBySectionIgnoreCase(section).stream()
+                        .filter(s -> s.getDepartment() != null && s.getDepartment().getId().equals(departmentId) && s.getYear() != null && s.getYear() >= 2)
+                        .toList();
+            } else {
+                students = studentRepository.findByDepartment_IdAndYearGreaterThanEqual(departmentId, 2);
+            }
+        }
+
+        List<Map<String, Object>> list = new ArrayList<>(students.size());
         for (Student s : students) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("studentId", s.getId());
@@ -274,7 +259,7 @@ public class HODService {
     public List<Map<String, Object>> getFaculty(Long departmentId) {
         ensureDepartmentExists(departmentId);
         List<User> faculty = userRepository.findByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId);
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>(faculty.size());
         for (User u : faculty) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("userId", u.getUserId());
@@ -301,8 +286,8 @@ public class HODService {
             Long subjId = m.getSubject().getId();
             String subjName = m.getSubject().getSubjectName() != null ? m.getSubject().getSubjectName() : "Subject " + subjId;
             String classKey = m.getStudent().getYear() + "-" + m.getStudent().getSection();
-            subjectClassScores.putIfAbsent(subjName, new LinkedHashMap<>());
-            subjectClassScores.get(subjName).putIfAbsent(classKey, new ArrayList<>());
+            subjectClassScores.computeIfAbsent(subjName, k -> new LinkedHashMap<>())
+                    .computeIfAbsent(classKey, k -> new ArrayList<>());
             if (m.getTotalScore() != null) subjectClassScores.get(subjName).get(classKey).add(m.getTotalScore());
         }
 
@@ -310,7 +295,8 @@ public class HODService {
         for (Map.Entry<String, Map<String, List<BigDecimal>>> e : subjectClassScores.entrySet()) {
             for (Map.Entry<String, List<BigDecimal>> ce : e.getValue().entrySet()) {
                 if (ce.getValue().isEmpty()) continue;
-                BigDecimal avg = ce.getValue().stream().reduce(BigDecimal.ZERO, (total, value) -> total.add(value)).divide(BigDecimal.valueOf(ce.getValue().size()), 2, RoundingMode.HALF_UP);
+                BigDecimal avg = ce.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(BigDecimal.valueOf(ce.getValue().size()), 2, RoundingMode.HALF_UP);
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("subject", e.getKey());
                 row.put("class", ce.getKey());
@@ -334,7 +320,7 @@ public class HODService {
         List<Map<String, Object>> weak = new ArrayList<>();
         for (Map.Entry<Long, List<Marks>> e : bySubject.entrySet()) {
             List<Marks> list = e.getValue();
-            BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(mark -> mark.getTotalScore()).reduce(BigDecimal.ZERO, (total, value) -> total.add(value));
+            BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(Marks::getTotalScore).reduce(BigDecimal.ZERO, BigDecimal::add);
             int count = (int) list.stream().filter(m -> m.getTotalScore() != null).count();
             if (count == 0) continue;
             avg = avg.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
@@ -369,7 +355,7 @@ public class HODService {
         }
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<String, List<BigDecimal>> e : groupScores.entrySet()) {
-            BigDecimal avg = e.getValue().stream().reduce(BigDecimal.ZERO, (total, value) -> total.add(value)).divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
+            BigDecimal avg = e.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
             Map<String, Object> row = new LinkedHashMap<>();
             row.put(byYear ? "year" : "semester", e.getKey());
             row.put("averageScore", avg);

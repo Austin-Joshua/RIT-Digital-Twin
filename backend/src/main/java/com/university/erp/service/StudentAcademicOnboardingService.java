@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,19 +43,29 @@ public class StudentAcademicOnboardingService {
 
     @Transactional
     public Map<String, Object> importCseAStudents(List<CseAStudentImportDto> rows) {
+        return importStudents("CSE", CSE_SECTION, BATCH_2024_2028, "2024-2025", rows);
+    }
+
+    @Transactional
+    public Map<String, Object> importStudents(
+            String deptCode, String section, String batch, String academicYear, List<CseAStudentImportDto> rows) {
         if (rows == null || rows.isEmpty()) {
             throw new ErpException.InvalidOperationException("Import payload is empty");
         }
 
-        Department cse = departmentRepository.findByCode("CSE")
+        String targetDeptCode = normalize(deptCode).isBlank() ? "CSE" : normalize(deptCode).toUpperCase();
+        String targetSection = normalize(section).isBlank() ? CSE_SECTION : normalize(section);
+        String targetBatch = normalize(batch).isBlank() ? BATCH_2024_2028 : normalize(batch);
+
+        Department dept = departmentRepository.findByCode(targetDeptCode)
                 .orElseGet(() -> departmentRepository.save(Department.builder()
-                        .code("CSE")
-                        .deptName(CSE_DEPARTMENT_NAME)
+                        .code(targetDeptCode)
+                        .deptName("B.E. " + targetDeptCode)
                         .build()));
         Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                 .orElseThrow(() -> new ErpException.ResourceNotFoundException("STUDENT role not found"));
 
-        seedCurriculum(cse);
+        seedCurriculum(dept);
 
         int createdStudents = 0;
         int updatedStudents = 0;
@@ -72,14 +84,14 @@ public class StudentAcademicOnboardingService {
             student.setRegisterNo(registerNo);
             student.setStudentIdNumber(registerNo);
             student.setStudentName(name);
-            student.setSection(CSE_SECTION);
-            student.setBatch(BATCH_2024_2028);
+            student.setSection(targetSection);
+            student.setBatch(targetBatch);
             student.setScholarType(normalize(row.getScholarType()).isBlank() ? "Day Scholar" : normalize(row.getScholarType()));
             student.setEmail(normalize(row.getEmail()));
             student.setPhone(normalize(row.getPhone()));
             student.setStatus("active");
             student.setYear(1);
-            student.setDepartment(cse);
+            student.setDepartment(dept);
 
             User user = student.getUser();
             if (user == null) {
@@ -93,7 +105,7 @@ public class StudentAcademicOnboardingService {
             user.setFirstName(names[0]);
             user.setLastName(names[1]);
             user.setRole(studentRole);
-            user.setDepartment(cse);
+            user.setDepartment(dept);
             user.setAccountStatus("active");
             user.setMustChangePassword(true);
             if (isNewUser) {
@@ -118,8 +130,10 @@ public class StudentAcademicOnboardingService {
         resp.put("updatedStudents", updatedStudents);
         resp.put("createdUsers", createdUsers);
         resp.put("totalImportedRows", rows.size());
-        resp.put("section", CSE_SECTION);
-        resp.put("batch", BATCH_2024_2028);
+        resp.put("department", targetDeptCode);
+        resp.put("section", targetSection);
+        resp.put("batch", targetBatch);
+        resp.put("academicYear", academicYear != null ? academicYear : "2024-2025");
         return resp;
     }
 
@@ -143,6 +157,16 @@ public class StudentAcademicOnboardingService {
                 .stream()
                 .map(this::toStudentAdminCard)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Map<String, Object>> listStudentsPaginated(
+            String section, String departmentCode, Pageable pageable) {
+        return studentRepository.findAdminSummaryByFilters(
+                (section != null && !section.isBlank()) ? normalize(section) : null,
+                (departmentCode != null && !departmentCode.isBlank()) ? normalize(departmentCode) : null,
+                pageable
+        ).map(this::toStudentAdminCard);
     }
 
     @Transactional
@@ -424,16 +448,26 @@ public class StudentAcademicOnboardingService {
 
     private void generateMockGradesAndAcademics(Student student) {
         if (student.getDepartment() == null) return;
-        List<Subject> sem1Subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(1, CSE_DEPARTMENT_NAME);
-        List<Subject> sem2Subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(2, CSE_DEPARTMENT_NAME);
-        Semester sem1 = semesterRepository.findBySemesterNumber(1).orElseThrow();
-        Semester sem2 = semesterRepository.findBySemesterNumber(2).orElseThrow();
+        String deptName = student.getDepartment().getDeptName() != null ? student.getDepartment().getDeptName() : CSE_DEPARTMENT_NAME;
+        List<Subject> sem1Subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(1, deptName);
+        List<Subject> sem2Subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(2, deptName);
+        Optional<Semester> sem1Opt = semesterRepository.findBySemesterNumber(1);
+        Optional<Semester> sem2Opt = semesterRepository.findBySemesterNumber(2);
+
+        if (sem1Opt.isEmpty() || sem2Opt.isEmpty()) {
+            return;
+        }
+
+        Semester sem1 = sem1Opt.get();
+        Semester sem2 = sem2Opt.get();
 
         double profileFactor = performanceFactor(student.getRegisterNo() != null ? student.getRegisterNo() : student.getStudentIdNumber());
 
-        createGradesForSemester(student, sem1, sem1Subjects, profileFactor);
-        createGradesForSemester(student, sem2, sem2Subjects, profileFactor - 0.2);
-        recalcStudentAcademic(student);
+        if (gradeRepository != null) {
+            createGradesForSemester(student, sem1, sem1Subjects, profileFactor);
+            createGradesForSemester(student, sem2, sem2Subjects, profileFactor - 0.2);
+            recalcStudentAcademic(student);
+        }
     }
 
     private void createGradesForSemester(Student student, Semester semester, List<Subject> subjects, double factor) {

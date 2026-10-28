@@ -8,7 +8,9 @@ import lombok.*;
 @Table(name = "students", indexes = {
         @Index(name = "idx_student_id_num", columnList = "student_id_number"),
         @Index(name = "idx_user_id", columnList = "user_id"),
-        @Index(name = "idx_dept_id", columnList = "dept_id")
+        @Index(name = "idx_dept_id", columnList = "dept_id"),
+        @Index(name = "idx_std_dept_yr_sec", columnList = "dept_id, academic_year, section"),
+        @Index(name = "idx_std_batch_dept", columnList = "batch_label, dept_id")
 })
 @Data
 @NoArgsConstructor

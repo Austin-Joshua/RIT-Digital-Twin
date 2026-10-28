@@ -9,7 +9,8 @@ import lombok.*;
         @Index(name = "idx_student_subject", columnList = "student_id, subject_id"),
         @Index(name = "idx_semester", columnList = "semester"),
         @Index(name = "idx_student_id", columnList = "student_id"),
-        @Index(name = "idx_subject_id", columnList = "subject_id")
+        @Index(name = "idx_subject_id", columnList = "subject_id"),
+        @Index(name = "idx_marks_subj_sem_score", columnList = "subject_id, semester, totalScore")
 })
 @Data
 @NoArgsConstructor
@@ -28,6 +29,10 @@ public class Marks extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "academic_year_id")
+    private AcademicYear academicYear;
 
     private Integer semester;
 
