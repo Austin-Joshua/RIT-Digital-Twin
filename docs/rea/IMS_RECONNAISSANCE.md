@@ -263,4 +263,26 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 09. Assignment Mark (`Assignment Mark`)
+- **Status**: **OBSERVED** (Evidence: `media_1793187614417_1a497cbd.png` through `media_1793187700925_7155e557.png`)
+- **Visual Structure**:
+  - Title: `Assignment Marks` (centered clean heading).
+  - Main Table Card:
+    - Columns:
+      1. `Subject Code` (shows Course Title in original IMS view)
+      2. `Subject Name` (shows Course Code e.g. `CS23511`, `CS23512` in original IMS view)
+      3. `Faculty Name` (e.g. `ARAVINDH`, `DR. MADHAN`, `ANJANA DEVI`, `SOWMYA`, `VINITHA`, `CHARUMATHY`)
+      4. `Assignment Mark-1 (10-Marks)`
+      5. `Assignment Mark-2 (10-Marks)`
+      6. `Assignment Mark-3 (10-Marks)`
+      7. `Assignment Mark-4 (10-Marks)`
+      8. `Assignment Mark-5 (10-Marks)`
+      9. `Total (50 - Marks)`
+  - Data Layout:
+    - 5 assignments evaluated out of 10 marks each.
+    - Total evaluated out of 50 marks.
+    - Supports course-wise score breakdowns.
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*

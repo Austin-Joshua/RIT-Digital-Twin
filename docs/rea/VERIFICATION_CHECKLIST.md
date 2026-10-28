@@ -27,7 +27,7 @@ This living checklist tracks the verification status of student-accessible modul
 | 08 | **My Subject Registration** | Student → Registration | `/student/registration` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 09 | **CAT Mark** | Student → CAT Mark | `/student/cat-mark` | **OBSERVED** | Verified `CAT Marks` 2-tier header: Course Outcomes CO-1 to CO-5 (25 Marks each, 125 Total), CAT test series mapping, Total (125 Marks), and computed Internal Weightage |
 | 10 | **LAB Mark** | Student → LAB Mark | `/student/lab-mark` | **OBSERVED** | Verified `LAB Marks` 2-tier header: Exam Name Cycle-1 (100), Cycle-2 (100), Model Exam (100), Total (300 Marks), and red cell highlight (`#dc3545`) for incomplete/low scores |
-| 11 | **Assignment Mark** | Student → Assignment Mark | `/student/assignment` | **NOT INSPECTED** | Awaiting dashboard verification |
+| 11 | **Assignment Mark** | Student → Assignment Mark | `/student/assignment` | **OBSERVED** | Verified `Assignment Marks` table with columns: Subject Code, Subject Name, Faculty Name, Assignment Mark-1 to Mark-5 (10-Marks each), and Total (50 - Marks) |
 | 12 | **Grade Book** | Student → Grade Book | `/student/gradebook` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 13 | **Apply Certificates** | Student → Certificates | `/student/certificates` | **OBSERVED** | Verified `Apply Certificate` green button, `Certificate Application List` (S.No, Date, Certificate, Purpose, Status, Response, Action), modal (BONAFIDE/TC/COURSE COMPLETION, Reason dropdown, Hosteler No/Yes, amber `Preview` button), and live Bonafide certificate preview modal |
 | 14 | **Feedbacks** | Student → Feedback | `/student/feedbacks` | **NOT INSPECTED** | Awaiting dashboard verification |
