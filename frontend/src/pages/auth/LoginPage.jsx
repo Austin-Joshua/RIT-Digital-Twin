@@ -54,9 +54,9 @@ const LoginPage = () => {
         let timeoutId;
         const checkConnection = async () => {
             const controller = new AbortController();
-            timeoutId = setTimeout(() => controller.abort(), 15000);
+            timeoutId = setTimeout(() => controller.abort(), 3000);
             try {
-                const healthUrl = `${getBackendRootURL()}/actuator/health`;
+                const healthUrl = `${getBackendRootURL()}/api/health`;
                 const response = await fetch(healthUrl, {
                     signal: controller.signal,
                     mode: 'cors',
@@ -70,7 +70,7 @@ const LoginPage = () => {
             }
         };
         checkConnection();
-        const interval = setInterval(checkConnection, 10000);
+        const interval = setInterval(checkConnection, 15000);
         return () => { if (timeoutId) clearTimeout(timeoutId); clearInterval(interval); };
     }, []);
 

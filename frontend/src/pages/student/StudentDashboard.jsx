@@ -30,11 +30,17 @@ const StudentDashboard = () => {
     const yearLabel = academicYearLabel(now);
     const semester = semesterWindow(now);
 
-    const [kpiData, setKpiData] = useState({
-        cgpa: null,
-        attendance: null,
-        arrear: 0,
-        loading: true,
+    const [kpiData, setKpiData] = useState(() => {
+        try {
+            const cached = sessionStorage.getItem('rit_student_kpi');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.ts < 120000) {
+                    return { ...parsed.data, loading: false };
+                }
+            }
+        } catch {}
+        return { cgpa: null, attendance: null, arrear: 0, loading: true };
     });
     const [timetable, setTimetable] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -83,13 +89,17 @@ const StudentDashboard = () => {
 
         Promise.all([pCgpa, pAtt, pTt]).then(([cgpaVal, attVal, ttData]) => {
             if (!isMounted) return;
-            setKpiData({
+            const fresh = {
                 cgpa: cgpaVal,
                 attendance: attVal,
                 arrear: 0,
                 loading: false,
-            });
+            };
+            setKpiData(fresh);
             setTimetable(ttData);
+            try {
+                sessionStorage.setItem('rit_student_kpi', JSON.stringify({ ts: Date.now(), data: fresh }));
+            } catch {}
         });
 
         return () => { isMounted = false; };

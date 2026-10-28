@@ -171,6 +171,18 @@ public class StudentDataSeeder implements CommandLineRunner {
                 .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech Computer Science and Business Systems").build()));
 
         if (cancelled || Thread.currentThread().isInterrupted()) return;
+
+        // Fast-path: if student batches are already populated in DB, skip redundant student loops and heavy startup analytics
+        if (studentRepository.count() >= 122) {
+            log.info("StudentDataSeeder: Student batches already present. Skipping redundant startup seeding.");
+            if (cancelled || Thread.currentThread().isInterrupted()) return;
+            seedOperationsSuiteData(cse);
+            if (cancelled || Thread.currentThread().isInterrupted()) return;
+            seedPhysicalTwinData();
+            log.info("StudentDataSeeder: Fast-path initialization complete.");
+            return;
+        }
+
         seedCurriculum(cse, "B.E. CSE");
         if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedCurriculum(csbs, "B.Tech CS & BS");

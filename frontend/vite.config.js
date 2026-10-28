@@ -68,6 +68,18 @@ export default defineConfig(({ mode }) => {
         },
       },
       chunkSizeWarningLimit: 1000,
+      modulePreload: {
+        resolveDependencies(filename, deps) {
+          // Do not inject preload tags for heavy, non-critical vendor chunks on initial load
+          return deps.filter(
+            (dep) =>
+              !dep.includes('pdf-vendor') &&
+              !dep.includes('maps-vendor') &&
+              !dep.includes('three-vendor') &&
+              !dep.includes('xlsx-vendor')
+          );
+        },
+      },
     },
 
     server: {

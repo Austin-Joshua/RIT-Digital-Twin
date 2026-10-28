@@ -172,7 +172,7 @@ public class CampusCredentialAlignment {
         if (user.getLastPasswordChange() != null) {
             return false;
         }
-        if (user.getPassword() != null && passwordEncoder.matches(password, user.getPassword())) {
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
             return false;
         }
         user.setPassword(passwordEncoder.encode(password));
