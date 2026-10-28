@@ -12,10 +12,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class V40MigrationRegressionTest {
 
     private String loadV40Sql() throws Exception {
-        try (InputStream is = getClass().getResourceAsStream("/db/migration/V40__Align_Production_Entities_Schema.sql")) {
-            assertNotNull(is, "V40__Align_Production_Entities_Schema.sql must exist on classpath");
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        InputStream is = getClass().getResourceAsStream("/db/migration/V40__Align_Production_Entities_Schema.sql");
+        if (is != null) {
+            try (is) {
+                return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            }
         }
+        // Fallback for IDE test environments where resources are read directly from source
+        java.nio.file.Path path = java.nio.file.Path.of("src/main/resources/db/migration/V40__Align_Production_Entities_Schema.sql");
+        if (!java.nio.file.Files.exists(path)) {
+            path = java.nio.file.Path.of("backend/src/main/resources/db/migration/V40__Align_Production_Entities_Schema.sql");
+        }
+        return java.nio.file.Files.readString(path, StandardCharsets.UTF_8);
     }
 
     @Test
@@ -66,6 +74,39 @@ class V40MigrationRegressionTest {
                 "V40 must only create faculty index if not already present");
         assertTrue(sql.contains("@idx_subj_exists = 0"),
                 "V40 must only create subject index if not already present");
+    }
+
+    @Test
+    @DisplayName("Verify V40 SQL has balanced PREPARE and DEALLOCATE PREPARE statements")
+    void testV40SqlHasBalancedPrepareAndDeallocateStatements() throws Exception {
+        String sql = loadV40Sql();
+        int prepareCount = countOccurrences(sql, "PREPARE stmt FROM @sql;");
+        int deallocateCount = countOccurrences(sql, "DEALLOCATE PREPARE stmt;");
+
+        assertTrue(prepareCount > 0, "V40 must contain dynamic prepared statements");
+        assertEquals(prepareCount, deallocateCount,
+                "V40 must deallocate every prepared statement handle to prevent MySQL connection resource leaks");
+    }
+
+    @Test
+    @DisplayName("Verify V40 SQL uses DATABASE() function for schema isolation")
+    void testV40SqlUsesDatabaseFunctionForSchemaIsolation() throws Exception {
+        String sql = loadV40Sql();
+
+        assertTrue(sql.contains("SET @dbname = DATABASE();"),
+                "V40 must initialize @dbname using DATABASE() function");
+        assertTrue(sql.contains("table_schema = @dbname"),
+                "V40 must scope information_schema queries to table_schema = @dbname");
+    }
+
+    private int countOccurrences(String text, String target) {
+        int count = 0;
+        int index = 0;
+        while ((index = text.indexOf(target, index)) != -1) {
+            count++;
+            index += target.length();
+        }
+        return count;
     }
 
     @Test
