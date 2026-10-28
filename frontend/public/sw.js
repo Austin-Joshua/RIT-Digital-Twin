@@ -1,7 +1,5 @@
-const CACHE_NAME = 'rit-digital-twin-v1';
+const CACHE_NAME = 'rit-digital-twin-v2';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
   '/assets/images/digital-twin-tree.jpg'
 ];
@@ -30,7 +28,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip WebSocket connections, API requests, and Chrome extensions
+  // Skip WebSocket connections, API requests, and non-http schemes
   if (
     request.method !== 'GET' ||
     url.pathname.startsWith('/api') ||
@@ -47,6 +45,19 @@ self.addEventListener('fetch', (event) => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
+
+        const contentType = response.headers.get('content-type') || '';
+
+        // Never cache HTML responses when fetching dynamic script/style assets
+        if (url.pathname.startsWith('/assets/') && contentType.includes('text/html')) {
+          return response;
+        }
+
+        // Never cache navigation or HTML document responses so users always get the latest release index.html
+        if (request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+          return response;
+        }
+
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(request, responseToCache);
@@ -57,9 +68,6 @@ self.addEventListener('fetch', (event) => {
         return caches.match(request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
-          }
-          if (request.mode === 'navigate') {
-            return caches.match('/index.html');
           }
           return new Response('Network error and asset not cached', {
             status: 503,

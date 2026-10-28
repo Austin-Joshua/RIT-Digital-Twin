@@ -1,5 +1,16 @@
 import React from 'react';
 
+const isChunkLoadError = (err) => {
+  const msg = (err?.message || String(err || '')).toLowerCase();
+  return (
+    msg.includes('failed to fetch dynamically imported module') ||
+    msg.includes('importing a module script failed') ||
+    msg.includes('error loading dynamically imported module') ||
+    msg.includes('chunkloaderror') ||
+    err?.name === 'ChunkLoadError'
+  );
+};
+
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -12,9 +23,24 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     console.error('[ErrorBoundary caught error]:', error, info);
+
+    // If this is a chunk load / deployment hash mismatch error, auto-reload once to fetch fresh assets
+    if (isChunkLoadError(error)) {
+      const storageKey = 'rit_chunk_reload_attempt';
+      const lastReload = sessionStorage.getItem(storageKey);
+      const now = Date.now();
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem(storageKey, String(now));
+        window.location.reload();
+      }
+    }
   }
 
   handleReset = () => {
+    if (isChunkLoadError(this.state.error)) {
+      window.location.reload();
+      return;
+    }
     this.setState({ hasError: false, error: null });
   };
 
@@ -26,6 +52,8 @@ export default class ErrorBoundary extends React.Component {
         ? this.props.fallback({ error: this.state.error, reset: this.handleReset })
         : this.props.fallback;
     }
+
+    const isChunk = isChunkLoadError(this.state.error);
 
     if (this.props.inline) {
       return (
@@ -39,10 +67,12 @@ export default class ErrorBoundary extends React.Component {
           textAlign: 'center'
         }}>
           <h4 style={{ margin: '0 0 6px 0', fontWeight: '600', fontSize: '0.95rem' }}>
-            {this.props.title || 'Module Unavailable'}
+            {isChunk ? 'Module Update Available' : (this.props.title || 'Module Unavailable')}
           </h4>
           <p style={{ margin: '0 0 12px 0', fontSize: '0.85rem', opacity: 0.85 }}>
-            {this.state.error?.message || 'A visual error occurred while rendering this module.'}
+            {isChunk
+              ? 'A newer version of this module is available. Please reload the page.'
+              : (this.state.error?.message || 'A visual error occurred while rendering this module.')}
           </p>
           <button
             onClick={this.handleReset}
@@ -58,7 +88,7 @@ export default class ErrorBoundary extends React.Component {
               transition: 'background 0.2s'
             }}
           >
-            Retry Module
+            {isChunk ? 'Reload Page' : 'Retry Module'}
           </button>
         </div>
       );
@@ -86,21 +116,23 @@ export default class ErrorBoundary extends React.Component {
             width: '48px',
             height: '48px',
             borderRadius: '50%',
-            background: '#FEE2E2',
-            color: '#DC2626',
+            background: isChunk ? '#E0F2FE' : '#FEE2E2',
+            color: isChunk ? '#0284C7' : '#DC2626',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 16px auto',
             fontSize: '24px'
           }}>
-            ⚠️
+            {isChunk ? '🔄' : '⚠️'}
           </div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--ims-heading, #0F172A)', margin: '0 0 8px 0' }}>
-            Service Temporarily Interrupted
+            {isChunk ? 'Portal Update Available' : 'Service Temporarily Interrupted'}
           </h2>
           <p style={{ color: 'var(--ims-subtext, #64748B)', fontSize: '0.875rem', margin: '0 0 24px 0', lineHeight: 1.5 }}>
-            {this.state.error?.message || 'An unexpected runtime error occurred while processing campus data.'}
+            {isChunk
+              ? 'A newer version of the digital twin platform has been deployed. Please reload the page to load the latest release.'
+              : (this.state.error?.message || 'An unexpected runtime error occurred while processing campus data.')}
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
             <button
@@ -116,7 +148,7 @@ export default class ErrorBoundary extends React.Component {
                 cursor: 'pointer'
               }}
             >
-              Try Again
+              {isChunk ? 'Reload Application' : 'Try Again'}
             </button>
             <button
               onClick={() => { window.location.href = '/'; }}
