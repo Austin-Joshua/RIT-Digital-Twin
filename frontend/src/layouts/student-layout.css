@@ -2296,13 +2296,38 @@ html.dark .ims-cal-table th {
     padding: 9px 20px;
     font-size: 0.875rem;
     font-weight: 600;
+    line-height: 1.25;
     letter-spacing: 0.2px;
+    white-space: nowrap;
+    box-sizing: border-box;
     cursor: pointer;
     border: none;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
     outline: none;
+    vertical-align: middle;
+}
+
+.ims-candy-btn:focus-visible {
+    outline: 2px solid #1d4ed8 !important;
+    outline-offset: 2px !important;
+}
+
+.ims-candy-outline {
+    background: transparent !important;
+    color: var(--theme-text, #1e293b) !important;
+    border: 1.5px solid var(--theme-border, #cbd5e1) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.ims-candy-outline:hover {
+    background: var(--theme-bg-muted, #f8fafc) !important;
+    border-color: #94a3b8 !important;
+    color: var(--theme-text, #0f172a) !important;
 }
 
 .ims-candy-btn:hover {
