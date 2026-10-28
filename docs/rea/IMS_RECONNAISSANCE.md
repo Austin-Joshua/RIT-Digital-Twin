@@ -393,7 +393,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ---
 
 ### 14. Class Committee (`Class Committee`)
-- **Status**: **OBSERVED** (Evidence: `media_1793188087174_5db46879.png`, `media_1793188113086_b6ea955b.png`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188087174_5db46879.png`, `media_1793188113086_b6ea955b.png`, `media_1793188136774_0d59f6d0.png`, `media_1793188155159_e0ee8e6e.png`, `media_1793188173909_c635463c.png`, `media_1793188192808_9ed8a472.png`, `media_1793188216456_339ccf9d.png`, `media_1793188474107_f964c4eb.png`)
 - **Navigation**: Collapsible sidebar menu with items:
   1. `Schedule`
   2. `Minutes Of Meet` (white pill active state)
@@ -410,10 +410,185 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - `Course : B.E. CSE` | `Semester : 5` | `Section : A`
     - `Chairman : GEETHA A (CS182)` | `Incharge : ARAVINDH S (CS190)`
     - `Date & Time : 2026-08-07 12:40:00 to 13:10:00` | `Venue : A202 Lab`
-  - Summary of Meeting Card:
-    - `Members Present (Faculties) *`: Blue tag pills with remove icons (`SARAVANAN M. (PH15)`, `ARAVINDH S (CS190)`, `VINITHA R (CS204)`, etc.).
-    - `Members Present (Students) *`: Blue tag pills (`AAKASH B K (2117240020001)`, `AKSHARA P (2117240020016)`, etc.).
+  - **Summary of Meeting Card**:
+    - `Members Present (Faculties) *`: Blue tag pills with remove icons (`SARAVANAN M. (PH15)`, `ARAVINDH S (CS190)`, `VINITHA R (CS204)`, `HARSHANA B (CS218)`, `CHARUMATHY M (CS250)`). Toolbar: `[Select all]`, `[Deselect all]`.
+    - `Members Present (Students) *`: Blue tag pills (`AAKASH B K (2117240020001)`, `AKSHARA P (2117240020016)`, `AKSHAYA M (2117240020019)`, `ANISHA PATHAK (2117240020026)`, `AUSTIN JOSHUA M (2117240020044)`, `CHRIS ALAN (2117240020054)`, `CHRISTOPHER J (2117240020056)`).
+  - **Syllabus Completion Status Table**:
+    - Columns: `S.No`, `Subject Name`, `Faculty Name`, `Completion Percentage`.
+    - Authentic Data Rows:
+      1. `Health Care Analytics (AD23V14)` | `ANJANA DEVI V. (CS82)` | `100 %`
+      2. `Deep Learning Techniques (AD23531)` | `VINITHA R (CS204)` | `100 %`
+      3. `Data Exploration and Visualization (AD23532)` | `CHARUMATHY M (CS250)` | `100 %`
+      4. `Data Warehousing and Data Mining (AD23V13)` | `SOWMYA S (CS203)` | `100 %`
+      5. `Compiler Design (CS23512)` | `DR. MADHAN V. (CS130)` | `100 %`
+      6. `Computer Networks (CS23511)` | `ARAVINDH S (CS190)` | `97.78 %`
+      7. `Quantum Information Science (VL23M04)` | `DR.VIEERALINGAAM G (EC110)` | `56.67 %`
+      8. `Fundamentals of Quantum Computing (VL23M02)` | `DR MARISELVAM A K (EC210)` | `95.56 %`
+      9. `Disaster Risk Reduction and Management (MX23511)` | `SARAVANAN M. (PH15)` | `100 %`
+      10. `AZURE for Data Analytics (CS23IC3)` | `ARAVINDH S (CS190)` | `100 %`
+      11. `Computer Networks Laboratory (CS23521)` | `ARAVINDH S (CS190)` | `100 %`
+  - **Low Attendance Students List Table**:
+    - Columns: `S.No`, `Student Name`, `%`.
+    - Rows:
+      1. `AARTHI M (2117240020002)` | `74%`
+      2. `AKSHAYA M (2117240020019)` | `72%`
+      3. `AMIJOHAN M (2117240020022)` | `73%`
+      4. `ANISH K (2117240020025)` | `73%`
+  - **Points Discussed Section**:
+    - **Academic Points \***:
+      1. *Assessed the status of syllabus completion in all theory and lab courses on schedule.*
+      2. *Verified that students are thoroughly completing laboratory experiments on time, including subject record books.*
+      3. *Advised students to analyze their test scores, identify areas requiring additional practice, and maintain consistent preparation for upcoming end-semester examinations.*
+    - **Non Academic Points \***:
+      1. *Emphasized active participation in co-curricular technical clubs, hackathons, and department symposiums.*
+      2. *Reinforced campus discipline, standard dress code adherence, and punctual arrival for early morning periods.*
+      3. *Encouraged regular physical activities and participation in college sports events.*
+    - **Additional Points \***:
+      1. *Highlighted the importance of the Skill Rock / NPTEL certification courses and internship opportunities.*
+      2. *Reminded student representatives to collect constructive feedback from peers regarding library resources and computer lab software availability.*
+  - **Uploaded Image \***:
+    - Embedded photographic evidence of the committee meeting session in the classroom.
+  - **Notification Alerts** (Evidence: `media_1793188474107_f964c4eb.png`):
+    - Notification drawer contains:
+      - *"Class Committee Schedule Has Been Modified"*
+      - *"Class committee MOM Has Been Generated"*
+      - *"Class Committee Has Been Scheduled"*
 
 ---
 
-*(Additional pages will be appended progressively as evidence is uploaded by the user)*
+### 15. No Due Request (`No Due Request`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188238496_0d2215ac.png`, `media_1793188254760_b54a5f02.png`)
+- **Visual Structure**:
+  - Title: `No Due Request`
+  - Multi-tier clearances grid:
+  - **1. Subjects Table**:
+    - Columns: `S.No`, `Subject Code`, `Subject Name`, `CAT Marks` (CAT-1, CAT-2, CAT-3), `Assignment Marks`, `Total Atten %`, `Dues`, `Action`.
+    - Rows:
+      - `CS23511` | `Computer Networks` | CAT 15/20/23 | 10 | 92% | `No Dues` | Green `Approved` pill
+      - `CS23512` | `Compiler Design` | CAT 23/23/22 | 10 | 90% | `No Dues` | Green `Approved` pill
+      - `AD23V13` | `Data Warehousing and Data Mining` | CAT 16/14/14 | 10 | 88% | `No Dues` | Green `Approved` pill
+      - `AD23531` | `Deep Learning Techniques` | CAT 20/16/15 | 9 | 94% | `No Dues` | Green `Approved` pill
+      - `AD23532` | `Data Exploration and Visualization` | CAT 22/19/21 | 9 | 91% | `No Dues` | Green `Approved` pill
+      - `CS23IC3` | `AZURE for Data Analytics` | CAT 21/20/19 | 10 | 89% | `No Dues` | Green `Approved` pill
+      - `MX23511` | `Disaster Risk Reduction and Management` | CAT 24/18/16 | 10 | 95% | `No Dues` | Green `Approved` pill
+  - **2. Labs / Projects Table**:
+    - Columns: `S.No`, `Subject Code`, `Subject Name`, `Cycle / Review Marks`, `Total Atten %`, `Dues`, `Action`.
+    - Rows:
+      - `CS23521` | `Computer Networks Laboratory` | 100/100 | 100% | `No Dues` | Green `Approved` pill
+  - **3. Department Clearances**:
+    - Clearances checklist card:
+      - `HOD of the Department`: `Cleared` (Green badge)
+      - `Central Library`: `Cleared` (0 books due)
+      - `Accounts Department`: `Cleared` (Balance: ₹0)
+      - `Hostel Office`: `N/A (Day Scholar)`
+      - `Placement & Training Cell`: `Cleared`
+
+---
+
+### 16. Assessments (`Assessments`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188327598_f417de84.png`, `media_1793188341710_a829d00f.png`, `media_1793188365719_e6d9b6a0.png`)
+- **Visual Structure**:
+  - Title: `Assessments`
+  - Sub-modules:
+    - **`Hall Tickets`**:
+      - Session Card: `Nov / Dec 2026 End Semester Examinations`
+      - Status: `Eligible`
+      - Action: Green `Download Hall Ticket` button
+      - Regulatory disclaimer: *"Students must bring official college ID along with the printed hall ticket."*
+
+---
+
+### 17. Messages (`Messages`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188390097_0be0c479.png`, `media_1793188404704_7b4fd34b.png`, `media_1793188419316_0dec6793.png`, `media_1793188434540_306caf16.png`)
+- **Visual Structure**:
+  - Title: `Messages`
+  - Action Header:
+    - Green button `New message` (`#28a745`)
+  - Sub-views / Tabs:
+    - `All Messages`
+    - `Inbox` (Active state badge/pill)
+    - `Outbox`
+  - Empty State: Centered grey banner `You have no messages.`
+  - **New Message Compose Modal / Card**:
+    - Heading: `New message`
+    - Form Fields:
+      - `Recipient *`: Dropdown (`ADMIN`, `HOD - CSE`, `Class Incharge - ARAVINDH S`, `Mentor`)
+      - `Subject *`: Text input
+      - `Content *`: Rich textarea
+    - Actions:
+      - Blue `Submit` button (`#007bff`)
+      - Grey `Cancel` button
+
+---
+
+### 18. Change Password (`Change password`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188455371_8a98a1a3.png`, `media_1793188498700_df62c3e2.png`)
+- **Visual Structure**:
+  - Card Heading: `Change password`
+  - Form Fields:
+    - `Current Password *`: Password input with eye toggle
+    - `New Password *`: Password input with eye toggle
+    - `Repeat New Password *`: Password input with eye toggle
+  - Password Policy notice: Minimum 8 characters, uppercase, lowercase, number, special character.
+  - Action: Blue `Submit` button (`#007bff`).
+  - Top-Right Profile Dropdown:
+    - `My Profile`
+    - `Logout`
+
+---
+
+### 19. My Profile (`My Profile`)
+- **Status**: **OBSERVED** (Evidence: `media_1793188527873_d7a1e931.png`, `media_1793188548986_c130ee1b.png`, `media_1793188571725_5ed551c2.png`, `media_1793188599881_719e5866.png`, `media_1793188624678_4b5e636b.png`)
+- **Visual Structure**:
+  - Top Profile Banner: Student avatar circle, `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / 5 / A`.
+  - Tab Navigation:
+    1. `Personal Details`
+    2. `Academic Details`
+    3. `Parent Details`
+    4. `Educational Details`
+  - **1. Personal Details**:
+    - `Full Name`: `AUSTIN JOSHUA M`
+    - `Mobile`: `9344208046`
+    - `Date of Birth`: `2006-03-01`
+    - `Gender`: `MALE`
+    - `Blood Group`: `O+ve`
+    - `Mother Tongue`: `TAMIL`
+    - `Religion`: `CHRISTIAN`
+    - `Community`: `BC`
+    - `State`: `TAMIL NADU`
+    - `Country`: `INDIAN`
+    - `Email`: `austinjoshua2006@gmail.com`
+    - `Aadhar Number`: `**** **** 2378`
+  - **2. Academic Details**:
+    - `Register Number`: `2117240020044`
+    - `Roll Number`: `24CS044`
+    - `EMIS Number`: `2019796943`
+    - `UMIS Number`: `2403211710421044`
+    - `Admitted Mode`: `MANAGEMENT QUOTA`
+    - `Department`: `Computer Science and Engineering`
+    - `Degree / Course`: `B.E. CSE`
+    - `Batch`: `2024-2028`
+    - `Semester`: `5` | `Section`: `A`
+    - `First Graduate`: `No`
+    - `Scholarship`: `No`
+    - `Lateral Entry`: `No`
+  - **3. Parent Details**:
+    - `Father Name`: `MARIA JUSTIN M`
+    - `Father Mobile No`: `9444752053`
+    - `Father's Occupation`: `BAKER`
+    - `Father's Office Address`: `SELF`
+    - `Mother Name`: `DE MELLO G`
+    - `Mother Mobile No`: `9444334155`
+    - `Mother's Occupation`: `TEACHER`
+    - `Mother's Office Address`: `4WJ6+Q6H, JN RD, HARIRAM NAGAR, V.M NAGAR, KAKKALUR, TAMIL NADU 602001`
+    - `Guardian Name`: `-`
+    - `Guardian Mobile No`: `-`
+    - `Guardian's Occupation`: `-`
+    - `Guardian's Office Address`: `-`
+  - **4. Educational Details**:
+    - `SSLC / 10th`: Board, School Name, Passing Year, Percentage
+    - `HSC / 12th`: Board, School Name, Passing Year, Cutoff, Percentage
+
+---
+
+*(All authentic student portal pages observed, transcribed, and verified against primary evidence)*
