@@ -79,8 +79,11 @@ public class CampusCredentialAlignment {
         if (user == null || isDemo(user)) {
             return false;
         }
-        boolean changed = false;
         String registerNo = student.getRegisterNo();
+        if (registerNo == null || registerNo.isBlank()) {
+            return false;
+        }
+        boolean changed = false;
         if (userRepository.findByUsername(registerNo).isEmpty() || registerNo.equals(user.getUsername())) {
             if (!registerNo.equals(user.getUsername())) {
                 user.setUsername(registerNo);
@@ -114,6 +117,9 @@ public class CampusCredentialAlignment {
 
     private boolean alignParent(Student student) {
         String registerNo = student.getRegisterNo();
+        if (registerNo == null || registerNo.isBlank()) {
+            return false;
+        }
         User parentUser = userRepository.findByUsername(LoginCredentials.parentUsername(registerNo)).orElse(null);
         if (parentUser == null || isDemo(parentUser)) {
             return false;
@@ -124,7 +130,8 @@ public class CampusCredentialAlignment {
             parentUser.setEmail(email);
             changed = true;
         }
-        Parent parent = parentRepository.findByUser_Id(parentUser.getId()).orElse(null);
+        Long parentUserId = parentUser.getId();
+        Parent parent = parentUserId != null ? parentRepository.findByUser_Id(parentUserId).orElse(null) : null;
         String phone = parentUser.getPhone();
         if (phone == null || phone.isBlank()) {
             if (parent != null && parent.getContactInfo() != null && parent.getContactInfo().matches("^\\d{10}$")) {

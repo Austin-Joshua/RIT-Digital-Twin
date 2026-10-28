@@ -113,23 +113,47 @@ public class StudentDataSeeder implements CommandLineRunner {
     @org.springframework.context.annotation.Lazy
     private StudentDataSeeder self; // Self-injection for proxy-aware @Transactional calls from async
 
+    private volatile boolean cancelled = false;
+    private CompletableFuture<Void> seedingFuture;
+
+    @jakarta.annotation.PreDestroy
+    public void destroy() {
+        this.cancelled = true;
+        log.info("StudentDataSeeder: Application shutdown detected; stopping background seeding.");
+    }
+
+    public CompletableFuture<Void> getSeedingFuture() {
+        return seedingFuture;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
     @Override
     public void run(String... args) {
-        CompletableFuture.runAsync(() -> {
+        seedingFuture = CompletableFuture.runAsync(() -> {
             log.info("Starting Async Bulk Student Data Integration (Zero-Trust Identity Seeding)...");
             try {
-                self.performSeeding(); // Call through Spring proxy so @Transactional works
+                performSeeding();
                 log.info("Student Data Integration Complete.");
             } catch (Exception e) {
-                log.error("StudentDataSeeder encountered an error in background thread: {}", e.getMessage());
-                log.debug("Seeder stack trace:", e);
+                if (cancelled || Thread.currentThread().isInterrupted()) {
+                    log.info("StudentDataSeeder stopped due to application shutdown.");
+                } else {
+                    log.error("StudentDataSeeder encountered an error in background thread: {}", e.getMessage(), e);
+                }
             }
         });
     }
 
-    @Transactional
     public void performSeeding() {
         try {
+            if (cancelled || Thread.currentThread().isInterrupted()) {
+                log.info("StudentDataSeeder: seeding aborted because application is shutting down.");
+                return;
+            }
+
             Role studentRole = roleRepository.findByRoleName(Role.UserRole.STUDENT)
                 .orElseThrow(() -> new RuntimeException("STUDENT role not found"));
         
@@ -146,19 +170,27 @@ public class StudentDataSeeder implements CommandLineRunner {
         Department csbs = departmentRepository.findByCode("CSBS")
                 .orElseGet(() -> departmentRepository.save(Department.builder().code("CSBS").deptName("B.Tech Computer Science and Business Systems").build()));
 
-        // seedStaffAccounts(); // Handled by DataInitializer
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedCurriculum(cse, "B.E. CSE");
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedCurriculum(csbs, "B.Tech CS & BS");
 
         // CSE-A Batch 2024-2028
-        seedBatch(cse, "CSE-A", "2024-2028", createCseAData(), studentRole);
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
+        self.seedBatch(cse, "CSE-A", "2024-2028", createCseAData(), studentRole);
         
         // CSBS Batch 2024-2028
-        seedBatch(csbs, "CSBS-C", "2024-2028", createCsbsData(), studentRole);
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
+        self.seedBatch(csbs, "CSBS-C", "2024-2028", createCsbsData(), studentRole);
+
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         campusCredentialAlignment.alignClassAccounts();
         
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedOperationsSuiteData(cse);
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedSmartCampusSuiteData();
+        if (cancelled || Thread.currentThread().isInterrupted()) return;
         seedPhysicalTwinData();
         } catch (Exception e) {
              throw e;
@@ -415,12 +447,19 @@ public class StudentDataSeeder implements CommandLineRunner {
         subjectRepository.save(subject);
     }
 
-    private void seedBatch(Department dept, String section, String batch, List<StudentInfo> records, Role role) {
+    @Transactional
+    public void seedBatch(Department dept, String section, String batch, List<StudentInfo> records, Role role) {
+        if (cancelled || Thread.currentThread().isInterrupted()) {
+            return;
+        }
         int created = 0;
         Semester sem1 = semesterRepository.findBySemesterNumber(1).orElseThrow();
         List<Subject> subjects = subjectRepository.findBySemester_SemesterNumberAndDepartmentNameIgnoreCaseOrderBySubjectCodeAsc(1, dept.getDeptName());
 
         for (StudentInfo info : records) {
+            if (cancelled || Thread.currentThread().isInterrupted()) {
+                break;
+            }
             User user = userRepository.findByUsername(info.regNo).orElse(null);
             boolean isNew = false;
             
@@ -532,12 +571,17 @@ public class StudentDataSeeder implements CommandLineRunner {
         int totalCredits = 0;
 
         for (Subject sub : subjects) {
-            StudentSubject ss = studentSubjectRepository.save(StudentSubject.builder()
-                    .student(student)
-                    .subject(sub)
-                    .semester(sem)
-                    .status("active")
-                    .build());
+            if (cancelled || Thread.currentThread().isInterrupted()) {
+                return;
+            }
+            StudentSubject ss = studentSubjectRepository
+                    .findByStudent_IdAndSubject_IdAndSemester_SemesterId(student.getId(), sub.getId(), sem.getSemesterId())
+                    .orElseGet(() -> studentSubjectRepository.save(StudentSubject.builder()
+                            .student(student)
+                            .subject(sub)
+                            .semester(sem)
+                            .status("active")
+                            .build()));
 
             if (attendanceRecordRepository.countByStudentSubject_StudentSubjectId(ss.getStudentSubjectId()) > 0) {
                 log.debug("Skipping attendance seeding for StudentSubject ID {}", ss.getStudentSubjectId());
@@ -549,6 +593,7 @@ public class StudentDataSeeder implements CommandLineRunner {
                 } else {
                     attended = (int) (totalClasses * (0.72 + random.nextDouble() * 0.26));
                 }
+                List<AttendanceRecord> recordsToSave = new ArrayList<>(totalClasses);
                 for (int i=0; i<totalClasses; i++) {
                     AttendanceRecord.AttendanceRecordBuilder arb = AttendanceRecord.builder()
                             .studentSubject(ss)
@@ -558,9 +603,9 @@ public class StudentDataSeeder implements CommandLineRunner {
                     if (facultyUser != null) {
                         arb.recordedBy(facultyUser);
                     }
-                    
-                    attendanceRecordRepository.save(arb.build());
+                    recordsToSave.add(arb.build());
                 }
+                attendanceRecordRepository.saveAll(recordsToSave);
             }
 
             if (gradeRepository.existsByStudent_IdAndSubject_IdAndSemester_SemesterId(student.getId(), sub.getId(), sem.getSemesterId())) {
