@@ -29,7 +29,7 @@ This living checklist tracks the verification status of student-accessible modul
 | 10 | **LAB Mark** | Student → LAB Mark | `/student/lab-mark` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 11 | **Assignment Mark** | Student → Assignment Mark | `/student/assignment` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 12 | **Grade Book** | Student → Grade Book | `/student/gradebook` | **NOT INSPECTED** | Awaiting dashboard verification |
-| 13 | **Apply Certificates** | Student → Certificates | `/student/certificates` | **NOT INSPECTED** | Awaiting dashboard verification |
+| 13 | **Apply Certificates** | Student → Certificates | `/student/certificates` | **OBSERVED** | Verified `Apply Certificate` green button, `Certificate Application List` (S.No, Date, Certificate, Purpose, Status, Response, Action), modal (BONAFIDE/TC/COURSE COMPLETION, Reason dropdown, Hosteler No/Yes, amber `Preview` button), and live Bonafide certificate preview modal |
 | 14 | **Feedbacks** | Student → Feedback | `/student/feedbacks` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 15 | **Class Committee** | Student → Committee | `/student/committee/*` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 16 | **No Due Request** | Student → No Due | `/student/nodue` | **NOT INSPECTED** | Awaiting dashboard verification |

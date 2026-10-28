@@ -168,4 +168,52 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 06. Apply Certificates (`Apply Certificates`)
+- **Status**: **OBSERVED** (Evidence: `media_1793187224431_ed85f313.png`, `media_1793187251490_fe758b1e.png`, `media_1793187277563_656993b5.png`, `media_1793187394398_3aa918e0.png`, `media_1793187414381_2f3c923f.png`)
+- **Visual Structure**:
+  - **Action Header**: Solid green button in top left: `Apply Certificate` (`#28a745`, white text).
+  - **Certificate Application List Card**:
+    - DataTables Controls: `Show [ 10 ] entries` and `Search: [ _________ ]`.
+    - Columns:
+      1. `S.No ⇅`
+      2. `Date ⇅`
+      3. `Certificate ⇅`
+      4. `Purpose ⇅`
+      5. `Status ⇅`
+      6. `Response ⇅`
+      7. `Action`
+    - Empty state: `No data available in table`.
+    - Table footer: `Showing 0 to 0 of 0 entries` / `Previous  Next`.
+  - **Apply Certificate Modal Dialog**:
+    - Header: Close button `×` on top right.
+    - Fields:
+      - `Certificate *`: Dropdown options:
+        - `Select Certificate`
+        - `BONAFIDE`
+        - `TC`
+        - `COURSE COMPLETION`
+      - `Date *`: Date input (auto-populates current date, e.g. `2026-10-29`).
+      - `Reason *`: Dropdown options:
+        - `Select Reason`
+        - `Labour Welfare Board Scholarship`
+        - `Farmer Welfare Scheme Scholarship`
+        - `Construction Workers Welfare Board Scholarship`
+        - `Higher Studies`
+        - `Internship`
+      - `Hosteler *`: Dropdown select (`No` / `Yes`).
+    - Actions:
+      - Amber/gold `Preview` button (`#ffc107` / `#e0a800`) appears when certificate reason is selected.
+      - Green outline `Apply` button on bottom right (`border: 1px solid #28a745; color: #28a745;`).
+  - **BONAFIDE Certificate Preview Modal**:
+    - Header: Blue text `BONAFIDE Certificate Preview` with `×` close icon.
+    - Card: Centered formal document layout:
+      - Top right: `Date : DD-MM-YYYY`
+      - Title: `BONAFIDE CERTIFICATE` (bold black uppercase).
+      - Body text:
+        `This is to certify that Mr. [STUDENT NAME]. Register No : [REG_NO], S/o Mr. [FATHER_NAME], is a bonafide student of our college studying in [YEAR] Year B.E., Degree course in [DEPARTMENT] during the academic year [AY].`
+        `This Certificate is issued to enable him to apply for [PURPOSE] .`
+      - Signature line at bottom right: `Principal`.
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*
