@@ -25,6 +25,7 @@ public class AnalyticsController {
     private final PerformanceWarningRepository performanceWarningRepository;
     private final com.university.erp.service.HODService hodService;
     private final com.university.erp.repository.DepartmentRepository departmentRepository;
+    private final com.university.erp.repository.StudentRepository studentRepository;
 
     @PostMapping("/run")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
@@ -57,9 +58,36 @@ public class AnalyticsController {
         List<AttendanceRisk> attendanceRisks = attendanceRiskRepository.findByStudent_IdOrderByAnalyzedAtDesc(studentId);
         List<PerformanceWarning> performanceWarnings = performanceWarningRepository.findByStudent_IdOrderByAnalyzedAtDesc(studentId);
         
-        return ResponseEntity.ok(Map.of(
-                "attendanceRisk", attendanceRisks.isEmpty() ? null : attendanceRisks.get(0),
-                "performanceWarning", performanceWarnings.isEmpty() ? null : performanceWarnings.get(0)
-        ));
+        AttendanceRisk attendanceRisk = attendanceRisks.isEmpty() ? null : attendanceRisks.get(0);
+        PerformanceWarning performanceWarning = performanceWarnings.isEmpty() ? null : performanceWarnings.get(0);
+
+        // Lazy on-demand compute if records have not yet been populated for this student
+        if (attendanceRisk == null && studentRepository != null) {
+            studentRepository.findById(studentId).ifPresent(s -> {
+                try {
+                    attendanceAnalyticsService.analyzeStudentAttendance(s);
+                } catch (Exception ignored) {}
+            });
+            List<AttendanceRisk> fresh = attendanceRiskRepository.findByStudent_IdOrderByAnalyzedAtDesc(studentId);
+            if (!fresh.isEmpty()) {
+                attendanceRisk = fresh.get(0);
+            }
+        }
+        if (performanceWarning == null && studentRepository != null) {
+            studentRepository.findById(studentId).ifPresent(s -> {
+                try {
+                    studentSuccessService.analyzeStudentPerformance(s);
+                } catch (Exception ignored) {}
+            });
+            List<PerformanceWarning> fresh = performanceWarningRepository.findByStudent_IdOrderByAnalyzedAtDesc(studentId);
+            if (!fresh.isEmpty()) {
+                performanceWarning = fresh.get(0);
+            }
+        }
+
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("attendanceRisk", attendanceRisk);
+        result.put("performanceWarning", performanceWarning);
+        return ResponseEntity.ok(result);
     }
 }

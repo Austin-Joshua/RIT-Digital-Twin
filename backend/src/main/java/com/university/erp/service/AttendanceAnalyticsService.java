@@ -21,11 +21,14 @@ public class AttendanceAnalyticsService {
     private final AttendanceRiskRepository attendanceRiskRepository;
     private final StudentRepository studentRepository;
 
-    @Transactional
     public void runAttendanceAnalysisForAllStudents() {
         List<Student> students = studentRepository.findAll();
         for (Student student : students) {
-            analyzeStudentAttendance(student);
+            try {
+                analyzeStudentAttendance(student);
+            } catch (Exception ex) {
+                // Individual student calculation failure should never abort the cohort
+            }
         }
     }
 

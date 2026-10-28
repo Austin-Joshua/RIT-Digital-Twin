@@ -112,15 +112,11 @@ class StudentDataSeederRegressionTest {
         ReflectionTestUtils.setField(studentDataSeeder, "roomRepository", roomRepository);
         ReflectionTestUtils.setField(studentDataSeeder, "companyRepository", companyRepository);
         ReflectionTestUtils.setField(studentDataSeeder, "opportunityRepository", opportunityRepository);
-        ReflectionTestUtils.setField(studentDataSeeder, "attendanceAnalyticsService", attendanceAnalyticsService);
-        ReflectionTestUtils.setField(studentDataSeeder, "studentSuccessService", studentSuccessService);
         ReflectionTestUtils.setField(studentDataSeeder, "hostelService", hostelService);
         ReflectionTestUtils.setField(studentDataSeeder, "buildingRepository", buildingRepository);
         ReflectionTestUtils.setField(studentDataSeeder, "classroomRepository", classroomRepository);
         ReflectionTestUtils.setField(studentDataSeeder, "timetableSlotRepository", timetableSlotRepository);
         ReflectionTestUtils.setField(studentDataSeeder, "campusCredentialAlignment", campusCredentialAlignment);
-        ReflectionTestUtils.setField(studentDataSeeder, "attendanceRiskRepository", attendanceRiskRepository);
-        ReflectionTestUtils.setField(studentDataSeeder, "performanceWarningRepository", performanceWarningRepository);
 
         testUser = User.builder()
                 .userId(100L)
@@ -312,11 +308,8 @@ class StudentDataSeederRegressionTest {
     }
 
     @Test
-    @DisplayName("Analytics Optimization: seedSmartCampusSuiteData skips expensive calculations when baseline exists")
-    void testSeedSmartCampusSuiteData_WhenAnalyticsAlreadyExist_SkipsExecution() throws Exception {
-        // Analytics repositories already have data
-        when(attendanceRiskRepository.count()).thenReturn(122L);
-        when(performanceWarningRepository.count()).thenReturn(122L);
+    @DisplayName("Startup Performance: seedSmartCampusSuiteData never invokes full-dataset analytics")
+    void testSeedSmartCampusSuiteData_StartupNeverInvokesExpensiveAnalytics() throws Exception {
         when(hostelRepository.count()).thenReturn(1L);
         when(companyRepository.count()).thenReturn(1L);
 
@@ -324,25 +317,9 @@ class StudentDataSeederRegressionTest {
         method.setAccessible(true);
         method.invoke(studentDataSeeder);
 
-        // Verify that full O(N) attendance analysis and performance analysis are never triggered
-        verify(attendanceAnalyticsService, never()).runAttendanceAnalysisForAllStudents();
-        verify(studentSuccessService, never()).runPerformanceAnalysisForAllStudents();
-    }
-
-    @Test
-    @DisplayName("Analytics Initial Seed: seedSmartCampusSuiteData populates baseline when empty")
-    void testSeedSmartCampusSuiteData_WhenAnalyticsEmpty_RunsInitialAnalytics() throws Exception {
-        when(attendanceRiskRepository.count()).thenReturn(0L);
-        when(performanceWarningRepository.count()).thenReturn(0L);
-        when(hostelRepository.count()).thenReturn(1L);
-        when(companyRepository.count()).thenReturn(1L);
-
-        Method method = StudentDataSeeder.class.getDeclaredMethod("seedSmartCampusSuiteData");
-        method.setAccessible(true);
-        method.invoke(studentDataSeeder);
-
-        verify(attendanceAnalyticsService, times(1)).runAttendanceAnalysisForAllStudents();
-        verify(studentSuccessService, times(1)).runPerformanceAnalysisForAllStudents();
+        // Verification: Full analytics must never be triggered during startup
+        verifyNoInteractions(attendanceAnalyticsService);
+        verifyNoInteractions(studentSuccessService);
     }
 
     @Test
@@ -373,8 +350,6 @@ class StudentDataSeederRegressionTest {
 
         when(hostelRepository.count()).thenReturn(1L);
         when(companyRepository.count()).thenReturn(1L);
-        when(attendanceRiskRepository.count()).thenReturn(122L);
-        when(performanceWarningRepository.count()).thenReturn(122L);
         when(transportRouteRepository.count()).thenReturn(1L);
         when(buildingRepository.count()).thenReturn(10L);
 
@@ -382,6 +357,8 @@ class StudentDataSeederRegressionTest {
 
         // Verify alignment was called and no error occurred
         verify(campusCredentialAlignment, times(1)).alignClassAccounts();
+        verifyNoInteractions(attendanceAnalyticsService);
+        verifyNoInteractions(studentSuccessService);
     }
 }
 

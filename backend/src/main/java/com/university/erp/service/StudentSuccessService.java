@@ -21,11 +21,14 @@ public class StudentSuccessService {
     private final PerformanceWarningRepository performanceWarningRepository;
     private final StudentRepository studentRepository;
 
-    @Transactional
     public void runPerformanceAnalysisForAllStudents() {
         List<Student> students = studentRepository.findAll();
         for (Student student : students) {
-            analyzeStudentPerformance(student);
+            try {
+                analyzeStudentPerformance(student);
+            } catch (Exception ex) {
+                // Individual student calculation failure should never abort the cohort
+            }
         }
     }
 

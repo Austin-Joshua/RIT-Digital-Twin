@@ -63,11 +63,6 @@ public class StudentDataSeeder implements CommandLineRunner {
     @org.springframework.beans.factory.annotation.Autowired
     private PlacementOpportunityRepository opportunityRepository;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private AttendanceAnalyticsService attendanceAnalyticsService;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    private StudentSuccessService studentSuccessService;
 
     @org.springframework.beans.factory.annotation.Autowired
     private HostelService hostelService;
@@ -84,11 +79,6 @@ public class StudentDataSeeder implements CommandLineRunner {
     @org.springframework.beans.factory.annotation.Autowired
     private com.university.erp.service.CampusCredentialAlignment campusCredentialAlignment;
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.university.erp.repository.AttendanceRiskRepository attendanceRiskRepository;
-
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.university.erp.repository.PerformanceWarningRepository performanceWarningRepository;
 
     public StudentDataSeeder(
             UserRepository userRepository,
@@ -179,8 +169,7 @@ public class StudentDataSeeder implements CommandLineRunner {
         
         // Fetch a default faculty to record attendance
         this.facultyUser = userRepository.findByEmail("faculty@ritchennai.edu.in")
-            .orElseGet(() -> userRepository.findAll().stream()
-                .filter(u -> u.getRole() != null && u.getRole().getRoleName() == Role.UserRole.FACULTY)
+            .orElseGet(() -> userRepository.findByRole_RoleName(Role.UserRole.FACULTY).stream()
                 .findFirst()
                 .orElse(null));
         
@@ -264,16 +253,10 @@ public class StudentDataSeeder implements CommandLineRunner {
                     .build());
         }
 
-        // 3. Trigger initial Analytics only if baseline not present
-        if (attendanceRiskRepository.count() == 0) {
-            log.info("StudentDataSeeder: Initial attendance risk baseline missing. Populating asynchronously...");
-            attendanceAnalyticsService.runAttendanceAnalysisForAllStudents();
-        }
-        if (performanceWarningRepository.count() == 0) {
-            log.info("StudentDataSeeder: Initial performance warning baseline missing. Populating asynchronously...");
-            studentSuccessService.runPerformanceAnalysisForAllStudents();
-        }
-        log.info("Smart Campus Analytics run complete.");
+        // Full attendance and performance analytics are excluded from the startup path
+        // to guarantee zero-latency application readiness and prevent connection exhaustion.
+        // Analytics run on-demand via POST /api/analytics/run or per-student query.
+        log.info("Smart Campus Analytics deferred to on-demand calculation.");
     }
 
     private void seedPhysicalTwinData() {
