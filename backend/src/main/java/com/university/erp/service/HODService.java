@@ -34,19 +34,8 @@ public class HODService {
                 .orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Department not found."));
     }
 
-    private void ensureDepartmentExists(Long departmentId) {
-        findDepartmentOrThrow(departmentId);
-    }
-
     private boolean isHandSDepartment(Department dept) {
         return dept != null && H_AND_S_DEPARTMENT_CODE.equalsIgnoreCase(dept.getCode());
-    }
-
-    private boolean isHandSDepartment(Long departmentId) {
-        if (departmentId == null) return false;
-        return departmentRepository.findById(departmentId)
-                .map(d -> isHandSDepartment(d))
-                .orElse(false);
     }
 
     private List<Student> getStudentsUnderHod(Department dept) {
@@ -56,23 +45,8 @@ public class HODService {
         return studentRepository.findByDepartment_IdAndYearGreaterThanEqual(dept.getId(), 2);
     }
 
-    private List<Student> getStudentsUnderHod(Long departmentId) {
-        if (isHandSDepartment(departmentId)) {
-            return studentRepository.findByYear(1);
-        }
-        return studentRepository.findByDepartment_IdAndYearGreaterThanEqual(departmentId, 2);
-    }
-
     private Set<Long> getStudentIdsUnderHod(Department dept) {
         return getStudentsUnderHod(dept).stream()
-                .filter(Objects::nonNull)
-                .map(s -> s.getId())
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Long> getStudentIdsUnderHod(Long departmentId) {
-        return getStudentsUnderHod(departmentId).stream()
                 .filter(Objects::nonNull)
                 .map(s -> s.getId())
                 .filter(Objects::nonNull)
@@ -467,12 +441,12 @@ public class HODService {
     }
 
     public Map<String, Object> getStudentPerformance(Long departmentId, Long studentId) {
-        findDepartmentOrThrow(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
         if (studentId == null) {
             throw new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found");
         }
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found"));
-        boolean isHandS = isHandSDepartment(departmentId);
+        boolean isHandS = isHandSDepartment(dept);
         boolean canAccess = isHandS
                 ? (student.getYear() != null && student.getYear() == 1)
                 : (student.getDepartment() != null && departmentId.equals(student.getDepartment().getId()) && student.getYear() != null && student.getYear() >= 2);
