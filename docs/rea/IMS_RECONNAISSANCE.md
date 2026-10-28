@@ -214,4 +214,53 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 07. CAT Mark (`CAT Mark`)
+- **Status**: **OBSERVED** (Evidence: `media_1793187558157_5c2321d9.png`, `media_1793187574467_97523814.png`)
+- **Visual Structure**:
+  - Title: `CAT Marks` (centered clean heading).
+  - Two-Tier Header Hierarchy:
+    - Tier 1 Header:
+      - Blank above `Subject Code`, `Subject Name`, `Faculty Name`
+      - `CAT - 1/III/05` (above CO-1)
+      - `CAT - 1/III/05` (above CO-2)
+      - `CAT- II/III/05` (above CO-3)
+      - `CAT- III/III/05` (above CO-4)
+      - `CAT- III/III/05` (above CO-5)
+      - Blank above `Total (125 Marks)` and `Internal Weightage`
+    - Tier 2 Header:
+      - `Subject Code`
+      - `Subject Name`
+      - `Faculty Name`
+      - `CO-1 (25 Marks)`
+      - `CO-2 (25 Marks)`
+      - `CO-3 (25 Marks)`
+      - `CO-4 (25 Marks)`
+      - `CO-5 (25 Marks)`
+      - `Total (125 Marks)`
+      - `Internal Weightage` (e.g. `21.84/30`, `26.4/30`, `18.48/30`, `57.6/75`, `13.92/20`, `11.36/20`)
+  - Rows: Course scores mapped across all 5 Course Outcomes and computed against total internal weightage.
+
+---
+
+### 08. LAB Mark (`LAB Mark`)
+- **Status**: **OBSERVED** (Evidence: `media_1793187594919_d30bb404.png`)
+- **Visual Structure**:
+  - Title: `LAB Marks` (centered clean heading).
+  - Two-Tier Header Hierarchy:
+    - Tier 1 Header:
+      - `Exam Name:` spanning over `Cycle-1`, `Cycle-2`, `Model Exam`
+    - Tier 2 Header:
+      - `Subject Code`
+      - `Subject Name`
+      - `Faculty Name`
+      - `100 Marks` (under `Cycle-1`)
+      - `100 Marks` (under `Cycle-2`)
+      - `100 Marks` (under `Model Exam`)
+      - `Total (300 Marks)`
+  - Highlighting / Alert Rule:
+    - Incomplete or zero totals are highlighted with a **solid crimson/red background (`#dc3545`) with white text** (e.g. Total `0` or `142`).
+    - Standard passing scores have clean white backgrounds.
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*
