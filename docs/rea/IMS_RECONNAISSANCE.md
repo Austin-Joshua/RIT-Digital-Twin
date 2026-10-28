@@ -285,4 +285,42 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 10. Grade Book (`Grade Book`)
+- **Status**: **OBSERVED** (Evidence: `media_1793187719944_ade78812.png` through `media_1793187837601_9720d71e.png`)
+- **Visual Structure**:
+  - Title: `Grade Book` (clean left-aligned heading).
+  - Filter Card:
+    - `Semester *`: Select dropdown (`Select Semester`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`).
+    - Blue button: `Submit` (`#007bff`, solid blue).
+  - Results Table & Action Bar:
+    - DataTables Controls: `Show [ 10 ] entries`, `Search: [ _________ ]`.
+    - Dedicated Action Button: Blue button labeled **`Download PDF`** (`#007bff`, solid blue).
+    - Table Columns:
+      1. Checkbox column
+      2. `Academic Year ⇅` (e.g. `2025-2026`)
+      3. `Semester ⇅` (e.g. `04` with leading zero)
+      4. `Subject Code ⇅` (e.g. `CS23411`)
+      5. `Subject Title ⇅` (e.g. `Database Management Systems`)
+      6. `Grade ⇅` (e.g. `A`, `B+`, `A+`, `RA`)
+      7. `Result ⇅` (e.g. `PASS`, `RA`)
+      8. `Exam Month and Exam Year ⇅` (e.g. `April 2026`)
+  - **Official Regulatory Grading Legend** (printed directly beneath the table):
+    - `RA – Reappearance is required`
+    - `RA* - Absent for End Exam`
+    - `W/WD – Withdrawal`
+    - `SA – Shortage of Attendance`
+    - `SE – Sports Exemption`
+    - `WH1 – Suspected Malpractice`
+    - `WH2 – Contact COE office`
+  - **Official `Semester Results` PDF Generation**:
+    - Header: RIT Tree Logo, `Rajalakshmi Institute of Technology`, `(An Autonomous Institution, Affiliated to Anna University, Chennai)`, `Kuthambakkam, Chennai - 600124`.
+    - Document Title: `Semester Results`.
+    - Metadata Box:
+      - `Student Name : [NAME]` | `Academic Year : [AY]`
+      - `Register No : [REG_NO]` | `Semester : [SEM]`
+      - `Course : B.E. CSE`
+    - Columns: `Subject Semester`, `Subject Code`, `Subject Title`, `Grade`, `Result`, `Exam Date`.
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*
