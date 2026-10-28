@@ -169,7 +169,7 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 ---
 
 ### 06. Apply Certificates (`Apply Certificates`)
-- **Status**: **OBSERVED** (Evidence: `media_1793187224431_ed85f313.png`, `media_1793187251490_fe758b1e.png`, `media_1793187277563_656993b5.png`, `media_1793187394398_3aa918e0.png`, `media_1793187414381_2f3c923f.png`)
+- **Status**: **OBSERVED & WORKFLOW VERIFIED** (Evidence: `media_1793187224431_ed85f313.png` through `media_1793187515978_ad4a51b2.png`)
 - **Visual Structure**:
   - **Action Header**: Solid green button in top left: `Apply Certificate` (`#28a745`, white text).
   - **Certificate Application List Card**:
@@ -179,40 +179,38 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
       2. `Date ⇅`
       3. `Certificate ⇅`
       4. `Purpose ⇅`
-      5. `Status ⇅`
+      5. `Status ⇅` (e.g. `Submitted For AO Verification` rendered in amber text)
       6. `Response ⇅`
       7. `Action`
+    - Action Buttons in Row:
+      - Teal/cyan `Edit` button (`#17a2b8`, white text)
+      - Red `Delete` button (`#dc3545`, white text)
     - Empty state: `No data available in table`.
-    - Table footer: `Showing 0 to 0 of 0 entries` / `Previous  Next`.
-  - **Apply Certificate Modal Dialog**:
+    - Table footer: `Showing X to Y of Z entries` / `Previous  1  Next`.
+  - **Apply / Edit Certificate Modal Dialog**:
     - Header: Close button `×` on top right.
     - Fields:
-      - `Certificate *`: Dropdown options:
-        - `Select Certificate`
-        - `BONAFIDE`
-        - `TC`
-        - `COURSE COMPLETION`
-      - `Date *`: Date input (auto-populates current date, e.g. `2026-10-29`).
-      - `Reason *`: Dropdown options:
-        - `Select Reason`
-        - `Labour Welfare Board Scholarship`
-        - `Farmer Welfare Scheme Scholarship`
-        - `Construction Workers Welfare Board Scholarship`
-        - `Higher Studies`
-        - `Internship`
+      - `Certificate *`: Dropdown options (`Select Certificate`, `BONAFIDE`, `TC`, `COURSE COMPLETION`).
+      - `Date *`: Date input (`YYYY-MM-DD`).
+      - `Reason *`: Dropdown options (`Select Reason`, `Labour Welfare Board Scholarship`, `Farmer Welfare Scheme Scholarship`, `Construction Workers Welfare Board Scholarship`, `Higher Studies`, `Internship`).
       - `Hosteler *`: Dropdown select (`No` / `Yes`).
+      - `Hostel Room No *`: Text input (displayed when Hosteler is relevant).
     - Actions:
-      - Amber/gold `Preview` button (`#ffc107` / `#e0a800`) appears when certificate reason is selected.
-      - Green outline `Apply` button on bottom right (`border: 1px solid #28a745; color: #28a745;`).
+      - Amber/gold `Preview` button (`#ffc107` / `#e0a800`) opens document preview.
+      - Bottom-right button: Green outline labeled `Apply` on creation, switches to `Update` in edit mode (`border: 1px solid #28a745; color: #28a745;`).
   - **BONAFIDE Certificate Preview Modal**:
     - Header: Blue text `BONAFIDE Certificate Preview` with `×` close icon.
-    - Card: Centered formal document layout:
+    - Formal document card:
       - Top right: `Date : DD-MM-YYYY`
       - Title: `BONAFIDE CERTIFICATE` (bold black uppercase).
       - Body text:
         `This is to certify that Mr. [STUDENT NAME]. Register No : [REG_NO], S/o Mr. [FATHER_NAME], is a bonafide student of our college studying in [YEAR] Year B.E., Degree course in [DEPARTMENT] during the academic year [AY].`
         `This Certificate is issued to enable him to apply for [PURPOSE] .`
       - Signature line at bottom right: `Principal`.
+  - **SweetAlert Interaction Dialogs**:
+    - **Creation Success**: Green circle with checkmark `✔`, message: `Certificate Applied Successfully`, blue `OK` button.
+    - **Deletion Prompt**: Amber exclamation mark `!`, title: `Are You Sure?`, subtitle: `Do You Really Want To Delete !`, buttons: `No` (grey) and `Yes` (blue).
+    - **Deletion Success**: Green circle with checkmark `✔`, message: `Certificate Application Deleted`, blue `OK` button. Table instantly clears back to empty state.
 
 ---
 
