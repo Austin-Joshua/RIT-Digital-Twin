@@ -51,27 +51,79 @@ const LoginPage = () => {
 
     // ── Backend health-check poll ──────────────────────────────
     useEffect(() => {
-        let timeoutId;
+        let isMounted = true;
+        let timerId;
+        let consecutiveFailures = 0;
+
         const checkConnection = async () => {
             const controller = new AbortController();
-            timeoutId = setTimeout(() => controller.abort(), 3000);
+            // 15s timeout to gracefully accommodate Render cold-starts or cellular network latency
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            // If still pending after 2.5s, signal that server is waking up
+            const wakingTimer = setTimeout(() => {
+                if (isMounted) {
+                    setBackendStatus((prev) => (prev === 'checking' ? 'waking' : prev));
+                }
+            }, 2500);
+
+            let isHealthy = false;
             try {
-                const healthUrl = `${getBackendRootURL()}/api/health`;
-                const response = await fetch(healthUrl, {
+                const rootUrl = getBackendRootURL();
+                const healthUrl = `${rootUrl}/api/health`;
+                const headers = {};
+                if (healthUrl.includes('ngrok')) {
+                    headers['ngrok-skip-browser-warning'] = 'true';
+                }
+
+                // Simple GET without custom headers eliminates CORS preflight OPTIONS round-trip
+                let response = await fetch(healthUrl, {
                     signal: controller.signal,
                     mode: 'cors',
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                setBackendStatus(response.ok ? 'online' : 'offline');
+                    headers
+                }).catch(() => null);
+
+                // Fallback to /health if /api/health was unreachable
+                if (!response || !response.ok) {
+                    response = await fetch(`${rootUrl}/health`, {
+                        signal: controller.signal,
+                        mode: 'cors',
+                        headers
+                    }).catch(() => null);
+                }
+
+                if (response && response.ok) {
+                    isHealthy = true;
+                }
             } catch {
-                setBackendStatus('offline');
+                isHealthy = false;
             } finally {
                 clearTimeout(timeoutId);
+                clearTimeout(wakingTimer);
+
+                if (isMounted) {
+                    if (isHealthy) {
+                        consecutiveFailures = 0;
+                        setBackendStatus('online');
+                    } else {
+                        consecutiveFailures += 1;
+                        // On Render free-tier cold starts, keep in 'waking' state before declaring offline
+                        setBackendStatus(consecutiveFailures > 2 ? 'offline' : 'waking');
+                    }
+
+                    // Poll faster (every 5s) while waking/offline to catch server availability promptly;
+                    // poll every 30s when stable online
+                    const nextInterval = isHealthy ? 30000 : 5000;
+                    timerId = setTimeout(checkConnection, nextInterval);
+                }
             }
         };
+
         checkConnection();
-        const interval = setInterval(checkConnection, 15000);
-        return () => { if (timeoutId) clearTimeout(timeoutId); clearInterval(interval); };
+        return () => {
+            isMounted = false;
+            if (timerId) clearTimeout(timerId);
+        };
     }, []);
 
     // ── Lockout countdown ──────────────────────────────────────
@@ -236,19 +288,25 @@ const LoginPage = () => {
                         display: 'inline-flex', alignItems: 'center', gap: '6px',
                         height: '26px', padding: '0 10px', borderRadius: '999px',
                         background: backendStatus === 'online' ? 'rgba(22,163,74,0.12)'
-                            : backendStatus === 'checking' ? 'rgba(59,130,246,0.12)' : 'rgba(220,38,38,0.12)',
+                            : backendStatus === 'checking' ? 'rgba(59,130,246,0.12)'
+                            : backendStatus === 'waking' ? 'rgba(234,179,8,0.15)'
+                            : 'rgba(220,38,38,0.12)',
                         border: `1px solid ${backendStatus === 'online' ? 'var(--color-success)'
-                            : backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'}`,
+                            : backendStatus === 'checking' ? '#3B82F6'
+                            : backendStatus === 'waking' ? '#EAB308'
+                            : 'var(--color-danger)'}`,
                         fontSize: '11px', fontWeight: 650, letterSpacing: '0.04em',
                         color: backendStatus === 'online' ? 'var(--color-success)'
-                            : backendStatus === 'checking' ? '#3B82F6' : 'var(--color-danger)'
+                            : backendStatus === 'checking' ? '#3B82F6'
+                            : backendStatus === 'waking' ? '#EAB308'
+                            : 'var(--color-danger)'
                     }}>
                         <span style={{
                             width: '7px', height: '7px', borderRadius: '50%',
                             background: 'currentColor',
-                            animation: backendStatus === 'checking' ? 'pulse 1.5s infinite' : 'none'
+                            animation: (backendStatus === 'checking' || backendStatus === 'waking') ? 'pulse 1.5s infinite' : 'none'
                         }} />
-                        {backendStatus === 'checking' ? 'CHECKING' : backendStatus.toUpperCase()}
+                        {backendStatus === 'checking' ? 'CHECKING' : backendStatus === 'waking' ? 'WAKING UP' : backendStatus.toUpperCase()}
                     </div>
                 </div>
 
