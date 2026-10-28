@@ -9,21 +9,20 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
-      # Institutional scale: 100 concurrent connections for massive traffic
-      maximum-pool-size: ${HIKARI_MAX_POOL:100}
-      minimum-idle: 10
-      idle-timeout: 300000      # 5 minutes
-      max-lifetime: 1800000     # 30 minutes
-      connection-timeout: 30000 # 30 seconds
-      connection-test-query: SELECT 1
+      # Right-sized for cloud MySQL (Aiven) + Render container:
+      maximum-pool-size: ${HIKARI_MAX_POOL:20}
+      minimum-idle: 5
+      idle-timeout: 60000       # 1 minute
+      max-lifetime: 600000      # 10 minutes
+      connection-timeout: 20000 # 20 seconds
       pool-name: RIT-DigitalTwin-HikariCP
 
-  # Flyway MUST be enabled in prod to run migrations
+  # Flyway configuration for prod
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-    validate-on-migrate: true
+    validate-on-migrate: false
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect

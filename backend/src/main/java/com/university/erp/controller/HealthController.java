@@ -17,6 +17,7 @@ public class HealthController {
 
     public HealthController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate.setQueryTimeout(3);
     }
 
     @GetMapping("/health")
@@ -34,7 +35,7 @@ public class HealthController {
                     "status", "DOWN",
                     "timestamp", Instant.now().toString(),
                     "database", "DOWN",
-                    "error", e.getMessage()
+                    "error", e.getMessage() != null ? e.getMessage() : "Database probe failed"
             ));
         }
     }
