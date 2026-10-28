@@ -45,7 +45,7 @@ public class HODService {
     private boolean isHandSDepartment(Long departmentId) {
         if (departmentId == null) return false;
         return departmentRepository.findById(departmentId)
-                .map(this::isHandSDepartment)
+                .map(d -> isHandSDepartment(d))
                 .orElse(false);
     }
 
@@ -66,7 +66,7 @@ public class HODService {
     private Set<Long> getStudentIdsUnderHod(Department dept) {
         return getStudentsUnderHod(dept).stream()
                 .filter(Objects::nonNull)
-                .map(Student::getId)
+                .map(s -> s.getId())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -74,7 +74,7 @@ public class HODService {
     private Set<Long> getStudentIdsUnderHod(Long departmentId) {
         return getStudentsUnderHod(departmentId).stream()
                 .filter(Objects::nonNull)
-                .map(Student::getId)
+                .map(s -> s.getId())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -361,7 +361,9 @@ public class HODService {
         for (Map.Entry<String, Map<String, List<BigDecimal>>> e : subjectClassScores.entrySet()) {
             for (Map.Entry<String, List<BigDecimal>> ce : e.getValue().entrySet()) {
                 if (ce.getValue().isEmpty()) continue;
-                BigDecimal avg = ce.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add)
+                BigDecimal avg = ce.getValue().stream()
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
                         .divide(BigDecimal.valueOf(ce.getValue().size()), 2, RoundingMode.HALF_UP);
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("subject", e.getKey());
@@ -389,12 +391,15 @@ public class HODService {
         for (Map.Entry<Long, List<Marks>> e : bySubject.entrySet()) {
             List<Marks> list = e.getValue();
             if (list == null || list.isEmpty()) continue;
-            BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(Marks::getTotalScore).reduce(BigDecimal.ZERO, BigDecimal::add);
-            int count = (int) list.stream().filter(m -> m.getTotalScore() != null).count();
+            BigDecimal avg = list.stream()
+                    .filter(m -> m != null && m.getTotalScore() != null)
+                    .map(m -> m.getTotalScore())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+            int count = (int) list.stream().filter(m -> m != null && m.getTotalScore() != null).count();
             if (count == 0) continue;
             avg = avg.divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-            int failed = (int) list.stream().filter(m -> m.getGrade() != null && ("F".equalsIgnoreCase(m.getGrade()) || "AB".equalsIgnoreCase(m.getGrade()))).count();
-            int graded = (int) list.stream().filter(m -> m.getGrade() != null && !m.getGrade().isEmpty()).count();
+            int failed = (int) list.stream().filter(m -> m != null && m.getGrade() != null && ("F".equalsIgnoreCase(m.getGrade()) || "AB".equalsIgnoreCase(m.getGrade()))).count();
+            int graded = (int) list.stream().filter(m -> m != null && m.getGrade() != null && !m.getGrade().isEmpty()).count();
             double failRate = graded > 0 ? (double) failed / graded : 0;
             if (avg.compareTo(avgThreshold) < 0 || failRate >= failureRateThreshold) {
                 Map<String, Object> m = new LinkedHashMap<>();
@@ -433,7 +438,10 @@ public class HODService {
         }
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<String, List<BigDecimal>> e : groupScores.entrySet()) {
-            BigDecimal avg = e.getValue().stream().reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
+            BigDecimal avg = e.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
+                    .divide(BigDecimal.valueOf(e.getValue().size()), 2, RoundingMode.HALF_UP);
             Map<String, Object> row = new LinkedHashMap<>();
             row.put(byYear ? "year" : "semester", e.getKey());
             row.put("averageScore", avg);
@@ -478,7 +486,7 @@ public class HODService {
         out.put("studentIdNumber", student.getStudentIdNumber());
         out.put("year", student.getYear());
         out.put("section", student.getSection());
-        out.put("marks", marks != null ? marks.stream().filter(Objects::nonNull).map(this::markToMap).collect(Collectors.toList()) : Collections.emptyList());
+        out.put("marks", marks != null ? marks.stream().filter(Objects::nonNull).map(m -> markToMap(m)).collect(Collectors.toList()) : Collections.emptyList());
         out.put("attendance", att != null ? att.stream().filter(Objects::nonNull).map(a -> {
             Map<String, Object> am = new LinkedHashMap<>();
             am.put("subjectId", a.getSubject() != null ? a.getSubject().getId() : null);
