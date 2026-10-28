@@ -356,6 +356,11 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
     - Meta box: `Receipt No : 2026-2027/1178`, `Date : 28-04-2026`, `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / III`.
     - Table: `Particulars` (`Tuition Fee`, `Other Fee`, `AU / Library Fee`) | `Amount (₹)`.
     - Summary & Legal: `NEFT No`, `Rupees (₹) in words`, `Note : Cheque subject to realisation`, `Computer generated receipt, no signature required`.
+  - **Official `Consolidated Receipt` PDF Document** (Evidence: `media_1793187997759_66589766.png`):
+    - Document Title: `Consolidated Receipt (2026-2027)`.
+    - Metadata: `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / III`.
+    - Ledger Table: `Date` (`28-04-2026`), `NEFT No` (`138736812`), `Particulars` (Tuition Fee, Other Fee, AU/Library Fee), `Amount` (87000, 138000, 625), `Total Amount (₹)` (`225625`), and a bottom `Summary` row.
+    - Legal disclaimer: `Rupees (₹)` in words, `Cheque subject to realisation`, and computer generated disclaimer.
 
 ---
 
