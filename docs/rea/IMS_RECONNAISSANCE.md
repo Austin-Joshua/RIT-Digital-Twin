@@ -323,4 +323,40 @@ From Primary Evidence (`media_1793186912831_0f9af050.png`):
 
 ---
 
+### 11. Academic Fee (`Academic Fee`)
+- **Status**: **OBSERVED & WORKFLOW VERIFIED** (Evidence: `media_1793187867080_0363baba.png` through `media_1793187967746_d1b9e692.png`)
+- **Visual Structure**:
+  - Title: `Academic Fee` (centered clean heading).
+  - **Top Action Bar**:
+    - Green button: `Pay Academic Fee` (`#28a745`, white text)
+    - Yellow button: `Payment History` (`#ffc107`, dark text)
+    - Red button: `Consolidated Receipt` (`#dc3545`, white text)
+    - In sub-views (`Payment History`, `Consolidated Receipt`), an additional dark grey `Back` button (`#6c757d`) appears.
+  - **Card 1: Student Details**:
+    - Key-value metadata: `Course : B.E. CSE` | `Admitted Mode : MANAGEMENT QUOTA`
+  - **Card 2: Fee Details Ledger (3-Column Grid)**:
+    - Row 1: `Current AY : 2026-2027` | `Opening Balance : 0` | `Tuition Fee : 87000`
+    - Row 2: `Hostel Fee : 0` | `Other Fee : 138000` | `AU / Library Fee : 625`
+    - Row 3: `Fine & Breakage : 0` | `Total Fee : 225625` | `Paid Amount : 225625`
+    - Row 4: `Reversal Amount : 0` | `Balance Amount : 0` | `Wallet Balance : 0`
+    - Row 5: `Last Updated On : 2026-04-28`
+  - **Pay Academic Fee Modal Dialog**:
+    - Header: Close button `×`.
+    - Status line: `Balance : 0` | `Wallet Balance : 0`.
+    - Input: `Enter Amount *` (required numeric input).
+    - Action: Green `Pay` button (`#28a745`) on bottom right.
+  - **Payment History View**:
+    - Card header: `Payment History` with sub-heading `AY : 2026-2027` (bold blue).
+    - Columns: `S.No`, `Transaction ID`, `Paid Date`, `Paid Amount`, `Mode`, `By`, `Status` (green `Success`), `Download Receipt` (green `Receipt` button).
+  - **Consolidated Receipts View**:
+    - Card header: `Consolidated Receipts`.
+    - Columns: `S.No`, `AY`, `Total Fee`, `Paid Fee`, `Download Receipt` (green `Receipt` button).
+  - **Official `Fee Receipt` PDF Document**:
+    - Header: RIT Tree Logo, `Rajalakshmi Institute of Technology`, `Accredited by NAAC...`, `Fee Receipt`.
+    - Meta box: `Receipt No : 2026-2027/1178`, `Date : 28-04-2026`, `AUSTIN JOSHUA M`, `2117240020044`, `B.E. CSE / III`.
+    - Table: `Particulars` (`Tuition Fee`, `Other Fee`, `AU / Library Fee`) | `Amount (₹)`.
+    - Summary & Legal: `NEFT No`, `Rupees (₹) in words`, `Note : Cheque subject to realisation`, `Computer generated receipt, no signature required`.
+
+---
+
 *(Additional pages will be appended progressively as evidence is uploaded by the user)*
