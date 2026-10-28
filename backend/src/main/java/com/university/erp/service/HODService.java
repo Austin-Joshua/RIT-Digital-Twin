@@ -49,6 +49,13 @@ public class HODService {
                 .orElse(false);
     }
 
+    private List<Student> getStudentsUnderHod(Department dept) {
+        if (isHandSDepartment(dept)) {
+            return studentRepository.findByYear(1);
+        }
+        return studentRepository.findByDepartment_IdAndYearGreaterThanEqual(dept.getId(), 2);
+    }
+
     private List<Student> getStudentsUnderHod(Long departmentId) {
         if (isHandSDepartment(departmentId)) {
             return studentRepository.findByYear(1);
@@ -56,8 +63,38 @@ public class HODService {
         return studentRepository.findByDepartment_IdAndYearGreaterThanEqual(departmentId, 2);
     }
 
+    private Set<Long> getStudentIdsUnderHod(Department dept) {
+        return getStudentsUnderHod(dept).stream()
+                .filter(Objects::nonNull)
+                .map(Student::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
     private Set<Long> getStudentIdsUnderHod(Long departmentId) {
-        return getStudentsUnderHod(departmentId).stream().map(Student::getId).collect(Collectors.toSet());
+        return getStudentsUnderHod(departmentId).stream()
+                .filter(Objects::nonNull)
+                .map(Student::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    private List<Marks> fetchMarksForStudentIds(Set<Long> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) return Collections.emptyList();
+        List<Long> idList = new ArrayList<>(studentIds);
+        int chunkSize = 500;
+        if (idList.size() <= chunkSize) {
+            return marksRepository.findAllByStudentIdIn(idList);
+        }
+        List<Marks> allMarks = new ArrayList<>(idList.size() * 5);
+        for (int i = 0; i < idList.size(); i += chunkSize) {
+            List<Long> chunk = idList.subList(i, Math.min(i + chunkSize, idList.size()));
+            List<Marks> part = marksRepository.findAllByStudentIdIn(chunk);
+            if (part != null) {
+                allMarks.addAll(part);
+            }
+        }
+        return allMarks;
     }
 
     @Cacheable(value = "dept_stats", key = "#departmentId")
@@ -302,10 +339,10 @@ public class HODService {
 
     @Cacheable(value = "dept_heatmap", key = "#departmentId")
     public List<Map<String, Object>> getSubjectHeatmap(Long departmentId) {
-        findDepartmentOrThrow(departmentId);
-        Set<Long> deptStudentIds = getStudentIdsUnderHod(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        Set<Long> deptStudentIds = getStudentIdsUnderHod(dept);
         if (deptStudentIds.isEmpty()) return Collections.emptyList();
-        List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(deptStudentIds);
+        List<Marks> deptMarks = fetchMarksForStudentIds(deptStudentIds);
 
         Map<String, Map<String, List<BigDecimal>>> subjectClassScores = new LinkedHashMap<>();
         for (Marks m : deptMarks) {
@@ -339,12 +376,12 @@ public class HODService {
 
     @Cacheable(value = "dept_weak_subjects", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#avgThreshold != null ? #avgThreshold : '50') + '-' + (#failureRateThreshold != null ? #failureRateThreshold : '0.3')")
     public List<Map<String, Object>> getWeakSubjects(Long departmentId, BigDecimal avgThreshold, Double failureRateThreshold) {
-        findDepartmentOrThrow(departmentId);
-        Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        Set<Long> studentIds = getStudentIdsUnderHod(dept);
         if (studentIds.isEmpty()) return Collections.emptyList();
         if (avgThreshold == null) avgThreshold = WEAK_AVG_THRESHOLD;
         if (failureRateThreshold == null) failureRateThreshold = WEAK_FAILURE_RATE_THRESHOLD;
-        List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
+        List<Marks> deptMarks = fetchMarksForStudentIds(studentIds);
         Map<Long, List<Marks>> bySubject = deptMarks.stream()
                 .filter(m -> m != null && m.getSubject() != null && m.getSubject().getId() != null)
                 .collect(Collectors.groupingBy(m -> m.getSubject().getId()));
@@ -376,10 +413,10 @@ public class HODService {
 
     @Cacheable(value = "dept_trends", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#by != null ? #by : 'semester')")
     public List<Map<String, Object>> getPerformanceTrends(Long departmentId, String by) {
-        findDepartmentOrThrow(departmentId);
-        Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        Set<Long> studentIds = getStudentIdsUnderHod(dept);
         if (studentIds.isEmpty()) return Collections.emptyList();
-        List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
+        List<Marks> deptMarks = fetchMarksForStudentIds(studentIds);
         if (deptMarks.isEmpty()) return Collections.emptyList();
         boolean byYear = "year".equalsIgnoreCase(by);
         Map<String, List<BigDecimal>> groupScores = new LinkedHashMap<>();
