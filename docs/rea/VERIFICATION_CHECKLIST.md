@@ -19,11 +19,11 @@ This living checklist tracks the verification status of student-accessible modul
 |---|---|---|---|---|---|
 | 01 | **Login Page & Authentication** | `/login` | `/login` | **OBSERVED** | Auth form, lockout, backend status badge implemented; awaiting captcha & human-verification confirmation |
 | 02 | **Student Dashboard** | `/home` or `/dashboard` | `/student` | **OBSERVED** | Verified 4 KPI rings, legend swatches, and October 2026 calendar grid from primary screenshots |
-| 03 | **Apply Leave / OD** | Student → Leave Application | `/student/leave` | **NOT INSPECTED** | Awaiting user upload |
+| 03 | **Apply Leave / OD** | Student → Leave Application | `/student/leave` | **OBSERVED** | Verified Leave Form layout: Leave Type (`Leave`/`OD`), From Date, To Date, Reason, Documents file upload (2MB PNG/JPG), and blue `Request` button |
 | 04 | **Academic Fee** | Student → Fee Payment | `/student/fee` | **NOT INSPECTED** | Awaiting user upload |
 | 05 | **Exam Fee** | Student → Exam Fee | `/student/exam-fee` | **NOT INSPECTED** | Awaiting user upload |
-| 06 | **Attendance** | Student → Attendance | `/student/attendance` | **NOT INSPECTED** | Awaiting user upload |
-| 07 | **My Time Table** | Student → Timetable | `/student/timetable` | **OBSERVED** | Verified `Class : B.E. CSE / 5 / A` header, 7-period grid, blue Subject/Staff cards, and elective stacking |
+| 06 | **Attendance** | Student → Attendance | `/student/attendance` | **OBSERVED** | Verified `Attendence Report`, Academic Year 2026-2027, Semester V, DataTables toolbar (Select all, Copy, CSV, Excel, PDF, Print), 9 columns, gold highlight for <75%, `view` action, and Anna University 75% rule notice |
+| 07 | **My Time Table** | Student → Timetable | `/student/timetable` | **OBSERVED** | Verified `Class : B.E. CSE / 5 / A` header, full 9-period grid x 6 days, Subject/Staff cards, elective stacking, Mentoring & Training slots |
 | 08 | **My Subject Registration** | Student → Registration | `/student/registration` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 09 | **CAT Mark** | Student → CAT Mark | `/student/cat-mark` | **NOT INSPECTED** | Awaiting dashboard verification |
 | 10 | **LAB Mark** | Student → LAB Mark | `/student/lab-mark` | **NOT INSPECTED** | Awaiting dashboard verification |
