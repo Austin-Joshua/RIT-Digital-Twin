@@ -26,9 +26,26 @@ public class HODService {
     private final AttendanceRepository attendanceRepository;
     private final DepartmentRepository departmentRepository;
 
-    private boolean isHandSDepartment(Long departmentId) {
+    private Department findDepartmentOrThrow(Long departmentId) {
+        if (departmentId == null) {
+            throw new com.university.erp.util.ErpException.ResourceNotFoundException("Department not found.");
+        }
         return departmentRepository.findById(departmentId)
-                .map(d -> H_AND_S_DEPARTMENT_CODE.equalsIgnoreCase(d.getCode()))
+                .orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Department not found."));
+    }
+
+    private void ensureDepartmentExists(Long departmentId) {
+        findDepartmentOrThrow(departmentId);
+    }
+
+    private boolean isHandSDepartment(Department dept) {
+        return dept != null && H_AND_S_DEPARTMENT_CODE.equalsIgnoreCase(dept.getCode());
+    }
+
+    private boolean isHandSDepartment(Long departmentId) {
+        if (departmentId == null) return false;
+        return departmentRepository.findById(departmentId)
+                .map(this::isHandSDepartment)
                 .orElse(false);
     }
 
@@ -45,14 +62,15 @@ public class HODService {
 
     @Cacheable(value = "dept_stats", key = "#departmentId")
     public Map<String, Object> getDepartmentStats(Long departmentId) {
-        ensureDepartmentExists(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        boolean isHandS = isHandSDepartment(dept);
         Map<String, Object> stats = new LinkedHashMap<>();
         stats.put("departmentId", departmentId);
-        stats.put("departmentCode", departmentRepository.findById(departmentId).map(Department::getCode).orElse(null));
-        stats.put("isHandS", isHandSDepartment(departmentId));
+        stats.put("departmentCode", dept.getCode());
+        stats.put("isHandS", isHandS);
         stats.put("totalFaculty", userRepository.countByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId));
 
-        if (isHandSDepartment(departmentId)) {
+        if (isHandS) {
             long y1 = studentRepository.countByYear(1);
             stats.put("totalStudents", y1);
             stats.put("year1Count", y1);
@@ -76,8 +94,8 @@ public class HODService {
 
     @Cacheable(value = "dept_analytics", key = "#departmentId")
     public Map<String, Object> getDepartmentAnalytics(Long departmentId) {
-        ensureDepartmentExists(departmentId);
-        boolean isHandS = isHandSDepartment(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        boolean isHandS = isHandSDepartment(dept);
 
         Map<String, Object> analytics = new LinkedHashMap<>();
         analytics.put("departmentId", departmentId);
@@ -94,19 +112,21 @@ public class HODService {
 
         if (marksRows != null && !marksRows.isEmpty() && marksRows.get(0) != null) {
             Object[] row = marksRows.get(0);
-            Double avgMarksVal = row[0] != null ? ((Number) row[0]).doubleValue() : null;
-            Double avgInternalVal = row[1] != null ? ((Number) row[1]).doubleValue() : null;
-            long passCount = row[2] != null ? ((Number) row[2]).longValue() : 0L;
-            long totalGraded = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+            if (row.length >= 4) {
+                Double avgMarksVal = row[0] != null ? ((Number) row[0]).doubleValue() : null;
+                Double avgInternalVal = row[1] != null ? ((Number) row[1]).doubleValue() : null;
+                long passCount = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+                long totalGraded = row[3] != null ? ((Number) row[3]).longValue() : 0L;
 
-            if (avgMarksVal != null) {
-                avgMarks = BigDecimal.valueOf(avgMarksVal).setScale(2, RoundingMode.HALF_UP);
-            }
-            if (avgInternalVal != null) {
-                avgInternal = BigDecimal.valueOf(avgInternalVal).setScale(2, RoundingMode.HALF_UP);
-            }
-            if (totalGraded > 0) {
-                passPercentage = BigDecimal.valueOf(100.0 * passCount / totalGraded).setScale(2, RoundingMode.HALF_UP);
+                if (avgMarksVal != null && Double.isFinite(avgMarksVal)) {
+                    avgMarks = BigDecimal.valueOf(avgMarksVal).setScale(2, RoundingMode.HALF_UP);
+                }
+                if (avgInternalVal != null && Double.isFinite(avgInternalVal)) {
+                    avgInternal = BigDecimal.valueOf(avgInternalVal).setScale(2, RoundingMode.HALF_UP);
+                }
+                if (totalGraded > 0) {
+                    passPercentage = BigDecimal.valueOf(100.0 * passCount / totalGraded).setScale(2, RoundingMode.HALF_UP);
+                }
             }
         }
 
@@ -119,14 +139,16 @@ public class HODService {
                 ? attendanceRepository.getFirstYearAverageAttendance()
                 : attendanceRepository.getDepartmentAverageAttendance(departmentId, 2);
 
-        analytics.put("averageAttendance", avgAtt != null ? BigDecimal.valueOf(avgAtt).setScale(2, RoundingMode.HALF_UP) : null);
+        analytics.put("averageAttendance", (avgAtt != null && Double.isFinite(avgAtt))
+                ? BigDecimal.valueOf(avgAtt).setScale(2, RoundingMode.HALF_UP)
+                : null);
         return analytics;
     }
 
-    @Cacheable(value = "class_performance", key = "#departmentId + '-' + #sortBy")
+    @Cacheable(value = "class_performance", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#sortBy != null ? #sortBy : 'default')")
     public List<Map<String, Object>> getClassPerformance(Long departmentId, String sortBy) {
-        ensureDepartmentExists(departmentId);
-        boolean isHandS = isHandSDepartment(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        boolean isHandS = isHandSDepartment(dept);
 
         List<Object[]> marksRows = isHandS
                 ? marksRepository.getFirstYearClassPerformanceMarksSummary()
@@ -139,7 +161,7 @@ public class HODService {
         Map<String, Double> attendanceMap = new HashMap<>();
         if (attRows != null) {
             for (Object[] r : attRows) {
-                if (r[0] != null && r[1] != null) {
+                if (r != null && r.length >= 3 && r[0] != null && r[1] != null) {
                     String key = r[0] + "-" + r[1];
                     Double avg = r[2] != null ? ((Number) r[2]).doubleValue() : null;
                     attendanceMap.put(key, avg);
@@ -150,7 +172,7 @@ public class HODService {
         List<Map<String, Object>> result = new ArrayList<>();
         if (marksRows != null) {
             for (Object[] r : marksRows) {
-                if (r[0] == null || r[1] == null) continue;
+                if (r == null || r.length < 6 || r[0] == null || r[1] == null) continue;
                 String classKey = r[0] + "-" + r[1];
                 int studentCount = r[2] != null ? ((Number) r[2]).intValue() : 0;
                 Double avgScore = r[3] != null ? ((Number) r[3]).doubleValue() : null;
@@ -162,8 +184,8 @@ public class HODService {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("class", classKey);
                 row.put("studentCount", studentCount);
-                row.put("academicAverage", avgScore != null ? BigDecimal.valueOf(avgScore).setScale(2, RoundingMode.HALF_UP) : null);
-                row.put("attendanceAverage", classAtt != null ? BigDecimal.valueOf(classAtt).setScale(2, RoundingMode.HALF_UP) : null);
+                row.put("academicAverage", (avgScore != null && Double.isFinite(avgScore)) ? BigDecimal.valueOf(avgScore).setScale(2, RoundingMode.HALF_UP) : null);
+                row.put("attendanceAverage", (classAtt != null && Double.isFinite(classAtt)) ? BigDecimal.valueOf(classAtt).setScale(2, RoundingMode.HALF_UP) : null);
                 row.put("failingCount", (int) failCount);
                 row.put("totalGraded", (int) totalGraded);
                 result.add(row);
@@ -201,33 +223,35 @@ public class HODService {
         return result;
     }
 
-    @Cacheable(value = "dept_students", key = "#departmentId + '-' + #year + '-' + #section")
+    @Cacheable(value = "dept_students", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#year != null ? #year : 'all') + '-' + (#section != null ? #section : 'all')")
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getStudents(Long departmentId, Integer year, String section) {
-        ensureDepartmentExists(departmentId);
-        boolean isHandS = isHandSDepartment(departmentId);
+        Department dept = findDepartmentOrThrow(departmentId);
+        boolean isHandS = isHandSDepartment(dept);
+
+        String trimmedSection = (section != null && !section.isBlank()) ? section.trim() : null;
 
         List<Student> students;
         if (isHandS) {
-            if (section != null && !section.isBlank()) {
-                students = studentRepository.findBySectionIgnoreCase(section).stream()
+            if (trimmedSection != null) {
+                students = studentRepository.findBySectionIgnoreCase(trimmedSection).stream()
                         .filter(s -> s.getYear() != null && s.getYear() == 1)
                         .toList();
             } else {
                 students = studentRepository.findByYear(1);
             }
         } else {
-            if (year != null && section != null && !section.isBlank()) {
-                students = studentRepository.findBySectionIgnoreCase(section).stream()
-                        .filter(s -> s.getDepartment() != null && s.getDepartment().getId().equals(departmentId) && year.equals(s.getYear()))
+            if (year != null && trimmedSection != null) {
+                students = studentRepository.findBySectionIgnoreCase(trimmedSection).stream()
+                        .filter(s -> s.getDepartment() != null && departmentId.equals(s.getDepartment().getId()) && year.equals(s.getYear()))
                         .toList();
             } else if (year != null) {
                 students = studentRepository.findByDepartmentId(departmentId).stream()
                         .filter(s -> year.equals(s.getYear()))
                         .toList();
-            } else if (section != null && !section.isBlank()) {
-                students = studentRepository.findBySectionIgnoreCase(section).stream()
-                        .filter(s -> s.getDepartment() != null && s.getDepartment().getId().equals(departmentId) && s.getYear() != null && s.getYear() >= 2)
+            } else if (trimmedSection != null) {
+                students = studentRepository.findBySectionIgnoreCase(trimmedSection).stream()
+                        .filter(s -> s.getDepartment() != null && departmentId.equals(s.getDepartment().getId()) && s.getYear() != null && s.getYear() >= 2)
                         .toList();
             } else {
                 students = studentRepository.findByDepartment_IdAndYearGreaterThanEqual(departmentId, 2);
@@ -236,6 +260,7 @@ public class HODService {
 
         List<Map<String, Object>> list = new ArrayList<>(students.size());
         for (Student s : students) {
+            if (s == null) continue;
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("studentId", s.getId());
             map.put("studentIdNumber", s.getStudentIdNumber());
@@ -248,7 +273,9 @@ public class HODService {
             }
             if (s.getUser() != null) {
                 map.put("email", s.getUser().getEmail());
-                map.put("name", (s.getUser().getFirstName() != null ? s.getUser().getFirstName() : "") + " " + (s.getUser().getLastName() != null ? s.getUser().getLastName() : ""));
+                String firstName = s.getUser().getFirstName() != null ? s.getUser().getFirstName() : "";
+                String lastName = s.getUser().getLastName() != null ? s.getUser().getLastName() : "";
+                map.put("name", (firstName + " " + lastName).trim());
             }
             list.add(map);
         }
@@ -257,10 +284,11 @@ public class HODService {
 
     @Cacheable(value = "dept_faculty", key = "#departmentId")
     public List<Map<String, Object>> getFaculty(Long departmentId) {
-        ensureDepartmentExists(departmentId);
+        findDepartmentOrThrow(departmentId);
         List<User> faculty = userRepository.findByRole_RoleNameAndDepartment_Id(Role.UserRole.FACULTY, departmentId);
         List<Map<String, Object>> list = new ArrayList<>(faculty.size());
         for (User u : faculty) {
+            if (u == null) continue;
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("userId", u.getUserId());
             map.put("email", u.getEmail());
@@ -274,13 +302,14 @@ public class HODService {
 
     @Cacheable(value = "dept_heatmap", key = "#departmentId")
     public List<Map<String, Object>> getSubjectHeatmap(Long departmentId) {
-        ensureDepartmentExists(departmentId);
+        findDepartmentOrThrow(departmentId);
         Set<Long> deptStudentIds = getStudentIdsUnderHod(departmentId);
         if (deptStudentIds.isEmpty()) return Collections.emptyList();
         List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(deptStudentIds);
 
         Map<String, Map<String, List<BigDecimal>>> subjectClassScores = new LinkedHashMap<>();
         for (Marks m : deptMarks) {
+            if (m == null || m.getStudent() == null || m.getSubject() == null) continue;
             if (!deptStudentIds.contains(m.getStudent().getId())) continue;
             if (m.getStudent().getYear() == null || m.getStudent().getSection() == null) continue;
             Long subjId = m.getSubject().getId();
@@ -308,18 +337,21 @@ public class HODService {
         return rows;
     }
 
-    @Cacheable(value = "dept_weak_subjects", key = "#departmentId + '-' + #avgThreshold + '-' + #failureRateThreshold")
+    @Cacheable(value = "dept_weak_subjects", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#avgThreshold != null ? #avgThreshold : '50') + '-' + (#failureRateThreshold != null ? #failureRateThreshold : '0.3')")
     public List<Map<String, Object>> getWeakSubjects(Long departmentId, BigDecimal avgThreshold, Double failureRateThreshold) {
-        ensureDepartmentExists(departmentId);
+        findDepartmentOrThrow(departmentId);
         Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
         if (studentIds.isEmpty()) return Collections.emptyList();
         if (avgThreshold == null) avgThreshold = WEAK_AVG_THRESHOLD;
         if (failureRateThreshold == null) failureRateThreshold = WEAK_FAILURE_RATE_THRESHOLD;
         List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
-        Map<Long, List<Marks>> bySubject = deptMarks.stream().collect(Collectors.groupingBy(m -> m.getSubject().getId()));
+        Map<Long, List<Marks>> bySubject = deptMarks.stream()
+                .filter(m -> m != null && m.getSubject() != null && m.getSubject().getId() != null)
+                .collect(Collectors.groupingBy(m -> m.getSubject().getId()));
         List<Map<String, Object>> weak = new ArrayList<>();
         for (Map.Entry<Long, List<Marks>> e : bySubject.entrySet()) {
             List<Marks> list = e.getValue();
+            if (list == null || list.isEmpty()) continue;
             BigDecimal avg = list.stream().filter(m -> m.getTotalScore() != null).map(Marks::getTotalScore).reduce(BigDecimal.ZERO, BigDecimal::add);
             int count = (int) list.stream().filter(m -> m.getTotalScore() != null).count();
             if (count == 0) continue;
@@ -330,7 +362,10 @@ public class HODService {
             if (avg.compareTo(avgThreshold) < 0 || failRate >= failureRateThreshold) {
                 Map<String, Object> m = new LinkedHashMap<>();
                 m.put("subjectId", e.getKey());
-                m.put("subjectName", list.get(0).getSubject().getSubjectName());
+                String subjName = (list.get(0).getSubject() != null && list.get(0).getSubject().getSubjectName() != null)
+                        ? list.get(0).getSubject().getSubjectName()
+                        : "Subject " + e.getKey();
+                m.put("subjectName", subjName);
                 m.put("averageScore", avg);
                 m.put("failureRate", BigDecimal.valueOf(failRate * 100).setScale(2, RoundingMode.HALF_UP));
                 weak.add(m);
@@ -339,9 +374,9 @@ public class HODService {
         return weak;
     }
 
-    @Cacheable(value = "dept_trends", key = "#departmentId + '-' + #by")
+    @Cacheable(value = "dept_trends", key = "(#departmentId != null ? #departmentId : '0') + '-' + (#by != null ? #by : 'semester')")
     public List<Map<String, Object>> getPerformanceTrends(Long departmentId, String by) {
-        ensureDepartmentExists(departmentId);
+        findDepartmentOrThrow(departmentId);
         Set<Long> studentIds = getStudentIdsUnderHod(departmentId);
         if (studentIds.isEmpty()) return Collections.emptyList();
         List<Marks> deptMarks = marksRepository.findAllByStudentIdIn(studentIds);
@@ -349,8 +384,14 @@ public class HODService {
         boolean byYear = "year".equalsIgnoreCase(by);
         Map<String, List<BigDecimal>> groupScores = new LinkedHashMap<>();
         for (Marks m : deptMarks) {
-            if (m.getTotalScore() == null) continue;
-            String key = byYear ? String.valueOf(m.getStudent().getYear()) : "Sem " + m.getSemester();
+            if (m == null || m.getTotalScore() == null) continue;
+            String key;
+            if (byYear) {
+                if (m.getStudent() == null || m.getStudent().getYear() == null) continue;
+                key = String.valueOf(m.getStudent().getYear());
+            } else {
+                key = m.getSemester() != null ? "Sem " + m.getSemester() : "Sem N/A";
+            }
             groupScores.computeIfAbsent(key, k -> new ArrayList<>()).add(m.getTotalScore());
         }
         List<Map<String, Object>> result = new ArrayList<>();
@@ -368,21 +409,28 @@ public class HODService {
     @Cacheable(value = "dept_rankings", key = "#departmentId")
     public List<Map<String, Object>> getClassRankings(Long departmentId) {
         List<Map<String, Object>> classPerf = getClassPerformance(departmentId, "highest");
+        List<Map<String, Object>> ranked = new ArrayList<>(classPerf.size());
         int rank = 1;
         for (Map<String, Object> row : classPerf) {
-            row.put("rank", rank++);
-            row.put("attendanceRank", rank - 1);
+            Map<String, Object> copy = new LinkedHashMap<>(row);
+            copy.put("rank", rank);
+            copy.put("attendanceRank", rank);
+            rank++;
+            ranked.add(copy);
         }
-        return classPerf;
+        return ranked;
     }
 
     public Map<String, Object> getStudentPerformance(Long departmentId, Long studentId) {
-        ensureDepartmentExists(departmentId);
+        findDepartmentOrThrow(departmentId);
+        if (studentId == null) {
+            throw new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found");
+        }
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Student not found"));
         boolean isHandS = isHandSDepartment(departmentId);
         boolean canAccess = isHandS
                 ? (student.getYear() != null && student.getYear() == 1)
-                : (student.getDepartment() != null && student.getDepartment().getId().equals(departmentId) && student.getYear() != null && student.getYear() >= 2);
+                : (student.getDepartment() != null && departmentId.equals(student.getDepartment().getId()) && student.getYear() != null && student.getYear() >= 2);
         if (!canAccess) {
             throw new org.springframework.security.access.AccessDeniedException("Student not under your department.");
         }
@@ -393,30 +441,26 @@ public class HODService {
         out.put("studentIdNumber", student.getStudentIdNumber());
         out.put("year", student.getYear());
         out.put("section", student.getSection());
-        out.put("marks", marks.stream().map(this::markToMap).collect(Collectors.toList()));
-        out.put("attendance", att.stream().map(a -> {
+        out.put("marks", marks != null ? marks.stream().filter(Objects::nonNull).map(this::markToMap).collect(Collectors.toList()) : Collections.emptyList());
+        out.put("attendance", att != null ? att.stream().filter(Objects::nonNull).map(a -> {
             Map<String, Object> am = new LinkedHashMap<>();
             am.put("subjectId", a.getSubject() != null ? a.getSubject().getId() : null);
             am.put("percentage", a.getPercentage());
             am.put("attendedClasses", a.getAttendedClasses());
             am.put("totalClasses", a.getTotalClasses());
             return am;
-        }).collect(Collectors.toList()));
+        }).collect(Collectors.toList()) : Collections.emptyList());
         return out;
     }
 
     private Map<String, Object> markToMap(Marks m) {
         Map<String, Object> map = new LinkedHashMap<>();
-        map.put("subjectId", m.getSubject().getId());
-        map.put("subjectName", m.getSubject().getSubjectName());
+        map.put("subjectId", (m.getSubject() != null) ? m.getSubject().getId() : null);
+        map.put("subjectName", (m.getSubject() != null) ? m.getSubject().getSubjectName() : null);
         map.put("semester", m.getSemester());
         map.put("totalScore", m.getTotalScore());
         map.put("calculatedInternal", m.getCalculatedInternal());
         map.put("grade", m.getGrade());
         return map;
-    }
-
-    private void ensureDepartmentExists(Long departmentId) {
-        departmentRepository.findById(departmentId).orElseThrow(() -> new com.university.erp.util.ErpException.ResourceNotFoundException("Department not found."));
     }
 }
