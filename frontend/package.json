@@ -23,7 +23,7 @@
     "@react-google-maps/api": "^2.20.8",
     "@stomp/stompjs": "^7.3.0",
     "axios": "^1.13.6",
-    "firebase": "^12.11.0",
+    "firebase": "^13.1.0",
     "framer-motion": "^13.4.0",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
