@@ -47,45 +47,45 @@ const AuthLayout = () => {
                     color: '#ffffff'
                 }}>
                     <AnimatedWaveBackground />
-                    <div className="brand-copy" style={{ position: 'relative', zIndex: 1, width: 'min(440px, 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img
-                            src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
-                            alt="RIT Institutional Logo"
-                            style={{ height: '72px', width: 'auto', display: 'block', margin: '0 auto 18px' }}
-                        />
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '450px' }}>
+                        <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
+                            <img
+                                src={isDarkMode ? "/assets/images/institutional-light-logo.png" : "/assets/images/institutional-dark-logo.png"}
+                                alt="RIT Institutional Logo"
+                                style={{ height: '75px', width: 'auto' }}
+                            />
+                        </div>
                         <AnimatePresence mode="wait">
-                            <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants} style={{ width: '100%' }}>
-                                <h1 style={{ fontSize: '2.6rem', fontWeight: 650, margin: '0 0 6px', lineHeight: 1.15, color: '#ffffff', textAlign: 'center' }}>
+                            <motion.div key={isLogin ? 'login-info' : 'signup-info'} initial="initial" animate="animate" exit="exit" variants={textVariants}>
+                                <h1 style={{ fontSize: '2.8rem', fontWeight: '800', marginBottom: '8px', lineHeight: '1.2', color: '#ffffff' }}>
                                     Digital <span style={{ color: 'var(--color-accent-gold)' }}>Twin</span>
                                 </h1>
-                                <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.92)', margin: '0 0 18px', lineHeight: 1.4, fontWeight: 500, textAlign: 'center' }}>
+                                <p style={{ fontSize: '1.2rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '40px', lineHeight: '1.6', fontWeight: '500' }}>
                                     Smart Campus Intelligence Platform
                                 </p>
 
                                 <div className="brand-description" style={{
                                     fontSize: '0.95rem',
-                                    color: 'rgba(255, 255, 255, 0.82)',
-                                    lineHeight: 1.65,
-                                    margin: '0 0 18px',
-                                    padding: '14px 16px',
-                                    background: 'rgba(0,0,0,0.12)',
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.65)',
+                                    lineHeight: '1.7',
+                                    marginBottom: '40px',
+                                    padding: '16px',
+                                    background: 'rgba(0,0,0,0.1)',
                                     borderRadius: '12px',
-                                    borderLeft: '3px solid var(--color-accent-gold)',
-                                    textAlign: 'left'
+                                    borderLeft: `2px solid ${isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}`
                                 }}>
                                     Rajalakshmi Institute of Technology is an engineering college in Chennai, Tamil Nadu, India.
                                     RIT is approved by AICTE and affiliated with Anna University, Chennai and accredited with <strong>&apos;A++&apos; Grade in NAAC</strong>.
                                 </div>
 
                                 <div className="brand-tagline" style={{
-                                    fontSize: '0.98rem',
+                                    fontSize: '1rem',
                                     fontStyle: 'italic',
                                     color: 'var(--color-accent-gold)',
-                                    fontWeight: 500,
-                                    margin: 0,
+                                    fontWeight: '500',
+                                    marginTop: '60px',
                                     borderLeft: '3px solid var(--color-accent-gold)',
-                                    paddingLeft: '14px',
-                                    textAlign: 'left'
+                                    paddingLeft: '16px'
                                 }}>
                                     &quot;Innovation through data, excellence in education.&quot;
                                 </div>
@@ -135,7 +135,7 @@ const AuthLayout = () => {
                     }
                     .brand-panel h1 { font-size: 1.4rem !important; margin-bottom: 6px !important; }
                     .brand-panel p, .brand-description, .brand-tagline { display: none !important; }
-                    .brand-panel img { height: 60px !important; margin-left: auto; margin-right: auto; }
+                    .brand-panel img { height: 60px !important; }
                     .form-panel { 
                         padding: 40px 20px !important; 
                         height: auto !important; 

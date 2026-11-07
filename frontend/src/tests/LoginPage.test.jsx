@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import { ThemeContext } from '../hooks/ThemeContext';
@@ -12,39 +12,32 @@ vi.mock('../hooks/AuthContext', () => ({
   }),
 }));
 
-const renderLogin = async () => {
-  let result;
-  await act(async () => {
-    result = render(
-      <BrowserRouter>
-        <ThemeContext.Provider value={{ isDarkMode: false }}>
-          <LoginPage />
-        </ThemeContext.Provider>
-      </BrowserRouter>
-    );
-  });
-  return result;
-};
+const renderLogin = () =>
+  render(
+    <BrowserRouter>
+      <ThemeContext.Provider value={{ isDarkMode: false }}>
+        <LoginPage />
+      </ThemeContext.Provider>
+    </BrowserRouter>
+  );
 
 describe('Login page', () => {
-  it('renders user id and password fields', async () => {
-    await renderLogin();
-    expect(screen.getByPlaceholderText(/Register No \/ Email \/ User ID/i)).toBeTruthy();
+  it('renders username and password fields', () => {
+    renderLogin();
+    expect(screen.getByPlaceholderText(/username or email/i)).toBeTruthy();
     expect(screen.getByPlaceholderText(/password/i)).toBeTruthy();
   });
 
-  it('renders sign in button', async () => {
-    await renderLogin();
+  it('renders sign in button', () => {
+    renderLogin();
     expect(screen.getByRole('button', { name: /^sign in$/i })).toBeTruthy();
   });
 
   it('submits form and stays on screen', async () => {
-    await renderLogin();
-    await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText(/Register No \/ Email \/ User ID/i), { target: { value: 'testuser' } });
-      fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
-    });
+    renderLogin();
+    fireEvent.change(screen.getByPlaceholderText(/username or email/i), { target: { value: 'FAC-001' } });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: 'FAC-001' } });
+    fireEvent.click(screen.getByRole('button', { name: /^sign in$/i }));
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /^sign in$/i })).toBeTruthy();
     });
